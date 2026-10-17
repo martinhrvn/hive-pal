@@ -483,7 +483,11 @@
       "queens": "História matiek",
       "assistant": "Asistent"
     },
-    "broodNestStats": "Štatistiky plodového hniezda"
+    "broodNestStats": "Štatistiky plodového hniezda",
+    "statShort": {
+      "strength": "Sila",
+      "queenCells": "Matečníky"
+    }
   },
   "scoreWarnings": {
     "noBrood": "Nezistený plod",

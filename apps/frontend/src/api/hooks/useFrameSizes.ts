@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { CreateFrameSizeDto, FrameSize } from 'shared-schemas';
 import { AxiosError } from 'axios';
 
@@ -24,6 +25,7 @@ export const useFrameSizes = () => {
 
 // Submit a new frame size for review
 export const useSubmitFrameSize = () => {
+  const { t } = useTranslation('common');
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: CreateFrameSizeDto): Promise<FrameSize> => {
@@ -34,14 +36,14 @@ export const useSubmitFrameSize = () => {
       return response.data;
     },
     onSuccess: async () => {
-      toast.success('Frame size submitted for review');
+      toast.success(t('frameSizeToasts.submitted'));
       await queryClient.invalidateQueries({
         queryKey: FRAME_SIZES_KEYS.lists(),
       });
     },
     onError: (error: AxiosError<{ message: string }>) => {
       toast.error(
-        error.response?.data?.message || 'Failed to submit frame size',
+        error.response?.data?.message || t('frameSizeToasts.submitFailed'),
       );
     },
   });
@@ -75,6 +77,7 @@ export const usePendingFrameSizes = () => {
 
 // Admin: Approve a frame size
 export const useApproveFrameSize = () => {
+  const { t } = useTranslation('admin');
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
@@ -84,14 +87,14 @@ export const useApproveFrameSize = () => {
       return response.data;
     },
     onSuccess: async () => {
-      toast.success('Frame size approved');
+      toast.success(t('frameSizes.toasts.approved'));
       await queryClient.invalidateQueries({
         queryKey: FRAME_SIZES_KEYS.all,
       });
     },
     onError: (error: AxiosError<{ message: string }>) => {
       toast.error(
-        error.response?.data?.message || 'Failed to approve frame size',
+        error.response?.data?.message || t('frameSizes.toasts.approveFailed'),
       );
     },
   });
@@ -99,6 +102,7 @@ export const useApproveFrameSize = () => {
 
 // Admin: Reject a frame size
 export const useRejectFrameSize = () => {
+  const { t } = useTranslation('admin');
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
@@ -108,14 +112,14 @@ export const useRejectFrameSize = () => {
       return response.data;
     },
     onSuccess: async () => {
-      toast.success('Frame size rejected');
+      toast.success(t('frameSizes.toasts.rejected'));
       await queryClient.invalidateQueries({
         queryKey: FRAME_SIZES_KEYS.all,
       });
     },
     onError: (error: AxiosError<{ message: string }>) => {
       toast.error(
-        error.response?.data?.message || 'Failed to reject frame size',
+        error.response?.data?.message || t('frameSizes.toasts.rejectFailed'),
       );
     },
   });
@@ -123,6 +127,7 @@ export const useRejectFrameSize = () => {
 
 // Admin: Delete a frame size
 export const useDeleteFrameSize = () => {
+  const { t } = useTranslation('admin');
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
@@ -130,14 +135,14 @@ export const useDeleteFrameSize = () => {
       return response.data;
     },
     onSuccess: async () => {
-      toast.success('Frame size deleted');
+      toast.success(t('frameSizes.toasts.deleted'));
       await queryClient.invalidateQueries({
         queryKey: FRAME_SIZES_KEYS.all,
       });
     },
     onError: (error: AxiosError<{ message: string }>) => {
       toast.error(
-        error.response?.data?.message || 'Failed to delete frame size',
+        error.response?.data?.message || t('frameSizes.toasts.deleteFailed'),
       );
     },
   });

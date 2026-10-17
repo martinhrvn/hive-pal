@@ -331,7 +331,11 @@
     "submit": "Submit Feedback",
     "thankYou": "Thank You!",
     "submittedMessage": "Your feedback has been submitted successfully. We appreciate your input and will review it soon.",
-    "submitAnother": "Submit Another Feedback"
+    "submitAnother": "Submit Another Feedback",
+    "toasts": {
+      "submitted": "Thank you for your feedback!",
+      "submitFailed": "Failed to submit feedback"
+    }
   },
   "alerts": {
     "alert": "alert",
@@ -2585,7 +2589,17 @@
     "cancel": "Cancel",
     "save": "Save",
     "deleteTitle": "Delete treatment product?",
-    "deleteDesc": "This removes your custom product. This cannot be undone."
+    "deleteDesc": "This removes your custom product. This cannot be undone.",
+    "toasts": {
+      "created": "Treatment product created",
+      "createFailed": "Failed to create product",
+      "updated": "Treatment product updated",
+      "updateFailed": "Failed to update product",
+      "deleted": "Treatment product deleted",
+      "deleteFailed": "Failed to delete product",
+      "ingredientAdded": "Active ingredient added",
+      "ingredientAddFailed": "Failed to add ingredient"
+    }
   },
   "imageDisplay": {
     "label": "Images: {{mode}}",
@@ -2650,5 +2664,9 @@
     "github": "GitHub",
     "privacyPolicy": "Privacy Policy",
     "copyright": "© {{year}} Hive Pal. Released under MIT License."
+  },
+  "frameSizeToasts": {
+    "submitted": "Frame size submitted for review",
+    "submitFailed": "Failed to submit frame size"
   }
 }

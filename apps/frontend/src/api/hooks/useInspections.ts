@@ -360,6 +360,7 @@ export const useUpsertInspection = (
   const { mutateAsync: createInspectionMutation } = useCreateInspection();
   const { mutateAsync: updateInspectionMutation } = useUpdateInspection();
   const { mutateAsync: updateHiveBoxes } = useUpdateHiveBoxes();
+  const { t } = useTranslation('inspection');
   const { parseWeight } = useUnitFormat();
   const { addPendingUpdate, updateStatus, removePendingUpdate } =
     usePendingBoxUpdatesStore();
@@ -438,10 +439,10 @@ export const useUpsertInspection = (
             'Failed to fetch hive data for box update staleness check:',
             e,
           );
-          const errorMessage =
-            'Failed to fetch hive data for staleness detection. Box update skipped.';
           toast.warning(
-            `Inspection saved, but box configuration could not be updated: ${errorMessage}`,
+            t('messages.boxUpdateWarning', {
+              error: t('messages.boxUpdateStalenessFailed'),
+            }),
           );
           return; // Exit early, no pending update added
         }
@@ -469,8 +470,7 @@ export const useUpsertInspection = (
         } catch (boxUpdateError) {
           // On failure, update the pending update status to 'failed' with error message
           // HIGH #6: Extract actual API error message from AxiosError
-          let errorMessage =
-            'Failed to update box configuration. Please try again.';
+          let errorMessage: string = t('messages.boxUpdateFailed');
 
           if (
             axios.isAxiosError(boxUpdateError) &&
@@ -485,14 +485,14 @@ export const useUpsertInspection = (
 
           // Show warning toast about the failure (banner will handle retry UI)
           toast.warning(
-            `Inspection saved, but box configuration could not be updated: ${errorMessage}`,
+            t('messages.boxUpdateWarning', { error: errorMessage }),
           );
         }
       } catch (unexpectedError) {
         // MEDIUM #15: Handle unexpected errors and clean up stuck pending state
         removePendingUpdate(inspectionRes.id);
         console.error('[performBoxUpdate] Unexpected error:', unexpectedError);
-        toast.error('An unexpected error occurred during box update.');
+        toast.error(t('messages.boxUpdateUnexpected'));
       }
     };
 
@@ -509,9 +509,9 @@ export const useUpsertInspection = (
         boxConfigAction?.updatedBoxes &&
         boxConfigAction.updatedBoxes.length > 0
       ) {
-        toast.success('Inspection saved');
+        toast.success(t('messages.saved'));
       } else {
-        toast.success('Inspection saved successfully');
+        toast.success(t('messages.savedSuccessfully'));
       }
 
       // Perform box update in background (don't await, don't block navigation)

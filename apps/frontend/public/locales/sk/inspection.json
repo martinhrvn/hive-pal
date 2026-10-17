@@ -97,6 +97,24 @@
             "requires_treatment": "Vyžaduje ošetrenie",
             "low_stores": "Nízke zásoby",
             "prepare_for_winter": "Príprava na zimu"
+        },
+        "eggsFrames": "Vajíčka",
+        "uncappedBroodFrames": "Nezavíčkovaný plod",
+        "cappedBroodFrames": "Zavíčkovaný plod",
+        "droneBroodFrames": "Trúdí plod",
+        "pollenFrames": "Peľ",
+        "nectarFrames": "Nektár",
+        "honeyFrames": "Med",
+        "emptyFrames": "Prázdne / medzistienky",
+        "frameShort": {
+            "eggsFrames": "Vajíčka",
+            "uncappedBroodFrames": "Otvorený",
+            "cappedBroodFrames": "Zavíčkovaný",
+            "droneBroodFrames": "Trúdí",
+            "pollenFrames": "Peľ",
+            "nectarFrames": "Nektár",
+            "honeyFrames": "Zásoby",
+            "emptyFrames": "Priestor"
         }
     },
     "actions": {
@@ -128,7 +146,13 @@
     },
     "messages": {
         "exportComingSoon": "Funkcia exportu bude čoskoro k dispozícii",
-        "shareComingSoon": "Funkcia zdieľania bude čoskoro k dispozícii"
+        "shareComingSoon": "Funkcia zdieľania bude čoskoro k dispozícii",
+        "boxUpdateWarning": "Prehliadka bola uložená, ale konfiguráciu nadstavkov sa nepodarilo aktualizovať: {{error}}",
+        "boxUpdateStalenessFailed": "Nepodarilo sa načítať údaje úľa na kontrolu aktuálnosti. Aktualizácia nadstavkov bola preskočená.",
+        "boxUpdateFailed": "Konfiguráciu nadstavkov sa nepodarilo aktualizovať. Skúste to znova.",
+        "boxUpdateUnexpected": "Pri aktualizácii nadstavkov sa vyskytla neočakávaná chyba.",
+        "saved": "Prehliadka bola uložená",
+        "savedSuccessfully": "Prehliadka bola úspešne uložená"
     },
     "scheduled": {
         "title": "Naplánované prehliadky",

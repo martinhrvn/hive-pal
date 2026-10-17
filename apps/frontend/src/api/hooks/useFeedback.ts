@@ -1,21 +1,25 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { CreateFeedbackDto } from 'shared-schemas';
 import { AxiosError } from 'axios';
 
 // Submit new feedback
 export const useSubmitFeedback = () => {
+  const { t } = useTranslation('common');
   return useMutation({
     mutationFn: async (data: CreateFeedbackDto) => {
       const response = await apiClient.post('/api/feedback', data);
       return response.data;
     },
     onSuccess: () => {
-      toast.success('Thank you for your feedback!');
+      toast.success(t('feedback.toasts.submitted'));
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      toast.error(error.response?.data?.message || 'Failed to submit feedback');
+      toast.error(
+        error.response?.data?.message || t('feedback.toasts.submitFailed'),
+      );
     },
   });
 };
@@ -47,6 +51,7 @@ export const useAllFeedback = (filters?: {
 
 // Admin: Update feedback status
 export const useUpdateFeedbackStatus = () => {
+  const { t } = useTranslation('admin');
   return useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const response = await apiClient.patch(`/api/feedback/${id}/status`, {
@@ -55,11 +60,12 @@ export const useUpdateFeedbackStatus = () => {
       return response.data;
     },
     onSuccess: () => {
-      toast.success('Feedback status updated');
+      toast.success(t('feedback.toasts.statusUpdated'));
     },
     onError: (error: AxiosError<{ message: string }>) => {
       toast.error(
-        error.response?.data?.message || 'Failed to update feedback status',
+        error.response?.data?.message ||
+          t('feedback.toasts.statusUpdateFailed'),
       );
     },
   });

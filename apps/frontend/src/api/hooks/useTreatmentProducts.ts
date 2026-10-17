@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import {
   ActiveIngredient,
   AppliedIngredientTotal,
@@ -39,21 +40,23 @@ export const useActiveIngredients = () =>
   });
 
 export const useCreateTreatmentProduct = () => {
+  const { t } = useTranslation('common');
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (dto: CreateTreatmentProductDto) =>
       (await apiClient.post<TreatmentProduct>('/api/treatment-products', dto))
         .data,
     onSuccess: () => {
-      toast.success('Treatment product created');
+      toast.success(t('treatmentProducts.toasts.created'));
       qc.invalidateQueries({ queryKey: TP_KEYS.lists() });
     },
     onError: (e: AxiosError<{ message?: string }>) =>
-      toast.error(errMsg(e, 'Failed to create product')),
+      toast.error(errMsg(e, t('treatmentProducts.toasts.createFailed'))),
   });
 };
 
 export const useUpdateTreatmentProduct = () => {
+  const { t } = useTranslation('common');
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({
@@ -70,40 +73,42 @@ export const useUpdateTreatmentProduct = () => {
         )
       ).data,
     onSuccess: () => {
-      toast.success('Treatment product updated');
+      toast.success(t('treatmentProducts.toasts.updated'));
       qc.invalidateQueries({ queryKey: TP_KEYS.lists() });
     },
     onError: (e: AxiosError<{ message?: string }>) =>
-      toast.error(errMsg(e, 'Failed to update product')),
+      toast.error(errMsg(e, t('treatmentProducts.toasts.updateFailed'))),
   });
 };
 
 export const useDeleteTreatmentProduct = () => {
+  const { t } = useTranslation('common');
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) =>
       (await apiClient.delete(`/api/treatment-products/${id}`)).data,
     onSuccess: () => {
-      toast.success('Treatment product deleted');
+      toast.success(t('treatmentProducts.toasts.deleted'));
       qc.invalidateQueries({ queryKey: TP_KEYS.lists() });
     },
     onError: (e: AxiosError<{ message?: string }>) =>
-      toast.error(errMsg(e, 'Failed to delete product')),
+      toast.error(errMsg(e, t('treatmentProducts.toasts.deleteFailed'))),
   });
 };
 
 export const useCreateActiveIngredient = () => {
+  const { t } = useTranslation('common');
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (dto: CreateActiveIngredientDto) =>
       (await apiClient.post<ActiveIngredient>('/api/active-ingredients', dto))
         .data,
     onSuccess: () => {
-      toast.success('Active ingredient added');
+      toast.success(t('treatmentProducts.toasts.ingredientAdded'));
       qc.invalidateQueries({ queryKey: TP_KEYS.ingredients() });
     },
     onError: (e: AxiosError<{ message?: string }>) =>
-      toast.error(errMsg(e, 'Failed to add ingredient')),
+      toast.error(errMsg(e, t('treatmentProducts.toasts.ingredientAddFailed'))),
   });
 };
 

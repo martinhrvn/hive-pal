@@ -537,7 +537,11 @@
       "queens": "Queen History",
       "assistant": "Assistant"
     },
-    "broodNestStats": "Brood Nest Stats"
+    "broodNestStats": "Brood Nest Stats",
+    "statShort": {
+      "strength": "Strength",
+      "queenCells": "Q. Cells"
+    }
   },
   "scoreWarnings": {
     "noBrood": "No brood detected",

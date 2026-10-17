@@ -45,15 +45,17 @@ function hasFrameData(inspection: InspectionResponse): boolean {
   );
 }
 
-const chartConfig = Object.fromEntries(
-  FRAME_FIELDS.map(ft => [ft.key, { label: ft.label, color: ft.color }]),
-);
-
 export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
   hiveId,
   period,
 }) => {
   const { t } = useTranslation('hive');
+  const chartConfig = Object.fromEntries(
+    FRAME_FIELDS.map(ft => [
+      ft.key,
+      { label: t(ft.labelKey), color: ft.color },
+    ]),
+  );
   const [selected, setSelected] = useState<Set<FrameKey>>(
     new Set(FRAME_FIELDS.map(ft => ft.key)),
   );
@@ -132,7 +134,7 @@ export const FrameBreakdownChart: React.FC<FrameBreakdownChartProps> = ({
                         className="h-2.5 w-2.5 rounded-full shrink-0"
                         style={{ backgroundColor: ft.color }}
                       />
-                      {ft.label}
+                      {t(ft.labelKey)}
                     </label>
                   ))}
                 </div>

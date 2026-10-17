@@ -119,7 +119,17 @@
     "pollenFrames": "Pollen",
     "nectarFrames": "Nectar",
     "honeyFrames": "Honey",
-    "emptyFrames": "Empty / Foundation"
+    "emptyFrames": "Empty / Foundation",
+    "frameShort": {
+      "eggsFrames": "Eggs",
+      "uncappedBroodFrames": "Uncapped",
+      "cappedBroodFrames": "Capped",
+      "droneBroodFrames": "Drone",
+      "pollenFrames": "Pollen",
+      "nectarFrames": "Nectar",
+      "honeyFrames": "Stores",
+      "emptyFrames": "Space"
+    }
   },
   "actions": {
     "details": "Details",
@@ -153,7 +163,13 @@
   },
   "messages": {
     "exportComingSoon": "Export functionality coming soon",
-    "shareComingSoon": "Share functionality coming soon"
+    "shareComingSoon": "Share functionality coming soon",
+    "boxUpdateWarning": "Inspection saved, but box configuration could not be updated: {{error}}",
+    "boxUpdateStalenessFailed": "Failed to fetch hive data for staleness detection. Box update skipped.",
+    "boxUpdateFailed": "Failed to update box configuration. Please try again.",
+    "boxUpdateUnexpected": "An unexpected error occurred during box update.",
+    "saved": "Inspection saved",
+    "savedSuccessfully": "Inspection saved successfully"
   },
   "scheduled": {
     "title": "Scheduled Inspections",

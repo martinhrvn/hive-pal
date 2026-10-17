@@ -104,7 +104,11 @@
     "fromLine": "From: {{sender}} • {{date}}",
     "messageLabel": "Message:",
     "statusLabel": "Status:",
-    "showing": "Showing {{from}} to {{to}} of {{total}} results"
+    "showing": "Showing {{from}} to {{to}} of {{total}} results",
+    "toasts": {
+      "statusUpdated": "Feedback status updated",
+      "statusUpdateFailed": "Failed to update feedback status"
+    }
   },
   "frameSizes": {
     "pendingTitle": "Pending Frame Size Submissions",
@@ -117,7 +121,15 @@
     "empty": "No frame sizes found",
     "dimensions": "{{width}} x {{height}} x {{depth}}",
     "builtIn": "Built-in",
-    "community": "Community"
+    "community": "Community",
+    "toasts": {
+      "approved": "Frame size approved",
+      "approveFailed": "Failed to approve frame size",
+      "rejected": "Frame size rejected",
+      "rejectFailed": "Failed to reject frame size",
+      "deleted": "Frame size deleted",
+      "deleteFailed": "Failed to delete frame size"
+    }
   },
   "media": {
     "title": "Media",
@@ -231,6 +243,12 @@
     "done": "Done",
     "newTitle": "New worker token",
     "newDescription": "Give the token a name to identify which machine or worker is using it.",
-    "namePlaceholder": "e.g. home-desktop"
+    "namePlaceholder": "e.g. home-desktop",
+    "toasts": {
+      "created": "Worker token created",
+      "createFailed": "Failed to create worker token",
+      "revoked": "Worker token revoked",
+      "revokeFailed": "Failed to revoke worker token"
+    }
   }
 }

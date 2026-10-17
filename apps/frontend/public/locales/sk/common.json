@@ -256,7 +256,11 @@
         "submit": "Odoslať spätnú väzbu",
         "thankYou": "Ďakujeme!",
         "submittedMessage": "Vaša spätná väzba bola úspešne odoslaná. Vážime si váš názor a čoskoro ho preskúmame.",
-        "submitAnother": "Odoslať ďalšiu spätnú väzbu"
+        "submitAnother": "Odoslať ďalšiu spätnú väzbu",
+        "toasts": {
+            "submitted": "Ďakujeme za vašu spätnú väzbu!",
+            "submitFailed": "Spätnú väzbu sa nepodarilo odoslať"
+        }
     },
     "alerts": {
         "alert": "upozornenie",
@@ -1283,6 +1287,22 @@
         "notFound": {
             "title": "Stránka sa nenašla",
             "message": "Stránku, ktorú hľadáte, sme nenašli."
+        }
+    },
+    "frameSizeToasts": {
+        "submitted": "Rozmer rámika bol odoslaný na posúdenie",
+        "submitFailed": "Rozmer rámika sa nepodarilo odoslať"
+    },
+    "treatmentProducts": {
+        "toasts": {
+            "created": "Prípravok na ošetrenie bol vytvorený",
+            "createFailed": "Prípravok sa nepodarilo vytvoriť",
+            "updated": "Prípravok na ošetrenie bol aktualizovaný",
+            "updateFailed": "Prípravok sa nepodarilo aktualizovať",
+            "deleted": "Prípravok na ošetrenie bol vymazaný",
+            "deleteFailed": "Prípravok sa nepodarilo vymazať",
+            "ingredientAdded": "Účinná látka bola pridaná",
+            "ingredientAddFailed": "Účinnú látku sa nepodarilo pridať"
         }
     }
 }

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import {
   CreateWorkerTokenDto,
   WorkerToken,
@@ -29,6 +30,7 @@ export const useWorkerTokens = () => {
 };
 
 export const useCreateWorkerToken = () => {
+  const { t } = useTranslation('admin');
   const queryClient = useQueryClient();
   return useMutation<
     WorkerTokenCreated,
@@ -43,20 +45,21 @@ export const useCreateWorkerToken = () => {
       return response.data;
     },
     onSuccess: async () => {
-      toast.success('Worker token created');
+      toast.success(t('workerTokens.toasts.created'));
       await queryClient.invalidateQueries({
         queryKey: WORKER_TOKENS_KEYS.list(),
       });
     },
     onError: error => {
       toast.error(
-        error.response?.data?.message || 'Failed to create worker token',
+        error.response?.data?.message || t('workerTokens.toasts.createFailed'),
       );
     },
   });
 };
 
 export const useRevokeWorkerToken = () => {
+  const { t } = useTranslation('admin');
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
@@ -64,14 +67,14 @@ export const useRevokeWorkerToken = () => {
       return response.data;
     },
     onSuccess: async () => {
-      toast.success('Worker token revoked');
+      toast.success(t('workerTokens.toasts.revoked'));
       await queryClient.invalidateQueries({
         queryKey: WORKER_TOKENS_KEYS.list(),
       });
     },
     onError: (error: AxiosError<{ message: string }>) => {
       toast.error(
-        error.response?.data?.message || 'Failed to revoke worker token',
+        error.response?.data?.message || t('workerTokens.toasts.revokeFailed'),
       );
     },
   });

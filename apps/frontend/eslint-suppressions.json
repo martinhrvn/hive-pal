@@ -1,29 +1,4 @@
 {
-  "src/api/hooks/useFeedback.ts": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/api/hooks/useFrameSizes.ts": {
-    "no-restricted-syntax": {
-      "count": 4
-    }
-  },
-  "src/api/hooks/useInspections.ts": {
-    "no-restricted-syntax": {
-      "count": 5
-    }
-  },
-  "src/api/hooks/useTreatmentProducts.ts": {
-    "no-restricted-syntax": {
-      "count": 4
-    }
-  },
-  "src/api/hooks/useWorkerTokens.ts": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
   "src/components/TestSentry.tsx": {
     "i18next/no-literal-string": {
       "count": 5
@@ -87,11 +62,6 @@
   "src/components/weather/weather-forecast.tsx": {
     "i18next/no-literal-string": {
       "count": 4
-    }
-  },
-  "src/constants/frame-fields.ts": {
-    "no-restricted-syntax": {
-      "count": 8
     }
   },
   "src/pages/actions/bulk/queen-builder.tsx": {

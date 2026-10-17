@@ -104,7 +104,11 @@
     "fromLine": "Od: {{sender}} • {{date}}",
     "messageLabel": "Správa:",
     "statusLabel": "Stav:",
-    "showing": "Zobrazené {{from}} až {{to}} z {{total}} výsledkov"
+    "showing": "Zobrazené {{from}} až {{to}} z {{total}} výsledkov",
+    "toasts": {
+      "statusUpdated": "Stav spätnej väzby bol aktualizovaný",
+      "statusUpdateFailed": "Stav spätnej väzby sa nepodarilo aktualizovať"
+    }
   },
   "frameSizes": {
     "pendingTitle": "Čakajúce návrhy rozmerov rámikov",
@@ -117,7 +121,15 @@
     "empty": "Nenašli sa žiadne rozmery rámikov",
     "dimensions": "{{width}} x {{height}} x {{depth}}",
     "builtIn": "Vstavané",
-    "community": "Komunita"
+    "community": "Komunita",
+    "toasts": {
+      "approved": "Rozmer rámika bol schválený",
+      "approveFailed": "Rozmer rámika sa nepodarilo schváliť",
+      "rejected": "Rozmer rámika bol zamietnutý",
+      "rejectFailed": "Rozmer rámika sa nepodarilo zamietnuť",
+      "deleted": "Rozmer rámika bol vymazaný",
+      "deleteFailed": "Rozmer rámika sa nepodarilo vymazať"
+    }
   },
   "media": {
     "title": "Médiá",
@@ -237,6 +249,12 @@
     "done": "Hotovo",
     "newTitle": "Nový token workera",
     "newDescription": "Pomenujte token, aby ste vedeli, ktorý počítač alebo worker ho používa.",
-    "namePlaceholder": "napr. domaci-pocitac"
+    "namePlaceholder": "napr. domaci-pocitac",
+    "toasts": {
+      "created": "Token workera bol vytvorený",
+      "createFailed": "Token workera sa nepodarilo vytvoriť",
+      "revoked": "Token workera bol zrušený",
+      "revokeFailed": "Token workera sa nepodarilo zrušiť"
+    }
   }
 }
