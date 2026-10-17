@@ -64,7 +64,17 @@
     "varroaManagement": "Varroa Management",
     "documentation": "Documentation",
     "hivehub": "HiveHub",
-    "treatmentProducts": "Treatment products"
+    "treatmentProducts": "Treatment products",
+    "batchInspections": "Batch Inspections",
+    "frameSizes": "Frame Sizes",
+    "media": "Media",
+    "workerTokens": "Worker Tokens",
+    "userAvatar": "user avatar",
+    "more": "More",
+    "viewProject": "View Project",
+    "shareProject": "Share Project",
+    "deleteProject": "Delete Project",
+    "brand": "Hive Pal"
   },
   "actions": {
     "save": "Save",
@@ -2089,7 +2099,8 @@
     "honeyProductionDescription": "Total honey harvested per hive (kg)"
   },
   "footer": {
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "copyright": "© {{year}} HRVN s.r.o."
   },
   "bulkAdd": {
     "title": "Bulk Add",
@@ -2529,7 +2540,8 @@
           "body": "Season-long treatment schedule for production colonies and nuclei with mite-fall thresholds, plus the divide-and-treat method explained step by step."
         }
       }
-    }
+    },
+    "brand": "Hive Pal"
   },
   "pwa": {
     "updateAvailable": "A new version is available",
@@ -2606,5 +2618,37 @@
       "reportIssue": "Report Issue",
       "copyright": "© 2025 Hive Pal. Released under MIT License. All rights reserved."
     }
+  },
+  "breadcrumbs": {
+    "queen": "Queen",
+    "details": "Details",
+    "inspectionFrom": "Inspection from {{date}}",
+    "harvestFrom": "Harvest from {{date}}"
+  },
+  "pageTitles": {
+    "home": "Hive Pal - Modern Beekeeping Management Software"
+  },
+  "errorPage": {
+    "notFound": {
+      "title": "Page not found",
+      "message": "We couldn't find the page you were looking for."
+    }
+  },
+  "publicLayout": {
+    "brand": "Hive Pal",
+    "logoAlt": "Hive Pal logo",
+    "openSource": "Open Source",
+    "liebefelder": "Liebefelder Schätzmethode",
+    "docs": "Docs",
+    "signIn": "Sign In",
+    "startFree": "Start Free",
+    "tagline": "Free and open-source beekeeping management platform.",
+    "freeTools": "Free Tools",
+    "project": "Project",
+    "documentation": "Documentation",
+    "releaseNotes": "Release Notes",
+    "github": "GitHub",
+    "privacyPolicy": "Privacy Policy",
+    "copyright": "© {{year}} Hive Pal. Released under MIT License."
   }
 }

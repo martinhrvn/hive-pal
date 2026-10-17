@@ -34,16 +34,6 @@
       "count": 1
     }
   },
-  "src/components/apiary-switcher.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
-    }
-  },
-  "src/components/app-sidebar.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/components/assistant/assistant-chat.tsx": {
     "i18next/no-literal-string": {
       "count": 10
@@ -68,11 +58,6 @@
   "src/components/audio/AudioRecordingsList.tsx": {
     "i18next/no-literal-string": {
       "count": 1
-    }
-  },
-  "src/components/breadcrumbs.tsx": {
-    "no-restricted-syntax": {
-      "count": 10
     }
   },
   "src/components/common/floating-action-button.tsx": {
@@ -108,44 +93,6 @@
   "src/components/feature-photo-picker.tsx": {
     "i18next/no-literal-string": {
       "count": 1
-    }
-  },
-  "src/components/layout/dashboard-layout.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
-    }
-  },
-  "src/components/layout/public-footer.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
-    }
-  },
-  "src/components/layout/public-layout.tsx": {
-    "i18next/no-literal-string": {
-      "count": 16
-    },
-    "no-restricted-syntax": {
-      "count": 4
-    }
-  },
-  "src/components/marketing/marketing-chrome.tsx": {
-    "i18next/no-literal-string": {
-      "count": 3
-    }
-  },
-  "src/components/nav-admin.tsx": {
-    "i18next/no-literal-string": {
-      "count": 3
-    }
-  },
-  "src/components/nav-hives.tsx": {
-    "i18next/no-literal-string": {
-      "count": 6
-    }
-  },
-  "src/components/nav-user.tsx": {
-    "i18next/no-literal-string": {
-      "count": 2
     }
   },
   "src/components/upcoming-inspection-list-item.tsx": {
@@ -231,16 +178,6 @@
   "src/pages/treatment-products/treatment-products-page.tsx": {
     "i18next/no-literal-string": {
       "count": 3
-    }
-  },
-  "src/root.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
-    }
-  },
-  "src/route-modules/app/home.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
     }
   }
 }

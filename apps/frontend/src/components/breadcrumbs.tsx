@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { format, parseISO } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,6 +11,8 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Home } from 'lucide-react';
 import { useBreadcrumbStore } from '@/stores/breadcrumb-store';
+import { useDateFormat } from '@/hooks/use-date-format';
+import { formatDateWithPreference } from '@/utils/date-format';
 
 interface BreadcrumbItem {
   label: string;
@@ -22,6 +24,8 @@ export const Breadcrumbs = () => {
   const location = useLocation();
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
   const { context } = useBreadcrumbStore();
+  const { t } = useTranslation('common');
+  const { dateFormat } = useDateFormat();
 
   useEffect(() => {
     const generateBreadcrumbs = () => {
@@ -32,7 +36,7 @@ export const Breadcrumbs = () => {
 
       // Add home
       breadcrumbItems.push({
-        label: 'Home',
+        label: t('navigation.home'),
         path: '/',
         isCurrentPage: pathSegments.length === 0,
       });
@@ -51,7 +55,7 @@ export const Breadcrumbs = () => {
         // Handle hives section
         if (segment === 'hives') {
           breadcrumbItems.push({
-            label: 'Hives',
+            label: t('navigation.hives'),
             path: '/hives',
             isCurrentPage: i === pathSegments.length - 1,
           });
@@ -65,7 +69,7 @@ export const Breadcrumbs = () => {
             // Insert hives breadcrumb if not already there
             if (!breadcrumbItems.some(item => item.path === '/hives')) {
               breadcrumbItems.push({
-                label: 'Hives',
+                label: t('navigation.hives'),
                 path: '/hives',
                 isCurrentPage: false,
               });
@@ -79,7 +83,7 @@ export const Breadcrumbs = () => {
           }
 
           breadcrumbItems.push({
-            label: 'Inspections',
+            label: t('navigation.inspections'),
             path: '/inspections',
             isCurrentPage: i === pathSegments.length - 1 && !context.inspection,
           });
@@ -89,7 +93,7 @@ export const Breadcrumbs = () => {
         // Handle queens section
         if (segment === 'queens') {
           breadcrumbItems.push({
-            label: 'Queens',
+            label: t('navigation.queens'),
             path: '/queens',
             isCurrentPage: i === pathSegments.length - 1,
           });
@@ -99,7 +103,7 @@ export const Breadcrumbs = () => {
         // Handle harvests section
         if (segment === 'harvests') {
           breadcrumbItems.push({
-            label: 'Harvests',
+            label: t('navigation.harvests'),
             path: '/harvests',
             isCurrentPage: i === pathSegments.length - 1,
           });
@@ -109,7 +113,7 @@ export const Breadcrumbs = () => {
         // Handle create
         if (segment === 'create') {
           breadcrumbItems.push({
-            label: 'Create',
+            label: t('actions.create'),
             path: currentPath,
             isCurrentPage: i === pathSegments.length - 1,
           });
@@ -119,7 +123,7 @@ export const Breadcrumbs = () => {
         // Handle edit
         if (segment === 'edit') {
           breadcrumbItems.push({
-            label: 'Edit',
+            label: t('actions.edit'),
             path: currentPath,
             isCurrentPage: i === pathSegments.length - 1,
           });
@@ -129,7 +133,7 @@ export const Breadcrumbs = () => {
         // Handle schedule
         if (segment === 'schedule') {
           breadcrumbItems.push({
-            label: 'Schedule',
+            label: t('navigation.schedule'),
             path: currentPath,
             isCurrentPage: i === pathSegments.length - 1,
           });
@@ -150,12 +154,12 @@ export const Breadcrumbs = () => {
 
           // Check if this is an inspection ID from context
           if (context.inspection && segment === context.inspection.id) {
-            const inspectionDate = format(
-              parseISO(context.inspection.date),
-              'MMM d, yyyy',
+            const inspectionDate = formatDateWithPreference(
+              context.inspection.date,
+              dateFormat,
             );
             breadcrumbItems.push({
-              label: `Inspection from ${inspectionDate}`,
+              label: t('breadcrumbs.inspectionFrom', { date: inspectionDate }),
               path: currentPath,
               isCurrentPage: i === pathSegments.length - 1,
             });
@@ -165,7 +169,7 @@ export const Breadcrumbs = () => {
           // Check if this is a queen ID from context
           if (context.queen && segment === context.queen.id) {
             breadcrumbItems.push({
-              label: context.queen.name || 'Queen',
+              label: context.queen.name || t('breadcrumbs.queen'),
               path: currentPath,
               isCurrentPage: i === pathSegments.length - 1,
             });
@@ -174,12 +178,12 @@ export const Breadcrumbs = () => {
 
           // Check if this is a harvest ID from context
           if (context.harvest && segment === context.harvest.id) {
-            const harvestDate = format(
-              parseISO(context.harvest.date),
-              'MMM d, yyyy',
+            const harvestDate = formatDateWithPreference(
+              context.harvest.date,
+              dateFormat,
             );
             breadcrumbItems.push({
-              label: `Harvest from ${harvestDate}`,
+              label: t('breadcrumbs.harvestFrom', { date: harvestDate }),
               path: currentPath,
               isCurrentPage: i === pathSegments.length - 1,
             });
@@ -188,7 +192,7 @@ export const Breadcrumbs = () => {
 
           // If we don't have context for this ID, show generic "Details"
           breadcrumbItems.push({
-            label: 'Details',
+            label: t('breadcrumbs.details'),
             path: currentPath,
             isCurrentPage: i === pathSegments.length - 1,
           });
@@ -200,7 +204,7 @@ export const Breadcrumbs = () => {
     };
 
     generateBreadcrumbs();
-  }, [location, context]);
+  }, [location, context, t, dateFormat]);
 
   // Don't render breadcrumbs on the homepage
   if (location.pathname === '/') {
@@ -215,7 +219,7 @@ export const Breadcrumbs = () => {
             <BreadcrumbItem>
               {breadcrumb.isCurrentPage ? (
                 <BreadcrumbPage>
-                  {breadcrumb.label === 'Home' ? (
+                  {breadcrumb.path === '/' ? (
                     <Home className="h-4 w-4" />
                   ) : (
                     breadcrumb.label
@@ -224,7 +228,7 @@ export const Breadcrumbs = () => {
               ) : (
                 <BreadcrumbLink asChild>
                   <Link to={breadcrumb.path}>
-                    {breadcrumb.label === 'Home' ? (
+                    {breadcrumb.path === '/' ? (
                       <Home className="h-4 w-4" />
                     ) : (
                       breadcrumb.label

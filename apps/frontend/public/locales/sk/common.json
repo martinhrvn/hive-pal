@@ -30,7 +30,17 @@
         "syrupCalculator": "Kalkulačka sirupu",
         "calendar": "Kalendár",
         "actions": "Hromadné pridanie",
-        "hivehub": "HiveHub"
+        "hivehub": "HiveHub",
+        "batchInspections": "Hromadné prehliadky",
+        "frameSizes": "Rozmery rámikov",
+        "media": "Médiá",
+        "workerTokens": "Tokeny workerov",
+        "userAvatar": "avatar používateľa",
+        "more": "Viac",
+        "viewProject": "Zobraziť projekt",
+        "shareProject": "Zdieľať projekt",
+        "deleteProject": "Vymazať projekt",
+        "brand": "Hive Pal"
     },
     "actions": {
         "save": "Uložiť",
@@ -1146,7 +1156,8 @@
         }
     },
     "footer": {
-        "privacyPolicy": "Zásady ochrany osobných údajov"
+        "privacyPolicy": "Zásady ochrany osobných údajov",
+        "copyright": "© {{year}} HRVN s.r.o."
     },
     "bulkAdd": {
         "title": "Hromadné pridanie",
@@ -1258,5 +1269,20 @@
         "note": "Poznámka",
         "other": "Iné",
         "weighing": "Váženie"
+    },
+    "breadcrumbs": {
+        "queen": "Matka",
+        "details": "Podrobnosti",
+        "inspectionFrom": "Prehliadka z {{date}}",
+        "harvestFrom": "Zber z {{date}}"
+    },
+    "pageTitles": {
+        "home": "Hive Pal - moderný softvér na správu včelárstva"
+    },
+    "errorPage": {
+        "notFound": {
+            "title": "Stránka sa nenašla",
+            "message": "Stránku, ktorú hľadáte, sme nenašli."
+        }
     }
 }

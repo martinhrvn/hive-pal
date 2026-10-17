@@ -134,7 +134,7 @@ export function ApiarySwitcher() {
                 {!viewAllApiaries && activeApiary?.id === apiary.id ? (
                   <Check className="ml-auto size-4" />
                 ) : (
-                  <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                  <DropdownMenuShortcut>{`⌘${index + 1}`}</DropdownMenuShortcut>
                 )}
               </DropdownMenuItem>
             ))}

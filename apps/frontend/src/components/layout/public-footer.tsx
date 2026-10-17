@@ -14,7 +14,7 @@ export const PublicFooter = () => {
             {t('footer.privacyPolicy')}
           </Link>
           <span>|</span>
-          <span>© {currentYear} HRVN s.r.o.</span>
+          <span>{t('footer.copyright', { year: currentYear })}</span>
         </div>
         <LanguageSwitcher
           variant="buttons"

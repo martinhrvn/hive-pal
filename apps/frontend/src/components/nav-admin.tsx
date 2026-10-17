@@ -125,7 +125,7 @@ export function NavAdmin({ collapsed: collapsedProp }: NavAdminProps) {
             <path d="M2 8h20" />
             <path d="M2 12h20" />
           </svg>
-          {!collapsed && <span>Frame Sizes</span>}
+          {!collapsed && <span>{t('navigation.frameSizes')}</span>}
         </Link>
         <Link
           to="/admin/metrics"
@@ -184,7 +184,7 @@ export function NavAdmin({ collapsed: collapsedProp }: NavAdminProps) {
             <circle cx="9" cy="9" r="2" />
             <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
           </svg>
-          {!collapsed && <span>Media</span>}
+          {!collapsed && <span>{t('navigation.media')}</span>}
         </Link>
         <Link
           to="/admin/worker-tokens"
@@ -212,7 +212,7 @@ export function NavAdmin({ collapsed: collapsedProp }: NavAdminProps) {
           >
             <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
           </svg>
-          {!collapsed && <span>Worker Tokens</span>}
+          {!collapsed && <span>{t('navigation.workerTokens')}</span>}
         </Link>
       </div>
     </div>

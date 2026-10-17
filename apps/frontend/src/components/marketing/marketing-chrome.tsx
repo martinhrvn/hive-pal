@@ -51,12 +51,13 @@ export function SectionLabel({
 
 /** The Hive Pal mark, 36 px tall; the 112 px source covers high-DPI screens. */
 function Logo({ className }: Readonly<{ className?: string }>) {
+  const { t } = useTranslation('common');
   return (
     <picture>
       <source srcSet="/hive-pal-logo-112.webp" type="image/webp" />
       <img
         src="/hive-pal-logo-112.png"
-        alt="Hive Pal"
+        alt={t('marketing.brand')}
         width={32}
         height={36}
         className={cn('h-9 w-auto select-none', className)}
@@ -124,7 +125,7 @@ export function MarketingHeader() {
         >
           <Logo />
           <span className="text-lg font-semibold tracking-tight text-stone-900">
-            Hive Pal
+            {t('marketing.brand')}
           </span>
         </Link>
 
@@ -226,7 +227,7 @@ export function MarketingFooter() {
             >
               <Logo />
               <span className="text-lg font-semibold text-amber-50">
-                Hive Pal
+                {t('marketing.brand')}
               </span>
             </Link>
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-amber-50/65">

@@ -23,12 +23,14 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useHives } from '@/api/hooks';
 
 export function NavHives() {
   const { isMobile, setOpenMobile } = useSidebar();
   const navigate = useNavigate();
   const { data: hives } = useHives();
+  const { t } = useTranslation('common');
 
   const handleNav = (url: string) => {
     if (isMobile) setOpenMobile(false);
@@ -37,7 +39,7 @@ export function NavHives() {
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Hives</SidebarGroupLabel>
+      <SidebarGroupLabel>{t('navigation.hives')}</SidebarGroupLabel>
       <SidebarMenu>
         {hives?.slice(0, 5)?.map(item => (
           <SidebarMenuItem key={item.id}>
@@ -57,7 +59,7 @@ export function NavHives() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuAction showOnHover>
                   <MoreHorizontal />
-                  <span className="sr-only">More</span>
+                  <span className="sr-only">{t('navigation.more')}</span>
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -67,16 +69,16 @@ export function NavHives() {
               >
                 <DropdownMenuItem>
                   <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
+                  <span>{t('navigation.viewProject')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Forward className="text-muted-foreground" />
-                  <span>Share Project</span>
+                  <span>{t('navigation.shareProject')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
+                  <span>{t('navigation.deleteProject')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -89,7 +91,7 @@ export function NavHives() {
               onClick={() => handleNav('/hives')}
             >
               <MoreHorizontal className="text-sidebar-foreground/70" />
-              <span>More</span>
+              <span>{t('navigation.more')}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         )}
