@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -35,8 +35,8 @@ export function ReleasesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-green-50 w-full">
       <PublicMeta
-        title="Release Notes - Hive Pal"
-        description="Stay up to date with the latest Hive Pal features, improvements, and bug fixes. See what's new in each release."
+        title={t('releasesPage.meta.title')}
+        description={t('releasesPage.meta.description')}
         path="/releases"
       />
       {/* Header */}
@@ -50,11 +50,11 @@ export function ReleasesPage() {
               >
                 <div className="text-2xl font-bold text-amber-600">🐝</div>
                 <h1 className="ml-2 text-xl font-semibold text-gray-900">
-                  Hive Pal
+                  {t('releasesPage.brand')}
                 </h1>
               </Link>
               <span className="ml-3 text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                Open Source
+                {t('releasesPage.openSource')}
               </span>
             </div>
             <nav className="hidden md:flex items-center space-x-6">
@@ -63,7 +63,7 @@ export function ReleasesPage() {
                 className="text-gray-600 hover:text-gray-900 text-sm font-medium flex items-center gap-1"
               >
                 <Home className="h-4 w-4" />
-                Home
+                {t('releasesPage.home')}
               </Link>
               <a
                 href="https://github.com/martinhrvn/hive-pal"
@@ -72,15 +72,15 @@ export function ReleasesPage() {
                 className="text-gray-600 hover:text-gray-900 flex items-center gap-1 text-sm font-medium"
               >
                 <GithubIcon className="h-4 w-4" />
-                GitHub
+                {t('releasesPage.github')}
               </a>
             </nav>
             <div className="flex space-x-4">
               <Button variant="outline" asChild>
-                <Link to="/login">Sign In</Link>
+                <Link to="/login">{t('releasesPage.signIn')}</Link>
               </Button>
               <Button asChild className="bg-amber-500 hover:bg-amber-600">
-                <Link to="/register">Start Free</Link>
+                <Link to="/register">{t('releasesPage.startFree')}</Link>
               </Button>
             </div>
           </div>
@@ -95,26 +95,29 @@ export function ReleasesPage() {
             className="text-amber-600 hover:text-amber-700 text-sm font-medium flex items-center gap-1 inline-flex"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Home
+            {t('releasesPage.backToHome')}
           </Link>
         </div>
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Release Notes
+            {t('releasesPage.title')}
           </h1>
           <p className="text-gray-600">
-            Stay up to date with the latest features, improvements, and bug
-            fixes in Hive Pal. Follow our development on{' '}
-            <a
-              href="https://github.com/martinhrvn/hive-pal"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-amber-600 hover:text-amber-700 underline"
-            >
-              GitHub
-            </a>
-            .
+            <Trans
+              t={t}
+              i18nKey="releasesPage.intro"
+              components={{
+                githubLink: (
+                  <a
+                    href="https://github.com/martinhrvn/hive-pal"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-amber-600 hover:text-amber-700 underline"
+                  />
+                ),
+              }}
+            />
           </p>
         </div>
 
@@ -127,7 +130,9 @@ export function ReleasesPage() {
                     variant={index === 0 ? 'default' : 'secondary'}
                     className={index === 0 ? 'bg-blue-600 text-white' : ''}
                   >
-                    v{release.version}
+                    {t('releasesPage.versionBadge', {
+                      version: release.version,
+                    })}
                   </Badge>
                   <span className="text-sm text-muted-foreground">
                     {release.releaseDate}
@@ -137,7 +142,7 @@ export function ReleasesPage() {
                       variant="outline"
                       className="text-green-700 border-green-300"
                     >
-                      Latest
+                      {t('releasesPage.latest')}
                     </Badge>
                   )}
                 </div>
@@ -158,7 +163,7 @@ export function ReleasesPage() {
         {releaseNotes.length === 0 && (
           <Card className="text-center py-12 bg-white">
             <CardContent>
-              <p className="text-gray-500">No release notes available.</p>
+              <p className="text-gray-500">{t('releasesPage.empty')}</p>
             </CardContent>
           </Card>
         )}
@@ -170,14 +175,15 @@ export function ReleasesPage() {
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <div className="text-2xl font-bold text-amber-400">🐝</div>
-              <span className="ml-2 text-lg font-semibold">Hive Pal</span>
+              <span className="ml-2 text-lg font-semibold">
+                {t('releasesPage.brand')}
+              </span>
               <span className="ml-2 text-xs font-medium bg-gray-800 text-green-400 px-2 py-1 rounded-full">
-                Open Source
+                {t('releasesPage.openSource')}
               </span>
             </div>
             <p className="text-gray-400 text-sm leading-6 mb-6">
-              Free and open-source beekeeping management platform. Making
-              beekeeping simpler, more productive, and more enjoyable.
+              {t('releasesPage.footer.tagline')}
             </p>
 
             <div className="flex justify-center space-x-6 mb-8">
@@ -185,7 +191,7 @@ export function ReleasesPage() {
                 to={localize('/')}
                 className="text-gray-400 hover:text-white text-sm"
               >
-                Home
+                {t('releasesPage.home')}
               </Link>
               <a
                 href="https://github.com/martinhrvn/hive-pal"
@@ -194,7 +200,7 @@ export function ReleasesPage() {
                 className="text-gray-400 hover:text-white text-sm flex items-center gap-1"
               >
                 <GithubIcon className="h-4 w-4" />
-                GitHub
+                {t('releasesPage.github')}
               </a>
               <a
                 href="https://github.com/martinhrvn/hive-pal/wiki"
@@ -202,7 +208,7 @@ export function ReleasesPage() {
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white text-sm"
               >
-                Documentation
+                {t('releasesPage.footer.documentation')}
               </a>
               <a
                 href="https://github.com/martinhrvn/hive-pal/issues"
@@ -210,13 +216,13 @@ export function ReleasesPage() {
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white text-sm"
               >
-                Report Issue
+                {t('releasesPage.footer.reportIssue')}
               </a>
             </div>
           </div>
           <div className="mt-8 border-t border-white/10 pt-8">
             <p className="text-sm leading-5 text-gray-400 text-center">
-              © 2025 Hive Pal. Released under MIT License. All rights reserved.
+              {t('releasesPage.footer.copyright')}
             </p>
           </div>
         </div>

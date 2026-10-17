@@ -223,11 +223,6 @@
       "count": 2
     }
   },
-  "src/pages/releases/releases-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 22
-    }
-  },
   "src/pages/reset-password-page.tsx": {
     "i18next/no-literal-string": {
       "count": 3

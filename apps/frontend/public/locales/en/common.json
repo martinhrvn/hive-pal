@@ -2582,5 +2582,29 @@
       "side": "Side",
       "hidden": "Hidden"
     }
+  },
+  "releasesPage": {
+    "meta": {
+      "title": "Release Notes - Hive Pal",
+      "description": "Stay up to date with the latest Hive Pal features, improvements, and bug fixes. See what's new in each release."
+    },
+    "brand": "Hive Pal",
+    "openSource": "Open Source",
+    "home": "Home",
+    "github": "GitHub",
+    "signIn": "Sign In",
+    "startFree": "Start Free",
+    "backToHome": "Back to Home",
+    "title": "Release Notes",
+    "intro": "Stay up to date with the latest features, improvements, and bug fixes in Hive Pal. Follow our development on <githubLink>GitHub</githubLink>.",
+    "versionBadge": "v{{version}}",
+    "latest": "Latest",
+    "empty": "No release notes available.",
+    "footer": {
+      "tagline": "Free and open-source beekeeping management platform. Making beekeeping simpler, more productive, and more enjoyable.",
+      "documentation": "Documentation",
+      "reportIssue": "Report Issue",
+      "copyright": "© 2025 Hive Pal. Released under MIT License. All rights reserved."
+    }
   }
 }
