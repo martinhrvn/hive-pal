@@ -38,6 +38,8 @@ export type SmokeUser = {
 };
 
 export type SmokeFixtures = {
+  /** Display name for `freshUser` (option; guides use a friendlier one). */
+  freshUserName: string | undefined;
   /** Signed-up user whose session is injected into the default browser context. */
   freshUser: SmokeUser;
   /** A second signed-up user without any browser session (use `newContext`). */
@@ -61,8 +63,10 @@ export const test = base.extend<SmokeFixtures>({
     { auto: true },
   ],
 
-  freshUser: async ({ context, baseURL }, use, testInfo) => {
-    const user = await signUpViaApi(baseURL!, testInfo);
+  freshUserName: [undefined, { option: true }],
+
+  freshUser: async ({ context, baseURL, freshUserName }, use, testInfo) => {
+    const user = await signUpViaApi(baseURL!, testInfo, '', freshUserName);
     const state = await user.storageState();
     await context.addCookies(state.cookies);
     // Pre-select the apiary like a returning user would have. Without it the
@@ -128,10 +132,10 @@ export async function signUpViaApi(
   baseURL: string,
   testInfo: TestInfo,
   suffix = '',
+  name = suffix ? `Smoke ${suffix}` : 'Smoke Tester',
 ): Promise<SmokeUser> {
   const email = smokeEmail(testInfo, suffix);
   const password = smokePassword();
-  const name = suffix ? `Smoke ${suffix}` : 'Smoke Tester';
 
   const ctx = await request.newContext({
     baseURL,
@@ -202,6 +206,7 @@ export type SeedInspection = {
   date: string;
 };
 export type SeedApiary = { id: string; name: string };
+export type SeedHarvest = { id: string; status: string };
 
 export class SmokeApi {
   constructor(
@@ -322,6 +327,41 @@ export class SmokeApi {
         headers: this.headers(apiaryId),
       }),
       'POST /api/queens',
+    );
+  }
+
+  async createHarvest(data: {
+    date?: string;
+    notes?: string;
+    harvestHives: { hiveId: string; framesTaken: number }[];
+    apiaryId?: string;
+  }) {
+    const { apiaryId, ...rest } = data;
+    return this.json<SeedHarvest>(
+      await this.ctx.post('/api/harvests', {
+        data: { date: new Date().toISOString(), ...rest },
+        headers: this.headers(apiaryId),
+      }),
+      'POST /api/harvests',
+    );
+  }
+
+  async setHarvestWeight(id: string, totalWeight: number, unit = 'kg') {
+    return this.json<SeedHarvest>(
+      await this.ctx.put(`/api/harvests/${id}/weight`, {
+        data: { totalWeight, totalWeightUnit: unit },
+        headers: this.headers(),
+      }),
+      `PUT /api/harvests/${id}/weight`,
+    );
+  }
+
+  async finalizeHarvest(id: string) {
+    return this.json<SeedHarvest>(
+      await this.ctx.post(`/api/harvests/${id}/finalize`, {
+        headers: this.headers(),
+      }),
+      `POST /api/harvests/${id}/finalize`,
     );
   }
 
