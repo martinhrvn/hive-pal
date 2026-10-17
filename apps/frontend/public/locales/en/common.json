@@ -2645,8 +2645,17 @@
   "errorPage": {
     "notFound": {
       "title": "Page not found",
-      "message": "We couldn't find the page you were looking for."
-    }
+      "message": "We couldn't find the page you were looking for.",
+      "pageTitle": "Page not found - Hive Pal",
+      "heading": "Not Found"
+    },
+    "heading": "Error",
+    "title": "Something went wrong",
+    "message": "We're having trouble loading this page. Please try again or return home.",
+    "code": "Error {{code}}",
+    "tryAgain": "Try Again",
+    "backToHome": "Back to Home",
+    "persists": "If this problem persists, please check your internet connection or try again later."
   },
   "publicLayout": {
     "brand": "Hive Pal",

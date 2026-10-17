@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string -- dev-only Sentry debug panel: not routed or imported anywhere, never shown to users */
 import { Button } from '@/components/ui/button';
 import * as Sentry from '@sentry/react';
 import { safeJsonParse } from '@/utils/safe-json-parse';

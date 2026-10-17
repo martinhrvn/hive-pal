@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, RefreshCw, Home } from 'lucide-react';
 
 interface ErrorPageProps {
@@ -11,12 +12,13 @@ interface ErrorPageProps {
 }
 
 const GenericErrorPage: React.FC<ErrorPageProps> = ({
-  title = 'Something went wrong',
-  message = "We're having trouble loading this page. Please try again or return home.",
+  title,
+  message,
   code = '500',
   onBack,
   onHome,
 }) => {
+  const { t } = useTranslation('common');
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -27,7 +29,7 @@ const GenericErrorPage: React.FC<ErrorPageProps> = ({
               <ArrowLeft size={20} className="text-gray-700" />
             </button>
           )}
-          <h1 className="text-lg font-semibold">Error</h1>
+          <h1 className="text-lg font-semibold">{t('errorPage.heading')}</h1>
         </div>
       </div>
 
@@ -37,15 +39,19 @@ const GenericErrorPage: React.FC<ErrorPageProps> = ({
           <div className="p-6 flex flex-col items-center text-center">
             <img src={'/error.png'} />
 
-            <h2 className="text-xl font-bold mb-1">{title}</h2>
+            <h2 className="text-xl font-bold mb-1">
+              {title ?? t('errorPage.title')}
+            </h2>
 
             {code && (
               <div className="mb-2 px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
-                Error {code}
+                {t('errorPage.code', { code })}
               </div>
             )}
 
-            <p className="text-gray-600 mb-6">{message}</p>
+            <p className="text-gray-600 mb-6">
+              {message ?? t('errorPage.message')}
+            </p>
 
             <div className="flex flex-col w-full gap-3">
               <button
@@ -53,7 +59,7 @@ const GenericErrorPage: React.FC<ErrorPageProps> = ({
                 className="w-full py-3 bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 font-medium"
               >
                 <RefreshCw size={16} />
-                <span>Try Again</span>
+                <span>{t('errorPage.tryAgain')}</span>
               </button>
 
               {onHome && (
@@ -62,17 +68,14 @@ const GenericErrorPage: React.FC<ErrorPageProps> = ({
                   className="w-full py-3 border border-gray-300 bg-white text-gray-700 rounded-lg flex items-center justify-center gap-2 font-medium"
                 >
                   <Home size={16} />
-                  <span>Back to Home</span>
+                  <span>{t('errorPage.backToHome')}</span>
                 </button>
               )}
             </div>
           </div>
 
           <div className="px-6 py-3 bg-gray-50 border-t text-center">
-            <p className="text-sm text-gray-500">
-              If this problem persists, please check your internet connection or
-              try again later.
-            </p>
+            <p className="text-sm text-gray-500">{t('errorPage.persists')}</p>
           </div>
         </div>
       </div>

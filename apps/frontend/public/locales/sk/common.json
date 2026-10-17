@@ -1286,8 +1286,17 @@
     "errorPage": {
         "notFound": {
             "title": "Stránka sa nenašla",
-            "message": "Stránku, ktorú hľadáte, sme nenašli."
-        }
+            "message": "Stránku, ktorú hľadáte, sme nenašli.",
+            "pageTitle": "Stránka sa nenašla - Hive Pal",
+            "heading": "Nenájdené"
+        },
+        "heading": "Chyba",
+        "title": "Niečo sa pokazilo",
+        "message": "Túto stránku sa nám nedarí načítať. Skúste to znova alebo sa vráťte na domovskú stránku.",
+        "code": "Chyba {{code}}",
+        "tryAgain": "Skúsiť znova",
+        "backToHome": "Späť na domovskú stránku",
+        "persists": "Ak problém pretrváva, skontrolujte svoje internetové pripojenie alebo to skúste neskôr."
     },
     "frameSizeToasts": {
         "submitted": "Rozmer rámika bol odoslaný na posúdenie",

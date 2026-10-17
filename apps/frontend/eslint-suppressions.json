@@ -1,9 +1,4 @@
 {
-  "src/components/TestSentry.tsx": {
-    "i18next/no-literal-string": {
-      "count": 5
-    }
-  },
   "src/components/add-photo-dialog.tsx": {
     "i18next/no-literal-string": {
       "count": 1
@@ -79,49 +74,14 @@
       "count": 9
     }
   },
-  "src/pages/error-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 5
-    }
-  },
   "src/pages/files/files-page.tsx": {
     "i18next/no-literal-string": {
       "count": 1
     }
   },
-  "src/pages/forgot-password-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 3
-    }
-  },
-  "src/pages/login-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 2
-    }
-  },
-  "src/pages/not-found-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 2
-    }
-  },
   "src/pages/onboarding/user-wizard-page.tsx": {
     "i18next/no-literal-string": {
       "count": 1
-    }
-  },
-  "src/pages/privacy-policy-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 2
-    }
-  },
-  "src/pages/register-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 2
-    }
-  },
-  "src/pages/reset-password-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 3
     }
   },
   "src/pages/treatment-products/treatment-products-page.tsx": {

@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next';
+
 export const NotFoundPage = () => {
+  const { t } = useTranslation('common');
   return (
     <>
-      <title>Page not found - Hive Pal</title>
-      <div>Not Found</div>
+      <title>{t('errorPage.notFound.pageTitle')}</title>
+      <div>{t('errorPage.notFound.heading')}</div>
     </>
   );
 };

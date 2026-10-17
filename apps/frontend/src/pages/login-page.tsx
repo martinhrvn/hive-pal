@@ -106,11 +106,8 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen w-full flex flex-col justify-center relative overflow-hidden">
-      <title>Sign In - Hive Pal</title>
-      <meta
-        name="description"
-        content="Sign in to your Hive Pal account to manage your apiaries, track hive inspections, and monitor your beekeeping operations."
-      />
+      <title>{t('login.meta.title')}</title>
+      <meta name="description" content={t('login.meta.description')} />
       <link rel="canonical" href="https://hivepal.app/login" />
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 bg-cover bg-center bg-[url('/hero2.jpg')]"></div>
@@ -122,7 +119,7 @@ const LoginPage = () => {
           <div className="flex items-center justify-center mb-4">
             <div className="text-5xl">🐝</div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Hive Pal</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">{t('brand')}</h1>
           <h2 className="text-lg text-amber-200">{t('login.title')}</h2>
         </div>
 
