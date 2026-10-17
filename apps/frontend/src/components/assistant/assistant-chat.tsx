@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { BotMessageSquare, Plus, Send, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -46,6 +47,7 @@ export function AssistantChat({
   threadId,
   initialMessage,
 }: AssistantChatProps) {
+  const { t } = useTranslation('ai');
   const queryClient = useQueryClient();
   const { data: threads } = useAssistantThreads(apiaryId, hiveId);
   const [activeThreadId, setActiveThreadId] = useState<string | undefined>(
@@ -86,7 +88,7 @@ export function AssistantChat({
         targetThreadId = created.id;
         setActiveThreadId(created.id);
       } catch {
-        toast.error('Could not start a new chat');
+        toast.error(t('assistant.chat.startFailed'));
         return;
       }
     }
@@ -120,7 +122,7 @@ export function AssistantChat({
         },
       });
     } catch {
-      toast.error('The assistant is unavailable right now');
+      toast.error(t('assistant.chat.unavailable'));
       setIsStreaming(false);
     }
   };
@@ -150,7 +152,7 @@ export function AssistantChat({
       await deleteThread.mutateAsync(activeThreadId);
       setActiveThreadId(undefined);
     } catch {
-      toast.error('Could not delete this chat');
+      toast.error(t('assistant.chat.deleteFailed'));
     }
   };
 
@@ -169,12 +171,12 @@ export function AssistantChat({
           disabled={!threads || threads.length === 0}
         >
           <SelectTrigger className="h-8 flex-1 text-sm">
-            <SelectValue placeholder="New conversation" />
+            <SelectValue placeholder={t('assistant.chat.newConversation')} />
           </SelectTrigger>
           <SelectContent>
-            {threads?.map(t => (
-              <SelectItem key={t.id} value={t.id}>
-                {t.title}
+            {threads?.map(item => (
+              <SelectItem key={item.id} value={item.id}>
+                {item.title}
               </SelectItem>
             ))}
           </SelectContent>
@@ -183,7 +185,7 @@ export function AssistantChat({
           variant="ghost"
           size="sm"
           onClick={handleNewThread}
-          title="New conversation"
+          title={t('assistant.chat.newConversation')}
         >
           <Plus className="h-4 w-4" />
         </Button>
@@ -192,7 +194,7 @@ export function AssistantChat({
             variant="ghost"
             size="sm"
             onClick={() => void handleDeleteThread()}
-            title="Delete conversation"
+            title={t('assistant.chat.deleteConversation')}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -201,8 +203,7 @@ export function AssistantChat({
 
       <Alert className="border-amber-300 bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-100 dark:border-amber-700 py-2">
         <AlertDescription className="text-xs">
-          Advice is advisory only. Treatment products and dosing are regionally
-          regulated — always follow the product label and local rules.
+          {t('assistant.chat.disclaimer')}
         </AlertDescription>
       </Alert>
 
@@ -213,8 +214,9 @@ export function AssistantChat({
       >
         {messages.length === 0 && pending.length === 0 && !streamingText && (
           <p className="text-sm text-muted-foreground m-auto text-center">
-            Ask about this {hiveId ? 'hive' : 'apiary'} — health, feeding, swarm
-            risk, seasonal next steps.
+            {hiveId
+              ? t('assistant.chat.emptyHive')
+              : t('assistant.chat.emptyApiary')}
           </p>
         )}
 
@@ -248,7 +250,8 @@ export function AssistantChat({
           <ChatBubble role="ASSISTANT" content={streamingText}>
             {!streamingText && (
               <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                <Loader2 className="h-3 w-3 animate-spin" /> Thinking…
+                <Loader2 className="h-3 w-3 animate-spin" />{' '}
+                {t('assistant.chat.thinking')}
               </span>
             )}
           </ChatBubble>
@@ -266,7 +269,7 @@ export function AssistantChat({
               void handleSend();
             }
           }}
-          placeholder="Ask the assistant…"
+          placeholder={t('assistant.chat.placeholder')}
           className="min-h-[44px] max-h-32 resize-none text-sm"
           disabled={isStreaming}
         />

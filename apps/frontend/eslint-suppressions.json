@@ -34,22 +34,6 @@
       "count": 1
     }
   },
-  "src/components/assistant/assistant-chat.tsx": {
-    "i18next/no-literal-string": {
-      "count": 10
-    },
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/components/assistant/assistant-suggestion-list.tsx": {
-    "i18next/no-literal-string": {
-      "count": 4
-    },
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
   "src/components/audio/AudioRecorder.tsx": {
     "i18next/no-literal-string": {
       "count": 10
@@ -118,11 +102,6 @@
   "src/pages/actions/bulk/staged-queue.tsx": {
     "i18next/no-literal-string": {
       "count": 3
-    }
-  },
-  "src/pages/assistant/assistant-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 5
     }
   },
   "src/pages/calendar/calendar-page.tsx": {

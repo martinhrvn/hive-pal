@@ -34,5 +34,56 @@
   "suggestion": {
     "conflict": "Conflicts with existing value",
     "willFill": "Will fill this field"
+  },
+  "assistant": {
+    "chat": {
+      "startFailed": "Could not start a new chat",
+      "unavailable": "The assistant is unavailable right now",
+      "deleteFailed": "Could not delete this chat",
+      "newConversation": "New conversation",
+      "deleteConversation": "Delete conversation",
+      "disclaimer": "Advice is advisory only. Treatment products and dosing are regionally regulated — always follow the product label and local rules.",
+      "emptyHive": "Ask about this hive — health, feeding, swarm risk, seasonal next steps.",
+      "emptyApiary": "Ask about this apiary — health, feeding, swarm risk, seasonal next steps.",
+      "thinking": "Thinking…",
+      "placeholder": "Ask the assistant…"
+    },
+    "suggestions": {
+      "created": "Action created",
+      "createFailed": "Could not create the action",
+      "title": "Suggested actions",
+      "reminder": "Reminder",
+      "createdLabel": "Created",
+      "createAction": "Create action"
+    },
+    "reminders": {
+      "honey_bound": "Honey bound",
+      "overcrowded": "Overcrowded",
+      "needs_super": "Needs super",
+      "queen_issues": "Queen issues",
+      "requires_treatment": "Requires treatment",
+      "low_stores": "Low stores",
+      "prepare_for_winter": "Prepare for winter"
+    },
+    "describe": {
+      "feed": "Feed {{amount}} {{unit}} of {{feedType}}",
+      "feedWithConcentration": "Feed {{amount}} {{unit}} of {{feedType}} ({{concentration}})",
+      "treat": "Treat with {{product}}",
+      "treatWithQuantity": "Treat with {{product}} ({{quantity}} {{unit}})",
+      "addFrames_one": "Add {{count}} frame",
+      "addFrames_other": "Add {{count}} frames",
+      "removeFrames_one": "Remove {{count}} frame",
+      "removeFrames_other": "Remove {{count}} frames",
+      "cleaned": "cleaned {{component}}",
+      "replaced": "replaced {{component}}",
+      "harvest": "Harvest {{amount}} {{unit}}",
+      "note": "Note: {{content}}"
+    },
+    "page": {
+      "title": "Apiary Assistant",
+      "description": "Ask comparative questions across all hives in {{apiary}} — e.g. which hives need feeding first, or where swarm risk is highest this week.",
+      "descriptionNoApiary": "Ask comparative questions across all hives in your apiary — e.g. which hives need feeding first, or where swarm risk is highest this week.",
+      "selectApiary": "Select an apiary to start chatting with the assistant."
+    }
   }
 }

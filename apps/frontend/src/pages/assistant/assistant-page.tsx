@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { BotMessageSquare } from 'lucide-react';
 import {
   Card,
@@ -13,6 +14,7 @@ import { useApiary } from '@/hooks/use-apiary';
 import { useFeatures } from '@/api/hooks/useFeatures';
 
 export function AssistantPage() {
+  const { t } = useTranslation('ai');
   const navigate = useNavigate();
   const { activeApiaryId, activeApiary } = useApiary();
   const { data: features, isLoading } = useFeatures();
@@ -34,13 +36,12 @@ export function AssistantPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BotMessageSquare className="h-5 w-5 text-amber-600" />
-            Apiary Assistant
+            {t('assistant.page.title')}
           </CardTitle>
           <CardDescription>
-            Ask comparative questions across all hives in
-            {activeApiary ? ` ${activeApiary.name}` : ' your apiary'} — e.g.
-            which hives need feeding first, or where swarm risk is highest this
-            week.
+            {activeApiary
+              ? t('assistant.page.description', { apiary: activeApiary.name })
+              : t('assistant.page.descriptionNoApiary')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -48,7 +49,7 @@ export function AssistantPage() {
             <AssistantChat apiaryId={activeApiaryId} />
           ) : (
             <p className="text-sm text-muted-foreground">
-              Select an apiary to start chatting with the assistant.
+              {t('assistant.page.selectApiary')}
             </p>
           )}
         </CardContent>
