@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState, useEffect } from 'react';
 import {
-  EquipmentItemWithCalculations,
   EquipmentPlan,
   UpdateEquipmentItem,
   CreateEquipmentItem,
@@ -27,6 +26,7 @@ import { Separator } from '@/components/ui/separator';
 import { EquipmentTable } from './components/equipment-table';
 import { ShoppingList } from './components/shopping-list';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import type { TFunction } from 'i18next';
 
 const StatsCards = ({ planData }: { planData: EquipmentPlan }) => {
@@ -151,42 +151,6 @@ const EquipmentActionSidebar = ({
   );
 };
 
-const SaveChangesSection = ({
-  hasChanges,
-  onCancel,
-  onSave,
-  isPending,
-}: {
-  hasChanges: boolean;
-  onCancel: () => void;
-  onSave: () => void;
-  isPending: boolean;
-}) => {
-  const { t } = useTranslation('hive');
-  if (!hasChanges) return null;
-  return (
-    <Card>
-      <CardContent className="py-4">
-        <div className="flex justify-center">
-          <div className="space-x-4">
-            <Button variant="outline" onClick={onCancel}>
-              {t('hive:equipment.cancelChanges', {
-                defaultValue: 'Cancel Changes',
-              })}
-            </Button>
-            <Button onClick={onSave} disabled={isPending} size="lg">
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('hive:equipment.saveAllChanges', {
-                defaultValue: 'Save All Changes',
-              })}
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
 export const EquipmentPlanningPage = () => {
   const {
     plan,
@@ -197,9 +161,6 @@ export const EquipmentPlanningPage = () => {
     multiplier,
     updateMultiplier,
   } = useEquipmentNew();
-  const [localItems, setLocalItems] = useState<EquipmentItemWithCalculations[]>(
-    [],
-  );
   const [localTargetHives, setLocalTargetHives] = useState<number>(0);
   const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
   const [deletingItems, setDeletingItems] = useState<Set<string>>(new Set());
@@ -213,16 +174,6 @@ export const EquipmentPlanningPage = () => {
     }
   }, [multiplier.data]);
 
-  const displayItems =
-    localItems.length > 0
-      ? plan.data?.items.map(planItem => {
-          const localItem = localItems.find(
-            local => local.itemId === planItem.itemId,
-          );
-          return localItem ? { ...planItem, ...localItem } : planItem;
-        }) || []
-      : plan.data?.items || [];
-
   if (plan.isLoading || items.isLoading || multiplier.isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -235,7 +186,7 @@ export const EquipmentPlanningPage = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <p className="text-red-600">{t('hive:equipment.errorLoading')}</p>
+          <p className="text-destructive">{t('hive:equipment.errorLoading')}</p>
           <Button
             onClick={() => {
               plan.refetch();
@@ -254,48 +205,6 @@ export const EquipmentPlanningPage = () => {
     return <div>{t('common:messages.noData')}</div>;
   }
 
-  const handleExtraChange = (itemId: string, value: number) => {
-    const updatedItems = displayItems.map(item =>
-      item.itemId === itemId ? { ...item, extra: value } : item,
-    );
-    setLocalItems(updatedItems);
-  };
-
-  const handlePerHiveChange = (itemId: string, value: number) => {
-    const updatedItems = displayItems.map(item =>
-      item.itemId === itemId ? { ...item, perHive: value } : item,
-    );
-    setLocalItems(updatedItems);
-  };
-
-  const handleNeededChange = (itemId: string, value: number) => {
-    const updatedItems = displayItems.map(item =>
-      item.itemId === itemId ? { ...item, neededOverride: value } : item,
-    );
-    setLocalItems(updatedItems);
-  };
-
-  const handleResetNeeded = (itemId: string) => {
-    const updatedItems = displayItems.map(item =>
-      item.itemId === itemId ? { ...item, neededOverride: null } : item,
-    );
-    setLocalItems(updatedItems);
-  };
-
-  const handleSaveChanges = async () => {
-    for (const item of localItems) {
-      await updateItem.mutateAsync({
-        itemId: item.itemId,
-        data: {
-          extra: item.extra,
-          perHive: item.perHive,
-          neededOverride: item.neededOverride,
-        },
-      });
-    }
-    setLocalItems([]);
-  };
-
   const handleTargetHivesChange = (value: number) => {
     setLocalTargetHives(value);
     updateMultiplier.mutate({ targetHives: value });
@@ -308,7 +217,9 @@ export const EquipmentPlanningPage = () => {
     setUpdatingItems(prev => new Set([...prev, itemId]));
     try {
       await updateItem.mutateAsync({ itemId, data });
-      setLocalItems(prev => prev.filter(item => item.itemId !== itemId));
+    } catch (error) {
+      toast.error(t('hive:equipment.table.saveFailed'));
+      throw error;
     } finally {
       setUpdatingItems(prev => {
         const next = new Set(prev);
@@ -322,7 +233,9 @@ export const EquipmentPlanningPage = () => {
     setDeletingItems(prev => new Set([...prev, itemId]));
     try {
       await deleteItem.mutateAsync(itemId);
-      setLocalItems(prev => prev.filter(item => item.itemId !== itemId));
+    } catch (error) {
+      toast.error(t('hive:equipment.table.saveFailed'));
+      throw error;
     } finally {
       setDeletingItems(prev => {
         const next = new Set(prev);
@@ -337,12 +250,14 @@ export const EquipmentPlanningPage = () => {
     try {
       await createItem.mutateAsync(data);
       plan.refetch();
+    } catch (error) {
+      toast.error(t('hive:equipment.table.saveFailed'));
+      throw error;
     } finally {
       setIsCreating(false);
     }
   };
 
-  const hasChanges = localItems.length > 0;
   return (
     <PageGrid>
       <MainContent>
@@ -378,18 +293,14 @@ export const EquipmentPlanningPage = () => {
             </CardHeader>
             <CardContent className="min-w-0">
               {localTargetHives === 0 && (
-                <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 dark:bg-amber-950/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded-md px-3 py-2 mb-4">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
+                <div className="mb-4 flex items-center gap-2 rounded-md border border-warning/30 bg-warning-muted px-3 py-2 text-sm text-warning-foreground">
+                  <AlertCircle className="size-4 shrink-0" />
                   {t('hive:equipment.setTargetHint')}
                 </div>
               )}
               <div className="overflow-x-auto">
                 <EquipmentTable
-                  items={displayItems}
-                  onExtraChange={handleExtraChange}
-                  onPerHiveChange={handlePerHiveChange}
-                  onNeededChange={handleNeededChange}
-                  onResetNeeded={handleResetNeeded}
+                  items={plan.data.items}
                   onUpdate={handleUpdateItem}
                   onDelete={handleDeleteItem}
                   onCreate={handleCreateItem}
@@ -402,13 +313,6 @@ export const EquipmentPlanningPage = () => {
               </div>
             </CardContent>
           </Card>
-
-          <SaveChangesSection
-            hasChanges={hasChanges}
-            onCancel={() => setLocalItems([])}
-            onSave={handleSaveChanges}
-            isPending={updateItem.isPending}
-          />
         </div>
       </MainContent>
 
@@ -425,7 +329,7 @@ export const EquipmentPlanningPage = () => {
           isUpdating={updateMultiplier.isPending}
           t={t}
         />
-        <ShoppingList items={displayItems} />
+        <ShoppingList items={plan.data.items} />
       </PageAside>
     </PageGrid>
   );

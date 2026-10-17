@@ -364,7 +364,8 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "hide": "Hide",
-      "showHidden": "Show {{count}} hidden item(s)",
+      "showHidden_one": "Show {{count}} hidden item",
+      "showHidden_other": "Show {{count}} hidden items",
       "restore": "Restore",
       "namePlaceholder": "Equipment name",
       "namePlaceholderExample": "e.g., Custom Smoker",
@@ -399,7 +400,11 @@
       "item": "Item",
       "inUseTooltip": "Currently mounted on your hives",
       "perHiveTarget": "Per Hive / Target",
-      "inventory": "Inventory"
+      "inventory": "Inventory",
+      "scope": "Scope",
+      "neededInfo": "How the needed amount is calculated",
+      "resetNeeded": "Reset to recommended amount",
+      "saveFailed": "Couldn't save the change. Please try again."
     }
   },
   "llmPrompt": {

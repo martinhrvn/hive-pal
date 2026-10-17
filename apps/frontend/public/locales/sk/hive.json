@@ -316,7 +316,10 @@
       "cancel": "Zrušiť",
       "delete": "Vymazať",
       "hide": "Skryť",
-      "showHidden": "Zobraziť {{count}} skrytých položiek",
+      "showHidden_one": "Zobraziť {{count}} skrytú položku",
+      "showHidden_few": "Zobraziť {{count}} skryté položky",
+      "showHidden_many": "Zobraziť {{count}} skrytých položiek",
+      "showHidden_other": "Zobraziť {{count}} skrytých položiek",
       "restore": "Obnoviť",
       "namePlaceholder": "Názov vybavenia",
       "namePlaceholderExample": "napr. vlastný dymák",
@@ -353,7 +356,11 @@
       "item": "Položka",
       "inUseTooltip": "Momentálne nasadené na vašich úľoch",
       "perHiveTarget": "Na úľ / cieľ",
-      "inventory": "Zásoby"
+      "inventory": "Zásoby",
+      "scope": "Rozsah",
+      "neededInfo": "Ako sa počíta potrebné množstvo",
+      "resetNeeded": "Obnoviť odporúčané množstvo",
+      "saveFailed": "Zmenu sa nepodarilo uložiť. Skúste to znova."
     }
   },
   "llmPrompt": {
