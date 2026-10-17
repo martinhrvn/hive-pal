@@ -11,10 +11,12 @@ import { caption, type Caption } from './captions';
 import { mixNarration, toMp4 } from './media';
 import { Narration, readingTimeMs, type Cue, type CueKind } from './narration';
 import {
-  captionBar,
-  highlightRing,
-  spotlight,
+  captionCommand,
+  ringCommand,
+  spotCommand,
+  stage,
   type Box,
+  type StageCommand,
   type Viewport,
 } from './overlays';
 import { voiceFromEnv, type VoiceProvider } from './voice';
@@ -25,6 +27,9 @@ export { t } from './captions';
 /** GUIDE=1 records video + narration; otherwise guides run as plain e2e tests. */
 export const GUIDE_MODE = !!process.env.GUIDE && process.env.GUIDE !== '0';
 export const GUIDES_OUT_DIR = path.join(__dirname, '..', 'out', 'guides');
+
+/** Delay between keystrokes when a guide types into a field. */
+export const TYPING_DELAY_MS = 100;
 
 export type CueOptions = {
   /** Override the hold time (ms); default is the estimated reading time. */
@@ -63,6 +68,10 @@ export class Guide {
     if (!GUIDE_MODE) return;
     await this.ensureRecording();
     const spoken = sub ? `${text}. ${sub}` : text;
+    await this.stage({
+      op: 'hide',
+      parts: ['spot', 'caption', 'ring', 'cursor'],
+    });
     await this.cue(
       'chapter',
       text,
@@ -89,8 +98,14 @@ export class Guide {
     await this.cue(
       'say',
       line,
-      (holdMs, shoot) =>
-        this.show(captionBar(line, this.viewport()), holdMs, shoot),
+      async (holdMs, shoot) => {
+        const started = Date.now();
+        await this.stage({ op: 'hide', parts: ['spot'] });
+        await this.stage(captionCommand(line, this.viewport()));
+        await shoot();
+        await this.waitRest(started, holdMs);
+        await this.stage({ op: 'hide', parts: ['caption'] });
+      },
       opts,
     );
   }
@@ -101,12 +116,21 @@ export class Guide {
     await expect(target).toBeVisible();
     if (!GUIDE_MODE) return;
     await this.ensureRecording();
+    // A lingering spotlight glides to the next element, but not across a
+    // scroll: its old position would be wrong while the page moves.
+    if (!(await this.inViewport(target)))
+      await this.stage({ op: 'hide', parts: ['spot'] });
     const box = await this.stableBox(target);
     await this.cue(
       'point',
       line,
-      (holdMs, shoot) =>
-        this.show(spotlight(box, line, this.viewport()), holdMs, shoot),
+      async (holdMs, shoot) => {
+        const started = Date.now();
+        await this.stage(spotCommand(box, line, this.viewport()));
+        await shoot();
+        await this.waitRest(started, holdMs);
+        await this.stage({ op: 'releaseSpot' });
+      },
       opts,
     );
   }
@@ -130,22 +154,31 @@ export class Guide {
       line,
       async (holdMs, shoot) => {
         const started = Date.now();
-        const bar = await this.page.screencast.showOverlay(
-          captionBar(line, this.viewport()),
-        );
+        await this.stage({ op: 'hide', parts: ['spot'] });
+        await this.stage(captionCommand(line, this.viewport()));
         try {
+          let ringFade: Promise<void> | undefined;
           if (opts.target) {
             const box = await this.stableBox(opts.target);
-            await this.show(highlightRing(box, this.viewport()), 800);
+            // The cursor heads for the target while the ring appears, so the
+            // action's click lands right away.
+            const ringShown = Date.now();
+            await Promise.all([
+              this.stage(ringCommand(box, this.viewport())),
+              moveCursorTo(opts.target, false),
+            ]);
+            await this.waitRest(ringShown, 1000);
+            ringFade = this.stage({ op: 'hide', parts: ['ring'] });
           }
           result = await action();
+          await ringFade;
           await this.page.waitForLoadState('networkidle').catch(() => {});
           // Let the viewer see the result before the caption goes away.
-          await this.page.waitForTimeout(400);
+          await this.page.waitForTimeout(1200);
           await shoot();
           await this.waitRest(started, holdMs);
         } finally {
-          await bar.dispose();
+          await this.stage({ op: 'hide', parts: ['caption', 'ring'] });
         }
       },
       opts,
@@ -175,7 +208,6 @@ export class Guide {
       size: this.viewport(),
     });
     narration.startClock();
-    await this.page.screencast.showActions({ cursor: 'pointer', fontSize: 0 });
     this.recording = { narration, dir, voice };
   }
 
@@ -210,25 +242,29 @@ export class Guide {
     );
     const shot = `shots/${entry.id}.png`;
     await render(holdMs, async () => {
-      // Let the overlay paint before capturing it.
-      await this.page.waitForTimeout(300);
+      // The stage resolves after its transition; give it a frame to paint.
+      await this.page.waitForTimeout(100);
       await this.page.screenshot({ path: path.join(dir, shot) });
       entry.shot = shot;
     });
     narration.end(entry);
   }
 
-  /** Show an overlay for `holdMs`, then remove it. */
-  private async show(
-    html: string,
-    holdMs: number,
-    shoot?: () => Promise<void>,
-  ) {
-    const started = Date.now();
-    const overlay = await this.page.screencast.showOverlay(html);
-    await shoot?.();
-    await this.waitRest(started, holdMs);
-    await overlay.dispose();
+  private stage(cmd: StageCommand) {
+    return stage(this.page, cmd);
+  }
+
+  /** Whether the element is fully inside the viewport right now. */
+  private async inViewport(target: Locator): Promise<boolean> {
+    const box = await target.boundingBox();
+    const { width, height } = this.viewport();
+    return (
+      !!box &&
+      box.y >= 0 &&
+      box.x >= 0 &&
+      box.y + box.height <= height &&
+      box.x + box.width <= width
+    );
   }
 
   /** Wait until `holdMs` have passed since `started`. */
@@ -255,6 +291,12 @@ export class Guide {
   async finish() {
     if (!this.recording) return;
     const { narration, dir } = this.recording;
+    // Fade out whatever is still on screen before the video ends.
+    await this.stage({
+      op: 'hide',
+      parts: ['spot', 'caption', 'ring', 'cursor'],
+    });
+    await this.page.waitForTimeout(300).catch(() => {});
     await this.page.screencast.stop();
     narration.write(dir);
     const clips = narration.cues.flatMap(c =>
@@ -303,7 +345,7 @@ export function guideDir(testInfo: TestInfo): string {
 // ---------------------------------------------------------------------------
 
 export const DEMO_APIARY_NAME = 'Home Apiary';
-export const DEMO_HIVES = ['Linden', 'Acacia', 'Meadow'] as const;
+export const DEMO_HIVES = ['Hive 1', 'Hive 2', 'Hive 3'] as const;
 export type DemoHiveName = (typeof DEMO_HIVES)[number];
 
 export type Demo = {
@@ -315,7 +357,7 @@ export type Demo = {
 
 /**
  * The same demo apiary for every guide: three hives and one completed
- * harvest (Linden 6 + Acacia 4 frames, 18 kg, 45 days ago).
+ * harvest (Hive 1: 6 + Hive 2: 4 frames, 18 kg, 45 days ago).
  */
 async function seedDemo(user: SmokeUser): Promise<Demo> {
   await user.api.updateApiary(user.apiaryId, { name: DEMO_APIARY_NAME });
@@ -330,8 +372,8 @@ async function seedDemo(user: SmokeUser): Promise<Demo> {
     date: date.toISOString(),
     notes: 'Spring honey',
     harvestHives: [
-      { hiveId: hives.Linden.id, framesTaken: 6 },
-      { hiveId: hives.Acacia.id, framesTaken: 4 },
+      { hiveId: hives['Hive 1'].id, framesTaken: 6 },
+      { hiveId: hives['Hive 2'].id, framesTaken: 4 },
     ],
   });
   await user.api.setHarvestWeight(harvest.id, 18);
@@ -350,10 +392,11 @@ export const test = smokeTest.extend<{
   demo: Demo;
   g: Guide;
   quietApp: void;
+  guideActions: void;
 }>({
   freshUserName: 'Demo Beekeeper',
 
-  /** Auto fixture: no "new version" toast popping up mid-guide. */
+  /** Auto fixture: no "new version" toast popping up mid-guide, no dev tools in the video. */
   quietApp: [
     async ({ context }, use) => {
       await context.addInitScript(key => {
@@ -362,7 +405,71 @@ export const test = smokeTest.extend<{
           JSON.stringify([{ version: '999.0.0', dismissedAt: '2026-01-01' }]),
         );
       }, RELEASE_NOTES_KEY);
+      // The React Query devtools button (dev builds only) is not part of the app.
+      if (GUIDE_MODE) {
+        await context.addInitScript(() => {
+          document.addEventListener('DOMContentLoaded', () => {
+            const style = document.createElement('style');
+            style.textContent =
+              '.tsqd-open-btn-container { display: none !important; }';
+            document.head.append(style);
+          });
+        });
+      }
       await use();
+    },
+    { auto: true },
+  ],
+
+  /**
+   * Auto fixture, guide mode only. Page objects stay as they are; their
+   * locator actions are made watchable:
+   * - a cursor glides to the element before every click, check, fill, …
+   *   (Playwright's own `showActions` always shows the action's title);
+   * - `fill()` on a text-like field types the value key by key.
+   * CI runs are untouched.
+   */
+  guideActions: [
+    async ({ page }, use) => {
+      if (!GUIDE_MODE) return use();
+      const proto = Object.getPrototypeOf(page.locator('body')) as Record<
+        PointerAction,
+        (this: Locator, ...args: unknown[]) => Promise<unknown>
+      >;
+      const originals = POINTER_ACTIONS.map(
+        name => [name, proto[name]] as const,
+      );
+
+      const fill = proto.fill as Locator['fill'];
+      proto.fill = async function (this: Locator, ...args: unknown[]) {
+        const [value, options] = args as Parameters<Locator['fill']>;
+        const typeable = await this.evaluate(
+          isTypeable,
+          undefined,
+          options,
+        ).catch(() => false);
+        if (!typeable || value === '') return fill.call(this, value, options);
+        // Type over the selection: clearing first lets controlled inputs
+        // put a default back (a number field reverting to its min).
+        await this.selectText(options);
+        await this.pressSequentially(value, {
+          delay: TYPING_DELAY_MS,
+          timeout: options?.timeout,
+        });
+      };
+
+      for (const name of POINTER_ACTIONS) {
+        const action = proto[name];
+        proto[name] = async function (this: Locator, ...args: unknown[]) {
+          await moveCursorTo(this, name !== 'hover');
+          return action.apply(this, args);
+        };
+      }
+      try {
+        await use();
+      } finally {
+        for (const [name, original] of originals) proto[name] = original;
+      }
     },
     { auto: true },
   ],
@@ -378,3 +485,49 @@ export const test = smokeTest.extend<{
     await guide.finish();
   },
 });
+
+/** Fields where typing key by key gives the same result as `fill`. */
+function isTypeable(el: Element): boolean {
+  if (el instanceof HTMLTextAreaElement) return true;
+  if (el instanceof HTMLInputElement)
+    return [
+      'text',
+      'search',
+      'email',
+      'number',
+      'tel',
+      'url',
+      'password',
+    ].includes(el.type);
+  return el instanceof HTMLElement && el.isContentEditable;
+}
+
+const POINTER_ACTIONS = [
+  'click',
+  'dblclick',
+  'tap',
+  'hover',
+  'check',
+  'uncheck',
+  'setChecked',
+  'selectOption',
+  'fill',
+] as const;
+type PointerAction = (typeof POINTER_ACTIONS)[number];
+
+/** Glide the guide cursor to the centre of `target`. */
+async function moveCursorTo(target: Locator, click: boolean) {
+  try {
+    await target.scrollIntoViewIfNeeded({ timeout: 5_000 });
+    const box = await target.boundingBox({ timeout: 1_000 });
+    if (!box) return;
+    await stage(target.page(), {
+      op: 'cursor',
+      x: box.x + box.width / 2,
+      y: box.y + box.height / 2,
+      click,
+    });
+  } catch {
+    // Not there (yet): the action itself waits for it and reports failures.
+  }
+}

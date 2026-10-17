@@ -25,14 +25,14 @@ The target app comes from `BASE_URL` (default `http://localhost:5173`, i.e. `pnp
 `out/guides/<slug>/` (git-ignored), where `<slug>` is the file name without
 `.guide.ts`, with `-mobile` appended for the mobile pass:
 
-| File | What it is |
-| --- | --- |
-| `video.webm` | Recording made with Playwright's `page.screencast` |
-| `video.mp4` | H.264 copy (with narration audio when a voice is configured); skipped if `ffmpeg` is missing |
-| `captions.vtt` | One WebVTT cue per chapter/say/point/do: soft subtitles, translation input, TTS script |
-| `script.md` | The whole narration as text with timestamps and a screenshot per cue |
-| `shots/*.png` | Those screenshots |
-| `narration.wav` | Voice clips placed at their cue times (only with `GUIDE_VOICE`) |
+| File            | What it is                                                                                   |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| `video.webm`    | Recording made with Playwright's `page.screencast`                                           |
+| `video.mp4`     | H.264 copy (with narration audio when a voice is configured); skipped if `ffmpeg` is missing |
+| `captions.vtt`  | One WebVTT cue per chapter/say/point/do: soft subtitles, translation input, TTS script       |
+| `script.md`     | The whole narration as text with timestamps and a screenshot per cue                         |
+| `shots/*.png`   | Those screenshots                                                                            |
+| `narration.wav` | Voice clips placed at their cue times (only with `GUIDE_VOICE`)                              |
 
 Recording starts at the first `g.*` call, so navigation you do before it is not
 in the video. A failed recording still writes what it got, which shows where the
@@ -50,8 +50,13 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
     await page.goto('/');
 
     await g.chapter('Honey harvests', 'From frames to kilos, hive by hive');
-    await g.do('Let’s open the Harvests page', () => harvests.openFromSidebar());
-    await g.point(harvests.totalYieldCard, 'All the honey from completed harvests');
+    await g.do('Let’s open the Harvests page', () =>
+      harvests.openFromSidebar(),
+    );
+    await g.point(
+      harvests.totalYieldCard,
+      'All the honey from completed harvests',
+    );
     await g.tour([
       [harvests.averageYieldCard, 'What a harvest brings in on average'],
       [harvests.historyCard, 'Every harvest is listed below'],
@@ -63,16 +68,29 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
 
 ### The narrator, `g`
 
-| Call | Guide mode | CI mode |
-| --- | --- | --- |
-| `g.chapter(title, description?)` | Full-screen title card | nothing |
-| `g.say(text, opts?)` | Caption at the bottom | nothing |
-| `g.point(locator, text, opts?)` | Scroll into view, wait until stable, dim the page around it, caption bubble above/below | `expect(locator).toBeVisible()` |
-| `g.tour([[locator, text], ...])` | `point` for each | `expect(...).toBeVisible()` for each |
-| `g.do(text, fn, { target? })` | Caption while `fn` runs, `target` highlighted first; returns `fn`'s result | runs `fn` |
+| Call                             | Guide mode                                                                              | CI mode                              |
+| -------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------ |
+| `g.chapter(title, description?)` | Full-screen title card                                                                  | nothing                              |
+| `g.say(text, opts?)`             | Caption at the bottom                                                                   | nothing                              |
+| `g.point(locator, text, opts?)`  | Scroll into view, wait until stable, dim the page around it, caption bubble above/below | `expect(locator).toBeVisible()`      |
+| `g.tour([[locator, text], ...])` | `point` for each                                                                        | `expect(...).toBeVisible()` for each |
+| `g.do(text, fn, { target? })`    | Caption while `fn` runs, `target` highlighted first; returns `fn`'s result              | runs `fn`                            |
 
-Each cue holds for its reading time (15 characters per second, at least 2 s);
+Each cue holds for its reading time (12 characters per second, at least 2.5 s);
 pass `{ holdMs }` to override. Nothing in this file waits outside guide mode.
+
+Spotlights and captions are drawn on a "stage" (`overlays.ts`): one element in
+its own shadow root under `<html>`, `aria-hidden` and `pointer-events: none`,
+so locators never see it. Because it is changed rather than replaced, every
+change is a CSS transition: captions fade and rise in, and consecutive `point`s
+glide the spotlight from one element to the next (unless the page has to
+scroll in between). A spotlight that is not followed by another `point` fades
+out after `LINGER_MS`. Timings are the constants at the top of `overlays.ts`.
+
+In guide mode `locator.fill()` on text-like fields (text, number, email,
+textarea, …) selects the current value and types the new one key by key
+(`TYPING_DELAY_MS`), so page objects get real typing in the video without
+changes. Other inputs (dates, selects) keep the instant `fill`.
 
 ### Rules of thumb
 
@@ -95,8 +113,8 @@ pass `{ holdMs }` to override. Nothing in this file waits outside guide mode.
 Every guide gets a freshly signed-up user ("Demo Beekeeper") with the same data,
 seeded through the API by the `demo` fixture in `guide.fixture.ts`:
 
-- apiary "Home Apiary" with hives Linden, Acacia and Meadow;
-- one finalized harvest 45 days ago (Linden 6 + Acacia 4 frames, 18 kg).
+- apiary "Home Apiary" with hives Hive 1, Hive 2 and Hive 3;
+- one finalized harvest 45 days ago (Hive 1: 6 + Hive 2: 4 frames, 18 kg).
 
 Need more? Extend `seedDemo` (shared by all guides) or seed extra data through
 `demo.user.api` at the top of your guide. The run uses a fixed viewport
@@ -111,7 +129,7 @@ To make a guide translatable, use keys:
 ```ts
 import { t } from './guide.fixture';
 await g.say(t('harvest.intro'));
-await g.say(t('harvest.weight', { kg: 16 }));   // "{{kg}} kg" interpolation
+await g.say(t('harvest.weight', { kg: 16 })); // "{{kg}} kg" interpolation
 ```
 
 Keys are looked up in `guides/locales/<locale>.json` (nested objects, like the app's

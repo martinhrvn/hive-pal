@@ -6,7 +6,7 @@ test.describe('Harvests', { tag: ['@extended'] }, () => {
     page,
     freshUser,
   }) => {
-    const hiveName = uniqueName('Hive Linden');
+    const hiveName = uniqueName('Hive');
     await freshUser.api.createHive({ name: hiveName });
 
     const harvests = new HarvestListPage(page);
@@ -36,7 +36,7 @@ test.describe('Harvests', { tag: ['@extended'] }, () => {
     page,
     freshUser,
   }) => {
-    const hiveName = uniqueName('Hive Acacia');
+    const hiveName = uniqueName('Hive');
     const hive = await freshUser.api.createHive({ name: hiveName });
     const harvest = await freshUser.api.createHarvest({
       harvestHives: [{ hiveId: hive.id, framesTaken: 4 }],
@@ -65,7 +65,7 @@ test.describe('Harvests', { tag: ['@extended'] }, () => {
     freshUser,
   }) => {
     const hive = await freshUser.api.createHive({
-      name: uniqueName('Hive Meadow'),
+      name: uniqueName('Hive'),
     });
     const harvest = await freshUser.api.createHarvest({
       harvestHives: [{ hiveId: hive.id, framesTaken: 2 }],

@@ -20,8 +20,8 @@ export type Cue = {
 };
 
 /** Characters per second a viewer comfortably reads in a caption. */
-export const READING_CHARS_PER_SECOND = 15;
-export const MIN_HOLD_MS = 2000;
+export const READING_CHARS_PER_SECOND = 12;
+export const MIN_HOLD_MS = 2500;
 
 /** Estimated time needed to read `text` (at least MIN_HOLD_MS). */
 export function readingTimeMs(text: string): number {

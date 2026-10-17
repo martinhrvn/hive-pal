@@ -15,3 +15,4 @@ export * from './settings';
 export * from './feedback';
 export * from './files';
 export * from './harvest';
+export * from './share';
