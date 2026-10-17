@@ -30,7 +30,9 @@ export const HoneyProductionChart = ({
       <Card>
         <CardHeader>
           <CardTitle>{t('reports.honeyProduction')}</CardTitle>
-          <CardDescription>Total honey harvested per hive (kg)</CardDescription>
+          <CardDescription>
+            {t('reports.honeyProductionDescription')}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Skeleton className="h-[300px] w-full" />
@@ -44,7 +46,9 @@ export const HoneyProductionChart = ({
       <Card>
         <CardHeader>
           <CardTitle>{t('reports.honeyProduction')}</CardTitle>
-          <CardDescription>Total honey harvested per hive (kg)</CardDescription>
+          <CardDescription>
+            {t('reports.honeyProductionDescription')}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="py-8 text-center text-muted-foreground">
@@ -59,13 +63,15 @@ export const HoneyProductionChart = ({
     <Card>
       <CardHeader>
         <CardTitle>{t('reports.honeyProduction')}</CardTitle>
-        <CardDescription>Total honey harvested per hive (kg)</CardDescription>
+        <CardDescription>
+          {t('reports.honeyProductionDescription')}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer
           config={{
             amount: {
-              label: 'Honey (kg)',
+              label: t('reports.charts.honeyKg'),
               color: '#f59e0b',
             },
           }}

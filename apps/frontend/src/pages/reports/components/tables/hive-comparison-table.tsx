@@ -250,10 +250,14 @@ export const HiveComparisonTable: React.FC<HiveComparisonTableProps> = ({
                 <TableRow key={row.hiveId}>
                   <TableCell className="font-medium">{row.hiveName}</TableCell>
                   <TableCell className="text-right">
-                    {row.honey.toFixed(1)} kg
+                    {t('reports.table.kgValue', {
+                      value: row.honey.toFixed(1),
+                    })}
                   </TableCell>
                   <TableCell className="text-right">
-                    {row.sugar.toFixed(1)} kg
+                    {t('reports.table.kgValue', {
+                      value: row.sugar.toFixed(1),
+                    })}
                   </TableCell>
                   <TableCell className="text-right">
                     <span

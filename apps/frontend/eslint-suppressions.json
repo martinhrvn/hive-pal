@@ -291,61 +291,6 @@
       "count": 22
     }
   },
-  "src/pages/reports/components/charts/feeding-totals-chart.tsx": {
-    "i18next/no-literal-string": {
-      "count": 3
-    },
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/pages/reports/components/charts/feeding-trend-chart.tsx": {
-    "i18next/no-literal-string": {
-      "count": 2
-    },
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/pages/reports/components/charts/health-trend-chart.tsx": {
-    "i18next/no-literal-string": {
-      "count": 2
-    },
-    "no-restricted-syntax": {
-      "count": 4
-    }
-  },
-  "src/pages/reports/components/charts/hive-score-trend-chart.tsx": {
-    "i18next/no-literal-string": {
-      "count": 4
-    },
-    "no-restricted-syntax": {
-      "count": 4
-    }
-  },
-  "src/pages/reports/components/charts/honey-production-chart.tsx": {
-    "i18next/no-literal-string": {
-      "count": 3
-    },
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/pages/reports/components/reports-header.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
-    }
-  },
-  "src/pages/reports/components/reports-sidebar.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
-    }
-  },
-  "src/pages/reports/components/tables/hive-comparison-table.tsx": {
-    "i18next/no-literal-string": {
-      "count": 2
-    }
-  },
   "src/pages/reset-password-page.tsx": {
     "i18next/no-literal-string": {
       "count": 3

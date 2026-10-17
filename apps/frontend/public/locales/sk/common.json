@@ -368,10 +368,15 @@
             "population": "Populácia",
             "stores": "Zásoby",
             "queen": "Matka",
-            "lastInspection": "Posledná prehliadka"
+            "lastInspection": "Posledná prehliadka",
+            "kgValue": "{{value}} kg"
         },
         "charts": {
-            "hiveScoreTrends": "Trendy skóre úľov"
+            "hiveScoreTrends": "Trendy skóre úľov",
+            "sugarKg": "Cukor (kg)",
+            "honeyKg": "Med (kg)",
+            "noInspectionData": "Za vybrané obdobie nie sú k dispozícii žiadne údaje z prehliadok",
+            "scoreType": "Typ skóre:"
         },
         "periods": {
             "1month": "1 mesiac",
@@ -382,7 +387,8 @@
             "all": "Všetko"
         },
         "filters": {
-            "period": "Obdobie"
+            "period": "Obdobie",
+            "selectPeriod": "Vyberte obdobie"
         },
         "export": {
             "title": "Export",
@@ -395,7 +401,9 @@
             "title": "Štatistiky včelnice",
             "viewReports": "Zobraziť reporty",
             "noApiary": "Vyberte včelnicu na zobrazenie štatistík"
-        }
+        },
+        "feedingTotalsDescription": "Celkové množstvo skrmeného cukru na úľ (kg)",
+        "honeyProductionDescription": "Celkové množstvo získaného medu na úľ (kg)"
     },
     "syrupCalculator": {
         "title": "Kalkulačka cukrového roztoku",

@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select';
 import type { TrendData } from 'shared-schemas';
 import type { ChartConfig } from '@/components/ui/chart';
+import { useTranslation } from 'react-i18next';
 
 type ScoreType =
   'overallScore' | 'populationScore' | 'storesScore' | 'queenScore';
@@ -26,11 +27,11 @@ interface HiveScoreTrendChartProps {
   isLoading: boolean;
 }
 
-const SCORE_OPTIONS: { value: ScoreType; label: string }[] = [
-  { value: 'overallScore', label: 'Overall' },
-  { value: 'populationScore', label: 'Population' },
-  { value: 'storesScore', label: 'Stores' },
-  { value: 'queenScore', label: 'Queen' },
+const SCORE_OPTIONS: { value: ScoreType; labelKey: string }[] = [
+  { value: 'overallScore', labelKey: 'reports.table.overall' },
+  { value: 'populationScore', labelKey: 'reports.table.population' },
+  { value: 'storesScore', labelKey: 'reports.table.stores' },
+  { value: 'queenScore', labelKey: 'reports.table.queen' },
 ];
 
 // Chart colors for different hives
@@ -51,12 +52,13 @@ export const HiveScoreTrendChart: React.FC<HiveScoreTrendChartProps> = ({
   data,
   isLoading,
 }) => {
+  const { t } = useTranslation('common');
   const [selectedScore, setSelectedScore] = useState<ScoreType>('overallScore');
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-        Loading...
+        {t('status.loading')}
       </div>
     );
   }
@@ -64,7 +66,7 @@ export const HiveScoreTrendChart: React.FC<HiveScoreTrendChartProps> = ({
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-        No data available
+        {t('messages.noData')}
       </div>
     );
   }
@@ -75,7 +77,7 @@ export const HiveScoreTrendChart: React.FC<HiveScoreTrendChartProps> = ({
   if (hivesWithData.length === 0) {
     return (
       <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-        No inspection data available for the selected period
+        {t('reports.charts.noInspectionData')}
       </div>
     );
   }
@@ -121,7 +123,9 @@ export const HiveScoreTrendChart: React.FC<HiveScoreTrendChartProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium">Score Type:</span>
+        <span className="text-sm font-medium">
+          {t('reports.charts.scoreType')}
+        </span>
         <Select
           value={selectedScore}
           onValueChange={v => setSelectedScore(v as ScoreType)}
@@ -132,7 +136,7 @@ export const HiveScoreTrendChart: React.FC<HiveScoreTrendChartProps> = ({
           <SelectContent>
             {SCORE_OPTIONS.map(option => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label}
+                {t(option.labelKey)}
               </SelectItem>
             ))}
           </SelectContent>

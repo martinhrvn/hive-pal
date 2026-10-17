@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/chart';
 import type { TrendData } from 'shared-schemas';
 import type { ChartConfig } from '@/components/ui/chart';
+import { useTranslation } from 'react-i18next';
 
 interface HealthTrendChartProps {
   data: TrendData['healthTrends'] | undefined;
@@ -19,10 +20,12 @@ export const HealthTrendChart: React.FC<HealthTrendChartProps> = ({
   data,
   isLoading,
 }) => {
+  const { t } = useTranslation('common');
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-        Loading...
+        {t('status.loading')}
       </div>
     );
   }
@@ -30,7 +33,7 @@ export const HealthTrendChart: React.FC<HealthTrendChartProps> = ({
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-        No data available
+        {t('messages.noData')}
       </div>
     );
   }
@@ -46,19 +49,19 @@ export const HealthTrendChart: React.FC<HealthTrendChartProps> = ({
 
   const chartConfig = {
     overall: {
-      label: 'Overall',
+      label: t('reports.table.overall'),
       color: 'hsl(var(--chart-1))',
     },
     population: {
-      label: 'Population',
+      label: t('reports.table.population'),
       color: 'hsl(var(--chart-2))',
     },
     stores: {
-      label: 'Stores',
+      label: t('reports.table.stores'),
       color: 'hsl(var(--chart-3))',
     },
     queen: {
-      label: 'Queen',
+      label: t('reports.table.queen'),
       color: 'hsl(var(--chart-4))',
     },
   } satisfies ChartConfig;

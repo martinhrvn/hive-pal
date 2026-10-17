@@ -31,7 +31,9 @@ export const FeedingTotalsChart = ({
       <Card>
         <CardHeader>
           <CardTitle>{t('reports.feedingTotals')}</CardTitle>
-          <CardDescription>Total sugar fed per hive (kg)</CardDescription>
+          <CardDescription>
+            {t('reports.feedingTotalsDescription')}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Skeleton className="h-[300px] w-full" />
@@ -45,7 +47,9 @@ export const FeedingTotalsChart = ({
       <Card>
         <CardHeader>
           <CardTitle>{t('reports.feedingTotals')}</CardTitle>
-          <CardDescription>Total sugar fed per hive (kg)</CardDescription>
+          <CardDescription>
+            {t('reports.feedingTotalsDescription')}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="py-8 text-center text-muted-foreground">
@@ -60,13 +64,15 @@ export const FeedingTotalsChart = ({
     <Card>
       <CardHeader>
         <CardTitle>{t('reports.feedingTotals')}</CardTitle>
-        <CardDescription>Total sugar fed per hive (kg)</CardDescription>
+        <CardDescription>
+          {t('reports.feedingTotalsDescription')}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer
           config={{
             sugarKg: {
-              label: 'Sugar (kg)',
+              label: t('reports.charts.sugarKg'),
               color: '#ea580c',
             },
           }}

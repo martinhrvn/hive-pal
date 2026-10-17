@@ -2048,10 +2048,15 @@
       "population": "Population",
       "stores": "Stores",
       "queen": "Queen",
-      "lastInspection": "Last Inspection"
+      "lastInspection": "Last Inspection",
+      "kgValue": "{{value}} kg"
     },
     "charts": {
-      "hiveScoreTrends": "Hive Score Trends"
+      "hiveScoreTrends": "Hive Score Trends",
+      "sugarKg": "Sugar (kg)",
+      "honeyKg": "Honey (kg)",
+      "noInspectionData": "No inspection data available for the selected period",
+      "scoreType": "Score Type:"
     },
     "periods": {
       "1month": "1 Month",
@@ -2062,7 +2067,8 @@
       "all": "All Time"
     },
     "filters": {
-      "period": "Period"
+      "period": "Period",
+      "selectPeriod": "Select period"
     },
     "export": {
       "title": "Export",
@@ -2078,7 +2084,9 @@
       "noApiary": "Select an apiary to view statistics"
     },
     "treatmentTotals": "Active ingredients applied (across products)",
-    "treatmentTotalsEmpty": "No treatments recorded for this period."
+    "treatmentTotalsEmpty": "No treatments recorded for this period.",
+    "feedingTotalsDescription": "Total sugar fed per hive (kg)",
+    "honeyProductionDescription": "Total honey harvested per hive (kg)"
   },
   "footer": {
     "privacyPolicy": "Privacy Policy"
