@@ -254,27 +254,6 @@
       "count": 3
     }
   },
-  "src/pages/harvest/components/harvest-wizard.tsx": {
-    "i18next/no-literal-string": {
-      "count": 14
-    },
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/pages/harvest/harvest-detail-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 43
-    },
-    "no-restricted-syntax": {
-      "count": 15
-    }
-  },
-  "src/pages/harvest/harvest-list-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 23
-    }
-  },
   "src/pages/hivescale/hivehub-firmware-card.tsx": {
     "i18next/no-literal-string": {
       "count": 8
