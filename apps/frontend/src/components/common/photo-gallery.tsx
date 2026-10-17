@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ImageIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,7 @@ export function PhotoGallery({
   quickCheckId: string;
   photos: Array<{ id: string; fileName: string }>;
 }) {
+  const { t } = useTranslation('common');
   const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({});
   const [lightboxPhoto, setLightboxPhoto] = useState<{
     id: string;
@@ -47,9 +49,7 @@ export function PhotoGallery({
           onClick={() => setLightboxPhoto(photos[0])}
         >
           <ImageIcon className="h-3.5 w-3.5" />
-          <span>
-            {photos.length} photo{photos.length !== 1 ? 's' : ''}
-          </span>
+          <span>{t('photo.count', { count: photos.length })}</span>
         </button>
         <div className="hidden group-hover/photos:flex absolute bottom-full left-0 mb-1 gap-1.5 p-1.5 bg-popover border rounded-md shadow-md z-50">
           {photos.map(photo => (
@@ -82,7 +82,7 @@ export function PhotoGallery({
       >
         <DialogContent className="max-w-3xl p-2">
           <DialogHeader className="sr-only">
-            <DialogTitle>Photo</DialogTitle>
+            <DialogTitle>{t('photo.lightboxTitle')}</DialogTitle>
           </DialogHeader>
           {lightboxPhoto && photoUrls[lightboxPhoto.id] && (
             <img

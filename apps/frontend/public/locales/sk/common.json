@@ -77,7 +77,8 @@
         "newQueen": "Nová matka",
         "recentInspections": "Nedávne prehliadky",
         "openMenu": "Otvoriť menu",
-        "deleting": "Vymazáva sa..."
+        "deleting": "Vymazáva sa...",
+        "tryAgain": "Skúsiť znova"
     },
     "status": {
         "loading": "Načítava sa...",
@@ -272,7 +273,19 @@
         "both": "Obe",
         "inspections": "Prehliadky",
         "actions": "Akcie",
-        "unknownHive": "Neznámy úľ"
+        "unknownHive": "Neznámy úľ",
+        "viewInspection": "Zobraziť prehliadku",
+        "inspectionCount_one": "{{count}} prehliadka",
+        "inspectionCount_few": "{{count}} prehliadky",
+        "inspectionCount_many": "{{count}} prehliadok",
+        "inspectionCount_other": "{{count}} prehliadok",
+        "actionCount_one": "{{count}} akcia",
+        "actionCount_few": "{{count}} akcie",
+        "actionCount_many": "{{count}} akcií",
+        "actionCount_other": "{{count}} akcií",
+        "inspectionOf": "Prehliadka úľa <hiveLink>{{hiveName}}</hiveLink>",
+        "actionsList": "Akcie: {{types}}",
+        "actionOn": "{{type}} – <hiveLink>{{hiveName}}</hiveLink>"
     },
     "quickCheck": {
         "title": "Rýchla kontrola",
@@ -1253,7 +1266,14 @@
         "apiary": "Včelnica"
     },
     "photo": {
-        "featureAlt": "Fotografia {{name}}"
+        "featureAlt": "Fotografia {{name}}",
+        "fileInfo": "{{name}} ({{size}} MB)",
+        "count_one": "{{count}} fotografia",
+        "count_few": "{{count}} fotografie",
+        "count_many": "{{count}} fotografií",
+        "count_other": "{{count}} fotografií",
+        "lightboxTitle": "Fotografia",
+        "featurePhotoAlt": "Hlavná fotografia"
     },
     "imageDisplay": {
         "label": "Obrázky: {{mode}}",
@@ -1312,6 +1332,53 @@
             "deleteFailed": "Prípravok sa nepodarilo vymazať",
             "ingredientAdded": "Účinná látka bola pridaná",
             "ingredientAddFailed": "Účinnú látku sa nepodarilo pridať"
-        }
+        },
+        "title": "Prípravky na ošetrenie",
+        "subtitle": "Definujte si vlastné prípravky na ošetrenie a zloženie ich účinných látok.",
+        "add": "Pridať prípravok",
+        "noComposition": "Zloženie nie je nastavené",
+        "withdrawalDays": "Ochranná lehota: {{d}} dní",
+        "withdrawalUnknown": "Ochranná lehota: neuvedená",
+        "editTitle": "Upraviť prípravok",
+        "dialogHint": "Nastavte fyzickú formu a účinné látky s ich koncentráciou.",
+        "name": "Názov",
+        "form": "Fyzická forma",
+        "method": "Aplikácia (voliteľné)",
+        "defaultUnit": "Jednotka množstva",
+        "withdrawal": "Ochranná lehota (dni)",
+        "composition": "Účinné látky",
+        "addIngredient": "Pridať látku",
+        "density": "Hustota (g/ml)",
+        "densityHint": "Hustota je potrebná na prepočet medzi jednotkou množstva a koncentráciou meranou inak.",
+        "advanced": "Rozšírené",
+        "cancel": "Zrušiť",
+        "save": "Uložiť",
+        "deleteTitle": "Vymazať prípravok na ošetrenie?",
+        "deleteDesc": "Týmto odstránite svoj vlastný prípravok. Túto akciu nie je možné vrátiť.",
+        "loading": "Načítava sa…",
+        "namePlaceholder": "VarroMed",
+        "ingredientPlaceholder": "Účinná látka"
+    },
+    "audioRecorder": {
+        "notSupported": "Tento prehliadač nepodporuje nahrávanie zvuku.",
+        "preview": "Ukážka nahrávky",
+        "discard": "Zahodiť",
+        "save": "Uložiť nahrávku",
+        "paused": "Pozastavené",
+        "recording": "Nahráva sa...",
+        "start": "Začať nahrávanie",
+        "hint": "Nahrajte hlasové poznámky k tejto prehliadke",
+        "empty": "Žiadne zvukové nahrávky"
+    },
+    "fab": {
+        "addInspection": "Pridať prehliadku"
+    },
+    "qrScanner": {
+        "title": "Naskenovať QR kód",
+        "description": "Namierte fotoaparát na QR kód úľa a prejdite naň",
+        "cameraUnavailable": "Prístup k fotoaparátu nie je v tomto prehliadači dostupný."
+    },
+    "temperatureField": {
+        "placeholder": "Zadajte teplotu"
     }
 }

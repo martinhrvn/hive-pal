@@ -10,7 +10,8 @@
   "welcome": {
     "title": "Začnite svoju včelársku cestu",
     "description": "Vitajte v Hive-Pal, vašom digitálnom včelárskom asistentovi! Prevedieme vás nastavením vašej prvej včelnice a úľa, aby ste mohli začať.",
-    "action": "Začnime"
+    "action": "Začnime",
+    "logoAlt": "Logo Hive-Pal"
   },
   "apiary": {
     "title": "Vytvorte svoju prvú včelnicu",

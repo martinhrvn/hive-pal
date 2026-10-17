@@ -151,7 +151,7 @@ export const FeaturePhotoPicker = forwardRef<
         <div className="relative group">
           <img
             src={displayUrl}
-            alt="Feature photo"
+            alt={t('photo.featurePhotoAlt')}
             className="w-full h-40 object-cover rounded-md border"
           />
           {isBusy ? (

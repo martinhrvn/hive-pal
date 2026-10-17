@@ -79,6 +79,20 @@ const formatDate = (dateString: string, t: (key: string) => string) => {
   }
 };
 
+const HOUR_FORMAT: Intl.DateTimeFormatOptions = {
+  hour: 'numeric',
+  hour12: false,
+};
+
+/** Bare 24h hour (e.g. "14") for the hourly forecast tiles. */
+const formatHour = (timestamp: string | number | Date) =>
+  new Date(timestamp)
+    .toLocaleTimeString('en-US', HOUR_FORMAT)
+    .replace(':00', '');
+
+const getSmallWeatherIcon = (condition: WeatherCondition) =>
+  getWeatherIcon(condition, 'sm');
+
 export const WeatherForecast: React.FC<WeatherForecastProps> = ({
   apiaryId,
   showHourly = true,
@@ -198,15 +212,10 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
                     className="flex-none w-16 h-20 bg-accent rounded-lg p-2 flex flex-col items-center justify-between hover:bg-accent/80 transition-colors"
                   >
                     <div className="text-xs text-muted-foreground text-center leading-tight">
-                      {new Date(hour.timestamp)
-                        .toLocaleTimeString('en-US', {
-                          hour: 'numeric',
-                          hour12: false,
-                        })
-                        .replace(':00', '')}
+                      {formatHour(hour.timestamp)}
                     </div>
                     <div className="flex-1 flex items-center">
-                      {getWeatherIcon(hour.condition, 'sm')}
+                      {getSmallWeatherIcon(hour.condition)}
                     </div>
                     <div className="text-xs font-medium text-center">
                       {formatTemperature(hour.temperature).value.toFixed(0)}°
@@ -246,7 +255,7 @@ export const WeatherForecast: React.FC<WeatherForecastProps> = ({
                       {formatDate(day.date, t).split(' ').slice(0, 1).join(' ')}
                     </div>
                     <div className="flex-1 flex items-center">
-                      {getWeatherIcon(day.condition, 'sm')}
+                      {getSmallWeatherIcon(day.condition)}
                     </div>
                     <div className="text-center">
                       <div className="text-xs font-medium">

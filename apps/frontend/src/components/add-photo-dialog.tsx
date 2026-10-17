@@ -132,8 +132,10 @@ export function AddPhotoDialog({
                   <X className="h-4 w-4" />
                 </button>
                 <div className="text-xs text-muted-foreground mt-1">
-                  {selectedFile.displayName} (
-                  {(selectedFile.file.size / 1024 / 1024).toFixed(1)} MB)
+                  {t('photo.fileInfo', {
+                    name: selectedFile.displayName,
+                    size: (selectedFile.file.size / 1024 / 1024).toFixed(1),
+                  })}
                 </div>
               </div>
             ) : (

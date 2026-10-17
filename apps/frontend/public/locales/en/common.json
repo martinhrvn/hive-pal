@@ -111,7 +111,8 @@
     "newQueen": "New Queen",
     "recentInspections": "Recent Inspections",
     "openMenu": "Open menu",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "tryAgain": "Try Again"
   },
   "status": {
     "loading": "Loading...",
@@ -359,7 +360,14 @@
     "noEvents": "No events",
     "overdueInspections": "Overdue Inspections ({{overdueInspectionsSize}})",
     "viewInspection": "View Inspection",
-    "unknownHive": "Unknown hive"
+    "unknownHive": "Unknown hive",
+    "inspectionCount_one": "{{count}} inspection",
+    "inspectionCount_other": "{{count}} inspections",
+    "actionCount_one": "{{count}} action",
+    "actionCount_other": "{{count}} actions",
+    "inspectionOf": "Inspection of <hiveLink>{{hiveName}}</hiveLink>",
+    "actionsList": "Actions: {{types}}",
+    "actionOn": "{{type}} on <hiveLink>{{hiveName}}</hiveLink>"
   },
   "quickAdd": {
     "title": "Add Entry",
@@ -386,7 +394,12 @@
     "deleteDescription": "This action cannot be undone. This will permanently delete this photo.",
     "deleted": "Photo deleted",
     "deleteFailed": "Failed to delete photo",
-    "featureAlt": "{{name}} photo"
+    "featureAlt": "{{name}} photo",
+    "fileInfo": "{{name}} ({{size}} MB)",
+    "count_one": "{{count}} photo",
+    "count_other": "{{count}} photos",
+    "lightboxTitle": "Photo",
+    "featurePhotoAlt": "Feature photo"
   },
   "document": {
     "title": "Add Document",
@@ -2599,7 +2612,10 @@
       "deleteFailed": "Failed to delete product",
       "ingredientAdded": "Active ingredient added",
       "ingredientAddFailed": "Failed to add ingredient"
-    }
+    },
+    "loading": "Loading…",
+    "namePlaceholder": "VarroMed",
+    "ingredientPlaceholder": "Ingredient"
   },
   "imageDisplay": {
     "label": "Images: {{mode}}",
@@ -2677,5 +2693,27 @@
   "frameSizeToasts": {
     "submitted": "Frame size submitted for review",
     "submitFailed": "Failed to submit frame size"
+  },
+  "audioRecorder": {
+    "notSupported": "Audio recording is not supported in this browser.",
+    "preview": "Recording Preview",
+    "discard": "Discard",
+    "save": "Save Recording",
+    "paused": "Paused",
+    "recording": "Recording...",
+    "start": "Start Recording",
+    "hint": "Record audio notes for this inspection",
+    "empty": "No audio recordings"
+  },
+  "fab": {
+    "addInspection": "Add Inspection"
+  },
+  "qrScanner": {
+    "title": "Scan QR Code",
+    "description": "Point your camera at a hive QR code to navigate to it",
+    "cameraUnavailable": "Camera access is not available in this browser."
+  },
+  "temperatureField": {
+    "placeholder": "Enter temperature"
   }
 }

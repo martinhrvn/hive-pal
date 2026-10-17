@@ -44,7 +44,8 @@
     "notes": "Notes",
     "cellCappedAt": "Queen cell capped",
     "emergedAt": "Emerged",
-    "expectedEmergence": "Expected emergence"
+    "expectedEmergence": "Expected emergence",
+    "installedAt": "Installed at"
   },
   "colors": {
     "blue": "Blue",
@@ -97,7 +98,8 @@
     "hiveLocked": "To move her to another hive, use Transfer on the queen page.",
     "notInHive": "Not in a hive",
     "notSet": "Not set",
-    "estimateHint": "An estimate is fine."
+    "estimateHint": "An estimate is fine.",
+    "pickColor": "Pick color"
   },
   "information": {
     "noActiveQueen": "No active queen found",

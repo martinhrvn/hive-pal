@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { useForm, FormProvider } from 'react-hook-form';
-import { format } from 'date-fns';
 import { Trash2, Edit2, Check, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -132,6 +132,7 @@ export const StagedQueue: React.FC<StagedQueueProps> = ({
   onUpdateAction,
 }) => {
   const { t } = useTranslation('common');
+  const { formatDate } = useDateFormat();
   const [editingId, setEditingId] = useState<string | null>(null);
   const editingItem = items.find(i => i.id === editingId);
   const kindLabel = (kind: StagedItem['kind']) => t(`bulkAdd.kind.${kind}`);
@@ -291,7 +292,7 @@ export const StagedQueue: React.FC<StagedQueueProps> = ({
                   </div>
                 )}
               <div className="text-[10px] uppercase tracking-wide text-muted-foreground/70">
-                {format(item.date, 'MMM d, yyyy')}
+                {formatDate(item.date)}
               </div>
             </div>
             <div className="flex shrink-0 gap-0.5">
@@ -301,7 +302,7 @@ export const StagedQueue: React.FC<StagedQueueProps> = ({
                   variant="ghost"
                   className="h-7 w-7"
                   onClick={() => handleStartEdit(item)}
-                  aria-label="Edit"
+                  aria-label={t('actions.edit')}
                 >
                   <Edit2 className="h-3.5 w-3.5" />
                 </Button>
@@ -311,7 +312,7 @@ export const StagedQueue: React.FC<StagedQueueProps> = ({
                 variant="ghost"
                 className="h-7 w-7"
                 onClick={() => onRemove(item.id)}
-                aria-label="Remove"
+                aria-label={t('actions.remove')}
               >
                 <Trash2 className="h-3.5 w-3.5 text-destructive" />
               </Button>
@@ -343,7 +344,7 @@ export const StagedQueue: React.FC<StagedQueueProps> = ({
                     </div>
                     <div>
                       <Label>{t('bulkAdd.edit.date')}</Label>
-                      <Input value={format(editingItem.date, 'PPP')} disabled />
+                      <Input value={formatDate(editingItem.date)} disabled />
                     </div>
                   </div>
                   <div className="mt-6">{renderEditForm()}</div>

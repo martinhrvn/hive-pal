@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -324,7 +324,9 @@ export const CalendarPage = () => {
           </div>
 
           {isLoading ? (
-            <div className="text-sm text-muted-foreground">Loading...</div>
+            <div className="text-sm text-muted-foreground">
+              {t('common:status.loading')}
+            </div>
           ) : (
             <div className="space-y-4">
               {days.map(day => {
@@ -358,14 +360,16 @@ export const CalendarPage = () => {
                           <div className="flex gap-2">
                             {dayInspections.length > 0 && (
                               <Badge variant="secondary" className="text-xs">
-                                {dayInspections.length} inspection
-                                {dayInspections.length > 1 ? 's' : ''}
+                                {t('common:calendar.inspectionCount', {
+                                  count: dayInspections.length,
+                                })}
                               </Badge>
                             )}
                             {standaloneActions.length > 0 && (
                               <Badge variant="outline" className="text-xs">
-                                {standaloneActions.length} action
-                                {standaloneActions.length > 1 ? 's' : ''}
+                                {t('common:calendar.actionCount', {
+                                  count: standaloneActions.length,
+                                })}
                               </Badge>
                             )}
                           </div>
@@ -393,13 +397,23 @@ export const CalendarPage = () => {
                                   <div className="flex items-center gap-2 flex-wrap">
                                     {getStatusIcon(inspection)}
                                     <span className="font-medium">
-                                      Inspection of{' '}
-                                      <Link
-                                        to={`/hives/${inspection.hiveId}`}
-                                        className="hover:underline text-blue-600 dark:text-blue-400"
-                                      >
-                                        {getHiveName(inspection.hiveId)}
-                                      </Link>
+                                      <Trans
+                                        t={t}
+                                        i18nKey="common:calendar.inspectionOf"
+                                        values={{
+                                          hiveName: getHiveName(
+                                            inspection.hiveId,
+                                          ),
+                                        }}
+                                        components={{
+                                          hiveLink: (
+                                            <Link
+                                              to={`/hives/${inspection.hiveId}`}
+                                              className="hover:underline text-blue-600 dark:text-blue-400"
+                                            />
+                                          ),
+                                        }}
+                                      />
                                     </span>
                                     <Badge
                                       variant="outline"
@@ -418,7 +432,7 @@ export const CalendarPage = () => {
                                       to={`/inspections/${inspection.id}`}
                                       className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline flex items-center gap-1"
                                     >
-                                      View Inspection
+                                      {t('common:calendar.viewInspection')}
                                       <ExternalLink className="h-3 w-3" />
                                     </Link>
                                   </div>
@@ -429,10 +443,11 @@ export const CalendarPage = () => {
                                 inspection.actions.length > 0 && (
                                   <div className="mt-2 pt-2 border-t border-current/20">
                                     <p className="text-xs opacity-75">
-                                      Actions:{' '}
-                                      {inspection.actions
-                                        .map(a => a.type)
-                                        .join(', ')}
+                                      {t('common:calendar.actionsList', {
+                                        types: inspection.actions
+                                          .map(a => a.type)
+                                          .join(', '),
+                                      })}
                                     </p>
                                   </div>
                                 )}
@@ -449,15 +464,28 @@ export const CalendarPage = () => {
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <span className="font-medium">
-                                      {action.type.charAt(0).toUpperCase() +
-                                        action.type.slice(1).toLowerCase()}{' '}
-                                      on{' '}
-                                      <Link
-                                        to={`/hives/${action.hiveId}`}
-                                        className="hover:underline text-purple-700 dark:text-purple-400"
-                                      >
-                                        {getHiveName(action.hiveId ?? '')}
-                                      </Link>
+                                      <Trans
+                                        t={t}
+                                        i18nKey="common:calendar.actionOn"
+                                        values={{
+                                          type:
+                                            action.type
+                                              .charAt(0)
+                                              .toUpperCase() +
+                                            action.type.slice(1).toLowerCase(),
+                                          hiveName: getHiveName(
+                                            action.hiveId ?? '',
+                                          ),
+                                        }}
+                                        components={{
+                                          hiveLink: (
+                                            <Link
+                                              to={`/hives/${action.hiveId}`}
+                                              className="hover:underline text-purple-700 dark:text-purple-400"
+                                            />
+                                          ),
+                                        }}
+                                      />
                                     </span>
                                   </div>
                                   {action.notes && (

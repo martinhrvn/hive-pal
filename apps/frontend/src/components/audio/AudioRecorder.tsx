@@ -1,4 +1,5 @@
 import { Mic, Square, Pause, Play, X, Upload, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { useAudioRecorder } from './useAudioRecorder';
 import { cn } from '@/lib/utils';
@@ -24,6 +25,7 @@ export function AudioRecorder({
   isUploading = false,
   className,
 }: AudioRecorderProps) {
+  const { t } = useTranslation('common');
   const {
     isRecording,
     isPaused,
@@ -55,7 +57,7 @@ export function AudioRecorder({
     return (
       <div className={cn('p-4 bg-muted rounded-lg text-center', className)}>
         <p className="text-muted-foreground text-sm">
-          Audio recording is not supported in this browser.
+          {t('audioRecorder.notSupported')}
         </p>
       </div>
     );
@@ -72,7 +74,7 @@ export function AudioRecorder({
           type="button"
           onClick={resetRecording}
         >
-          Try Again
+          {t('actions.tryAgain')}
         </Button>
       </div>
     );
@@ -83,7 +85,9 @@ export function AudioRecorder({
     return (
       <div className={cn('p-4 bg-muted rounded-lg space-y-3', className)}>
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Recording Preview</span>
+          <span className="text-sm font-medium">
+            {t('audioRecorder.preview')}
+          </span>
           <span className="text-sm text-muted-foreground">
             {formatDuration(duration)}
           </span>
@@ -101,7 +105,7 @@ export function AudioRecorder({
             className="flex-1"
           >
             <X className="size-4" />
-            Discard
+            {t('audioRecorder.discard')}
           </Button>
           <Button
             size="sm"
@@ -115,7 +119,7 @@ export function AudioRecorder({
             ) : (
               <Upload className="size-4" />
             )}
-            {isUploading ? 'Uploading...' : 'Save Recording'}
+            {isUploading ? t('photo.uploading') : t('audioRecorder.save')}
           </Button>
         </div>
       </div>
@@ -178,7 +182,7 @@ export function AudioRecorder({
         </div>
 
         <p className="text-xs text-center text-muted-foreground">
-          {isPaused ? 'Paused' : 'Recording...'}
+          {isPaused ? t('audioRecorder.paused') : t('audioRecorder.recording')}
         </p>
       </div>
     );
@@ -196,11 +200,9 @@ export function AudioRecorder({
         className="gap-2"
       >
         <Mic className="size-5" />
-        Start Recording
+        {t('audioRecorder.start')}
       </Button>
-      <p className="text-xs text-muted-foreground">
-        Record audio notes for this inspection
-      </p>
+      <p className="text-xs text-muted-foreground">{t('audioRecorder.hint')}</p>
     </div>
   );
 }

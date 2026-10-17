@@ -1,4 +1,5 @@
 import { Thermometer } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import NumericField from './numeric-input-field';
 
 interface TemperatureFieldProps {
@@ -20,6 +21,7 @@ const TemperatureField = ({
   max = 50,
   defaultValue = 10,
 }: TemperatureFieldProps) => {
+  const { t } = useTranslation('common');
   // Render function for the temperature icon
   const renderTemperatureIcon = (value: number | null) => {
     let colorClass = 'text-gray-400';
@@ -43,7 +45,7 @@ const TemperatureField = ({
       name={name}
       min={min}
       max={max}
-      placeholder={'Enter temperature'}
+      placeholder={t('temperatureField.placeholder')}
       defaultValue={defaultValue}
       renderIcon={renderTemperatureIcon}
       unit="°C"
