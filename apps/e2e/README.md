@@ -2,13 +2,16 @@
 
 End-to-end tests for Hive Pal using Playwright.
 
-Two suites live here:
+Three suites live here:
 
 - **Smoke suite** (`tests/smoke/`, config `playwright.smoke.config.ts`): one
   happy path per page, every spec signs up its own user, runs against a
   deployed preview or a local stack. This is what CI runs. See
   [`tests/smoke/README.md`](tests/smoke/README.md) and
   [`tests/smoke/TODO.md`](tests/smoke/TODO.md).
+- **Living guides** (`guides/*.guide.ts`, config `playwright.guides.config.ts`):
+  user guides that run as e2e tests and, with `GUIDE=1`, record narrated videos.
+  See [`guides/README.md`](guides/README.md).
 - **Legacy suite** (`tests/*.spec.ts`, `tests/**/`, config
   `playwright.config.ts`): older multi-browser tests that depend on a shared
   admin login. Several are out of date; they are not run in CI.
@@ -29,6 +32,12 @@ cd apps/e2e
 BASE_URL=https://243.preview.hivepal.app pnpm test:smoke
 pnpm test:smoke:local            # against pnpm dev, reads .env.local
 pnpm test:smoke:ui               # Playwright UI mode
+
+# Smoke suite + guides (CI mode)
+pnpm test:e2e
+
+# Record the guides (video, captions.vtt, script.md → out/guides/)
+pnpm guides:record
 
 # Legacy suite
 pnpm test:local                  # .env.local

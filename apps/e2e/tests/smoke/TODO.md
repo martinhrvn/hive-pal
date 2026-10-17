@@ -30,7 +30,7 @@ for conventions. One spec file per line; each file signs up its own user.
 
 ## Tier 2 `@extended`
 
-- [ ] `extended/harvests.spec.ts` — seed hive; `/harvests` → "Start Harvest" wizard → detail. Labels are hard-coded English. No share button assertions.
+- [x] `extended/harvests.spec.ts` — seed hive; `/harvests` → "Start Harvest" wizard → detail. Labels are hard-coded English. No share button assertions.
 - [ ] `extended/batch-inspections.spec.ts` — seed 2 hives; schedule page → tick both → "Create as Batch Inspection" → name → `/batch-inspections/:id`; list shows it.
 - [ ] `extended/bulk-add.spec.ts` — seed 2 hives; `/actions/bulk` → select all → Actions tab → add Feeding → submit queue → toast. Labels under `common.json` `bulkAdd.*`.
 - [ ] `extended/equipment.spec.ts` — seed hive; `/equipment` → change "Target Hives" → "Save All Changes" → toast.

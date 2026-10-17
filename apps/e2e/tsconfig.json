@@ -7,10 +7,11 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "types": ["node"],
     "baseUrl": ".",
     "paths": {
       "page-objects": ["../../packages/page-objects/src/index.ts"]
     }
   },
-  "include": ["tests/**/*.ts", "*.ts"]
+  "include": ["tests/**/*.ts", "guides/**/*.ts", "*.ts"]
 }
