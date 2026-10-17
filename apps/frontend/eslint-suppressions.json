@@ -176,11 +176,6 @@
       "count": 8
     }
   },
-  "src/pages/account/change-password-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 10
-    }
-  },
   "src/pages/actions/bulk/queen-builder.tsx": {
     "no-restricted-syntax": {
       "count": 5
@@ -354,19 +349,6 @@
   "src/pages/reset-password-page.tsx": {
     "i18next/no-literal-string": {
       "count": 3
-    }
-  },
-  "src/pages/settings/data-transfer-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 32
-    },
-    "no-restricted-syntax": {
-      "count": 9
-    }
-  },
-  "src/pages/settings/user-settings-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 7
     }
   },
   "src/pages/shared/shared-page.tsx": {

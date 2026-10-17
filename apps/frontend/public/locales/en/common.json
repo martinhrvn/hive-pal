@@ -238,6 +238,7 @@
     "passkeyDeleteFailed": "Failed to delete passkey",
     "saveSettings": "Save Settings",
     "preferencesUpdated": "Your preferences have been updated successfully.",
+    "failedToSavePreferences": "Failed to save your preferences. Please try again.",
     "saving": "Saving...",
     "dangerZone": "Danger Zone",
     "dangerZoneDescription": "Irreversible actions for your account.",
@@ -251,7 +252,55 @@
     "deleteAccountButton": "Delete my account",
     "deleteAccountDeleting": "Deleting account...",
     "accountDeleted": "Your account has been deleted.",
-    "deleteAccountFailed": "Failed to delete account. Please try again."
+    "deleteAccountFailed": "Failed to delete account. Please try again.",
+    "data": {
+      "title": "Data",
+      "description": "Export your account data for backup, or import from a previous export.",
+      "transferTitle": "Export and import",
+      "transferDescription": "Migrate between instances or keep your own backups.",
+      "open": "Open"
+    },
+    "dataTransfer": {
+      "title": "Data Transfer",
+      "description": "Export your account data for backup, or import a previous export to this account.",
+      "exportDescription": "Download a ZIP archive containing all apiaries you own and their data, including photos, documents, and audio.",
+      "startExport": "Start export",
+      "exportInProgress": "Export in progress…",
+      "importDescription": "Restore data from a previously created export ZIP. Imports are additive — every imported apiary becomes a new record under your account.",
+      "chooseFile": "Choose ZIP file…",
+      "importInProgress": "Import in progress…",
+      "recentJobs": "Recent jobs",
+      "recentJobsDescription": "Exports remain downloadable for 7 days.",
+      "noJobs": "No jobs yet.",
+      "columns": {
+        "type": "Type",
+        "status": "Status",
+        "created": "Created",
+        "progress": "Progress"
+      },
+      "failed": "Failed",
+      "expired": "Expired",
+      "viewSummary": "View summary",
+      "viewError": "View error",
+      "confirmImportTitle": "Import data into your account?",
+      "confirmImportDescription": "This will add all data from <bold>{{fileName}}</bold> to your account. Imports are additive and cannot be automatically undone.",
+      "startImport": "Start import",
+      "jobError": "Job error",
+      "importSummary": "Import summary",
+      "deleteConfirm": "Delete this job and its stored file?",
+      "toasts": {
+        "exportStarted": "Export started",
+        "exportStartedDescription": "Your export is being prepared. This may take a few minutes.",
+        "exportFailed": "Failed to start export",
+        "importStarted": "Import started",
+        "importStartedDescription": "Your data is being imported. This may take a few minutes.",
+        "importFailed": "Failed to start import",
+        "downloadFailed": "Download failed",
+        "downloadFailedWithStatus": "Download failed: {{status}}",
+        "jobDeleted": "Job deleted",
+        "deleteFailed": "Failed to delete job"
+      }
+    }
   },
   "feedback": {
     "title": "Send Feedback",

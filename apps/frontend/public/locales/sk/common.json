@@ -176,7 +176,56 @@
         "changePassword": "Zmeniť heslo účtu",
         "saveSettings": "Uložiť nastavenia",
         "preferencesUpdated": "Vaše nastavenia boli úspešne aktualizované.",
-        "saving": "Ukladanie..."
+        "failedToSavePreferences": "Nastavenia sa nepodarilo uložiť. Skúste to znova.",
+        "saving": "Ukladanie...",
+        "data": {
+            "title": "Dáta",
+            "description": "Exportujte dáta svojho účtu ako zálohu alebo ich importujte z predchádzajúceho exportu.",
+            "transferTitle": "Export a import",
+            "transferDescription": "Presúvajte dáta medzi inštanciami alebo si uchovávajte vlastné zálohy.",
+            "open": "Otvoriť"
+        },
+        "dataTransfer": {
+            "title": "Prenos dát",
+            "description": "Exportujte dáta svojho účtu ako zálohu alebo do tohto účtu importujte predchádzajúci export.",
+            "exportDescription": "Stiahnite si ZIP archív so všetkými vašimi včelnicami a ich dátami vrátane fotiek, dokumentov a zvukových záznamov.",
+            "startExport": "Spustiť export",
+            "exportInProgress": "Export prebieha…",
+            "importDescription": "Obnovte dáta z predtým vytvoreného ZIP exportu. Importy sa pridávajú k existujúcim dátam — každá importovaná včelnica sa vo vašom účte vytvorí ako nový záznam.",
+            "chooseFile": "Vybrať ZIP súbor…",
+            "importInProgress": "Import prebieha…",
+            "recentJobs": "Posledné úlohy",
+            "recentJobsDescription": "Exporty je možné stiahnuť počas 7 dní.",
+            "noJobs": "Zatiaľ žiadne úlohy.",
+            "columns": {
+                "type": "Typ",
+                "status": "Stav",
+                "created": "Vytvorené",
+                "progress": "Priebeh"
+            },
+            "failed": "Zlyhalo",
+            "expired": "Vypršalo",
+            "viewSummary": "Zobraziť súhrn",
+            "viewError": "Zobraziť chybu",
+            "confirmImportTitle": "Importovať dáta do vášho účtu?",
+            "confirmImportDescription": "Všetky dáta zo súboru <bold>{{fileName}}</bold> sa pridajú do vášho účtu. Importy sa pridávajú k existujúcim dátam a nedajú sa automaticky vrátiť späť.",
+            "startImport": "Spustiť import",
+            "jobError": "Chyba úlohy",
+            "importSummary": "Súhrn importu",
+            "deleteConfirm": "Vymazať túto úlohu a jej uložený súbor?",
+            "toasts": {
+                "exportStarted": "Export bol spustený",
+                "exportStartedDescription": "Váš export sa pripravuje. Môže to trvať niekoľko minút.",
+                "exportFailed": "Export sa nepodarilo spustiť",
+                "importStarted": "Import bol spustený",
+                "importStartedDescription": "Vaše dáta sa importujú. Môže to trvať niekoľko minút.",
+                "importFailed": "Import sa nepodarilo spustiť",
+                "downloadFailed": "Sťahovanie zlyhalo",
+                "downloadFailedWithStatus": "Sťahovanie zlyhalo: {{status}}",
+                "jobDeleted": "Úloha bola vymazaná",
+                "deleteFailed": "Úlohu sa nepodarilo vymazať"
+            }
+        }
     },
     "feedback": {
         "title": "Poslať spätnú väzbu",
