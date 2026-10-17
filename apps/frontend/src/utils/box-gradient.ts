@@ -1,8 +1,7 @@
 import { BoxVariantEnum } from 'shared-schemas';
 import { getBoxHeightMm } from './box-display';
 
-const MUTED_GRADIENT =
-  'linear-gradient(to bottom, hsl(var(--muted)), hsl(var(--muted)))';
+const MUTED_GRADIENT = 'linear-gradient(to bottom, var(--muted), var(--muted))';
 
 export function buildBoxGradient(
   boxes?: {

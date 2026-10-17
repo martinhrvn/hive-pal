@@ -50,19 +50,19 @@ export const HealthTrendChart: React.FC<HealthTrendChartProps> = ({
   const chartConfig = {
     overall: {
       label: t('reports.table.overall'),
-      color: 'hsl(var(--chart-1))',
+      color: 'var(--chart-1)',
     },
     population: {
       label: t('reports.table.population'),
-      color: 'hsl(var(--chart-2))',
+      color: 'var(--chart-2)',
     },
     stores: {
       label: t('reports.table.stores'),
-      color: 'hsl(var(--chart-3))',
+      color: 'var(--chart-3)',
     },
     queen: {
       label: t('reports.table.queen'),
-      color: 'hsl(var(--chart-4))',
+      color: 'var(--chart-4)',
     },
   } satisfies ChartConfig;
 

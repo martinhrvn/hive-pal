@@ -45,7 +45,7 @@ export const FeedingTrendChart: React.FC<FeedingTrendChartProps> = ({
   const chartConfig = {
     sugar: {
       label: t('reports.charts.sugarKg'),
-      color: 'hsl(var(--chart-1))',
+      color: 'var(--chart-1)',
     },
   } satisfies ChartConfig;
 
