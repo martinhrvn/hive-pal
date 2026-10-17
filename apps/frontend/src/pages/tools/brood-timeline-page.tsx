@@ -37,6 +37,15 @@ import { cn } from '@/lib/utils';
 type BeeType = 'queen' | 'worker' | 'drone';
 type Stage = 'egg' | 'larva' | 'pupa' | 'adult';
 
+const BEE_TYPES: readonly BeeType[] = ['queen', 'worker', 'drone'];
+const STAGES: readonly Stage[] = ['egg', 'larva', 'pupa', 'adult'];
+
+// Short month + day in the active UI language (e.g. "Oct 17" in English).
+const formatShortDate = (date: Date, language: string) =>
+  new Intl.DateTimeFormat(language, { month: 'short', day: 'numeric' }).format(
+    date,
+  );
+
 interface StageData {
   stage: Stage;
   startDay: number;
@@ -111,6 +120,7 @@ function TimelineBar({
   compact?: boolean;
   scaleToMax?: boolean;
 }) {
+  const { i18n } = useTranslation();
   const totalStages = beeData.totalDays + 1;
   const barWidthPercent = scaleToMax ? (totalStages / MAX_DAYS) * 100 : 100;
 
@@ -149,7 +159,10 @@ function TimelineBar({
                 <div>{stage.startDay}</div>
                 {startDate && (
                   <div className="text-[10px] text-muted-foreground/70">
-                    {format(addDays(startDate, stage.startDay), 'MMM d')}
+                    {formatShortDate(
+                      addDays(startDate, stage.startDay),
+                      i18n.language,
+                    )}
                   </div>
                 )}
               </div>
@@ -158,7 +171,10 @@ function TimelineBar({
                   <div>{stage.endDay}</div>
                   {startDate && (
                     <div className="text-[10px] text-muted-foreground/70">
-                      {format(addDays(startDate, stage.endDay), 'MMM d')}
+                      {formatShortDate(
+                        addDays(startDate, stage.endDay),
+                        i18n.language,
+                      )}
                     </div>
                   )}
                 </div>
@@ -172,7 +188,7 @@ function TimelineBar({
 }
 
 export function BroodTimelinePage() {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
 
   const [selectedBeeType, setSelectedBeeType] = useState<BeeType>('worker');
   const [showComparison, setShowComparison] = useState(false);
@@ -196,19 +212,18 @@ export function BroodTimelinePage() {
 
   const formatDateRange = (startDay: number, endDay: number) => {
     if (!startDate) return null;
-    const from = format(addDays(startDate, startDay), 'MMM d');
+    const from = formatShortDate(addDays(startDate, startDay), i18n.language);
     if (startDay === endDay) return from;
-    const to = format(addDays(startDate, endDay), 'MMM d');
+    const to = formatShortDate(addDays(startDate, endDay), i18n.language);
     return `${from} – ${to}`;
   };
 
   const structuredData = buildStructuredData(
     buildWebApplicationJsonLd({
-      name: 'Honey Bee Brood Development Timeline',
+      name: t('broodTimeline.meta.appName'),
       path: '/tools/brood-timeline',
       kind: 'reference',
-      description:
-        'Visualize honey bee brood development stages (egg, larva, pupa, adult) for queens, workers, and drones. Project capping and emergence dates from any start date.',
+      description: t('broodTimeline.meta.appDescription'),
     }),
     buildFaqJsonLd(faqItems),
   );
@@ -216,9 +231,9 @@ export function BroodTimelinePage() {
   return (
     <PageGrid>
       <ToolMeta
-        title="Honey Bee Brood Development Timeline — Hive Pal"
-        description="Free brood development timeline for queen, worker, and drone honey bees. Visualize each stage (egg, larva, pupa, adult) with day counts and project capping or emergence dates from any start date."
-        ogDescription="Visualize queen, worker, and drone brood stages with day counts and projected dates."
+        title={t('broodTimeline.meta.title')}
+        description={t('broodTimeline.meta.description')}
+        ogDescription={t('broodTimeline.meta.ogDescription')}
         path="/tools/brood-timeline"
         structuredData={structuredData}
       />
@@ -335,7 +350,7 @@ export function BroodTimelinePage() {
           <CardContent>
             {showComparison ? (
               <>
-                {(['queen', 'worker', 'drone'] as const).map(type => (
+                {BEE_TYPES.map(type => (
                   <TimelineBar
                     key={type}
                     beeData={BEE_DATA[type]}
@@ -405,7 +420,7 @@ export function BroodTimelinePage() {
             {/* Minimal legend for comparison view */}
             {showComparison && (
               <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t">
-                {(['egg', 'larva', 'pupa', 'adult'] as const).map(stage => (
+                {STAGES.map(stage => (
                   <div key={stage} className="flex items-center gap-1.5">
                     <div
                       className={cn(

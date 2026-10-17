@@ -359,67 +359,6 @@
       "count": 4
     }
   },
-  "src/pages/tools/artificial-swarm-method-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
-    },
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/pages/tools/brood-timeline-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 10
-    },
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/pages/tools/demaree-method-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
-    },
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/pages/tools/liebefelder-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 9
-    },
-    "no-restricted-syntax": {
-      "count": 4
-    }
-  },
-  "src/pages/tools/pagden-method-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
-    },
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/pages/tools/swarm-management-overview-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
-    },
-    "no-restricted-syntax": {
-      "count": 4
-    }
-  },
-  "src/pages/tools/syrup-calculator-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 2
-    },
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/pages/tools/varroa-management-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 5
-    }
-  },
   "src/pages/treatment-products/treatment-products-page.tsx": {
     "i18next/no-literal-string": {
       "count": 3

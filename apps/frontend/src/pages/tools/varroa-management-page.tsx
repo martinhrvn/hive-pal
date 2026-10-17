@@ -33,6 +33,7 @@ import {
   ToolMeta,
   ToolPageHeader,
   buildHowToJsonLd,
+  type HowToStepItem,
   buildStructuredData,
   buildWebApplicationJsonLd,
 } from '@/components/tool-page';
@@ -41,6 +42,9 @@ import { cn } from '@/lib/utils';
 // Treatment categories drive the badge colors in the timeline; all copy comes
 // from i18n under `varroaManagement.*`.
 type Treatment = 'biotech' | 'lactic' | 'formic' | 'oxalic';
+
+const DIVIDE_AND_TREAT_CONCEPTS = ['flightling', 'broodling'] as const;
+const COLONY_TYPES = ['production', 'nucleus'] as const;
 
 const TREATMENT_BADGE_CLASSES: Record<Treatment, string> = {
   biotech:
@@ -257,7 +261,7 @@ function DivideAndTreatGuide() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {(['flightling', 'broodling'] as const).map(concept => (
+        {DIVIDE_AND_TREAT_CONCEPTS.map(concept => (
           <div
             key={concept}
             className={cn(
@@ -401,47 +405,26 @@ export function VarroaManagementPage() {
 
   const structuredData = buildStructuredData(
     buildWebApplicationJsonLd({
-      name: 'Varroa Management Plan for Production Colonies and Nuclei',
+      name: t('varroaManagement.meta.appName'),
       path: '/tools/varroa-management',
       kind: 'reference',
-      description:
-        'Season-long varroa treatment schedule for production colonies and nucleus colonies, based on natural mite-fall thresholds, with a step-by-step divide-and-treat guide.',
+      description: t('varroaManagement.meta.appDescription'),
     }),
     buildHowToJsonLd({
-      name: 'How to keep varroa under control through the season',
-      description:
-        'Five-step varroa management plan combining drone brood removal, nucleus formation, mite-fall monitoring, formic acid, and oxalic acid in broodless periods.',
-      steps: [
-        {
-          name: 'April to July: cut drone brood',
-          text: 'Remove capped drone brood from production colonies 3-4 times between April and July.',
-        },
-        {
-          name: 'April to July: treat new nuclei with lactic acid',
-          text: 'Spray nucleus colonies once with 15% lactic acid in the broodless phase after they are made up.',
-        },
-        {
-          name: 'End of July: monitor mite fall after the harvest',
-          text: 'Count natural mite fall for exactly 3 days. Treat with formic acid only above 10 mites/day (production colony) or 5 mites/day (nucleus).',
-        },
-        {
-          name: 'August/September: late-summer care',
-          text: 'Condense the production colony, treat once with formic acid, feed, and re-check mite fall — or make the colony broodless with divide-and-treat and use oxalic acid instead.',
-        },
-        {
-          name: 'Late November to mid December: oxalic acid',
-          text: 'In the broodless winter period, trickle oxalic acid once if natural mite fall exceeds 1 mite/day.',
-        },
-      ],
+      name: t('varroaManagement.meta.howTo.name'),
+      description: t('varroaManagement.meta.howTo.description'),
+      steps: t('varroaManagement.meta.howTo.steps', {
+        returnObjects: true,
+      }) as HowToStepItem[],
     }),
   );
 
   return (
     <PageGrid>
       <ToolMeta
-        title="Varroa Management Plan: Production Colony and Nucleus Schedule — Hive Pal"
-        description="Free season-long varroa treatment schedule for production colonies and nuclei. Mite-fall thresholds, drone brood removal, formic and oxalic acid timing, and the divide-and-treat method explained step by step."
-        ogDescription="When to treat which colony against varroa — threshold-based schedule plus the divide-and-treat method."
+        title={t('varroaManagement.meta.title')}
+        description={t('varroaManagement.meta.description')}
+        ogDescription={t('varroaManagement.meta.ogDescription')}
         path="/tools/varroa-management"
         structuredData={structuredData}
       />
@@ -460,7 +443,7 @@ export function VarroaManagementPage() {
               poster. */}
           <div className="space-y-6 md:space-y-0">
             <div className="mb-4 hidden gap-4 md:grid md:grid-cols-[1fr_6.5rem_1fr]">
-              {(['production', 'nucleus'] as const).map((colony, index) => (
+              {COLONY_TYPES.map((colony, index) => (
                 <div
                   key={colony}
                   className={cn(

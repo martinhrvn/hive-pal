@@ -578,6 +578,39 @@
           "answer": "For one liter of finished 1:1 syrup, you need roughly 715 g of water and 715 g of white granulated sugar. The exact amounts depend on the ratio and final volume — this calculator computes them based on sucrose displacement."
         }
       ]
+    },
+    "meta": {
+      "title": "Sugar Syrup Calculator for Beekeepers — Hive Pal",
+      "description": "Free sugar syrup calculator for beekeepers. Compute exact sugar and water amounts for 1:1, 3:2, or 2:1 syrup at any container size, in metric or imperial units.",
+      "ogDescription": "Free calculator for bee sugar syrup. Get precise sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size.",
+      "appName": "Sugar Syrup Calculator",
+      "appDescription": "Free calculator for bee feeding syrup. Computes exact sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size, in metric or imperial units.",
+      "howTo": {
+        "name": "How to make sugar syrup for bees",
+        "description": "Step-by-step recipe for preparing 1:1, 3:2, or 2:1 sugar syrup for feeding honey bees, with sugar and water amounts calculated for any container size.",
+        "steps": [
+          {
+            "name": "Measure the water",
+            "text": "Measure {{water}} ({{waterWeight}}) of water."
+          },
+          {
+            "name": "Warm the water",
+            "text": "Heat the water until warm (not boiling)."
+          },
+          {
+            "name": "Add the sugar",
+            "text": "Add {{sugar}} of white granulated sugar."
+          },
+          {
+            "name": "Stir to dissolve",
+            "text": "Stir until the sugar is completely dissolved."
+          },
+          {
+            "name": "Cool before feeding",
+            "text": "Let the syrup cool to room temperature before feeding."
+          }
+        ]
+      }
     }
   },
   "liebefelder": {
@@ -589,11 +622,23 @@
       "title": "Frame type",
       "description": "Choose the frame format used in your hive — it determines the estimation values per eighth.",
       "custom": "Custom",
-      "customDescription": "Enter your own estimation values for one eighth of a comb side."
+      "customDescription": "Enter your own estimation values for one eighth of a comb side.",
+      "names": {
+        "zander": "Zander",
+        "dnm": "Deutsch-Normal",
+        "langstroth": "Langstroth",
+        "dadant": "Dadant"
+      },
+      "customHint": "Enter the comb-side frame dimensions. Hive Pal derives bees, drones, brood cells, pollen and feed per 1/8 from Zander by scaling with frame area.",
+      "customWidth": "Width (mm)",
+      "customHeight": "Height (mm)",
+      "customDerived": "Derived from Zander ({{dimensions}}) at {{ratio}}× area. The calculated per-1/8 values are shown in the reference card."
     },
     "counts": {
       "title": "Counts — total eighths",
-      "description": "Sum the eighths of comb area across all comb sides for each category. One eighth holds about {{bees}} bees ({{frame}}). Brood and stores are optional — they are needed for split evaluation and feed assessment."
+      "description": "Sum the eighths of comb area across all comb sides for each category. One eighth holds about {{bees}} bees ({{frame}}). Brood and stores are optional — they are needed for split evaluation and feed assessment.",
+      "decrease": "Decrease",
+      "increase": "Increase"
     },
     "fields": {
       "bees": "Bees",
@@ -733,6 +778,13 @@
           "description": "From the unfertilized egg: 3 d egg + 7 d larva + 14 d pupa. A colony holds 0–1,000 drones."
         }
       }
+    },
+    "meta": {
+      "title": "Liebefelder Colony Strength Calculator — Hive Pal",
+      "description": "Free Liebefelder Schätzmethode calculator. Estimate bee population, brood cells, pollen and feed stores by counting comb eighths — with seasonal evaluation guidelines by Dr. Pia Aumeier.",
+      "ogDescription": "Estimate colony strength with the Liebefelder Schätzmethode: bees, brood, pollen and feed from 1/8 comb counts, plus seasonal strength evaluation.",
+      "appName": "Liebefelder Colony Strength Calculator",
+      "appDescription": "Free Liebefelder Schätzmethode calculator. Estimate bee population, brood cells, pollen and feed stores by counting comb eighths, with seasonal evaluation guidelines by Dr. Pia Aumeier."
     }
   },
   "broodTimeline": {
@@ -802,6 +854,13 @@
           "answer": "Drones take 24 days from egg to emergence — the longest of any caste. Drone cells are capped around day 10."
         }
       ]
+    },
+    "meta": {
+      "title": "Honey Bee Brood Development Timeline — Hive Pal",
+      "description": "Free brood development timeline for queen, worker, and drone honey bees. Visualize each stage (egg, larva, pupa, adult) with day counts and project capping or emergence dates from any start date.",
+      "ogDescription": "Visualize queen, worker, and drone brood stages with day counts and projected dates.",
+      "appName": "Honey Bee Brood Development Timeline",
+      "appDescription": "Visualize honey bee brood development stages (egg, larva, pupa, adult) for queens, workers, and drones. Project capping and emergence dates from any start date."
     }
   },
   "swarmManagement": {
@@ -1008,6 +1067,47 @@
             "answer": "Missing a queen cell in the upper brood box during the day 7-8 check is the biggest risk — the colony can still swarm if a virgin queen emerges above the excluder. Shaking bees off every brood frame helps spot all cells."
           }
         ]
+      },
+      "meta": {
+        "title": "Demaree Method: Swarm Control Guide and Planner — Hive Pal",
+        "description": "Free reference guide and inspection planner for the Demaree swarm-control method. Prerequisites, step-by-step instructions, follow-up timing, and pros/cons for honey bee beekeepers.",
+        "ogDescription": "Step-by-step Demaree method for honey bee swarm control, with follow-up timing and an inspection planner.",
+        "appName": "Demaree Swarm-Control Method Guide and Planner",
+        "appDescription": "Reference guide and inspection planner for the Demaree swarm-control method, with prerequisites, step-by-step instructions, pros/cons, and follow-up timing.",
+        "howTo": {
+          "name": "How to perform the Demaree swarm-control method",
+          "description": "Step-by-step Demaree procedure for relieving swarm pressure in a strong honey bee colony without splitting it.",
+          "steps": [
+            {
+              "name": "Preparation",
+              "text": "Place a spare brood box with drawn comb or foundation on the hive floor below the existing brood."
+            },
+            {
+              "name": "Hunt the queen",
+              "text": "Find the laying queen, place her and the frame she is on into the centre of the new bottom box, and remove any queen cells from that frame."
+            },
+            {
+              "name": "Brood manipulation",
+              "text": "Consolidate brood frames above and knock down every queen cell. Shake bees off frames to make sure no cells are missed."
+            },
+            {
+              "name": "Reassembly",
+              "text": "Stack queen excluder, two or more honey supers, a second queen excluder, and the brood box above. Refit the crown board and roof."
+            },
+            {
+              "name": "Follow-up at day 7-8",
+              "text": "Inspect the upper brood box for emergency queen cells and remove any that have been started."
+            },
+            {
+              "name": "Follow-up at day 14-15",
+              "text": "Recheck for late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
+            },
+            {
+              "name": "Follow-up at day 21-22",
+              "text": "Carry out a final review and decide whether the colony can be normalised or still needs close monitoring."
+            }
+          ]
+        }
       }
     },
     "planner": {
@@ -1301,6 +1401,47 @@
           "title": "Checkpoint order is no longer chronological",
           "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
         }
+      },
+      "meta": {
+        "title": "Pagden Split Method: Swarm Control Guide and Planner — Hive Pal",
+        "description": "Free reference guide and inspection planner for the Pagden split swarm-control method. Prerequisites, step-by-step instructions, follow-up timing, and pros/cons for honey bee beekeepers.",
+        "ogDescription": "Step-by-step Pagden split method for honey bee swarm control, with follow-up timing and an inspection planner.",
+        "appName": "Pagden Split Method Guide and Planner",
+        "appDescription": "Reference guide and inspection planner for the Pagden split swarm-control method, with prerequisites, step-by-step instructions, pros/cons, and follow-up timing.",
+        "howTo": {
+          "name": "How to perform the Pagden split method",
+          "description": "Step-by-step Pagden procedure for relieving swarm pressure by moving the queen to a new hive on the original stand while relocating the parent colony with brood.",
+          "steps": [
+            {
+              "name": "Preparation",
+              "text": "Find a spare brood box with drawn comb and prepare a second hive floor and stand a few metres away."
+            },
+            {
+              "name": "Relocate the Queen",
+              "text": "Locate the laying queen, place her and her frame into the new brood box on the original stand. Flying bees return to her."
+            },
+            {
+              "name": "Manage the Parent Colony",
+              "text": "Move the original hive a few metres away. Reduce queen cells to one or two well-placed cells so the colony can raise a new queen."
+            },
+            {
+              "name": "Reassembly",
+              "text": "Add a queen excluder and supers to the new hive as needed. Fit crown board and roof on both hives."
+            },
+            {
+              "name": "Follow-up at day 7-8",
+              "text": "Inspect the parent colony and reduce queen cells to one well-placed cell."
+            },
+            {
+              "name": "Follow-up at day 14-15",
+              "text": "Check the retained queen cell is capped and developing. Remove any additional cells."
+            },
+            {
+              "name": "Follow-up at day 21-22",
+              "text": "Confirm the new queen is mated and laying in the parent colony."
+            }
+          ]
+        }
       }
     },
     "artificialSwarm": {
@@ -1509,11 +1650,73 @@
           "title": "Checkpoint order is no longer chronological",
           "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
         }
+      },
+      "meta": {
+        "title": "Artificial Swarm Method: Swarm Control Guide and Planner — Hive Pal",
+        "description": "Free reference guide and inspection planner for the artificial swarm swarm-control method. Prerequisites, step-by-step instructions, follow-up timing, and pros/cons for honey bee beekeepers.",
+        "ogDescription": "Step-by-step artificial swarm method for honey bee swarm control when the queen cannot be found, with follow-up timing and an inspection planner.",
+        "appName": "Artificial Swarm Method Guide and Planner",
+        "appDescription": "Reference guide and inspection planner for the artificial swarm swarm-control method, with prerequisites, step-by-step instructions, pros/cons, and follow-up timing.",
+        "howTo": {
+          "name": "How to perform the artificial swarm method",
+          "description": "Step-by-step artificial swarm procedure for moving the parent colony aside while placing a new hive on the original stand with a frame containing a queen cell.",
+          "steps": [
+            {
+              "name": "Preparation",
+              "text": "Find a spare brood box with drawn comb and prepare a second hive floor and stand a few metres away."
+            },
+            {
+              "name": "Move the Parent Colony",
+              "text": "Move the original hive (with the queen) to a new location. Identify a frame with a queen cell or eggs and reduce other queen cells."
+            },
+            {
+              "name": "Set Up the New Colony",
+              "text": "Place the new brood box on the original stand with the selected brood frame in the centre, filled with drawn comb."
+            },
+            {
+              "name": "Reassembly",
+              "text": "Add a queen excluder and supers to the new hive as needed. Fit crown board and roof on both hives."
+            },
+            {
+              "name": "Follow-up at day 7-8",
+              "text": "Inspect the new colony to confirm the queen cell is developing and check for additional queen cells."
+            },
+            {
+              "name": "Follow-up at day 14-15",
+              "text": "Confirm the queen cell is capped and developing. Monitor the parent colony."
+            },
+            {
+              "name": "Follow-up at day 21-22",
+              "text": "Confirm the new queen is mated and laying in the new colony."
+            }
+          ]
+        }
       }
     },
     "cushmanCredit": {
       "text": "Method references sourced from the Dave Cushman Beekeeping Website.",
       "linkLabel": "Dave Cushman Beekeeping Website"
+    },
+    "meta": {
+      "title": "Honey Bee Swarm Management Methods — Hive Pal",
+      "description": "Free reference guides for honey bee swarm-control methods. Compare the Demaree, Pagden, and artificial swarm techniques and plan follow-up inspections.",
+      "ogDescription": "Compare proven honey bee swarm-control methods and plan follow-up inspections.",
+      "collectionName": "Honey Bee Swarm Management Methods",
+      "collectionDescription": "Reference guides for honey bee swarm-control methods, including the Demaree method, Pagden split, and artificial swarm technique, with prerequisites, step-by-step procedures, and follow-up inspection timing.",
+      "parts": {
+        "demaree": {
+          "name": "Demaree Method",
+          "description": "Reference workflow for the Demaree swarm-control method with an inspection planner."
+        },
+        "pagden": {
+          "name": "Pagden Split",
+          "description": "Reference workflow for the Pagden split swarm-control method with an inspection planner."
+        },
+        "artificial": {
+          "name": "Artificial Swarm",
+          "description": "Reference workflow for the artificial swarm swarm-control method with an inspection planner."
+        }
+      }
     }
   },
   "varroaManagement": {
@@ -1790,6 +1993,39 @@
       "principleBody": "The recipe's success factor: record the natural mite fall with screened floors and sticky boards instead of treating on a fixed calendar. Every treatment is matched to the actual infestation and the colony's development. Used nationwide since 2008 in 140 hobby, professional, and institute apiaries, this approach kept colony losses at 7% or less — with no chemicals during the nectar flow and no residue-forming or resistance-building varroacides.",
       "sourceTitle": "Source",
       "sourceBody": "Concept by Dr. Pia Aumeier, developed with Dr. Gerhard Liebig and Dr. Otto Boecking at Ruhr-Universität Bochum in the “Imkerberatung NRW” project; divide-and-treat method as published in Deutsches Bienen-Journal (DNB 07/2017)."
+    },
+    "meta": {
+      "title": "Varroa Management Plan: Production Colony and Nucleus Schedule — Hive Pal",
+      "description": "Free season-long varroa treatment schedule for production colonies and nuclei. Mite-fall thresholds, drone brood removal, formic and oxalic acid timing, and the divide-and-treat method explained step by step.",
+      "ogDescription": "When to treat which colony against varroa — threshold-based schedule plus the divide-and-treat method.",
+      "appName": "Varroa Management Plan for Production Colonies and Nuclei",
+      "appDescription": "Season-long varroa treatment schedule for production colonies and nucleus colonies, based on natural mite-fall thresholds, with a step-by-step divide-and-treat guide.",
+      "howTo": {
+        "name": "How to keep varroa under control through the season",
+        "description": "Five-step varroa management plan combining drone brood removal, nucleus formation, mite-fall monitoring, formic acid, and oxalic acid in broodless periods.",
+        "steps": [
+          {
+            "name": "April to July: cut drone brood",
+            "text": "Remove capped drone brood from production colonies 3-4 times between April and July."
+          },
+          {
+            "name": "April to July: treat new nuclei with lactic acid",
+            "text": "Spray nucleus colonies once with 15% lactic acid in the broodless phase after they are made up."
+          },
+          {
+            "name": "End of July: monitor mite fall after the harvest",
+            "text": "Count natural mite fall for exactly 3 days. Treat with formic acid only above 10 mites/day (production colony) or 5 mites/day (nucleus)."
+          },
+          {
+            "name": "August/September: late-summer care",
+            "text": "Condense the production colony, treat once with formic acid, feed, and re-check mite fall — or make the colony broodless with divide-and-treat and use oxalic acid instead."
+          },
+          {
+            "name": "Late November to mid December: oxalic acid",
+            "text": "In the broodless winter period, trickle oxalic acid once if natural mite fall exceeds 1 mite/day."
+          }
+        ]
+      }
     }
   },
   "reports": {

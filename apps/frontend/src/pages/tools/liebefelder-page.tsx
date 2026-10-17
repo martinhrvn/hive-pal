@@ -50,7 +50,6 @@ type FrameDimensions = {
 
 type FrameTypeConfig = {
   id: string;
-  label: string;
   dimensions: string;
   dimensionsMm: FrameDimensions;
   perEighth: PerEighth;
@@ -91,28 +90,24 @@ function calculateFromZanderArea(dimensions: FrameDimensions): PerEighth {
 const FRAME_TYPES = [
   {
     id: 'zander',
-    label: 'Zander',
     dimensions: formatFrameDimensions(ZANDER_DIMENSIONS),
     dimensionsMm: ZANDER_DIMENSIONS,
     perEighth: ZANDER_PER_EIGHTH,
   },
   {
     id: 'dnm',
-    label: 'Deutsch-Normal',
     dimensions: '370×223 mm',
     dimensionsMm: { widthMm: 370, heightMm: 223 },
     perEighth: calculateFromZanderArea({ widthMm: 370, heightMm: 223 }),
   },
   {
     id: 'langstroth',
-    label: 'Langstroth',
     dimensions: '448×232 mm',
     dimensionsMm: { widthMm: 448, heightMm: 232 },
     perEighth: calculateFromZanderArea({ widthMm: 448, heightMm: 232 }),
   },
   {
     id: 'dadant',
-    label: 'Dadant',
     dimensions: '448×285 mm',
     dimensionsMm: { widthMm: 448, heightMm: 285 },
     perEighth: calculateFromZanderArea({ widthMm: 448, heightMm: 285 }),
@@ -185,6 +180,7 @@ function Counter({
   value: number;
   onChange: (v: number) => void;
 }) {
+  const { t } = useTranslation('common');
   return (
     <div className="flex items-center justify-center gap-2">
       <Button
@@ -194,7 +190,7 @@ function Counter({
         className="h-8 w-8 shrink-0"
         disabled={value <= 0}
         onClick={() => onChange(Math.max(0, value - 1))}
-        aria-label="Decrease"
+        aria-label={t('liebefelder.counts.decrease')}
       >
         <Minus className="h-3 w-3" />
       </Button>
@@ -213,7 +209,7 @@ function Counter({
         size="icon"
         className="h-8 w-8 shrink-0"
         onClick={() => onChange(value + 1)}
-        aria-label="Increase"
+        aria-label={t('liebefelder.counts.increase')}
       >
         <Plus className="h-3 w-3" />
       </Button>
@@ -364,18 +360,16 @@ function formatGrams(grams: number): string {
     : `${Math.round(grams)} g`;
 }
 
-const structuredData = buildStructuredData(
-  buildWebApplicationJsonLd({
-    name: 'Liebefelder Colony Strength Calculator',
-    path: '/tools/liebefelder',
-    kind: 'calculator',
-    description:
-      'Free Liebefelder Schätzmethode calculator. Estimate bee population, brood cells, pollen and feed stores by counting comb eighths, with seasonal evaluation guidelines by Dr. Pia Aumeier.',
-  }),
-);
-
 export function LiebefelderPage() {
   const { t } = useTranslation('common');
+  const structuredData = buildStructuredData(
+    buildWebApplicationJsonLd({
+      name: t('liebefelder.meta.appName'),
+      path: '/tools/liebefelder',
+      kind: 'calculator',
+      description: t('liebefelder.meta.appDescription'),
+    }),
+  );
   const [frameType, setFrameType] = useState<FrameTypeId>('zander');
   const [customDimensions, setCustomDimensions] =
     useState<FrameDimensions>(ZANDER_DIMENSIONS);
@@ -389,7 +383,7 @@ export function LiebefelderPage() {
   const selected = FRAME_TYPES.find(f => f.id === frameType) ?? null;
   const per = selected ? selected.perEighth : customPer;
   const frameLabel = selected
-    ? selected.label
+    ? t(`liebefelder.frameType.names.${selected.id}`)
     : `${t('liebefelder.frameType.custom')} (${formatFrameDimensions(customDimensions)})`;
   const customAreaRatio =
     (customDimensions.widthMm * customDimensions.heightMm) /
@@ -618,9 +612,9 @@ export function LiebefelderPage() {
   return (
     <PageGrid>
       <ToolMeta
-        title="Liebefelder Colony Strength Calculator — Hive Pal"
-        description="Free Liebefelder Schätzmethode calculator. Estimate bee population, brood cells, pollen and feed stores by counting comb eighths — with seasonal evaluation guidelines by Dr. Pia Aumeier."
-        ogDescription="Estimate colony strength with the Liebefelder Schätzmethode: bees, brood, pollen and feed from 1/8 comb counts, plus seasonal strength evaluation."
+        title={t('liebefelder.meta.title')}
+        description={t('liebefelder.meta.description')}
+        ogDescription={t('liebefelder.meta.ogDescription')}
         path="/tools/liebefelder"
         structuredData={structuredData}
       />
@@ -651,7 +645,7 @@ export function LiebefelderPage() {
                   active={frameType === f.id}
                   onClick={() => setFrameType(f.id)}
                 >
-                  {f.label}
+                  {t(`liebefelder.frameType.names.${f.id}`)}
                   <span className="ml-1 text-xs opacity-60">
                     ({f.dimensions})
                   </span>
@@ -668,13 +662,13 @@ export function LiebefelderPage() {
             {frameType === 'custom' && (
               <div className="mt-4 space-y-3">
                 <p className="text-xs text-muted-foreground">
-                  Enter the comb-side frame dimensions. Hive Pal derives bees,
-                  drones, brood cells, pollen and feed per 1/8 from Zander by
-                  scaling with frame area.
+                  {t('liebefelder.frameType.customHint')}
                 </p>
                 <div className="grid grid-cols-2 gap-3 sm:max-w-md">
                   <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">Width (mm)</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t('liebefelder.frameType.customWidth')}
+                    </p>
                     <Input
                       type="number"
                       min={1}
@@ -684,7 +678,9 @@ export function LiebefelderPage() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">Height (mm)</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t('liebefelder.frameType.customHeight')}
+                    </p>
                     <Input
                       type="number"
                       min={1}
@@ -696,10 +692,10 @@ export function LiebefelderPage() {
                 </div>
                 <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
                   <p>
-                    Derived from Zander (
-                    {formatFrameDimensions(ZANDER_DIMENSIONS)}) at{' '}
-                    {customAreaRatio.toFixed(2)}× area. The calculated per-1/8
-                    values are shown in the reference card.
+                    {t('liebefelder.frameType.customDerived', {
+                      dimensions: formatFrameDimensions(ZANDER_DIMENSIONS),
+                      ratio: customAreaRatio.toFixed(2),
+                    })}
                   </p>
                 </div>
               </div>

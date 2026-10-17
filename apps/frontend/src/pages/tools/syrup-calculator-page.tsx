@@ -29,6 +29,7 @@ import {
   ToolFaq,
   buildFaqJsonLd,
   buildHowToJsonLd,
+  type HowToStepItem,
   buildStructuredData,
   buildWebApplicationJsonLd,
   type FaqItem,
@@ -67,6 +68,12 @@ const RATIOS: { id: Ratio; sugar: number; water: number }[] = [
 
 // 1 gram of dissolved sucrose occupies ~0.63 mL of volume
 const ML_PER_GRAM_SUGAR = 0.63;
+
+// Unit symbols for the custom-volume input; symbols are not translated.
+const VOLUME_INPUT_UNIT: Record<UnitPreference, string> = {
+  metric: 'L',
+  imperial: 'qt',
+};
 
 function formatNum(value: number, decimals: number = 0): string {
   return value.toFixed(decimals).replace(/\.?0+$/, '') || '0';
@@ -173,38 +180,20 @@ export function SyrupCalculatorPage() {
 
   const structuredData = buildStructuredData(
     buildWebApplicationJsonLd({
-      name: 'Sugar Syrup Calculator',
+      name: t('syrupCalculator.meta.appName'),
       path: '/tools/syrup-calculator',
       kind: 'calculator',
-      description:
-        'Free calculator for bee feeding syrup. Computes exact sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size, in metric or imperial units.',
+      description: t('syrupCalculator.meta.appDescription'),
     }),
     buildHowToJsonLd({
-      name: 'How to make sugar syrup for bees',
-      description:
-        'Step-by-step recipe for preparing 1:1, 3:2, or 2:1 sugar syrup for feeding honey bees, with sugar and water amounts calculated for any container size.',
-      steps: [
-        {
-          name: 'Measure the water',
-          text: `Measure ${waterDisplay} (${waterWeightDisplay}) of water.`,
-        },
-        {
-          name: 'Warm the water',
-          text: 'Heat the water until warm (not boiling).',
-        },
-        {
-          name: 'Add the sugar',
-          text: `Add ${sugarDisplay} of white granulated sugar.`,
-        },
-        {
-          name: 'Stir to dissolve',
-          text: 'Stir until the sugar is completely dissolved.',
-        },
-        {
-          name: 'Cool before feeding',
-          text: 'Let the syrup cool to room temperature before feeding.',
-        },
-      ],
+      name: t('syrupCalculator.meta.howTo.name'),
+      description: t('syrupCalculator.meta.howTo.description'),
+      steps: t('syrupCalculator.meta.howTo.steps', {
+        returnObjects: true,
+        water: waterDisplay,
+        waterWeight: waterWeightDisplay,
+        sugar: sugarDisplay,
+      }) as HowToStepItem[],
     }),
     buildFaqJsonLd(faqItems),
   );
@@ -212,9 +201,9 @@ export function SyrupCalculatorPage() {
   return (
     <PageGrid>
       <ToolMeta
-        title="Sugar Syrup Calculator for Beekeepers — Hive Pal"
-        description="Free sugar syrup calculator for beekeepers. Compute exact sugar and water amounts for 1:1, 3:2, or 2:1 syrup at any container size, in metric or imperial units."
-        ogDescription="Free calculator for bee sugar syrup. Get precise sugar and water amounts for 1:1, 3:2, or 2:1 ratios at any container size."
+        title={t('syrupCalculator.meta.title')}
+        description={t('syrupCalculator.meta.description')}
+        ogDescription={t('syrupCalculator.meta.ogDescription')}
         path="/tools/syrup-calculator"
         structuredData={structuredData}
       />
@@ -320,7 +309,7 @@ export function SyrupCalculatorPage() {
                   className="w-28"
                 />
                 <span className="text-sm text-muted-foreground">
-                  {isImperial ? 'qt' : 'L'}
+                  {VOLUME_INPUT_UNIT[units]}
                 </span>
               </div>
             )}
