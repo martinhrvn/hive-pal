@@ -148,19 +148,6 @@
       "count": 2
     }
   },
-  "src/components/share/share-dialog.tsx": {
-    "i18next/no-literal-string": {
-      "count": 9
-    },
-    "no-restricted-syntax": {
-      "count": 8
-    }
-  },
-  "src/components/share/share-prompt-dialog.tsx": {
-    "i18next/no-literal-string": {
-      "count": 6
-    }
-  },
   "src/components/upcoming-inspection-list-item.tsx": {
     "i18next/no-literal-string": {
       "count": 2
@@ -256,11 +243,6 @@
       "count": 2
     }
   },
-  "src/pages/join/join-apiary-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 24
-    }
-  },
   "src/pages/login-page.tsx": {
     "i18next/no-literal-string": {
       "count": 2
@@ -294,14 +276,6 @@
   "src/pages/reset-password-page.tsx": {
     "i18next/no-literal-string": {
       "count": 3
-    }
-  },
-  "src/pages/shared/shared-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 31
-    },
-    "no-restricted-syntax": {
-      "count": 4
     }
   },
   "src/pages/treatment-products/treatment-products-page.tsx": {

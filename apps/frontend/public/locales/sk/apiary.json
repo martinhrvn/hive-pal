@@ -94,5 +94,36 @@
       "subjective": "",
       "description": ""
     }
+  },
+  "roles": {
+    "EDITOR": "Plný prístup",
+    "VIEWER": "Len na prezeranie"
+  },
+  "join": {
+    "goToDashboard": "Prejsť na Dashboard",
+    "notFound": {
+      "title": "Pozvánka sa nenašla",
+      "description": "Tento odkaz na pozvánku mohol byť zrušený alebo je neplatný."
+    },
+    "expired": {
+      "title": "Platnosť pozvánky vypršala",
+      "description": "Platnosť tohto odkazu na pozvánku vypršala. Požiadajte vlastníka včelnice o nový."
+    },
+    "alreadyMember": {
+      "title": "Už ste členom",
+      "description": "K včelnici <strong>{{apiaryName}}</strong> už máte prístup."
+    },
+    "requested": {
+      "title": "Žiadosť odoslaná!",
+      "description": "Vaša žiadosť o pripojenie k včelnici <strong>{{apiaryName}}</strong> bola odoslaná. Vlastník ju čoskoro posúdi."
+    },
+    "title": "Pripojiť sa k {{apiaryName}}",
+    "invited": "Boli ste pozvaní pripojiť sa k tejto včelnici s oprávnením <badge>{{role}}</badge>.",
+    "signInPrompt": "Pokračujte prihlásením alebo vytvorením účtu.",
+    "signIn": "Prihlásiť sa",
+    "createAccount": "Vytvoriť účet",
+    "requesting": "Odosiela sa...",
+    "requestToJoin": "Požiadať o pripojenie",
+    "joinFailed": "Pripojenie zlyhalo. Skúste to znova."
   }
 }

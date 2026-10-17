@@ -1,0 +1,79 @@
+{
+  "dialog": {
+    "title": "Zdieľať",
+    "description": "Zdieľajte svoje včelárske výsledky s ostatnými.",
+    "previewAlt": "Náhľad zdieľania",
+    "share": "Zdieľať",
+    "facebook": "Facebook",
+    "twitter": "X / Twitter",
+    "image": "Obrázok",
+    "instagramHint": "Pre Instagram si stiahnite obrázok a zdieľajte ho zo svojej galérie.",
+    "revoke": "Zrušiť odkaz",
+    "nativeShareTitle": "Pozrite si moje včelárske výsledky!",
+    "tweetText": "Pozrite si moje včelárske výsledky v Hive Pal!",
+    "toast": {
+      "linkCopied": "Odkaz bol skopírovaný do schránky",
+      "copyFailed": "Odkaz sa nepodarilo skopírovať",
+      "shareFailed": "Zdieľanie zlyhalo",
+      "imageDownloaded": "Obrázok bol stiahnutý",
+      "downloadFailed": "Obrázok sa nepodarilo stiahnuť",
+      "revoked": "Odkaz na zdieľanie bol zrušený",
+      "revokeFailed": "Odkaz na zdieľanie sa nepodarilo zrušiť"
+    }
+  },
+  "prompt": {
+    "harvest": {
+      "title": "Zber uložený!",
+      "description": "Chcete zdieľať výsledky zberu s priateľmi a ďalšími včelármi?"
+    },
+    "inspection": {
+      "title": "Prehliadka uložená!",
+      "description": "Chcete zdieľať výsledky prehliadky s priateľmi a ďalšími včelármi?"
+    },
+    "dontShowAgain": "Už nezobrazovať",
+    "skip": "Preskočiť",
+    "share": "Zdieľať",
+    "creating": "Vytvára sa..."
+  },
+  "shared": {
+    "brand": "Hive Pal",
+    "pageTitle": "{{title}} - Hive Pal",
+    "signUpFree": "Zaregistrovať sa zadarmo",
+    "notFound": {
+      "title": "Odkaz na zdieľanie sa nenašiel",
+      "description": "Platnosť odkazu mohla vypršať alebo bol zrušený.",
+      "signUp": "Zaregistrujte sa do Hive Pal"
+    },
+    "og": {
+      "harvestTitle": "Zber: {{amount}}",
+      "inspectionTitle": "Prehliadka úľa: {{hiveName}}"
+    },
+    "cta": {
+      "title": "Začnite spravovať vlastné úle",
+      "description": "Zaznamenávajte prehliadky, zbery a ďalšie s Hive Pal."
+    },
+    "harvest": {
+      "title": "Zber",
+      "date": "Dátum",
+      "apiary": "Včelnica",
+      "totalWeight": "Celková hmotnosť",
+      "inProgress": "Prebieha",
+      "hives": "Úle",
+      "breakdown": "Rozpis podľa úľov",
+      "frames_one": "{{count}} rámik",
+      "frames_few": "{{count}} rámiky",
+      "frames_many": "{{count}} rámika",
+      "frames_other": "{{count}} rámikov"
+    },
+    "inspection": {
+      "title": "Prehliadka: {{hiveName}}",
+      "date": "Dátum",
+      "temperature": "Teplota",
+      "weather": "Počasie",
+      "observations": "Pozorovania",
+      "notes": "Poznámky",
+      "yes": "Áno",
+      "no": "Nie"
+    }
+  }
+}

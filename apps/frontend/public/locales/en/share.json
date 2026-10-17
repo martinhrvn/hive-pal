@@ -1,0 +1,77 @@
+{
+  "dialog": {
+    "title": "Share",
+    "description": "Share your beekeeping results with others.",
+    "previewAlt": "Share preview",
+    "share": "Share",
+    "facebook": "Facebook",
+    "twitter": "X / Twitter",
+    "image": "Image",
+    "instagramHint": "For Instagram, download the image and share it from your gallery.",
+    "revoke": "Revoke link",
+    "nativeShareTitle": "Check out my beekeeping results!",
+    "tweetText": "Check out my beekeeping results on Hive Pal!",
+    "toast": {
+      "linkCopied": "Link copied to clipboard",
+      "copyFailed": "Failed to copy link",
+      "shareFailed": "Failed to share",
+      "imageDownloaded": "Image downloaded",
+      "downloadFailed": "Failed to download image",
+      "revoked": "Share link revoked",
+      "revokeFailed": "Failed to revoke share link"
+    }
+  },
+  "prompt": {
+    "harvest": {
+      "title": "Harvest saved!",
+      "description": "Share your harvest results with friends and fellow beekeepers?"
+    },
+    "inspection": {
+      "title": "Inspection saved!",
+      "description": "Share your inspection results with friends and fellow beekeepers?"
+    },
+    "dontShowAgain": "Don't show this again",
+    "skip": "Skip",
+    "share": "Share",
+    "creating": "Creating..."
+  },
+  "shared": {
+    "brand": "Hive Pal",
+    "pageTitle": "{{title}} - Hive Pal",
+    "signUpFree": "Sign up free",
+    "notFound": {
+      "title": "Share link not found",
+      "description": "This link may have expired or been revoked.",
+      "signUp": "Sign up for Hive Pal"
+    },
+    "og": {
+      "harvestTitle": "Harvest: {{amount}}",
+      "inspectionTitle": "Hive Inspection: {{hiveName}}"
+    },
+    "cta": {
+      "title": "Start managing your own hives",
+      "description": "Track inspections, harvests, and more with Hive Pal."
+    },
+    "harvest": {
+      "title": "Harvest",
+      "date": "Date",
+      "apiary": "Apiary",
+      "totalWeight": "Total Weight",
+      "inProgress": "In progress",
+      "hives": "Hives",
+      "breakdown": "Hive Breakdown",
+      "frames_one": "{{count}} frame",
+      "frames_other": "{{count}} frames"
+    },
+    "inspection": {
+      "title": "Inspection: {{hiveName}}",
+      "date": "Date",
+      "temperature": "Temperature",
+      "weather": "Weather",
+      "observations": "Observations",
+      "notes": "Notes",
+      "yes": "Yes",
+      "no": "No"
+    }
+  }
+}
