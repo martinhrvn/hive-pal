@@ -8,7 +8,9 @@
     "searchPlaceholder": "Hľadať včelnice...",
     "noApiaries": "Nenašli sa žiadne včelnice",
     "noApiariesMatching": "Nenašli sa žiadne včelnice zodpovedajúce \"{{searchTerm}}\"",
-    "clearFilters": "Vymazať filtre"
+    "clearFilters": "Vymazať filtre",
+    "sharedEdit": "Zdieľaná · úpravy",
+    "sharedView": "Zdieľaná · prezeranie"
   },
   "create": {
     "title": "Vytvoriť včelnicu",
@@ -125,5 +127,24 @@
     "requesting": "Odosiela sa...",
     "requestToJoin": "Požiadať o pripojenie",
     "joinFailed": "Pripojenie zlyhalo. Skúste to znova."
+  },
+  "sharing": {
+    "inviteLinks": {
+      "title": "Odkazy na pozvánky",
+      "createLink": "Vytvoriť odkaz",
+      "dialogTitle": "Vytvoriť odkaz na pozvánku",
+      "permissionLevel": "Úroveň oprávnení",
+      "viewerHint": "Môže prezerať všetky údaje, ale nemôže robiť zmeny.",
+      "editorHint": "Môže vytvárať, upravovať a mazať úle, prehliadky atď.",
+      "empty": "Žiadne aktívne odkazy na pozvánky. Vytvorte jeden a zdieľajte túto včelnicu."
+    },
+    "members": {
+      "title": "Členovia",
+      "empty": "Zatiaľ žiadni členovia. Začnite zdieľaním odkazu na pozvánku.",
+      "pending": "Čakajúce žiadosti ({{total}})",
+      "active": "Aktívni členovia ({{total}})",
+      "approve": "Schváliť",
+      "reject": "Zamietnuť"
+    }
   }
 }

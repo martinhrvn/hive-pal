@@ -4,6 +4,7 @@ import { Trash2, Plus } from 'lucide-react';
 import { HiveCard } from './hive-card';
 import { HiveWithBoxesResponse } from 'shared-schemas';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface HiveRowProps {
   rowIndex: number;
@@ -28,6 +29,7 @@ export const HiveRow = ({
   canRemove = true,
   className,
 }: HiveRowProps) => {
+  const { t } = useTranslation('hive');
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
@@ -57,7 +59,7 @@ export const HiveRow = ({
     <Card className={cn('p-4', className)}>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-medium text-muted-foreground">
-          Row {rowIndex + 1}
+          {t('layout.rowLabel', { number: rowIndex + 1 })}
         </h3>
         {canRemove && onRemoveRow && (
           <Button

@@ -173,21 +173,6 @@
       "count": 3
     }
   },
-  "src/pages/apiaries/apiary-list-page.tsx": {
-    "i18next/no-literal-string": {
-      "count": 2
-    }
-  },
-  "src/pages/apiaries/components/hives-layout/hive-row.tsx": {
-    "i18next/no-literal-string": {
-      "count": 1
-    }
-  },
-  "src/pages/apiaries/components/sharing-tab.tsx": {
-    "i18next/no-literal-string": {
-      "count": 20
-    }
-  },
   "src/pages/assistant/assistant-page.tsx": {
     "i18next/no-literal-string": {
       "count": 5

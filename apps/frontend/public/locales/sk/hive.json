@@ -244,7 +244,8 @@
       "brood": "Plodisko",
       "honey": "Medník",
       "feeder": "Kŕmidlo"
-    }
+    },
+    "rowLabel": "Rad {{number}}"
   },
   "equipment": {
     "currentHives": "Aktuálne úle",

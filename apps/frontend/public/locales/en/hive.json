@@ -296,7 +296,8 @@
       "brood": "Brood",
       "honey": "Honey",
       "feeder": "Feeder"
-    }
+    },
+    "rowLabel": "Row {{number}}"
   },
   "equipment": {
     "currentHives": "Current Hives",

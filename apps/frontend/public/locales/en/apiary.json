@@ -8,7 +8,9 @@
     "searchPlaceholder": "Search apiaries...",
     "noApiaries": "No apiaries found",
     "noApiariesMatching": "No apiaries found matching \"{{searchTerm}}\"",
-    "clearFilters": "Clear filters"
+    "clearFilters": "Clear filters",
+    "sharedEdit": "Shared · Edit",
+    "sharedView": "Shared · View"
   },
   "create": {
     "title": "Create Apiary",
@@ -129,5 +131,24 @@
     "requesting": "Requesting...",
     "requestToJoin": "Request to Join",
     "joinFailed": "Failed to join. Please try again."
+  },
+  "sharing": {
+    "inviteLinks": {
+      "title": "Invite Links",
+      "createLink": "Create Link",
+      "dialogTitle": "Create Invite Link",
+      "permissionLevel": "Permission Level",
+      "viewerHint": "Can view all data but cannot make changes.",
+      "editorHint": "Can create, edit, and delete hives, inspections, etc.",
+      "empty": "No active invite links. Create one to share this apiary."
+    },
+    "members": {
+      "title": "Members",
+      "empty": "No members yet. Share an invite link to get started.",
+      "pending": "Pending Requests ({{total}})",
+      "active": "Active Members ({{total}})",
+      "approve": "Approve",
+      "reject": "Reject"
+    }
   }
 }
