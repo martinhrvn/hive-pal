@@ -7,7 +7,10 @@
     "insight": "Insight",
     "scale1": "Scale 1",
     "scale2": "Scale 2",
-    "unknownError": "unknown error"
+    "unknownError": "unknown error",
+    "fileInfo": "{{name}} ({{size}} KB)",
+    "kgValue": "{{value}} kg",
+    "celsiusValue": "{{value}} °C"
   },
   "loading": {
     "fallback": "Loading…",
@@ -125,7 +128,8 @@
       "owner": "Owner",
       "admin": "Admin",
       "viewer": "Viewer"
-    }
+    },
+    "emailPlaceholder": "user@example.com"
   },
   "calibration": {
     "title": "Calibration",
@@ -1220,7 +1224,8 @@
       "clearHint": "Leave empty and press Enter for auto",
       "tickTitle": "Click to set {{bound}}; clear for auto",
       "reset": "reset",
-      "help": "Click the lowest or highest y-axis label to edit. Clear the value for auto."
+      "help": "Click the lowest or highest y-axis label to edit. Clear the value for auto.",
+      "bounds": "y_min {{min}} · y_max {{max}}"
     },
     "chart": {
       "downloadCsv": "Download CSV"
@@ -1266,6 +1271,7 @@
       "dominant": "dominant frequency {{hz}} Hz",
       "noDominant": "no dominant frequency reported",
       "footnote": "Relative levels 0–15 (not dBFS) of the latest reading in the range. Dashed lines mark the dominant frequency HiveHeart reports; the Sub-bass/Hum/Piping/Stress headings are approximate and span several ranges."
-    }
+    },
+    "widgetSize": "{{w}} x {{h}}"
   }
 }

@@ -113,6 +113,9 @@ const numberOrDash = (value: number | null | undefined, digits = 1) =>
     ? value.toFixed(digits)
     : '—';
 
+// Format example for the HiveHub claim code input.
+const CLAIM_CODE_PLACEHOLDER = 'ABCD-1234';
+
 const HIVESCALE_DATE_RANGE_STORAGE_KEY = 'hivescale.diagram.dateRange';
 
 const hiveScaleDateRangePresets = [
@@ -456,7 +459,7 @@ function ClaimDeviceCard() {
               id="claim-code"
               value={claimCode}
               onChange={event => setClaimCode(event.target.value)}
-              placeholder="ABCD-1234"
+              placeholder={CLAIM_CODE_PLACEHOLDER}
             />
           </div>
           <div className="space-y-2">
@@ -624,7 +627,7 @@ function DeviceStatusCard({
                   type="email"
                   value={email}
                   onChange={event => setEmail(event.target.value)}
-                  placeholder="user@example.com"
+                  placeholder={t('status.emailPlaceholder')}
                 />
               </div>
               <div className="space-y-2">

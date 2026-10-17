@@ -7,7 +7,10 @@
     "insight": "Insight",
     "scale1": "Scale 1",
     "scale2": "Scale 2",
-    "unknownError": "unknown error"
+    "unknownError": "unknown error",
+    "fileInfo": "{{name}} ({{size}} KB)",
+    "kgValue": "{{value}} kg",
+    "celsiusValue": "{{value}} °C"
   },
   "loading": {
     "fallback": "Loading…",
@@ -125,7 +128,8 @@
       "owner": "Vlastník",
       "admin": "Administrátor",
       "viewer": "Pozorovateľ"
-    }
+    },
+    "emailPlaceholder": "meno@example.com"
   },
   "calibration": {
     "title": "Calibration",
@@ -1258,7 +1262,8 @@
       "clearHint": "Nechajte prázdne a stlačte Enter pre auto",
       "tickTitle": "Kliknutím nastavíte {{bound}}; vymazaním auto",
       "reset": "obnoviť",
-      "help": "Kliknutím na najnižší alebo najvyšší popis osi Y ho upravíte. Vymazaním hodnoty nastavíte auto."
+      "help": "Kliknutím na najnižší alebo najvyšší popis osi Y ho upravíte. Vymazaním hodnoty nastavíte auto.",
+      "bounds": "y_min {{min}} · y_max {{max}}"
     },
     "chart": {
       "downloadCsv": "Stiahnuť CSV"
@@ -1308,6 +1313,7 @@
       "dominant": "dominantná frekvencia {{hz}} Hz",
       "noDominant": "dominantná frekvencia nie je hlásená",
       "footnote": "Relatívne úrovne 0–15 (nie dBFS) posledného merania v rozsahu. Prerušované čiary označujú dominantnú frekvenciu, ktorú hlási HiveHeart; nadpisy Sub-bass/Hum/Piping/Stress sú približné a pokrývajú viac rozsahov."
-    }
+    },
+    "widgetSize": "{{w}} x {{h}}"
   }
 }

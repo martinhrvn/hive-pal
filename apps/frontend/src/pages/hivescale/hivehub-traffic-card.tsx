@@ -47,6 +47,8 @@ const TZ_PRESETS = [
   { id: 'utc', value: '' },
 ] as const;
 const TZ_CUSTOM = 'custom';
+// Example POSIX TZ string shown as the custom time zone placeholder.
+const POSIX_TZ_EXAMPLE = 'CET-1CEST,M3.5.0,M10.5.0/3';
 
 const BANKS = [
   { bank: 1, key: 'beecounter_bank1_enabled', gates: '00–07' },
@@ -436,7 +438,7 @@ export function HiveHubTrafficCard({
                 <Input
                   id="traffic-timezone-custom"
                   value={night.tzCustom}
-                  placeholder="CET-1CEST,M3.5.0,M10.5.0/3"
+                  placeholder={POSIX_TZ_EXAMPLE}
                   maxLength={64}
                   onChange={event =>
                     patchNight({ tzCustom: event.target.value })
