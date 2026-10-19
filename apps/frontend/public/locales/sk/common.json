@@ -1371,7 +1371,9 @@
         "empty": "Žiadne zvukové nahrávky"
     },
     "fab": {
-        "addInspection": "Pridať prehliadku"
+        "addInspection": "Pridať prehliadku",
+        "open": "Otvoriť rýchle akcie",
+        "close": "Zavrieť rýchle akcie"
     },
     "qrScanner": {
         "title": "Naskenovať QR kód",

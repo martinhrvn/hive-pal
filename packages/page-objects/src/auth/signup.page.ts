@@ -30,13 +30,23 @@ export class SignupPage {
     await this.page.goto('/register');
   }
 
-  /** Fill every required field (including the privacy consent) and submit. */
-  async signUp(email: string, password: string, displayName: string) {
+  /** Fill in the account details (both password fields get `password`). */
+  async fillDetails(email: string, password: string, displayName: string) {
     await this.emailField.fill(email);
     await this.passwordField.fill(password);
     await this.confirmPasswordField.fill(password);
     await this.displayNameField.fill(displayName);
+  }
+
+  /** Tick the privacy consent and submit the form. */
+  async acceptAndSubmit() {
     await this.privacyCheckbox.check();
     await this.signUpButton.click();
+  }
+
+  /** Fill every required field (including the privacy consent) and submit. */
+  async signUp(email: string, password: string, displayName: string) {
+    await this.fillDetails(email, password, displayName);
+    await this.acceptAndSubmit();
   }
 }

@@ -5,6 +5,8 @@ export class ApiaryFormPage {
   readonly nameInput: Locator;
   readonly locationInput: Locator;
   readonly mapContainer: Locator;
+  /** "Data Driven" or "Subjective" inspections for this apiary. */
+  readonly inspectionTypeSelect: Locator;
   readonly cancelButton: Locator;
   /** "Create Apiary" on the create page, "Edit Apiary" on the edit page. */
   readonly submitButton: Locator;
@@ -14,6 +16,9 @@ export class ApiaryFormPage {
     this.nameInput = page.getByLabel('Name');
     this.locationInput = page.getByLabel('Location');
     this.mapContainer = page.locator('.leaflet-container');
+    this.inspectionTypeSelect = page.getByRole('combobox', {
+      name: 'Inspection Type',
+    });
     this.cancelButton = page.getByRole('button', { name: 'Cancel' });
     this.submitButton = page.getByRole('button', {
       name: /^(Create|Edit) Apiary$/,
@@ -39,6 +44,11 @@ export class ApiaryFormPage {
       // Click on the map to set a location (needs map tiles; avoid in smoke tests)
       await this.mapContainer.click({ position: { x: 100, y: 100 } });
     }
+  }
+
+  /** Click the middle of the map to drop the location pin there. */
+  async dropPin() {
+    await this.mapContainer.click();
   }
 
   async submitForm() {

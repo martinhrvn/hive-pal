@@ -38,15 +38,20 @@ export class HiveFormPage {
     await this.installationDateButton.click();
   }
 
-  /** Select a day of the currently shown month in the date picker (react-day-picker v8). */
+  /**
+   * Select a day of the currently shown month in the date picker
+   * (react-day-picker v10: each day cell carries `data-day="yyyy-MM-dd"`).
+   */
   async selectDate(date: Date) {
     await this.openCalendar();
-    const day = String(date.getDate());
+    const iso = [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0'),
+    ].join('-');
     await this.page
-      .locator('button[name="day"]:not(.day-outside)', {
-        hasText: new RegExp('^' + day + '$'),
-      })
-      .first()
+      .locator(`[role="gridcell"][data-day="${iso}"]`)
+      .getByRole('button')
       .click();
   }
 

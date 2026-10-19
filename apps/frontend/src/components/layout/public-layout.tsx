@@ -4,6 +4,7 @@ import { BookOpen, Beaker, Bug, Waypoints, Microscope } from 'lucide-react';
 import { GithubIcon } from '@/components/icons/github-icon';
 import { Button } from '@/components/ui/button';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
+import { LanguageMenu } from '@/components/language-menu';
 
 const TOOL_LINKS = [
   {
@@ -71,6 +72,7 @@ export const PublicLayout = () => {
               </a>
             </nav>
             <div className="flex items-center gap-2">
+              <LanguageMenu className="text-gray-600 hover:bg-gray-900/5 hover:text-gray-900" />
               <Button variant="outline" size="sm" asChild>
                 <Link to="/login">{t('publicLayout.signIn')}</Link>
               </Button>

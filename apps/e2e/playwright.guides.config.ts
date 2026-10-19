@@ -13,10 +13,17 @@ import { defineConfig, devices } from '@playwright/test';
  */
 const GUIDE = !!process.env.GUIDE && process.env.GUIDE !== '0';
 
+// Sized for YouTube: the video is recorded at viewport × deviceScaleFactor.
+// Headless Chromium only hands the screencast device-pixel frames when the
+// scale is set at launch (--force-device-scale-factor); the context's
+// deviceScaleFactor alone gives viewport-sized frames.
+//   desktop  1280×720 @1.5 → 1920×1080 (16:9)
+//   mobile    360×640 @3   → 1080×1920 (9:16, Shorts)
 const PASSES = {
-  desktop: { viewport: { width: 1280, height: 800 } },
+  desktop: { viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1.5 },
   mobile: {
-    viewport: { width: 390, height: 844 },
+    viewport: { width: 360, height: 640 },
+    deviceScaleFactor: 3,
     isMobile: true,
     hasTouch: true,
   },
@@ -56,10 +63,16 @@ export default defineConfig({
     locale: LOCALES[locale] ?? locale,
     timezoneId: 'Europe/Prague',
     contextOptions: { reducedMotion: 'reduce' },
-    launchOptions: { slowMo: GUIDE ? 120 : 0 },
   },
   projects: passes.map(pass => ({
     name: `guides-${pass}`,
-    use: { ...devices['Desktop Chrome'], ...PASSES[pass] },
+    use: {
+      ...devices['Desktop Chrome'],
+      ...PASSES[pass],
+      launchOptions: {
+        slowMo: GUIDE ? 120 : 0,
+        args: [`--force-device-scale-factor=${PASSES[pass].deviceScaleFactor}`],
+      },
+    },
   })),
 });

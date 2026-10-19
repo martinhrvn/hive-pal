@@ -143,7 +143,7 @@ export const HivesLayout = ({
     e.preventDefault();
     const hiveId = e.dataTransfer.getData('text/plain');
     if (hiveId) {
-      handleDropHive(hiveId, row, col);
+      void handleDropHive(hiveId, row, col);
     }
   };
 
@@ -155,6 +155,9 @@ export const HivesLayout = ({
       return (
         <div
           key={key}
+          data-testid="layout-cell"
+          data-row={row}
+          data-col={col}
           className="relative group"
           draggable
           onDragStart={e => {
@@ -172,6 +175,7 @@ export const HivesLayout = ({
             variant="ghost"
             size="icon"
             className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-background shadow-sm border"
+            aria-label={t('layout.removeFromLayout', { name: hive.name })}
             onClick={() => handleRemoveHivePosition(hive.id)}
           >
             <X className="h-3 w-3" />
@@ -184,6 +188,9 @@ export const HivesLayout = ({
     return (
       <div
         key={key}
+        data-testid="layout-cell"
+        data-row={row}
+        data-col={col}
         className="min-w-[120px] min-h-[80px] border border-dashed border-muted-foreground/20 rounded-md hover:border-muted-foreground/30 hover:bg-muted/20 transition-all flex items-center justify-center"
         onDragOver={handleDragOver}
         onDrop={e => handleDrop(e, row, col)}
@@ -220,7 +227,7 @@ export const HivesLayout = ({
 
       {/* Unpositioned hives */}
       {unpositionedHives.length > 0 && (
-        <Card className="p-4">
+        <Card className="p-4" data-testid="unpositioned-hives">
           <h3 className="text-sm font-medium text-muted-foreground mb-3">
             {t('layout.unpositionedHives')}
           </h3>

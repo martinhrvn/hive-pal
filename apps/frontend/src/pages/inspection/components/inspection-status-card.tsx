@@ -68,8 +68,8 @@ export const InspectionStatusCard = ({
       className={cn(
         '@container/status rounded-xl border px-4 @sm/status:px-5 py-3 flex flex-col @sm/status:flex-row @sm/status:items-center gap-3 @sm/status:gap-4',
         isOverdue
-          ? 'border-red-300/70 bg-red-50/70 dark:border-red-900/60 dark:bg-red-950/30'
-          : 'border-amber-300/70 bg-amber-50/70 dark:border-amber-900/60 dark:bg-amber-950/30',
+          ? 'border-red-200 bg-red-50/70 dark:border-red-900/60 dark:bg-red-950/30'
+          : 'border-amber-200 bg-amber-50/70 dark:border-amber-900/60 dark:bg-amber-950/30',
       )}
     >
       <div className="flex items-center gap-2.5 min-w-0 flex-1">

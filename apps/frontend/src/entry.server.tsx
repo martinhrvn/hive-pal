@@ -32,8 +32,12 @@ import { DEFAULT_LANGUAGE } from '@/utils/language-utils';
 // `react-router build`/`dev` run from the frontend package directory.
 const LOCALES_DIR = path.resolve(process.cwd(), 'public', 'locales');
 
+// The plan embeds the locale files. In dev they are edited while the server
+// runs, and a cached copy would ship stale bundles (new keys render raw), so
+// it is only cached for the build.
 let cachedPlan: PrerenderPlan | undefined;
 function getPlan(): PrerenderPlan {
+  if (import.meta.env.DEV) return buildPrerenderPlan(LOCALES_DIR);
   cachedPlan ??= buildPrerenderPlan(LOCALES_DIR);
   return cachedPlan;
 }

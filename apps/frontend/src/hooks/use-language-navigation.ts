@@ -59,8 +59,14 @@ export function useLocalizedPath(): (neutralPath: string) => string {
  * URL (so the prefixed URLs become the canonical browsing path and SEO signals
  * consolidate there). On app/protected pages it only changes the i18next
  * language and persists the choice — URLs stay language-neutral, as before.
+ *
+ * Pass `publicChrome` from components that only render for logged-out visitors
+ * (the public page headers): there the bare `/` is the landing page, so it is
+ * localized to `/<lang>` as well.
  */
-export function useLanguageNavigation(): (code: string) => void {
+export function useLanguageNavigation({
+  publicChrome = false,
+}: { publicChrome?: boolean } = {}): (code: string) => void {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -76,7 +82,10 @@ export function useLanguageNavigation(): (code: string) => void {
         // localStorage may be unavailable — ignore.
       }
 
-      if (isLanguageNavigablePath(location.pathname)) {
+      if (
+        isLanguageNavigablePath(location.pathname) ||
+        (publicChrome && location.pathname === '/')
+      ) {
         const neutral = stripLanguagePrefix(location.pathname);
         const target = buildLocalizedPath(neutral, normalized);
         if (target !== location.pathname) {
@@ -84,6 +93,13 @@ export function useLanguageNavigation(): (code: string) => void {
         }
       }
     },
-    [i18n, navigate, location.pathname, location.search, location.hash],
+    [
+      i18n,
+      navigate,
+      publicChrome,
+      location.pathname,
+      location.search,
+      location.hash,
+    ],
   );
 }

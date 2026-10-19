@@ -37,7 +37,13 @@ export type StageCommand =
   | { op: 'spot'; hole: Box; text: string; bubble: BubblePlacement }
   /** Fade out the spot's bubble now and the dimming after LINGER_MS. */
   | { op: 'releaseSpot' }
-  | { op: 'caption'; text: string; maxWidth: number; fontSize: number }
+  | {
+      op: 'caption';
+      text: string;
+      maxWidth: number;
+      fontSize: number;
+      bottom: number;
+    }
   | { op: 'ring'; box: Box }
   /** Move the cursor to a point; `click` adds a ripple when it arrives. */
   | { op: 'cursor'; x: number; y: number; click: boolean }
@@ -45,6 +51,17 @@ export type StageCommand =
 
 function fontSize(viewport: Viewport): number {
   return viewport.width < 600 ? 18 : 22;
+}
+
+/**
+ * Space kept free at the bottom of the frame. In a portrait (Shorts) video
+ * YouTube lays the title, channel and buttons over the lower part of the
+ * frame, so captions stay above it there.
+ */
+export function bottomInset(viewport: Viewport): number {
+  return viewport.height > viewport.width
+    ? Math.round(viewport.height * 0.28)
+    : 28;
 }
 
 export function spotCommand(
@@ -61,14 +78,16 @@ export function spotCommand(
     Math.ceil(text.length / (maxWidth / (size * 0.55))) * size * 1.35 + 30;
 
   // Below the element, above it when there is no room below, or pinned to
-  // the bottom of the frame for elements taller than the viewport.
+  // the bottom of the frame for elements taller than the viewport. All of
+  // it above the bottom inset.
+  const inset = bottomInset(viewport);
   let vertical: { top?: number; bottom?: number };
-  if (hole.y + hole.height + gap + bubbleHeight <= viewport.height - 8) {
+  if (hole.y + hole.height + gap + bubbleHeight <= viewport.height - inset) {
     vertical = { top: hole.y + hole.height + gap };
   } else if (hole.y - gap - bubbleHeight >= 8) {
     vertical = { bottom: viewport.height - hole.y + gap };
   } else {
-    vertical = { bottom: 28 };
+    vertical = { bottom: inset };
   }
   const centre = hole.x + hole.width / 2;
   const left = Math.min(
@@ -89,6 +108,7 @@ export function captionCommand(text: string, viewport: Viewport): StageCommand {
     text,
     maxWidth: Math.min(900, viewport.width - 32),
     fontSize: fontSize(viewport),
+    bottom: bottomInset(viewport),
   };
 }
 
@@ -288,6 +308,7 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
           caption.textContent = cmd.text;
           caption.style.maxWidth = `${cmd.maxWidth}px`;
           caption.style.fontSize = `${cmd.fontSize}px`;
+          caption.style.bottom = `${cmd.bottom}px`;
         });
         show(caption);
         return sleep(timing.fade);

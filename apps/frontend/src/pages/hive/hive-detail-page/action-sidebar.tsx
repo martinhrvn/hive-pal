@@ -63,7 +63,7 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
     <div className="space-y-4">
       {/* Active Alerts */}
       {hive?.alerts && hive.alerts.length > 0 && (
-        <ActionSidebarContainer className="border-amber-300/70 dark:border-amber-900/50 bg-amber-50/40 dark:bg-amber-950/20 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_22px_-14px_rgba(217,119,6,0.20)]">
+        <ActionSidebarContainer className="border-amber-200 dark:border-amber-900/50 bg-amber-50/40 dark:bg-amber-950/20 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_22px_-14px_rgba(217,119,6,0.20)]">
           <ActionSidebarGroup
             title={
               <span className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300">

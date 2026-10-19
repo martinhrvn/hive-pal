@@ -2706,7 +2706,9 @@
     "empty": "No audio recordings"
   },
   "fab": {
-    "addInspection": "Add Inspection"
+    "addInspection": "Add Inspection",
+    "open": "Open quick actions",
+    "close": "Close quick actions"
   },
   "qrScanner": {
     "title": "Scan QR Code",

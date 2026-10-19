@@ -29,12 +29,15 @@ import { useLanguageNavigation } from '@/hooks/use-language-navigation';
 interface LanguageSwitcherProps {
   variant?: 'sidebar' | 'select' | 'buttons';
   className?: string;
+  /** Id for the select trigger, so a `<Label htmlFor>` can point at it. */
+  id?: string;
   onLanguageChange?: (code: string) => void;
 }
 
 export function LanguageSwitcher({
   variant = 'sidebar',
   className,
+  id,
   onLanguageChange,
 }: LanguageSwitcherProps) {
   const { t, i18n } = useTranslation('common');
@@ -53,7 +56,7 @@ export function LanguageSwitcher({
   if (variant === 'select') {
     return (
       <Select value={currentLanguage} onValueChange={handleLanguageChange}>
-        <SelectTrigger className={className}>
+        <SelectTrigger id={id} className={className}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

@@ -4,6 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { GithubIcon } from '@/components/icons/github-icon';
 import { cn } from '@/lib/utils';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
+import { LanguageMenu } from '@/components/language-menu';
 import { MarketingButton } from './marketing-button';
 import { DOCS_URL, GITHUB_URL, MARKETING_FOCUS } from './marketing-constants';
 
@@ -151,6 +152,7 @@ export function MarketingHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <LanguageMenu className="text-stone-700 hover:bg-stone-900/5 hover:text-stone-900" />
           <MarketingButton
             variant="ghost"
             asChild

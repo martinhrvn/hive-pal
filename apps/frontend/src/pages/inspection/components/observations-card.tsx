@@ -161,7 +161,7 @@ const FlagChip = ({
         'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm',
         good
           ? 'border-emerald-200 bg-emerald-50/60 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-300'
-          : 'border-amber-300/70 bg-amber-50/60 text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-300',
+          : 'border-amber-200 bg-amber-50/60 text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-300',
       )}
     >
       <span
@@ -412,7 +412,7 @@ export const ObservationsCard = ({
                 <Badge
                   key={obs}
                   variant="outline"
-                  className="border-red-300/70 bg-red-50/50 text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300"
+                  className="border-red-200 bg-red-50/50 text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300"
                 >
                   {t(`observations.reminder.${obs}`, {
                     defaultValue: obs.replace(/_/g, ' '),

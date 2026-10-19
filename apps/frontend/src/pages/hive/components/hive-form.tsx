@@ -19,7 +19,8 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { CalendarIcon, ChevronDown, ChevronUp } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { parseISO } from 'date-fns';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils.ts';
 import { Textarea } from '@/components/ui/textarea';
@@ -84,6 +85,10 @@ const hiveSchema = z.object({
 
 export type HiveFormData = z.infer<typeof hiveSchema>;
 
+/** The API sends dates as ISO strings; the form works with Date objects. */
+const toDate = (value: Date | string): Date =>
+  typeof value === 'string' ? parseISO(value) : value;
+
 type HiveFormProps = {
   hiveId?: string;
   onSubmit?: (data: HiveFormData) => void;
@@ -96,6 +101,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
   isLoading,
 }) => {
   const { t } = useTranslation(['hive', 'common']);
+  const { formatDate } = useDateFormat();
   const navigate = useNavigate();
   const { apiaries, activeApiaryId } = useApiary();
   const isEditMode = !!hiveId;
@@ -135,9 +141,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
         apiaryId: existingHive.apiaryId || '',
         status: existingHive.status,
         installationDate: existingHive.installationDate
-          ? typeof existingHive.installationDate === 'string'
-            ? parseISO(existingHive.installationDate)
-            : existingHive.installationDate
+          ? toDate(existingHive.installationDate)
           : new Date(),
         settings: existingHive.settings,
         featurePhotoId: existingHive.featurePhotoId ?? null,
@@ -262,24 +266,24 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('hive:fields.apiary')}</FormLabel>
-              <FormControl>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  defaultValue={activeApiaryId ?? field.value}
-                >
-                  <SelectTrigger className={'w-full'}>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+                defaultValue={activeApiaryId ?? field.value}
+              >
+                <FormControl>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder={t('hive:form.selectHive')} />
                   </SelectTrigger>
-                  <SelectContent>
-                    {apiaryOptions?.map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
+                </FormControl>
+                <SelectContent>
+                  {apiaryOptions?.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
               <FormMessage />
             </FormItem>
@@ -335,7 +339,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                       )}
                     >
                       {field.value ? (
-                        format(field.value, 'PPP')
+                        formatDate(field.value)
                       ) : (
                         <span>{t('hive:form.pickDate')}</span>
                       )}

@@ -185,6 +185,7 @@ export const UserSettingsPage = () => {
               <div className="space-y-2">
                 <Label htmlFor="language">{t('actions.language')}</Label>
                 <LanguageSwitcher
+                  id="language"
                   variant="select"
                   onLanguageChange={handleLanguageChange}
                 />

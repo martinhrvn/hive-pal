@@ -15,7 +15,7 @@ pnpm test:guides       # CI mode: the guides as plain e2e tests
 pnpm test:e2e          # smoke suite + guides
 pnpm guides:record     # GUIDE=1: record every guide to out/guides/
 pnpm guides:record harvest            # one guide only
-GUIDE_PASSES=desktop,mobile pnpm guides:record   # also a 390×844 pass
+GUIDE_PASSES=desktop,mobile pnpm guides:record   # also a portrait (Shorts) pass
 ```
 
 The target app comes from `BASE_URL` (default `http://localhost:5173`, i.e. `pnpm dev`).
@@ -103,7 +103,9 @@ changes. Other inputs (dates, selects) keep the instant `fill`.
 - **Mix show, do and configure.** Point at what the page tells you, perform the
   main task end to end through the page object, and point at settings without changing them.
 - **Short, friendly captions:** under ~80 characters, written for beekeepers, not developers.
-  Aim for 60–90 seconds per guide.
+- **Length follows the format.** A full guide (desktop) has no length limit: it
+  runs as long as the flow needs, and chapters let viewers skip around. A short
+  (mobile pass, one task only) should stay around 60 seconds.
 - **One guide per file**; the file name is the output slug.
 - Edge cases and validation belong in a normal spec (e.g.
   `tests/smoke/extended/harvests.spec.ts`), not in a guide.
@@ -118,8 +120,50 @@ seeded through the API by the `demo` fixture in `guide.fixture.ts`:
 
 Need more? Extend `seedDemo` (shared by all guides) or seed extra data through
 `demo.user.api` at the top of your guide. The run uses a fixed viewport
-(1280×800), `reducedMotion: 'reduce'`, the Europe/Prague time zone, and the
+(1280×720), `reducedMotion: 'reduce'`, the Europe/Prague time zone, and the
 smoke fixtures' blocking of third-party requests.
+
+A guide that does not request `demo` starts logged out with no account at all:
+`getting-started.guide.ts` signs up through the UI and builds its apiary on
+screen.
+
+### Network in guides
+
+- **Map tiles:** with `GUIDE=1`, OpenStreetMap tiles and the Leaflet marker icons are let through the
+  third-party block (`guideTiles` fixture), so maps in the video are real. In CI
+  mode they stay blocked; the map is grey but still takes clicks.
+- **Weather:** real weather comes from the backend's scheduled OpenMeteo fetch
+  (every 3 hours, the forecast daily), so a new apiary has none. `weather-mock.ts`
+  serves a fixed spring forecast instead (`mockWeather(page, apiaryId)`);
+  `allowStoredWeather(page)` lets the app read the backend's (empty) weather in
+  the meantime. Both work the same in CI mode.
+
+## Guides
+
+| File                       | What it shows                                                                                |
+| -------------------------- | -------------------------------------------------------------------------------------------- |
+| `getting-started.guide.ts` | Sign-up, the apiary switcher, apiary location, first hives, hive layout, settings, dashboard |
+| `harvest.guide.ts`         | Recording a honey harvest from frames to finalized weights                                   |
+| `quick-check.guide.ts`     | Short: a quick check at the hive (tags, note, timeline), portrait                            |
+
+`getting-started` skips the mobile pass: arranging hives on the layout is
+native drag and drop, which needs a mouse.
+
+### Shorts
+
+A short is a guide about one task, recorded in the mobile pass only (portrait,
+for Shorts/Reels). It still runs on desktop in CI, so it skips the desktop pass
+in guide mode only:
+
+```ts
+test.skip(
+  GUIDE_MODE && testInfo.project.name !== 'guides-mobile',
+  'short: recorded in the mobile pass only',
+);
+```
+
+Record it with `GUIDE_PASSES=mobile pnpm guides:record quick-check`; the output
+lands in `out/guides/quick-check-mobile/`.
 
 ## Captions and translation
 
@@ -156,8 +200,19 @@ To add another engine, implement `VoiceProvider` and register it in `voiceFromEn
 
 ## Adding a viewport pass
 
-Passes are defined in `playwright.guides.config.ts` (`PASSES`): `desktop` (1280×800)
-and `mobile` (390×844, touch). `GUIDE_PASSES=desktop,mobile` records both; CI mode
-always runs desktop only. The mobile layout hides the sidebar behind a menu, so a
+Passes are defined in `playwright.guides.config.ts` (`PASSES`), sized for YouTube:
+
+| Pass      | Viewport (CSS px) | Scale | Video              |
+| --------- | ----------------- | ----- | ------------------ |
+| `desktop` | 1280×720          | 1.5×  | 1920×1080 (16:9)   |
+| `mobile`  | 360×640, touch    | 3×    | 1080×1920 (Shorts) |
+
+The page lays out at the viewport size and renders at the scale, so the video
+is sharp. The scale is also passed to Chromium as `--force-device-scale-factor`:
+without it, headless Chromium records viewport-sized frames. In portrait,
+captions keep the bottom 28% of the frame free, where YouTube draws the Short's
+title and buttons (`bottomInset` in `overlays.ts`).
+
+`GUIDE_PASSES=desktop,mobile` records both; CI mode always runs desktop only. The mobile layout hides the sidebar behind a menu, so a
 guide that navigates through the sidebar needs a page-object method that opens the
 menu first.

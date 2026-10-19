@@ -73,36 +73,32 @@ export const FloatingActionButton = () => {
 
   const actions = getContextualActions();
 
-  const handleMainClick = () => {
-    if (actions.length === 1) {
-      actions[0].onClick();
-    } else {
-      setIsOpen(!isOpen);
-    }
-  };
-
-  const handleBackdropClick = () => {
-    setIsOpen(false);
-  };
-
   return (
     <>
       <QrScannerDialog open={scannerOpen} onOpenChange={setScannerOpen} />
 
-      {/* Backdrop */}
+      {/* Backdrop: a click outside closes the menu */}
       {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 md:bg-transparent z-40"
-          onClick={handleBackdropClick}
+        <button
+          type="button"
+          tabIndex={-1}
+          aria-hidden="true"
+          className="fixed inset-0 bg-black/20 md:bg-transparent z-40 cursor-default"
+          onClick={() => setIsOpen(false)}
         />
       )}
 
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-none">
+      <div
+        data-testid="fab"
+        className="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-none"
+      >
         {/* Action buttons */}
         <div
+          data-testid="fab-actions"
+          inert={!isOpen}
           className={cn(
             'flex flex-col items-end gap-3 mb-3 bg-background/95 backdrop-blur-sm rounded-2xl p-3 shadow-lg border border-border transition-all duration-300',
-            isOpen && actions.length > 1
+            isOpen
               ? 'opacity-100 pointer-events-auto'
               : 'opacity-0 pointer-events-none',
           )}
@@ -112,7 +108,7 @@ export const FloatingActionButton = () => {
               key={action.id}
               className={cn(
                 'transform transition-all duration-300 ease-out',
-                isOpen && actions.length > 1
+                isOpen
                   ? 'translate-y-0 opacity-100 scale-100'
                   : 'translate-y-4 opacity-0 scale-95 pointer-events-none',
               )}
@@ -132,6 +128,7 @@ export const FloatingActionButton = () => {
                     'h-12 w-12 rounded-full shadow-lg border-0',
                     action.color || 'bg-primary hover:bg-primary/90',
                   )}
+                  aria-label={action.label}
                   onClick={action.onClick}
                 >
                   {action.icon}
@@ -146,17 +143,13 @@ export const FloatingActionButton = () => {
           className={cn(
             'h-14 w-14 rounded-full shadow-lg transition-all duration-300 pointer-events-auto',
             'bg-primary hover:bg-primary/90',
-            isOpen && actions.length > 1 && 'rotate-45',
+            isOpen && 'rotate-45',
           )}
-          onClick={handleMainClick}
+          aria-label={t(isOpen ? 'fab.close' : 'fab.open')}
+          aria-expanded={isOpen}
+          onClick={() => setIsOpen(open => !open)}
         >
-          {isOpen && actions.length > 1 ? (
-            <X className="h-6 w-6" />
-          ) : actions.length === 1 ? (
-            actions[0].icon
-          ) : (
-            <Plus className="h-6 w-6" />
-          )}
+          {isOpen ? <X className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
         </Button>
       </div>
     </>

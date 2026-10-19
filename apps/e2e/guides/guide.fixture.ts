@@ -189,7 +189,14 @@ export class Guide {
   // -------------------------------------------------------------------------
 
   private viewport(): Viewport {
-    return this.page.viewportSize() ?? { width: 1280, height: 800 };
+    return this.page.viewportSize() ?? { width: 1280, height: 720 };
+  }
+
+  /** The video is recorded in device pixels, so a 1.5× page gives a sharp 1080p video. */
+  private async videoSize(): Promise<Viewport> {
+    const { width, height } = this.viewport();
+    const dpr = await this.page.evaluate(() => window.devicePixelRatio);
+    return { width: Math.round(width * dpr), height: Math.round(height * dpr) };
   }
 
   /** Start the screencast on first use, so setup navigation is not recorded. */
@@ -205,7 +212,7 @@ export class Guide {
     const narration = new Narration(this.testInfo.title);
     await this.page.screencast.start({
       path: path.join(dir, 'video.webm'),
-      size: this.viewport(),
+      size: await this.videoSize(),
     });
     narration.startClock();
     this.recording = { narration, dir, voice };
@@ -393,6 +400,7 @@ export const test = smokeTest.extend<{
   g: Guide;
   quietApp: void;
   guideActions: void;
+  guideTiles: void;
 }>({
   freshUserName: 'Demo Beekeeper',
 
@@ -405,17 +413,16 @@ export const test = smokeTest.extend<{
           JSON.stringify([{ version: '999.0.0', dismissedAt: '2026-01-01' }]),
         );
       }, RELEASE_NOTES_KEY);
-      // The React Query devtools button (dev builds only) is not part of the app.
-      if (GUIDE_MODE) {
-        await context.addInitScript(() => {
-          document.addEventListener('DOMContentLoaded', () => {
-            const style = document.createElement('style');
-            style.textContent =
-              '.tsqd-open-btn-container { display: none !important; }';
-            document.head.append(style);
-          });
+      // The React Query devtools button (dev builds only) is not part of the
+      // app: keep it out of the video, and from covering the FAB it overlaps.
+      await context.addInitScript(() => {
+        document.addEventListener('DOMContentLoaded', () => {
+          const style = document.createElement('style');
+          style.textContent =
+            '.tsqd-open-btn-container { display: none !important; }';
+          document.head.append(style);
         });
-      }
+      });
       await use();
     },
     { auto: true },
@@ -474,11 +481,36 @@ export const test = smokeTest.extend<{
     { auto: true },
   ],
 
+  /**
+   * Auto fixture, guide mode only: let OpenStreetMap tiles and the Leaflet
+   * marker icons (served from unpkg) through the third-party block so maps in
+   * the video are not grey. CI stays offline
+   * (the map still takes clicks). Routes added later win, hence the
+   * dependency on blockThirdParty.
+   */
+  guideTiles: [
+    async ({ page, blockThirdParty: _block }, use) => {
+      if (GUIDE_MODE) {
+        await page.route(/\.tile\.openstreetmap\.org\//, route =>
+          route.continue(),
+        );
+        await page.route(
+          /\/\/unpkg\.com\/leaflet@[^/]+\/dist\/images\//,
+          route => route.continue(),
+        );
+      }
+      await use();
+    },
+    { auto: true },
+  ],
+
   demo: async ({ freshUser }, use) => {
     await use(await seedDemo(freshUser));
   },
 
-  g: async ({ page, demo: _demo }, use, testInfo) => {
+  // Not tied to `demo`: a guide that starts logged out (sign-up) just
+  // doesn't request it.
+  g: async ({ page }, use, testInfo) => {
     const guide = new Guide(page, testInfo);
     await use(guide);
     // Keep the partial video of a failed run: it shows where the flow broke.

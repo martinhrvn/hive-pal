@@ -297,7 +297,8 @@
       "honey": "Honey",
       "feeder": "Feeder"
     },
-    "rowLabel": "Row {{number}}"
+    "rowLabel": "Row {{number}}",
+    "removeFromLayout": "Remove {{name}} from the layout"
   },
   "equipment": {
     "currentHives": "Current Hives",

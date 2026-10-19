@@ -56,7 +56,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       await wizard.selectHive({ name: 'Hive 3', frames: 3 });
     });
     await expect(wizard.selectionSummary).toHaveText(
-      'Selected: 2 hive(s) • 8 total frames',
+      'Selected: 2 hives • 8 total frames',
     );
     await g.point(wizard.selectionSummary, 'The summary keeps count for you');
     await g.do('Add a note if you like', () =>

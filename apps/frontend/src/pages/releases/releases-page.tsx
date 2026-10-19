@@ -10,6 +10,7 @@ import { ArrowLeft, Home } from 'lucide-react';
 import { GithubIcon } from '@/components/icons/github-icon';
 import { PublicMeta } from '@/components/seo/public-meta';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
+import { LanguageMenu } from '@/components/language-menu';
 
 export function ReleasesPage() {
   const { t } = useTranslation('common');
@@ -75,7 +76,8 @@ export function ReleasesPage() {
                 {t('releasesPage.github')}
               </a>
             </nav>
-            <div className="flex space-x-4">
+            <div className="flex items-center space-x-4">
+              <LanguageMenu className="text-gray-600 hover:bg-gray-900/5 hover:text-gray-900" />
               <Button variant="outline" asChild>
                 <Link to="/login">{t('releasesPage.signIn')}</Link>
               </Button>

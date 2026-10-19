@@ -245,7 +245,8 @@
       "honey": "Medník",
       "feeder": "Kŕmidlo"
     },
-    "rowLabel": "Rad {{number}}"
+    "rowLabel": "Rad {{number}}",
+    "removeFromLayout": "Odstrániť {{name}} z rozloženia"
   },
   "equipment": {
     "currentHives": "Aktuálne úle",

@@ -81,19 +81,24 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
     },
   );
 
+  // A refetch (e.g. after a cache invalidation) re-runs this; keep what the
+  // user already changed instead of wiping it with the server values.
   useEffect(() => {
     if (existingApiary) {
-      form.reset({
-        name: existingApiary.name,
-        location: existingApiary.location || '',
-        latitude: existingApiary.latitude ?? undefined,
-        longitude: existingApiary.longitude ?? undefined,
-        featurePhotoId: existingApiary.featurePhotoId ?? null,
-        settings: {
-          inspectionType:
-            existingApiary.settings?.inspectionType ?? 'data_driven',
+      form.reset(
+        {
+          name: existingApiary.name,
+          location: existingApiary.location || '',
+          latitude: existingApiary.latitude ?? undefined,
+          longitude: existingApiary.longitude ?? undefined,
+          featurePhotoId: existingApiary.featurePhotoId ?? null,
+          settings: {
+            inspectionType:
+              existingApiary.settings?.inspectionType ?? 'data_driven',
+          },
         },
-      });
+        { keepDirtyValues: true },
+      );
       if (existingApiary.featurePhotoUrl) {
         setFeaturePhotoUrl(existingApiary.featurePhotoUrl);
       }
@@ -218,8 +223,8 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
                 : undefined
             }
             onLocationSelect={({ latitude, longitude }) => {
-              form.setValue('latitude', latitude);
-              form.setValue('longitude', longitude);
+              form.setValue('latitude', latitude, { shouldDirty: true });
+              form.setValue('longitude', longitude, { shouldDirty: true });
             }}
           />
         </Suspense>
