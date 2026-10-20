@@ -5,7 +5,9 @@
         "caption": "En liste af alle dine bigårde",
         "searchPlaceholder": "Søg i bigårde...",
         "noApiaries": "Ingen bigårde fundet",
-        "noApiariesMatching": "Ingen bigårde fundet, der indeholder \"{{searchTerm}}\""
+        "noApiariesMatching": "Ingen bigårde fundet, der indeholder \"{{searchTerm}}\"",
+        "sharedEdit": "Delt - rediger",
+        "sharedView": "Delt - vis"
     },
     "fields": {
         "name": "Navn",
@@ -41,7 +43,8 @@
         "tabs": {
             "overview": "Oversigt",
             "hives": "Stader",
-            "location": "Placering"
+            "location": "Placering",
+            "sharing": "Deling"
         },
         "apiaryInformation": "Bigårds information",
         "locationMap": "Kort over lokation",
@@ -95,5 +98,12 @@
             "subjective": "Subjektiv",
             "description": "Datadreven bruger antal rammer og auto-scoring. Subjektiv bruger en kvalitativ 0-10 vurdering."
         }
+    },
+    "roles": {
+        "EDITOR": "Fuld adgang",
+        "VIEWER": "Kun visning"
+    },
+    "join": {
+        "goToDashboard": "Gå til kontrolpanel"
     }
 }
