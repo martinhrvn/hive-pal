@@ -80,7 +80,9 @@
         "syrupCalculator": "Sirups beregner",
         "broodTimeline": "Yngel tidslinie",
         "swarmManagement": "Sværm styring",
-        "hivehub": "HiveHub"
+        "hivehub": "HiveHub",
+        "todos": "Todos",
+        "allTodos": "Alle todos"
     },
     "messages": {
         "confirmDelete": "Er du sikker på at du vil slette denne?",
@@ -1255,6 +1257,32 @@
                 "queenOne": "{{count}} dronning",
                 "queenMany": "{{count}} dronninger"
             }
+        }
+    },
+    "feedTypes": {
+        "title": "Fodertyper",
+        "description": "Egne fodertyper (fx kommerciel invert sirup) med massefylde og sukker indhold. Disse vises i foder oversigten, sammen med standard typer.",
+        "empty": "Der er ikke oprettet egne fodertyper.",
+        "add": "Tilføj fodertype",
+        "name": "Navn",
+        "namePlaceholder": "fx Apiinvert",
+        "form": "Oversigt",
+        "sugarContent": "Sukker indhold (% efter vægt)",
+        "density": "Massefylde (g/ml, kun flydende)",
+        "densityHint": "Indtastes ikke for fast foder — denne indtastes kun som vægt.",
+        "sugarShort": "{{value}} % sukker",
+        "densityShort": "{{value}} g/ml",
+        "saveFailed": "Kunne ikke gemme denne type foder. Findes der måske foder med samme navn?",
+        "deleteFailed": "Kunne ikke slette denne type foder.",
+        "forms": {
+            "SYRUP": "Sirup",
+            "INVERT_SYRUP": "Invert sirup",
+            "FONDANT": "Fondant",
+            "CANDY": "Foderdej",
+            "DRY_SUGAR": "Almindelig sukker",
+            "HONEY": "Honning",
+            "PROTEIN": "Protein foder",
+            "OTHER": "Andre"
         }
     }
 }
