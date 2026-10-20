@@ -10,7 +10,8 @@
     "welcome": {
         "title": "Start din biavls rejse",
         "description": "Velkommen til Hive-Pal, dit digitale stadekort. Nu hjælper vi dig i gang med at oprette din første bigård og stade.",
-        "action": "Lad os komme i gang"
+        "action": "Lad os komme i gang",
+        "logoAlt": "Hive-Pal Logo"
     },
     "apiary": {
         "title": "Opret din første bigård",
@@ -48,13 +49,19 @@
         "noHives": {
             "title": "Endnu ingen stader",
             "description": "Tilføj dit første stade for at kunne starte med at følge det.",
-            "action": "Tilføj dit første stade"
+            "action": "Tilføj dit første stade",
+            "descriptionAll": "Tilføj et stade til en af dine bigårde for at begynde at følge det."
         },
         "noLocation": {
             "title": "Tilføj en placering for vejret",
             "description": "Tilføj din bigårds placering for at få vejrudsigten.",
             "action": "Tilføj placering",
             "dismiss": "Afvis"
+        },
+        "pendingApproval": {
+            "title": "Afventer godkendelse",
+            "description_one": "Du har anmodet om at blive medlem af en bigård. Ejeren vil gennemgå din anmodning snarest.",
+            "description_other": "Du har anmodet om at blive medlem af {{count}} bigårde. Ejeren vil gennemgå din anmodning snarest."
         }
     }
 }
