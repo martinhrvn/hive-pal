@@ -5,16 +5,21 @@
     "create": {
         "title": "Ny dronning",
         "button": "Opret dronning",
-        "success": "Dronning er blevet oprettet"
+        "success": "Dronning er blevet oprettet",
+        "error": "Oprettelse af dronning fejlede"
     },
     "edit": {
         "title": "Rediger dronning",
         "button": "Gem ændringer",
-        "success": "Ændring af dronning er blevet gemt"
+        "success": "Ændring af dronning er blevet gemt",
+        "error": "Opdatering af dronning fejlede"
     },
     "delete": {
         "confirm": "Er du sikker på at du vil slette denne dronning?",
-        "success": "Dronning er blevet slettet"
+        "success": "Dronning er blevet slettet",
+        "title": "Slet denne dronning?",
+        "description": "Dette sletter dronningen permanent, samt hendes historik. Hendes døtre forbliver, bare uden link til hende.",
+        "error": "Sletning af dronning fejlede"
     },
     "fields": {
         "hive": "Stade",
@@ -26,7 +31,21 @@
         "installationDate": "Dato for etablering",
         "replacedDate": "Udskiftet den (Frivilligt)",
         "installedOn": "Tilsat den {{date}}",
-        "via": "fra {{source}}"
+        "via": "fra {{source}}",
+        "name": "Navn",
+        "breeder": "Dronningeavler",
+        "notes": "Noter",
+        "line": "Linie",
+        "mother": "Mor",
+        "matingType": "Parring",
+        "matingStation": "Parringsstation",
+        "matedAt": "Parret på",
+        "installed": "Tilsat",
+        "replaced": "Udskiftet",
+        "cellCappedAt": "Dronningecelle forseglet",
+        "emergedAt": "Krøbet",
+        "expectedEmergence": "Forventet krybetidspunkt",
+        "installedAt": "Tilsat den"
     },
     "colors": {
         "blue": "Blå",
@@ -63,10 +82,17 @@
         "enterMarking": "Indtaste dronning markering",
         "enterSource": "Indtast ophav af dronning",
         "selectStatus": "Vælg status",
-        "pickDate": "Vælg en dato"
+        "pickDate": "Vælg en dato",
+        "enterBreeder": "Hvem har avlet hende",
+        "enterLine": "fx Carnica Troiseck",
+        "selectMother": "Vælg dronningemoderen",
+        "noMother": "Ingen"
     },
     "information": {
         "noActiveQueen": "Ingen aktiv dronning fundet",
         "hasActiveQueen": "Dette stade har allerede en aktiv dronning. Udskiftning af dronning vil markerede den nuværende som udskiftet."
+    },
+    "table": {
+        "status": "Status"
     }
 }
