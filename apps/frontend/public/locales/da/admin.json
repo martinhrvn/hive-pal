@@ -11,7 +11,26 @@
         "apiaries": "Bigårde",
         "hives": "Stader",
         "inspections": "Inspektioner",
-        "lastActivity": "Seneste aktivitet"
+        "lastActivity": "Seneste aktivitet",
+        "type": "Type",
+        "status": "Status",
+        "subject": "Emne",
+        "from": "Fra",
+        "date": "Dato",
+        "widthMm": "Bredde (mm)",
+        "heightMm": "Højde (mm)",
+        "depthMm": "Dybde (mm)",
+        "dimensionsMm": "Dimensioner (mm)",
+        "submitted": "Opdateret",
+        "source": "Kilde",
+        "file": "Fil",
+        "owner": "Ejer",
+        "apiary": "Bigård",
+        "size": "Størrelse",
+        "uploaded": "Uploaded",
+        "prefix": "Prefix",
+        "created": "Oprettet",
+        "lastSeen": "Sidst set"
     },
     "actions": {
         "resetPassword": "Nulstil password"
@@ -63,6 +82,13 @@
             "inspections": "Inspektioner",
             "lastInspection": "Seneste inspektion",
             "noApiaries": "Der blev ikke fundet nogle bigårde for denne bruger"
+        }
+    },
+    "feedback": {
+        "statuses": {
+            "NEW": "Ny",
+            "REVIEWED": "Gennemset",
+            "RESOLVED": "Løst"
         }
     }
 }
