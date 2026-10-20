@@ -66,11 +66,13 @@
         "filterByStatus": "Filtrer på status",
         "allStatuses": "Alle status",
         "noHives": "Ingen stader fundet",
-        "noHivesMatchingBoth": "Ingen {{status}} stader fundet, der indeholder \"{{searchTerm}}\"",
+        "noHivesMatchingBoth": "Ingen stader fundet med status {{status}} der indeholder \"{{searchTerm}}\"",
         "noHivesMatchingSearch": "Ingen stader fundet, der indeholder \"{{searchTerm}}\"",
-        "noHivesWithStatus": "Ingen {{status}} stader fundet",
+        "noHivesWithStatus": "Ingen stader med status {{status}}",
         "clearFilters": "Nulstil filtre",
-        "createFirst": "Opret dit første stade"
+        "createFirst": "Opret dit første stade",
+        "captionFiltered_one": "Viser {{count}} stade med status {{status}}",
+        "captionFiltered_other": "Viser {{count}} stader med status {{status}}"
     },
     "create": {
         "title": "Opret nyt stade",
@@ -78,7 +80,8 @@
     },
     "edit": {
         "title": "Rediger stade",
-        "success": "Ændring af stadet er gemt"
+        "success": "Ændring af stadet er gemt",
+        "error": "Stadet kunne ikke gemmes. Prøv igen."
     },
     "delete": {
         "confirm": "Er du sikker på at du vil slette dette stade?",
@@ -119,7 +122,10 @@
             "warre": "Warré",
             "topBar": "Topbar",
             "custom": "Tilpasset"
-        }
+        },
+        "noFrameSizeSelected": "Rammestørrelse ikke valgt",
+        "noFrameSize": "Ingen rammestørrelse",
+        "builtIn": "Indbygget"
     },
     "card": {
         "showDetails": "Vis detaljer",
@@ -156,7 +162,7 @@
     "manage": {
         "title": "Administrer stade",
         "llmPrompt": "LLM prompt",
-        "removeHive": "Fjern stade"
+        "removeHive": "Arkiver stade"
     },
     "equipment": {
         "currentHives": "Aktuelle stader",
