@@ -10,7 +10,9 @@
         "weatherConditions": "Vejrforhold",
         "notRecorded": "Ikke registreret",
         "yes": "Ja",
-        "no": "Nej"
+        "no": "Nej",
+        "notes": "Noter",
+        "actions": "Handlinger"
     },
     "form": {
         "selectHive": "Vælg et stade",
@@ -179,13 +181,16 @@
         "filterByHive": "Filtrer på stade",
         "allHives": "Alle stader",
         "noInspections": "Ingen inspektioner fundet",
-        "unknownHive": "Ukendt stade"
+        "unknownHive": "Ukendt stade",
+        "broodNestStats": "Yngelleje statistik",
+        "noFrameData": "Ingen data om ramme registreret"
     },
     "status": {
         "scheduled": "Planlagt",
         "completed": "Gennemført",
         "overdue": "Overskredet",
-        "cancelled": "Annuleret"
+        "cancelled": "Annuleret",
+        "unknown": "Ukendt"
     },
     "observations": {
         "title": "Observationer",
