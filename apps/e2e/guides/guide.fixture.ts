@@ -34,6 +34,11 @@ export const TYPING_DELAY_MS = 100;
 export type CueOptions = {
   /** Override the hold time (ms); default is the estimated reading time. */
   holdMs?: number;
+  /**
+   * What the narrator says, when it should be fuller than the caption: the
+   * caption stays short on screen while the voice speaks a whole sentence.
+   */
+  voiceover?: Caption;
 };
 
 export type DoOptions = CueOptions & {
@@ -62,12 +67,13 @@ export class Guide {
   ) {}
 
   /** Full-screen title card. */
-  async chapter(title: Caption, description?: Caption) {
+  async chapter(title: Caption, description?: Caption, opts: CueOptions = {}) {
     const text = caption(title);
     const sub = description === undefined ? undefined : caption(description);
+    const voiceover = opts.voiceover && caption(opts.voiceover);
     if (!GUIDE_MODE) return;
     await this.ensureRecording();
-    const spoken = sub ? `${text}. ${sub}` : text;
+    const spoken = voiceover ?? (sub ? `${text}. ${sub}` : text);
     await this.stage({
       op: 'hide',
       parts: ['spot', 'caption', 'ring', 'cursor'],
@@ -86,7 +92,7 @@ export class Guide {
         ]);
         await this.waitRest(started, holdMs);
       },
-      { spoken, detail: sub },
+      { ...opts, spoken, detail: sub },
     );
   }
 
@@ -136,8 +142,9 @@ export class Guide {
   }
 
   /** Point at several elements in turn. */
-  async tour(stops: [Locator, Caption][], opts: CueOptions = {}) {
-    for (const [target, text] of stops) await this.point(target, text, opts);
+  async tour(stops: [Locator, Caption, CueOptions?][], opts: CueOptions = {}) {
+    for (const [target, text, stopOpts] of stops)
+      await this.point(target, text, { ...opts, ...stopOpts });
   }
 
   /**
@@ -232,9 +239,11 @@ export class Guide {
     const { narration, dir, voice } = this.recording!;
     // Never narrate over skeletons and spinners.
     await this.page.waitForLoadState('networkidle').catch(() => {});
-    const spoken = opts.spoken ?? text;
+    const spoken =
+      opts.spoken ?? (opts.voiceover ? caption(opts.voiceover) : text);
     const entry: Cue = narration.begin(kind, text);
     entry.detail = opts.detail;
+    if (opts.voiceover) entry.spoken = spoken;
     const clip = await voice.synthesize(
       spoken,
       path.join(dir, 'voice'),

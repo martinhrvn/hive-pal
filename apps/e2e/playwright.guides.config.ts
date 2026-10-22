@@ -1,4 +1,19 @@
 import { defineConfig, devices } from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
+import { parseEnv } from 'node:util';
+
+// Voice settings and API keys may live in the git-ignored .env.local. Only
+// those are taken: its BASE_URL points test:smoke:local at the local stack and
+// must not override the recording default below. The shell wins over the file.
+const envLocal = path.join(__dirname, '.env.local');
+if (fs.existsSync(envLocal)) {
+  const vars = parseEnv(fs.readFileSync(envLocal, 'utf8'));
+  for (const [key, value] of Object.entries(vars)) {
+    if (/^(GUIDE_|GEMINI_|OPENAI_|PIPER_)/.test(key) && !(key in process.env))
+      process.env[key] = value;
+  }
+}
 
 /**
  * Living guides (`guides/*.guide.ts`): Playwright specs that double as user
@@ -8,10 +23,16 @@ import { defineConfig, devices } from '@playwright/test';
  *   GUIDE=1         record video, captions.vtt and script.md to out/guides/
  *   GUIDE_PASSES    viewport passes to record, e.g. "desktop,mobile"
  *   GUIDE_LOCALE    caption + browser locale (default en)
- *   GUIDE_VOICE     voiceover provider: none (default) | piper
- *   BASE_URL        target origin (default http://localhost:5173)
+ *   GUIDE_VOICE     voiceover provider: none (default) | piper | openai | gemini
+ *   GUIDE_VOICE_PROFILE  narrator (default) | upbeat | mentor
+ *   BASE_URL        target origin (default: https://preview.hivepal.app when
+ *                   recording, http://localhost:5173 otherwise)
  */
 const GUIDE = !!process.env.GUIDE && process.env.GUIDE !== '0';
+// Recordings show the deployed preview; test runs check the local stack.
+const BASE_URL =
+  process.env.BASE_URL ??
+  (GUIDE ? 'https://preview.hivepal.app' : 'http://localhost:5173');
 
 // Sized for YouTube: the video is recorded at viewport × deviceScaleFactor.
 // Headless Chromium only hands the screencast device-pixel frames when the
@@ -53,7 +74,7 @@ export default defineConfig({
     ['html', { open: 'never', outputFolder: 'playwright-report/guides' }],
   ],
   use: {
-    baseURL: process.env.BASE_URL ?? 'http://localhost:5173',
+    baseURL: BASE_URL,
     headless: true,
     // A renamed button should fail fast, not at the test timeout.
     actionTimeout: 15_000,

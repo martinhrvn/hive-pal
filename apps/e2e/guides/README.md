@@ -18,7 +18,11 @@ pnpm guides:record harvest            # one guide only
 GUIDE_PASSES=desktop,mobile pnpm guides:record   # also a portrait (Shorts) pass
 ```
 
-The target app comes from `BASE_URL` (default `http://localhost:5173`, i.e. `pnpm dev`).
+The target app comes from `BASE_URL`. Recording (`GUIDE=1`) defaults to
+`https://preview.hivepal.app`, so videos show the deployed app; the test runs
+default to `http://localhost:5173` (`pnpm dev`). Set `BASE_URL` to record a
+local change before it is deployed. No account is needed on the target: every
+guide signs up its own throwaway user.
 
 ## Output
 
@@ -79,6 +83,25 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
 Each cue holds for its reading time (12 characters per second, at least 2.5 s);
 pass `{ holdMs }` to override. Nothing in this file waits outside guide mode.
 
+Every call also takes `{ voiceover }`: what the narrator says when it should
+be fuller than the caption. The caption stays short on screen, the voice
+speaks a whole sentence and the cue holds until it ends. Write the
+voiceovers as one continuous script, so lines connect ("This one shows…,"
+→ "and here’s…"), and spell out numbers ("eighteen kilos"). `tour` stops take
+it as a third element, `chapter` as its third argument; script.md lists each
+voiceover under its caption.
+
+```ts
+await g.point(
+  wizard.dateButton,
+  'It’s dated today. Click here to pick another day',
+  {
+    voiceover:
+      'The harvest is dated today. If you took the honey off on another day, click the date and pick the right one.',
+  },
+);
+```
+
 Spotlights and captions are drawn on a "stage" (`overlays.ts`): one element in
 its own shadow root under `<html>`, `aria-hidden` and `pointer-events: none`,
 so locators never see it. Because it is changed rather than replaced, every
@@ -102,7 +125,7 @@ changes. Other inputs (dates, selects) keep the instant `fill`.
   a fact ("the totals are updated") so the guide fails when the fact is no longer true.
 - **Mix show, do and configure.** Point at what the page tells you, perform the
   main task end to end through the page object, and point at settings without changing them.
-- **Short, friendly captions:** under ~80 characters, written for beekeepers, not developers.
+- **Short, friendly captions:** under ~80 characters, written for beekeepers, not developers. Put the fuller explanation in `voiceover`.
 - **Length follows the format.** A full guide (desktop) has no length limit: it
   runs as long as the flow needs, and chapters let viewers skip around. A short
   (mobile pass, one task only) should stay around 60 seconds.
@@ -190,11 +213,59 @@ The default `NoopVoice` produces captions only. With a provider configured:
 - each cue holds for `max(reading time, audio duration)`, so the video waits for the voice;
 - the clips are positioned by cue start time into `narration.wav` and muxed into `video.mp4`.
 
-`PiperVoice` is a stub for the local [Piper](https://github.com/rhasspy/piper) CLI:
+Providers (`GUIDE_VOICE`):
+
+| Value    | Engine                                                                | Settings                                                            |
+| -------- | --------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `gemini` | [Gemini TTS](https://ai.google.dev/gemini-api/docs/speech-generation) | `GEMINI_API_KEY`, `GEMINI_TTS_MODEL` (gemini-2.5-flash-preview-tts) |
+| `openai` | [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech)  | `OPENAI_API_KEY`, `OPENAI_TTS_MODEL` (gpt-4o-mini-tts)              |
+| `piper`  | Local [Piper](https://github.com/rhasspy/piper) CLI (stub)            | `PIPER_MODEL`, `PIPER_BIN`                                          |
+
+Keys and voice settings can go in the git-ignored `apps/e2e/.env.local`; the
+guides config reads only the `GUIDE_*`, `GEMINI_*`, `OPENAI_*` and `PIPER_*`
+variables from it (its `BASE_URL` is for `test:smoke:local`), and the shell
+overrides the file:
 
 ```bash
-GUIDE_VOICE=piper PIPER_MODEL=~/voices/en_GB-alba-medium.onnx pnpm guides:record
+# apps/e2e/.env.local
+GUIDE_VOICE=gemini
+GEMINI_API_KEY=...
 ```
+
+### Voice profiles
+
+`GUIDE_VOICE_PROFILE` picks a narrator: a tone prompt plus a matching voice for
+each engine (`VOICE_PROFILES` in `voice.ts`).
+
+| Profile              | Use                                  | Gemini voice | OpenAI voice |
+| -------------------- | ------------------------------------ | ------------ | ------------ |
+| `narrator` (default) | Full guides: warm, calm, unhurried   | Sulafat      | coral        |
+| `upbeat`             | Shorts: bright, lively, a bit faster | Puck         | nova         |
+| `mentor`             | An experienced beekeeper, relaxed    | Charon       | ash          |
+
+```bash
+pnpm guides:record harvest
+GUIDE_PASSES=mobile GUIDE_VOICE_PROFILE=upbeat pnpm guides:record quick-check
+```
+
+Override one part of a profile with `GUIDE_VOICE_STYLE` (tone prompt; Gemini
+and the gpt-4o OpenAI models), `GEMINI_TTS_VOICE` or `OPENAI_TTS_VOICE`. To add
+a profile, add an entry to `VOICE_PROFILES`.
+
+The cloud providers cache each clip in `out/guides/.voice-cache/`, keyed by
+engine, model, voice, style and text, so re-recording only synthesizes lines
+that changed; delete the folder to regenerate everything.
+
+Each clip is normalized to the same loudness (-16 LUFS) before mixing, since
+separate requests come back several dB apart. Gemini gets a fixed seed and a
+prompt that treats every line as part of one recording session, which keeps
+the voice steadier from line to line.
+
+On a rate limit (429) the cloud providers wait as long as the API asks and
+retry. The Gemini free tier allows only 3 TTS requests a minute, so the first
+recording of a guide is slow and freezes on screen while it waits; run it
+again and every line comes from the cache, giving a smooth video. A key with
+billing enabled avoids the wait.
 
 To add another engine, implement `VoiceProvider` and register it in `voiceFromEnv()`.
 

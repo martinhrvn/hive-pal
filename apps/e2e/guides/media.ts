@@ -5,8 +5,10 @@ import type { VoiceClip } from './voice';
 const run = promisify(execFile);
 
 /**
- * Mix clips into one track, each delayed to its cue start. Returns false
- * when there is nothing to mix or ffmpeg is unavailable.
+ * Mix clips into one track, each delayed to its cue start. Every clip is
+ * first normalized to the same loudness: separate TTS requests come back
+ * several dB apart, which sounds like the narrator moving around the room.
+ * Returns false when there is nothing to mix or ffmpeg is unavailable.
  */
 export async function mixNarration(
   clips: { clip: VoiceClip; startMs: number }[],
@@ -15,7 +17,11 @@ export async function mixNarration(
   if (clips.length === 0 || !(await hasFfmpeg())) return false;
   const inputs = clips.flatMap(c => ['-i', c.clip.file]);
   const delays = clips
-    .map((c, i) => `[${i}]adelay=${c.startMs}:all=1[a${i}]`)
+    .map(
+      (c, i) =>
+        // loudnorm resamples to 192 kHz; bring it back down before mixing.
+        `[${i}]loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000,adelay=${c.startMs}:all=1[a${i}]`,
+    )
     .join(';');
   const labels = clips.map((_, i) => `[a${i}]`).join('');
   await run('ffmpeg', [
