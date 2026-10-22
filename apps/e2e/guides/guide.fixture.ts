@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import type { Locator, Page, TestInfo } from '@playwright/test';
 import {
@@ -12,6 +13,7 @@ import { mixNarration, toMp4 } from './media';
 import { Narration, readingTimeMs, type Cue, type CueKind } from './narration';
 import {
   captionCommand,
+  cardCommand,
   ringCommand,
   spotCommand,
   stage,
@@ -26,6 +28,16 @@ export { t } from './captions';
 
 /** GUIDE=1 records video + narration; otherwise guides run as plain e2e tests. */
 export const GUIDE_MODE = !!process.env.GUIDE && process.env.GUIDE !== '0';
+/**
+ * GUIDE_PREPARE=1 (`pnpm guides:voice`): run the guides as plain tests and
+ * generate every voiceover line into the voice cache, recording nothing.
+ * The recording afterwards takes all lines from the cache, so it never waits
+ * on the TTS engine or its rate limit.
+ */
+export const PREPARE_MODE =
+  !GUIDE_MODE &&
+  !!process.env.GUIDE_PREPARE &&
+  process.env.GUIDE_PREPARE !== '0';
 export const GUIDES_OUT_DIR = path.join(__dirname, '..', 'out', 'guides');
 
 /** Delay between keystrokes when a guide types into a field. */
@@ -40,6 +52,13 @@ export type CueOptions = {
    */
   voiceover?: Caption;
 };
+
+type SpokenOptions = CueOptions & { spoken?: string };
+
+/** What the narrator says for a cue: its voiceover, else the caption. */
+function spokenLine(text: string, opts: SpokenOptions): string {
+  return opts.spoken ?? (opts.voiceover ? caption(opts.voiceover) : text);
+}
 
 export type DoOptions = CueOptions & {
   /** Element to highlight briefly before the action runs. */
@@ -60,20 +79,44 @@ type Recording = {
 export class Guide {
   private recording: Recording | null = null;
   private started = false;
+  private prepareVoice?: VoiceProvider;
+  private prepared = 0;
 
   constructor(
     readonly page: Page,
     private readonly testInfo: TestInfo,
   ) {}
 
-  /** Full-screen title card. */
+  /**
+   * Opening card: the Hive Pal logo, the guide's title and a line about it.
+   * Call it first; it is the video's first frame.
+   */
+  async intro(title: Caption, description?: Caption, opts: CueOptions = {}) {
+    await this.card('intro', title, description, opts);
+  }
+
+  /** Full-screen chapter card in the Hive Pal style. */
   async chapter(title: Caption, description?: Caption, opts: CueOptions = {}) {
+    await this.card('chapter', title, description, opts);
+  }
+
+  private async card(
+    kind: 'intro' | 'chapter',
+    title: Caption,
+    description: Caption | undefined,
+    opts: CueOptions,
+  ) {
     const text = caption(title);
     const sub = description === undefined ? undefined : caption(description);
-    const voiceover = opts.voiceover && caption(opts.voiceover);
-    if (!GUIDE_MODE) return;
+    const spoken = spokenLine(sub ? `${text}. ${sub}` : text, opts);
+    if (!GUIDE_MODE) return this.prepare(spoken);
+    const card = { kind, title: text, description: sub };
+    // The intro is already up when the video starts.
+    if (kind === 'intro' && !this.started)
+      await this.stage(
+        cardCommand({ ...card, instant: true }, this.viewport()),
+      );
     await this.ensureRecording();
-    const spoken = voiceover ?? (sub ? `${text}. ${sub}` : text);
     await this.stage({
       op: 'hide',
       parts: ['spot', 'caption', 'ring', 'cursor'],
@@ -83,14 +126,10 @@ export class Guide {
       text,
       async (holdMs, shoot) => {
         const started = Date.now();
-        await Promise.all([
-          this.page.screencast.showChapter(text, {
-            description: sub,
-            duration: holdMs,
-          }),
-          shoot(),
-        ]);
+        await this.stage(cardCommand(card, this.viewport()));
+        await shoot();
         await this.waitRest(started, holdMs);
+        await this.stage({ op: 'hide', parts: ['card'] });
       },
       { ...opts, spoken, detail: sub },
     );
@@ -99,7 +138,7 @@ export class Guide {
   /** Caption only. */
   async say(text: Caption, opts: CueOptions = {}) {
     const line = caption(text);
-    if (!GUIDE_MODE) return;
+    if (!GUIDE_MODE) return this.prepare(spokenLine(line, opts));
     await this.ensureRecording();
     await this.cue(
       'say',
@@ -120,7 +159,7 @@ export class Guide {
   async point(target: Locator, text: Caption, opts: CueOptions = {}) {
     const line = caption(text);
     await expect(target).toBeVisible();
-    if (!GUIDE_MODE) return;
+    if (!GUIDE_MODE) return this.prepare(spokenLine(line, opts));
     await this.ensureRecording();
     // A lingering spotlight glides to the next element, but not across a
     // scroll: its old position would be wrong while the page moves.
@@ -153,7 +192,10 @@ export class Guide {
    */
   async do<T>(text: Caption, action: () => Promise<T>, opts: DoOptions = {}) {
     const line = caption(text);
-    if (!GUIDE_MODE) return action();
+    if (!GUIDE_MODE) {
+      await this.prepare(spokenLine(line, opts));
+      return action();
+    }
     await this.ensureRecording();
     let result!: T;
     await this.cue(
@@ -194,6 +236,19 @@ export class Guide {
   }
 
   // -------------------------------------------------------------------------
+
+  /** Prepare mode: put the line's voice in the cache. Otherwise a no-op. */
+  private async prepare(spoken: string) {
+    if (!PREPARE_MODE) return;
+    this.prepareVoice ??= voiceFromEnv();
+    const n = ++this.prepared;
+    console.log(`[voice] ${this.testInfo.title} #${n}: ${spoken}`);
+    await this.prepareVoice.synthesize(
+      spoken,
+      path.join(os.tmpdir(), 'hive-pal-guide-voice'),
+      String(n),
+    );
+  }
 
   private viewport(): Viewport {
     return this.page.viewportSize() ?? { width: 1280, height: 720 };
@@ -239,8 +294,7 @@ export class Guide {
     const { narration, dir, voice } = this.recording!;
     // Never narrate over skeletons and spinners.
     await this.page.waitForLoadState('networkidle').catch(() => {});
-    const spoken =
-      opts.spoken ?? (opts.voiceover ? caption(opts.voiceover) : text);
+    const spoken = spokenLine(text, opts);
     const entry: Cue = narration.begin(kind, text);
     entry.detail = opts.detail;
     if (opts.voiceover) entry.spoken = spoken;
@@ -493,7 +547,7 @@ export const test = smokeTest.extend<{
   /**
    * Auto fixture, guide mode only: let OpenStreetMap tiles and the Leaflet
    * marker icons (served from unpkg) through the third-party block so maps in
-   * the video are not grey. CI stays offline
+   * the video are not grey, and Google Fonts for the cards. CI stays offline
    * (the map still takes clicks). Routes added later win, hence the
    * dependency on blockThirdParty.
    */
@@ -506,6 +560,10 @@ export const test = smokeTest.extend<{
         await page.route(
           /\/\/unpkg\.com\/leaflet@[^/]+\/dist\/images\//,
           route => route.continue(),
+        );
+        // Brand fonts for the intro and chapter cards.
+        await page.route(/\/\/fonts\.(googleapis|gstatic)\.com\//, route =>
+          route.continue(),
         );
       }
       await use();

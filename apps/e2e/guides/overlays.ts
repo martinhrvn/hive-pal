@@ -47,7 +47,21 @@ export type StageCommand =
   | { op: 'ring'; box: Box }
   /** Move the cursor to a point; `click` adds a ripple when it arrives. */
   | { op: 'cursor'; x: number; y: number; click: boolean }
-  | { op: 'hide'; parts: ('spot' | 'caption' | 'ring' | 'cursor')[] };
+  /** Full-screen Hive Pal card: the intro, or a chapter title. */
+  | {
+      op: 'card';
+      kind: 'intro' | 'chapter';
+      title: string;
+      description?: string;
+      titleSize: number;
+      textSize: number;
+      /** Show without fading in: the first frame of a video. */
+      instant?: boolean;
+    }
+  | {
+      op: 'hide';
+      parts: ('spot' | 'caption' | 'ring' | 'cursor' | 'card')[];
+    };
 
 function fontSize(viewport: Viewport): number {
   return viewport.width < 600 ? 18 : 22;
@@ -109,6 +123,25 @@ export function captionCommand(text: string, viewport: Viewport): StageCommand {
     maxWidth: Math.min(900, viewport.width - 32),
     fontSize: fontSize(viewport),
     bottom: bottomInset(viewport),
+  };
+}
+
+/** The intro or a chapter card, sized for the viewport. */
+export function cardCommand(
+  card: {
+    kind: 'intro' | 'chapter';
+    title: string;
+    description?: string;
+    instant?: boolean;
+  },
+  viewport: Viewport,
+): StageCommand {
+  const narrow = viewport.width < 600;
+  return {
+    op: 'card',
+    ...card,
+    titleSize: narrow ? 38 : card.kind === 'intro' ? 64 : 72,
+    textSize: narrow ? 18 : 24,
   };
 }
 
@@ -222,11 +255,81 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
         from { opacity: 0.9; scale: 0.3; }
         to { opacity: 0; scale: 1.4; }
       }
+      /* Hive Pal card: the marketing site's forest section (hexagons in
+         honey, soft amber and emerald glows, Bricolage Grotesque + Manrope). */
+      #card {
+        inset: 0; overflow: hidden; background: #15201e; color: #fffbeb;
+        font-family: Manrope, ui-sans-serif, system-ui, sans-serif;
+        transition: opacity ${timing.fade * 1.5}ms ${ease};
+      }
+      #card .hex {
+        position: absolute; inset: -64px; opacity: 0.07;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='64' viewBox='0 0 56 64'><path d='M28 2l24 14v32L28 62 4 48V16L28 2z' fill='none' stroke='%23E8C76A' stroke-width='1'/></svg>");
+        background-size: 56px 64px; animation: card-drift 24s linear infinite;
+      }
+      @keyframes card-drift { to { translate: 56px 64px; } }
+      #card .glow { position: absolute; border-radius: 50%; }
+      /* Radial gradients, not blur(): a blurred layer gets hard clipped edges
+         in the captured frames. */
+      #card .glow.amber {
+        width: 70vmax; height: 70vmax; top: -32vmax; right: -24vmax;
+        background: radial-gradient(closest-side, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0));
+        animation: card-breathe 9s ease-in-out infinite alternate;
+      }
+      #card .glow.emerald {
+        width: 80vmax; height: 80vmax; bottom: -40vmax; left: -28vmax;
+        background: radial-gradient(closest-side, rgba(16, 185, 129, 0.16), rgba(16, 185, 129, 0));
+        animation: card-breathe 11s ease-in-out infinite alternate-reverse;
+      }
+      @keyframes card-breathe { from { scale: 0.92; } to { scale: 1.08; } }
+      #card .body {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        justify-content: center; padding: 0 9%; gap: 0.9em;
+      }
+      #card.intro .body { align-items: center; text-align: center; }
+      #card .rise {
+        opacity: 0; translate: 0 18px;
+        transition: opacity 600ms ${ease}, translate 600ms ${ease};
+      }
+      #card.on .rise { opacity: 1; translate: 0 0; }
+      #card.on .rise:nth-child(2) { transition-delay: 120ms; }
+      #card.on .rise:nth-child(3) { transition-delay: 240ms; }
+      #card.on .rise:nth-child(4) { transition-delay: 360ms; }
+      #card .logo { width: 7em; height: auto; filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.35)); }
+      #card.chapter .logo { display: none; }
+      #card .brand {
+        display: flex; align-items: center; gap: 0.7em;
+        font-size: 0.62em; font-weight: 600; letter-spacing: 0.14em;
+        text-transform: uppercase; color: rgba(253, 230, 138, 0.8);
+      }
+      #card .brand img { width: 1.9em; height: auto; }
+      #card.intro .brand img { display: none; }
+      #card .title {
+        margin: 0; max-width: 16em; line-height: 1.05; color: #fffbeb;
+        font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+        font-variation-settings: 'opsz' 96, 'wdth' 100, 'wght' 600; letter-spacing: -0.02em;
+      }
+      #card .desc { margin: 0; max-width: 30em; line-height: 1.45; color: rgba(255, 251, 235, 0.75); }
+      #card.chapter .desc { position: relative; padding-top: 1em; }
+      #card.chapter .desc::before {
+        content: ''; position: absolute; left: 0; top: 0;
+        width: 3em; height: 3px; border-radius: 2px; background: #fbbf24;
+      }
+      #card .desc:empty { display: none; }
     </style>
     <div id="hole" class="layer"></div>
     <div id="ring" class="layer"></div>
     <div id="tip" class="layer bubble"></div>
     <div id="caption" class="layer bubble"></div>
+    <div id="card" class="layer">
+      <div class="hex"></div><div class="glow amber"></div><div class="glow emerald"></div>
+      <div class="body">
+        <img class="logo rise" src="/hive-pal-logo.png" alt="" />
+        <div class="brand rise"><img src="/hive-pal-logo.png" alt="" />Hive Pal</div>
+        <div class="title rise"></div>
+        <p class="desc rise"></p>
+      </div>
+    </div>
     <div id="cursor" class="layer">
       <div id="ripple"></div>
       <svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15.5 L12.5 22.5 L15.5 21 L12 14 L19 14 Z"
@@ -236,6 +339,35 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
     state = { root };
     w.__guideStage = state;
   }
+
+  /** Brand fonts (into the document: shadow roots use its @font-face) and the logo. */
+  const loadCardAssets = async (card: HTMLElement) => {
+    const id = 'hive-pal-guide-fonts';
+    if (!document.getElementById(id)) {
+      const link = document.createElement('link');
+      link.id = id;
+      link.rel = 'stylesheet';
+      link.href =
+        'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Manrope:wght@400;600&display=block';
+      const loaded = new Promise(r => {
+        link.onload = r;
+        link.onerror = r;
+      });
+      document.head.appendChild(link);
+      await Promise.race([loaded, sleep(4000)]);
+    }
+    await Promise.race([
+      Promise.all([
+        document.fonts.load("600 72px 'Bricolage Grotesque'"),
+        document.fonts.load('400 24px Manrope'),
+        document.fonts.load('600 16px Manrope'),
+        ...[...card.querySelectorAll('img')].map(img =>
+          img.decode().catch(() => {}),
+        ),
+      ]),
+      sleep(4000),
+    ]);
+  };
 
   const { root } = state;
   const el = (id: string) => root.getElementById(id) as HTMLElement;
@@ -347,6 +479,41 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
       cursor.style.translate = to;
       return sleep(timing.cursor).then(arrive);
     }
+    case 'card': {
+      const card = el('card');
+      const body = card.querySelector('.body') as HTMLElement;
+      // Already up (the intro is shown before the video starts).
+      if (
+        isOn(card) &&
+        card.classList.contains(cmd.kind) &&
+        card.querySelector('.title')?.textContent === cmd.title
+      )
+        return Promise.resolve();
+      const fill = () => {
+        card.className = `layer ${cmd.kind}`;
+        body.style.fontSize = `${cmd.textSize}px`;
+        const title = card.querySelector('.title') as HTMLElement;
+        title.textContent = cmd.title;
+        title.style.fontSize = `${cmd.titleSize}px`;
+        (card.querySelector('.desc') as HTMLElement).textContent =
+          cmd.description ?? '';
+      };
+      return loadCardAssets(card).then(() => {
+        if (cmd.instant) {
+          // Straight to the finished state, no transitions.
+          const all = [card, ...card.querySelectorAll<HTMLElement>('.rise')];
+          all.forEach(e => (e.style.transition = 'none'));
+          fill();
+          card.classList.add('on');
+          void card.offsetWidth;
+          all.forEach(e => (e.style.transition = ''));
+          return;
+        }
+        jump(card, fill);
+        show(card);
+        return sleep(timing.fade * 1.5 + 600);
+      });
+    }
     case 'hide': {
       const ids = cmd.parts.flatMap(p =>
         p === 'spot' ? ['hole', 'tip'] : [p],
@@ -363,6 +530,10 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
       if (cmd.parts.includes('caption')) hide(el('caption'));
       if (cmd.parts.includes('ring')) hide(el('ring'));
       if (cmd.parts.includes('cursor')) hide(el('cursor'));
+      if (cmd.parts.includes('card')) {
+        hide(el('card'));
+        return sleep(timing.fade * 1.5);
+      }
       return sleep(timing.fade);
     }
   }

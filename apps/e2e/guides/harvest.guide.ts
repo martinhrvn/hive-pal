@@ -12,7 +12,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
     await expect(sidebar.nav('Harvests')).toBeVisible();
 
     // -- Show: where the page is and what the overview tells you -------------
-    await g.chapter('Honey harvests', 'From frames to kilos, hive by hive', {
+    await g.intro('Honey harvests', 'From frames to kilos, hive by hive', {
       voiceover:
         'Welcome to Hive Pal. In this guide, we’ll follow a honey harvest from the frames you pull to the kilos on each hive.',
     });
@@ -68,9 +68,13 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
     ]);
 
     // -- Do: record a harvest end to end -------------------------------------
-    await g.chapter('Record a harvest', undefined, {
-      voiceover: 'Now let’s record a new harvest, step by step.',
-    });
+    await g.chapter(
+      'Record a harvest',
+      'Frames, weight, and the split between hives',
+      {
+        voiceover: 'Now let’s record a new harvest, step by step.',
+      },
+    );
     await g.do('Click “Start Harvest” to begin', () => wizard.open(), {
       target: harvests.startHarvestButton,
       voiceover: 'To begin, click Start Harvest.',

@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
 export type VoiceClip = { file: string; durationMs: number };
@@ -68,10 +69,9 @@ const TTS_SAMPLE_RATE = 24_000;
 export const VOICE_PROFILES = {
   /** Default: full guides. */
   narrator: {
-    style:
-      'A warm, calm, friendly narrator walking a beekeeper through an app. ' +
-      'Unhurried, clear and natural, like a helpful friend showing the way.',
-    gemini: 'Sulafat',
+    // No tone prompt: Ludo reads best in its own manner.
+    style: '',
+    gemini: 'Ludo',
     openai: 'coral',
   },
   /** Shorts: one task in about a minute. */
@@ -95,18 +95,38 @@ export type VoiceProfileName = keyof typeof VOICE_PROFILES;
 
 const NARRATOR_STYLE = VOICE_PROFILES.narrator.style;
 
-/** Cloud clips are cached across runs, keyed by engine settings and text. */
-const VOICE_CACHE_DIR = path.join(
-  __dirname,
-  '..',
-  'out',
-  'guides',
-  '.voice-cache',
-);
+/**
+ * Cloud clips are cached across runs, keyed by engine settings and text.
+ * They live in the user's cache directory, not in out/: they cost money and
+ * time to make, and are shared by every clone and worktree of the repo.
+ * GUIDE_VOICE_CACHE points somewhere else.
+ */
+export const VOICE_CACHE_DIR =
+  process.env.GUIDE_VOICE_CACHE ||
+  path.join(
+    process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'),
+    'hive-pal',
+    'guide-voice',
+  );
 
 /** Longest rate-limit wait worth sitting through; longer means a daily cap. */
 const MAX_RETRY_WAIT_MS = 2 * 60_000;
 const MAX_RETRIES = 10;
+
+/**
+ * Requests per minute to stay under (GUIDE_VOICE_RPM). Gemini TTS allows 10
+ * even on a paid key; one less leaves room for clock skew.
+ */
+const REQUESTS_PER_MINUTE = Number(process.env.GUIDE_VOICE_RPM) || 9;
+let nextRequestAt = 0;
+
+/** Space requests evenly instead of running into the rate limit. */
+async function nextRequestSlot() {
+  const wait = nextRequestAt - Date.now();
+  nextRequestAt =
+    Math.max(Date.now(), nextRequestAt) + 60_000 / REQUESTS_PER_MINUTE;
+  if (wait > 0) await new Promise(r => setTimeout(r, wait));
+}
 
 /** A failure worth retrying (a 429, an empty reply), and how long to wait. */
 class Retryable extends Error {
@@ -121,7 +141,7 @@ class Retryable extends Error {
 
 /**
  * Base for HTTP engines that return raw PCM: caches each clip under
- * out/guides/.voice-cache so re-recording neither pays nor waits for
+ * VOICE_CACHE_DIR so re-recording neither pays nor waits for
  * unchanged lines, writes the WAV header itself, and waits out per-minute
  * rate limits (the Gemini free tier allows 3 TTS requests a minute).
  */
@@ -150,6 +170,7 @@ abstract class CloudVoice implements VoiceProvider {
   private async fetchWithRetry(text: string): Promise<Buffer> {
     for (let attempt = 1; ; attempt++) {
       try {
+        await nextRequestSlot();
         return await this.fetchPcm(text);
       } catch (e) {
         if (
@@ -222,7 +243,9 @@ export class OpenAIVoice extends CloudVoice {
         input: text,
         response_format: 'pcm',
         // Only the gpt-4o TTS models take a style prompt.
-        ...(this.model.startsWith('gpt-') ? { instructions: this.style } : {}),
+        ...(this.model.startsWith('gpt-') && this.style
+          ? { instructions: this.style }
+          : {}),
       }),
     });
     await ensureOk(res, 'OpenAI');
@@ -237,8 +260,8 @@ const GEMINI_SEED = 7;
 /**
  * Gemini native TTS (https://ai.google.dev/gemini-api/docs/speech-generation).
  *   GUIDE_VOICE=gemini GEMINI_API_KEY=...
- *   GEMINI_TTS_MODEL   default gemini-2.5-flash-preview-tts
- *   GEMINI_TTS_VOICE   prebuilt voice, default from GUIDE_VOICE_PROFILE (Sulafat)
+ *   GEMINI_TTS_MODEL   default gemini-3.8-flash-tts
+ *   GEMINI_TTS_VOICE   prebuilt voice, default from GUIDE_VOICE_PROFILE (Ludo)
  *   GUIDE_VOICE_STYLE  tone prompt, sent ahead of the text
  */
 export class GeminiVoice extends CloudVoice {
@@ -246,7 +269,7 @@ export class GeminiVoice extends CloudVoice {
 
   constructor(
     private readonly apiKey: string,
-    private readonly model = 'gemini-2.5-flash-preview-tts',
+    private readonly model = 'gemini-3.8-flash-tts',
     private readonly voice: string = VOICE_PROFILES.narrator.gemini,
     private readonly style: string = NARRATOR_STYLE,
   ) {
@@ -262,6 +285,8 @@ export class GeminiVoice extends CloudVoice {
    * belongs to the same session, and a fixed seed keeps a line's take stable.
    */
   private prompt(text: string): string {
+    // GUIDE_VOICE_STYLE=none: just the line, in the voice's own manner.
+    if (!this.style) return text;
     return [
       '# AUDIO PROFILE',
       this.style,
@@ -299,11 +324,15 @@ export class GeminiVoice extends CloudVoice {
     await ensureOk(res, 'Gemini');
     const json = (await res.json()) as {
       candidates?: {
-        content?: { parts?: { inlineData?: { data: string } }[] };
+        content?: {
+          parts?: { inlineData?: { data: string; mimeType?: string } }[];
+        };
       }[];
     };
-    const data = json.candidates?.[0]?.content?.parts?.find(p => p.inlineData)
-      ?.inlineData?.data;
+    const audio = json.candidates?.[0]?.content?.parts?.find(
+      p => p.inlineData,
+    )?.inlineData;
+    const data = audio?.data;
     // Now and then a reply has no audio (finishReason OTHER); asking again helps.
     if (!data)
       throw new Retryable(
@@ -311,8 +340,24 @@ export class GeminiVoice extends CloudVoice {
         1000,
         'no audio in the reply',
       );
-    return Buffer.from(data, 'base64');
+    const bytes = Buffer.from(data, 'base64');
+    // 2.5 sends raw PCM (audio/L16); 3.x sends a whole WAV file.
+    return audio?.mimeType === 'audio/wav' ? wavPcm(bytes) : bytes;
   }
+}
+
+/** The PCM samples of a 24 kHz 16-bit mono WAV. */
+function wavPcm(wav: Buffer): Buffer {
+  if (wav.readUInt32LE(24) !== TTS_SAMPLE_RATE || wav.readUInt16LE(34) !== 16)
+    throw new Error('Expected 24 kHz 16-bit WAV from the TTS engine');
+  let offset = 12;
+  while (offset + 8 <= wav.length) {
+    const id = wav.toString('ascii', offset, offset + 4);
+    const size = wav.readUInt32LE(offset + 4);
+    if (id === 'data') return wav.subarray(offset + 8, offset + 8 + size);
+    offset += 8 + size;
+  }
+  throw new Error('No data chunk in the WAV from the TTS engine');
 }
 
 /** Wrap 16-bit mono little-endian PCM in a WAV header. */
@@ -348,7 +393,10 @@ function voiceProfile(name = 'narrator') {
  */
 export function voiceFromEnv(env = process.env): VoiceProvider {
   const profile = voiceProfile(env.GUIDE_VOICE_PROFILE || undefined);
-  const style = env.GUIDE_VOICE_STYLE || profile.style;
+  const style =
+    env.GUIDE_VOICE_STYLE === 'none'
+      ? ''
+      : env.GUIDE_VOICE_STYLE || profile.style;
   switch (env.GUIDE_VOICE) {
     case 'piper':
       if (!env.PIPER_MODEL)

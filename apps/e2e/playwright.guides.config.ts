@@ -21,18 +21,25 @@ if (fs.existsSync(envLocal)) {
  *
  *   (default)       headless e2e run: no video, no pauses
  *   GUIDE=1         record video, captions.vtt and script.md to out/guides/
+ *   GUIDE_PREPARE=1 generate the voiceover into the cache first (guides:voice)
  *   GUIDE_PASSES    viewport passes to record, e.g. "desktop,mobile"
  *   GUIDE_LOCALE    caption + browser locale (default en)
  *   GUIDE_VOICE     voiceover provider: none (default) | piper | openai | gemini
  *   GUIDE_VOICE_PROFILE  narrator (default) | upbeat | mentor
+ *   GUIDE_VOICE_RPM TTS requests per minute (default 9)
+ *   GUIDE_VOICE_CACHE  voice clip cache (default ~/.cache/hive-pal/guide-voice)
  *   BASE_URL        target origin (default: https://preview.hivepal.app when
- *                   recording, http://localhost:5173 otherwise)
+ *                   recording or preparing, http://localhost:5173 otherwise)
  */
 const GUIDE = !!process.env.GUIDE && process.env.GUIDE !== '0';
+const PREPARE =
+  !GUIDE && !!process.env.GUIDE_PREPARE && process.env.GUIDE_PREPARE !== '0';
 // Recordings show the deployed preview; test runs check the local stack.
+// Preparing must hit the same app as recording: the flow (and so the lines
+// spoken) can differ, e.g. the share prompt only exists on cloud.
 const BASE_URL =
   process.env.BASE_URL ??
-  (GUIDE ? 'https://preview.hivepal.app' : 'http://localhost:5173');
+  (GUIDE || PREPARE ? 'https://preview.hivepal.app' : 'http://localhost:5173');
 
 // Sized for YouTube: the video is recorded at viewport × deviceScaleFactor.
 // Headless Chromium only hands the screencast device-pixel frames when the
@@ -65,9 +72,11 @@ export default defineConfig({
   fullyParallel: !GUIDE,
   forbidOnly: !!process.env.CI,
   // Recording holds every caption for its reading time.
-  timeout: GUIDE ? 10 * 60_000 : 90_000,
+  // Preparing paces TTS requests to stay under the rate limit.
+  timeout: GUIDE ? 10 * 60_000 : PREPARE ? 30 * 60_000 : 90_000,
   expect: { timeout: 10_000 },
-  workers: GUIDE ? 1 : Number(process.env.SMOKE_WORKERS ?? 2),
+  // One worker when preparing: the request pacing is per process.
+  workers: GUIDE || PREPARE ? 1 : Number(process.env.SMOKE_WORKERS ?? 2),
   retries: !GUIDE && process.env.CI ? 1 : 0,
   reporter: [
     ['list'],

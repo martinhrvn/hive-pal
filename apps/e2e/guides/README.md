@@ -13,6 +13,7 @@ A guide is a Playwright spec (`guides/<name>.guide.ts`) that is two things at on
 cd apps/e2e
 pnpm test:guides       # CI mode: the guides as plain e2e tests
 pnpm test:e2e          # smoke suite + guides
+pnpm guides:voice      # GUIDE_PREPARE=1: generate the voiceover into the cache
 pnpm guides:record     # GUIDE=1: record every guide to out/guides/
 pnpm guides:record harvest            # one guide only
 GUIDE_PASSES=desktop,mobile pnpm guides:record   # also a portrait (Shorts) pass
@@ -74,11 +75,17 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
 
 | Call                             | Guide mode                                                                              | CI mode                              |
 | -------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------ |
-| `g.chapter(title, description?)` | Full-screen title card                                                                  | nothing                              |
+| `g.intro(title, description?)`   | Opening card: logo, title, description; the first frame of the video                    | nothing                              |
+| `g.chapter(title, description?)` | Full-screen chapter card                                                                | nothing                              |
 | `g.say(text, opts?)`             | Caption at the bottom                                                                   | nothing                              |
 | `g.point(locator, text, opts?)`  | Scroll into view, wait until stable, dim the page around it, caption bubble above/below | `expect(locator).toBeVisible()`      |
 | `g.tour([[locator, text], ...])` | `point` for each                                                                        | `expect(...).toBeVisible()` for each |
 | `g.do(text, fn, { target? })`    | Caption while `fn` runs, `target` highlighted first; returns `fn`'s result              | runs `fn`                            |
+
+The intro and chapter cards use the marketing site's look: forest green with
+honey hexagons, the logo, Bricolage Grotesque titles and Manrope text (Google
+Fonts, let through the third-party block in guide mode). Start a guide with
+`g.intro`; it is already on screen when the video starts.
 
 Each cue holds for its reading time (12 characters per second, at least 2.5 s);
 pass `{ holdMs }` to override. Nothing in this file waits outside guide mode.
@@ -215,11 +222,11 @@ The default `NoopVoice` produces captions only. With a provider configured:
 
 Providers (`GUIDE_VOICE`):
 
-| Value    | Engine                                                                | Settings                                                            |
-| -------- | --------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `gemini` | [Gemini TTS](https://ai.google.dev/gemini-api/docs/speech-generation) | `GEMINI_API_KEY`, `GEMINI_TTS_MODEL` (gemini-2.5-flash-preview-tts) |
-| `openai` | [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech)  | `OPENAI_API_KEY`, `OPENAI_TTS_MODEL` (gpt-4o-mini-tts)              |
-| `piper`  | Local [Piper](https://github.com/rhasspy/piper) CLI (stub)            | `PIPER_MODEL`, `PIPER_BIN`                                          |
+| Value    | Engine                                                                | Settings                                                    |
+| -------- | --------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `gemini` | [Gemini TTS](https://ai.google.dev/gemini-api/docs/speech-generation) | `GEMINI_API_KEY`, `GEMINI_TTS_MODEL` (gemini-3.8-flash-tts) |
+| `openai` | [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech)  | `OPENAI_API_KEY`, `OPENAI_TTS_MODEL` (gpt-4o-mini-tts)      |
+| `piper`  | Local [Piper](https://github.com/rhasspy/piper) CLI (stub)            | `PIPER_MODEL`, `PIPER_BIN`                                  |
 
 Keys and voice settings can go in the git-ignored `apps/e2e/.env.local`; the
 guides config reads only the `GUIDE_*`, `GEMINI_*`, `OPENAI_*` and `PIPER_*`
@@ -234,12 +241,12 @@ GEMINI_API_KEY=...
 
 ### Voice profiles
 
-`GUIDE_VOICE_PROFILE` picks a narrator: a tone prompt plus a matching voice for
-each engine (`VOICE_PROFILES` in `voice.ts`).
+`GUIDE_VOICE_PROFILE` picks a narrator: a tone prompt (or none) plus a
+matching voice for each engine (`VOICE_PROFILES` in `voice.ts`).
 
 | Profile              | Use                                  | Gemini voice | OpenAI voice |
 | -------------------- | ------------------------------------ | ------------ | ------------ |
-| `narrator` (default) | Full guides: warm, calm, unhurried   | Sulafat      | coral        |
+| `narrator` (default) | Full guides; no tone prompt          | Ludo         | coral        |
 | `upbeat`             | Shorts: bright, lively, a bit faster | Puck         | nova         |
 | `mentor`             | An experienced beekeeper, relaxed    | Charon       | ash          |
 
@@ -249,23 +256,36 @@ GUIDE_PASSES=mobile GUIDE_VOICE_PROFILE=upbeat pnpm guides:record quick-check
 ```
 
 Override one part of a profile with `GUIDE_VOICE_STYLE` (tone prompt; Gemini
-and the gpt-4o OpenAI models), `GEMINI_TTS_VOICE` or `OPENAI_TTS_VOICE`. To add
+and the gpt-4o OpenAI models; `none` for no prompt), `GEMINI_TTS_VOICE` or `OPENAI_TTS_VOICE`. To add
 a profile, add an entry to `VOICE_PROFILES`.
 
-The cloud providers cache each clip in `out/guides/.voice-cache/`, keyed by
-engine, model, voice, style and text, so re-recording only synthesizes lines
-that changed; delete the folder to regenerate everything.
+The cloud providers cache each clip in `~/.cache/hive-pal/guide-voice/`
+(`$XDG_CACHE_HOME` if set, or `GUIDE_VOICE_CACHE`), keyed by engine, model,
+voice, style and text, so re-recording only synthesizes lines that changed.
+The cache lives outside the repo so cleaning `out/` does not throw away
+clips that cost time and money, and every clone and worktree shares it;
+delete the folder to regenerate everything.
 
 Each clip is normalized to the same loudness (-16 LUFS) before mixing, since
-separate requests come back several dB apart. Gemini gets a fixed seed and a
-prompt that treats every line as part of one recording session, which keeps
-the voice steadier from line to line.
+separate requests come back several dB apart. Gemini gets a fixed seed, so a
+line comes out the same every time; with a tone prompt, the prompt also treats
+every line as part of one recording session.
 
-On a rate limit (429) the cloud providers wait as long as the API asks and
-retry. The Gemini free tier allows only 3 TTS requests a minute, so the first
-recording of a guide is slow and freezes on screen while it waits; run it
-again and every line comes from the cache, giving a smooth video. A key with
-billing enabled avoids the wait.
+### Generate first, then record
+
+Gemini TTS allows 10 requests a minute even on a paid key (3 on the free
+tier), and a line that is not cached yet freezes the video while it is
+generated. So generate the voiceover first, then record:
+
+```bash
+pnpm guides:voice harvest     # runs the guide as a plain test, fills the cache
+pnpm guides:record harvest    # every line from the cache: no waits
+```
+
+`guides:voice` targets the same app as recording (preview by default), since
+the flow, and so what is said, can differ between deployments. It runs on one
+worker and spaces requests to `GUIDE_VOICE_RPM` per minute (default 9); on a
+429 anyway, it waits as long as the API asks and retries.
 
 To add another engine, implement `VoiceProvider` and register it in `voiceFromEnv()`.
 

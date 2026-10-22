@@ -17,6 +17,7 @@
     "test:smoke:ui": "dotenv -e .env.local -- playwright test -c playwright.smoke.config.ts --ui",
     "test:e2e": "playwright test -c playwright.smoke.config.ts; s=$?; playwright test -c playwright.guides.config.ts && exit $s",
     "test:guides": "playwright test -c playwright.guides.config.ts",
+    "guides:voice": "GUIDE_PREPARE=1 playwright test -c playwright.guides.config.ts",
     "guides:record": "GUIDE=1 playwright test -c playwright.guides.config.ts"
   },
   "devDependencies": {

@@ -46,7 +46,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
     await expect(landing.startFreeButton).toBeVisible();
 
     // -- Create your account ---------------------------------------------------
-    await g.chapter('Getting started', 'From sign-up to your first dashboard');
+    await g.intro('Getting started', 'From sign-up to your first dashboard');
     await g.do(
       'Click “Start free” to create an account',
       () => landing.startSignUp(),
