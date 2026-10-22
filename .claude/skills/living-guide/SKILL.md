@@ -90,7 +90,7 @@ text. Unchanged lines cost nothing; never delete the cache to "fix" something.
 ## 4. Record the video
 
 ```bash
-pnpm guides:record <slug>                                  # desktop, 1920×1080
+pnpm guides:record <slug>                                  # desktop, 1920×1080, 30 fps
 GUIDE_PASSES=mobile pnpm guides:record <slug>              # Short, 1080×1920
 GUIDE_PASSES=mobile GUIDE_VOICE_PROFILE=upbeat pnpm guides:record quick-check
 ```

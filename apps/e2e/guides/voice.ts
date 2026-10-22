@@ -4,7 +4,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-export type VoiceClip = { file: string; durationMs: number };
+export type VoiceClip = {
+  file: string;
+  durationMs: number;
+  /** Came from the cache rather than a new request. */
+  cached?: boolean;
+};
 
 /**
  * Turns caption text into speech. When a provider is configured, every cue
@@ -112,6 +117,15 @@ export const VOICE_CACHE_DIR =
 /** Longest rate-limit wait worth sitting through; longer means a daily cap. */
 const MAX_RETRY_WAIT_MS = 2 * 60_000;
 const MAX_RETRIES = 10;
+/** A TTS request that takes longer than this is abandoned and retried. */
+const REQUEST_TIMEOUT_MS = 90_000;
+
+/** Progress lines, so a long `guides:voice` run shows what it is doing. */
+function log(message: string) {
+  console.log(`[voice]   ${message}`);
+}
+
+const seconds = (ms: number) => `${(ms / 1000).toFixed(1)} s`;
 
 /**
  * Requests per minute to stay under (GUIDE_VOICE_RPM). Gemini TTS allows 10
@@ -125,7 +139,12 @@ async function nextRequestSlot() {
   const wait = nextRequestAt - Date.now();
   nextRequestAt =
     Math.max(Date.now(), nextRequestAt) + 60_000 / REQUESTS_PER_MINUTE;
-  if (wait > 0) await new Promise(r => setTimeout(r, wait));
+  if (wait <= 0) return;
+  if (wait > 1000)
+    log(
+      `waiting ${seconds(wait)} for a request slot (${REQUESTS_PER_MINUTE}/min)`,
+    );
+  await new Promise(r => setTimeout(r, wait));
 }
 
 /** A failure worth retrying (a 429, an empty reply), and how long to wait. */
@@ -149,7 +168,12 @@ abstract class CloudVoice implements VoiceProvider {
   abstract readonly name: string;
   /** Everything besides the text that changes the audio. */
   protected abstract cacheKey(): unknown[];
-  protected abstract fetchPcm(text: string): Promise<Buffer>;
+  /** Everything besides the text that changes the audio, for the log. */
+  protected abstract describe(): string;
+  protected abstract fetchPcm(
+    text: string,
+    signal: AbortSignal,
+  ): Promise<Buffer>;
 
   async synthesize(text: string, dir: string, id: string): Promise<VoiceClip> {
     fs.mkdirSync(dir, { recursive: true });
@@ -158,34 +182,68 @@ abstract class CloudVoice implements VoiceProvider {
       .update(JSON.stringify([this.name, ...this.cacheKey(), text]))
       .digest('hex');
     const cached = path.join(VOICE_CACHE_DIR, `${key}.wav`);
-    if (!fs.existsSync(cached)) {
+    const hit = fs.existsSync(cached);
+    if (hit) {
+      log('cached');
+    } else {
+      log(`generating with ${this.name} (${this.describe()})`);
+      const started = Date.now();
       const pcm = await this.fetchWithRetry(text);
       fs.writeFileSync(cached, pcmToWav(pcm, TTS_SAMPLE_RATE));
+      log(
+        `done in ${seconds(Date.now() - started)}, ${seconds(wavDurationMs(cached))} of audio`,
+      );
     }
     const file = path.join(dir, `${id}.wav`);
     fs.copyFileSync(cached, file);
-    return { file, durationMs: wavDurationMs(file) };
+    return { file, durationMs: wavDurationMs(file), cached: hit };
   }
 
   private async fetchWithRetry(text: string): Promise<Buffer> {
     for (let attempt = 1; ; attempt++) {
       try {
         await nextRequestSlot();
-        return await this.fetchPcm(text);
-      } catch (e) {
-        if (
-          !(e instanceof Retryable) ||
-          attempt > MAX_RETRIES ||
-          e.retryMs > MAX_RETRY_WAIT_MS
-        )
-          throw e;
-        console.warn(
-          `${this.name} TTS: ${e.reason}, retrying in ${Math.ceil(e.retryMs / 1000)} s`,
+        return await this.fetchPcm(
+          text,
+          AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        );
+      } catch (err) {
+        const e =
+          err instanceof DOMException && err.name === 'TimeoutError'
+            ? new Retryable(
+                `${this.name} TTS timed out`,
+                1000,
+                `no reply after ${seconds(REQUEST_TIMEOUT_MS)}`,
+              )
+            : err;
+        if (!(e instanceof Retryable) || attempt > MAX_RETRIES) throw e;
+        if (e.retryMs > MAX_RETRY_WAIT_MS) throw quotaError(this.name, e);
+        log(
+          `${e.reason}, retry ${attempt}/${MAX_RETRIES} in ${seconds(e.retryMs)}`,
         );
         await new Promise(r => setTimeout(r, e.retryMs));
       }
     }
   }
+}
+
+/**
+ * A 429 that asks for a wait of hours is a daily cap, not a per-minute one.
+ * Say so plainly instead of dumping the API's JSON.
+ */
+function quotaError(engine: string, e: Retryable): Error {
+  const quota = /"quotaId":\s*"([^"]+)"/.exec(e.message)?.[1];
+  const limit = /"quotaValue":\s*"(\d+)"/.exec(e.message)?.[1];
+  const hours = Math.floor(e.retryMs / 3_600_000);
+  const minutes = Math.ceil((e.retryMs % 3_600_000) / 60_000);
+  return new Error(
+    [
+      `${engine} TTS quota used up${quota ? ` (${quota}${limit ? `: ${limit}` : ''})` : ''}.`,
+      `It resets in ${hours} h ${minutes} min. Lines generated so far are cached,`,
+      'so running guides:voice again after that continues where this stopped.',
+    ].join('\n'),
+    { cause: e },
+  );
 }
 
 async function ensureOk(res: Response, engine: string) {
@@ -230,9 +288,14 @@ export class OpenAIVoice extends CloudVoice {
     return [this.model, this.voice, this.style];
   }
 
-  protected async fetchPcm(text: string): Promise<Buffer> {
+  protected describe() {
+    return `${this.model}, ${this.voice}`;
+  }
+
+  protected async fetchPcm(text: string, signal: AbortSignal): Promise<Buffer> {
     const res = await fetch('https://api.openai.com/v1/audio/speech', {
       method: 'POST',
+      signal,
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
         'Content-Type': 'application/json',
@@ -299,11 +362,16 @@ export class GeminiVoice extends CloudVoice {
     ].join('\n');
   }
 
-  protected async fetchPcm(text: string): Promise<Buffer> {
+  protected describe() {
+    return `${this.model}, ${this.voice}`;
+  }
+
+  protected async fetchPcm(text: string, signal: AbortSignal): Promise<Buffer> {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`,
       {
         method: 'POST',
+        signal,
         headers: {
           'x-goog-api-key': this.apiKey,
           'Content-Type': 'application/json',

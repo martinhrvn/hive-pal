@@ -30,14 +30,18 @@ guide signs up its own throwaway user.
 `out/guides/<slug>/` (git-ignored), where `<slug>` is the file name without
 `.guide.ts`, with `-mobile` appended for the mobile pass:
 
-| File            | What it is                                                                                   |
-| --------------- | -------------------------------------------------------------------------------------------- |
-| `video.webm`    | Recording made with Playwright's `page.screencast`                                           |
-| `video.mp4`     | H.264 copy (with narration audio when a voice is configured); skipped if `ffmpeg` is missing |
-| `captions.vtt`  | One WebVTT cue per chapter/say/point/do: soft subtitles, translation input, TTS script       |
-| `script.md`     | The whole narration as text with timestamps and a screenshot per cue                         |
-| `shots/*.png`   | Those screenshots                                                                            |
-| `narration.wav` | Voice clips placed at their cue times (only with `GUIDE_VOICE`)                              |
+| File            | What it is                                                                             |
+| --------------- | -------------------------------------------------------------------------------------- |
+| `video.mp4`     | H.264, 30 fps, with narration audio when a voice is configured; needs `ffmpeg`         |
+| `captions.vtt`  | One WebVTT cue per chapter/say/point/do: soft subtitles, translation input, TTS script |
+| `script.md`     | The whole narration as text with timestamps and a screenshot per cue                   |
+| `shots/*.png`   | Those screenshots                                                                      |
+| `narration.wav` | Voice clips placed at their cue times (only with `GUIDE_VOICE`)                        |
+
+The video is encoded once, at the end: `page.screencast` hands over each
+frame as the browser's JPEG, `FrameRecorder` (`media.ts`) writes them to
+`.frames/` and ffmpeg turns them into one x264 encode (CRF 16). Playwright's
+own recorder encodes real-time VP8, which smears fades and scrolling.
 
 Recording starts at the first `g.*` call, so navigation you do before it is not
 in the video. A failed recording still writes what it got, which shows where the

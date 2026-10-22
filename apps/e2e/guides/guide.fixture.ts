@@ -9,7 +9,7 @@ import {
   type SmokeUser,
 } from '../tests/smoke/fixtures';
 import { caption, type Caption } from './captions';
-import { mixNarration, toMp4 } from './media';
+import { FrameRecorder, mixNarration } from './media';
 import { Narration, readingTimeMs, type Cue, type CueKind } from './narration';
 import {
   captionCommand,
@@ -69,6 +69,7 @@ type Recording = {
   narration: Narration;
   dir: string;
   voice: VoiceProvider;
+  frames: FrameRecorder;
 };
 
 /**
@@ -81,6 +82,7 @@ export class Guide {
   private started = false;
   private prepareVoice?: VoiceProvider;
   private prepared = 0;
+  private generated = 0;
 
   constructor(
     readonly page: Page,
@@ -243,11 +245,12 @@ export class Guide {
     this.prepareVoice ??= voiceFromEnv();
     const n = ++this.prepared;
     console.log(`[voice] ${this.testInfo.title} #${n}: ${spoken}`);
-    await this.prepareVoice.synthesize(
+    const clip = await this.prepareVoice.synthesize(
       spoken,
       path.join(os.tmpdir(), 'hive-pal-guide-voice'),
       String(n),
     );
+    if (!clip.cached) this.generated++;
   }
 
   private viewport(): Viewport {
@@ -272,12 +275,16 @@ export class Guide {
     fs.mkdirSync(path.join(dir, 'shots'), { recursive: true });
     const voice = voiceFromEnv();
     const narration = new Narration(this.testInfo.title);
-    await this.page.screencast.start({
-      path: path.join(dir, 'video.webm'),
-      size: await this.videoSize(),
-    });
+    const size = await this.videoSize();
+    // Video time 0 and narration time 0 are the same moment.
+    const frames = new FrameRecorder(path.join(dir, '.frames'));
     narration.startClock();
-    this.recording = { narration, dir, voice };
+    await this.page.screencast.start({
+      onFrame: frames.onFrame,
+      size,
+      quality: 95,
+    });
+    this.recording = { narration, dir, voice, frames };
   }
 
   /**
@@ -359,14 +366,19 @@ export class Guide {
 
   /** Stop recording and write video, captions, script and audio. */
   async finish() {
+    if (PREPARE_MODE)
+      console.log(
+        `[voice] ${this.testInfo.title}: ${this.prepared} lines, ${this.generated} generated, ${this.prepared - this.generated} cached`,
+      );
     if (!this.recording) return;
-    const { narration, dir } = this.recording;
+    const { narration, dir, frames } = this.recording;
     // Fade out whatever is still on screen before the video ends.
     await this.stage({
       op: 'hide',
       parts: ['spot', 'caption', 'ring', 'cursor'],
     });
     await this.page.waitForTimeout(300).catch(() => {});
+    const end = Date.now();
     await this.page.screencast.stop();
     narration.write(dir);
     const clips = narration.cues.flatMap(c =>
@@ -374,15 +386,15 @@ export class Guide {
     );
     const wav = path.join(dir, 'narration.wav');
     const hasAudio = await mixNarration(clips, wav);
-    const mp4 = await toMp4(
-      path.join(dir, 'video.webm'),
+    const mp4 = await frames.encode(
       path.join(dir, 'video.mp4'),
       hasAudio ? wav : undefined,
+      end,
     );
     if (!mp4)
       this.testInfo.annotations.push({
         type: 'guide',
-        description: 'ffmpeg not found, skipped video.mp4',
+        description: 'ffmpeg not found, no video.mp4',
       });
     this.testInfo.annotations.push({ type: 'guide', description: dir });
   }
