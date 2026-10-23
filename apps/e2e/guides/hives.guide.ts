@@ -9,6 +9,7 @@ import {
 } from 'page-objects';
 import { expect, test } from './guide.fixture';
 import { seedHiveHistory } from './hive-history';
+import { allowStoredWeather, mockWeather } from './weather-mock';
 
 const NEW_HIVE = 'Meadow';
 /** A frame full of bees, from the landing page. */
@@ -16,9 +17,12 @@ const PHOTO = path.join(__dirname, '../../frontend/public/hero3.jpg');
 
 test.describe('Guides', { tag: ['@guide'] }, () => {
   test('Managing your hives', async ({ page, context, g, demo }) => {
-    test.setTimeout(10 * 60_000);
+    // Long: a recording with voice runs well over ten minutes.
+    test.setTimeout(30 * 60_000);
     await seedHiveHistory(demo.user.api, demo.hives['Hive 1'].id);
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await allowStoredWeather(page);
+    await mockWeather(page, demo.user.apiaryId);
 
     const sidebar = new AppSidebar(page);
     const list = new HiveListPage(page);
@@ -246,7 +250,9 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       voiceover: 'Hive 1 has been inspected all summer. Let’s open it.',
     });
     await expect(hive.heading('Hive 1')).toBeVisible();
-    await expect(actions.alert(/overdue for inspection/)).toBeVisible();
+    await expect(
+      actions.alert(/overdue for inspection \(10 days since/),
+    ).toBeVisible();
     await g.point(
       actions.alert(/overdue for inspection/),
       'Ten days since the last visit: overdue',
@@ -617,14 +623,17 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
     });
     await g.do(
       'Copy it, and paste it into any AI chat',
-      () => actions.copyLlmPrompt(),
+      async () => {
+        await actions.copyLlmPrompt();
+        // "Copied" only shows for a moment, so check it right away.
+        await expect(actions.llmCopyButton).toHaveText('Copied');
+      },
       {
         target: actions.llmCopyButton,
         voiceover:
           'Then copy it, and paste it into the AI chat of your choice, for a second opinion on how your hive is doing.',
       },
     );
-    await expect(actions.llmCopyButton).toHaveText('Copied');
     await actions.closeDialog();
 
     // -- Archive or delete ----------------------------------------------------

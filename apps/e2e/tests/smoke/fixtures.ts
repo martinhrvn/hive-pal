@@ -326,6 +326,16 @@ export class SmokeApi {
     );
   }
 
+  async updateHive(id: string, data: Record<string, unknown>) {
+    return this.json<SeedHive>(
+      await this.ctx.patch(`/api/hives/${id}`, {
+        data: { ...data, id },
+        headers: this.headers(),
+      }),
+      `PATCH /api/hives/${id}`,
+    );
+  }
+
   /** Replace a hive's box stack (`boxSchema` from shared-schemas). */
   async setBoxes(hiveId: string, boxes: Record<string, unknown>[]) {
     return this.json<unknown>(

@@ -13,24 +13,23 @@ work, **P3** is power features and the long tail.
 
 ## Done
 
-| File                       | Format   | Covers                                                              |
-| -------------------------- | -------- | ------------------------------------------------------------------- |
-| `getting-started.guide.ts` | Guide ✅ | Sign-up, apiary, first hives, hive layout, settings, dashboard tour |
-| `harvest.guide.ts`         | Guide ✅ | Recording a harvest: frames, weights, split between hives, finalize |
-| `quick-check.guide.ts`     | Short ✅ | Quick check at the hive: tags, note, timeline                       |
+| File                       | Format   | Covers                                                                                                                       |
+| -------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `getting-started.guide.ts` | Guide ✅ | Sign-up, apiary, first hives, hive layout, settings, dashboard tour                                                          |
+| `harvest.guide.ts`         | Guide ✅ | Recording a harvest: frames, weights, split between hives, finalize                                                          |
+| `quick-check.guide.ts`     | Short ✅ | Quick check at the hive: tags, note, timeline                                                                                |
+| `hives.guide.ts`           | Guide    | Creating a hive, alerts, todos, analytics, the box editor in detail, sidebar actions, archiving (script done; voice pending) |
 
 ## Hives
 
-| Idea                        | Format | P   | Flow                                                                                                         | Notes                                                                                            |
-| --------------------------- | ------ | --- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| **Your hive at a glance**   | Guide  | P1  | Hive detail: header stats, score cards, timeline, queen card, todos, treatment summary, charts               | Needs a seeded history (inspections, actions) to look alive                                      |
-| Box configuration           | Guide  | P2  | Box configurator: add a super, change frame counts, frame sizes; how it shows on the hive and in inspections | No drag and drop: works in the mobile pass too                                                   |
-| Splitting a colony          | Guide  | P2  | Split wizard: frames → new hive → queen → confirm; both hives afterwards                                     |                                                                                                  |
-| Split in 60 seconds         | Short  | P2  | Same flow, one pass                                                                                          |                                                                                                  |
-| Hive status changes         | Short  | P3  | Mark a hive dead, sold, combined; what happens to it in lists                                                |                                                                                                  |
-| QR codes for your hives     | Guide  | P2  | Print QR labels, then scan one with the + button to jump to the hive                                         | 🎥 Film printing, sticking the label on a hive and scanning it; the app part is a recorded guide |
-| Scan, inspect, done         | Short  | P2  | Scan a hive's QR code on the phone → quick check                                                             | 🎥 Phone footage of the scan, then the recorded quick check                                      |
-| Hive summary for an AI chat | Short  | P3  | "LLM prompt" dialog: copy a hive's history into ChatGPT/Claude                                               |                                                                                                  |
+| Idea                        | Format | P   | Flow                                                                     | Notes                                                                                            |
+| --------------------------- | ------ | --- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Splitting a colony          | Guide  | P2  | Split wizard: frames → new hive → queen → confirm; both hives afterwards |                                                                                                  |
+| Split in 60 seconds         | Short  | P2  | Same flow, one pass                                                      |                                                                                                  |
+| Hive status changes         | Short  | P3  | Mark a hive dead, sold, combined; what happens to it in lists            |                                                                                                  |
+| QR codes for your hives     | Guide  | P2  | Print QR labels, then scan one with the + button to jump to the hive     | 🎥 Film printing, sticking the label on a hive and scanning it; the app part is a recorded guide |
+| Scan, inspect, done         | Short  | P2  | Scan a hive's QR code on the phone → quick check                         | 🎥 Phone footage of the scan, then the recorded quick check                                      |
+| Hive summary for an AI chat | Short  | P3  | "LLM prompt" dialog: copy a hive's history into ChatGPT/Claude           |                                                                                                  |
 
 ## Inspections
 

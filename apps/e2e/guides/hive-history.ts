@@ -47,6 +47,14 @@ export async function seedHiveHistory(api: SmokeApi, hiveId: string) {
         : undefined,
     });
   }
+
+  // Each inspection re-checks the hive's alerts in the background, and those
+  // checks can finish out of order, leaving an alert about an older visit.
+  // A settings update runs one more check against the latest inspection.
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  await api.updateHive(hiveId, {
+    settings: { inspection: { frequencyDays: 7 } },
+  });
 }
 
 function box(
