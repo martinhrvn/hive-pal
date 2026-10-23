@@ -111,6 +111,11 @@ export class BoxEditorPage {
     await this.box(n).getByRole('button', { name: 'Remove box' }).click();
   }
 
+  /** An option in whichever select list is open. */
+  option(label: string): Locator {
+    return this.page.getByRole('option', { name: label, exact: true });
+  }
+
   /** English: "Brood Box", "Honey Super", "Feeder Box". */
   async setPurpose(label: string) {
     await this.purposeSelect.click();

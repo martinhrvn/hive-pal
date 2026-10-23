@@ -21,6 +21,11 @@ export class AppSidebar {
       .first();
   }
 
+  /** A hive's link in the sidebar's "Hives" list. */
+  hive(name: string): Locator {
+    return this.root.getByRole('link', { name, exact: true }).first();
+  }
+
   async open(label: string) {
     await this.nav(label).click();
   }

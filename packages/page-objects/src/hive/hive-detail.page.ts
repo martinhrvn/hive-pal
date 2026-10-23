@@ -44,7 +44,7 @@ export class HiveDetailPage {
       .first();
     this.header = page
       .getByRole('heading', { level: 1 })
-      .locator('xpath=ancestor::*[@data-slot="card"][1]');
+      .locator('xpath=ancestor::section[1]');
     this.statusButton = page.getByRole('button', {
       name: 'Change hive status',
     });

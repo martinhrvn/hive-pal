@@ -39,18 +39,15 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
     await g.chapter('Create a hive', 'Every option on the form', {
       voiceover: 'Let’s start by creating a new hive.',
     });
-    await g.do('Open Hives in the sidebar', () => sidebar.open('Hives'), {
-      target: sidebar.nav('Hives'),
-      voiceover: 'Your hives have their own page in the sidebar.',
+    await g.do('Open All Hives in the sidebar', () => list.openFromSidebar(), {
+      target: list.allHivesLink,
+      voiceover:
+        'Your hives are in the sidebar. All Hives opens the full list.',
     });
-    await g.do(
-      'Click “Create New Hive”',
-      () => actions.action('Create New Hive').click(),
-      {
-        target: actions.action('Create New Hive'),
-        voiceover: 'From here, click Create New Hive.',
-      },
-    );
+    await g.do('Click “Create New Hive”', () => list.createButton.click(), {
+      target: list.createButton,
+      voiceover: 'From here, click Create New Hive.',
+    });
     await g.do('Give it a name', () => form.nameInput.fill(NEW_HIVE), {
       target: form.nameInput,
       voiceover:
@@ -165,13 +162,12 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       },
     );
     await g.do(
-      'Open it from the hive list',
-      async () => {
-        await sidebar.open('Hives');
-        await list.openDetails(NEW_HIVE);
-      },
+      'It’s already in the sidebar',
+      () => sidebar.hive(NEW_HIVE).click(),
       {
-        voiceover: 'You’ll find it in the hive list. Let’s open it.',
+        target: sidebar.hive(NEW_HIVE),
+        voiceover:
+          'It’s already listed in the sidebar, with your other hives. Let’s open it.',
       },
     );
     await expect(hive.heading(NEW_HIVE)).toBeVisible();
@@ -185,14 +181,6 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       {
         voiceover:
           'This button shows the hive’s status. If a colony dies, or you sell it, change the status here, with the date it happened.',
-      },
-    );
-    await g.point(
-      hive.stats,
-      'A summary of the brood nest from your last inspection',
-      {
-        voiceover:
-          'Next to it, a short summary of the brood nest. It fills in from your inspections.',
       },
     );
 
@@ -253,16 +241,10 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
           'A new hive is a bit empty, so let’s look at one with a season behind it.',
       },
     );
-    await g.do(
-      'Open Hive 1',
-      async () => {
-        await sidebar.open('Hives');
-        await list.openDetails('Hive 1');
-      },
-      {
-        voiceover: 'Hive 1 has been inspected all summer. Let’s open it.',
-      },
-    );
+    await g.do('Open Hive 1', () => sidebar.hive('Hive 1').click(), {
+      target: sidebar.hive('Hive 1'),
+      voiceover: 'Hive 1 has been inspected all summer. Let’s open it.',
+    });
     await expect(hive.heading('Hive 1')).toBeVisible();
     await expect(actions.alert(/overdue for inspection/)).toBeVisible();
     await g.point(
@@ -404,7 +386,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       async () => {
         await boxes.purposeSelect.click();
         await page.waitForTimeout(1500);
-        await boxes.setPurpose('Honey Super');
+        await boxes.option('Honey Super').click();
       },
       {
         target: boxes.purposeSelect,
@@ -573,16 +555,10 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
           'Finally, let’s go back to our new hive and look at the sidebar.',
       },
     );
-    await g.do(
-      'Back to Meadow',
-      async () => {
-        await sidebar.open('Hives');
-        await list.openDetails(NEW_HIVE);
-      },
-      {
-        voiceover: 'Back to Meadow.',
-      },
-    );
+    await g.do('Back to Meadow', () => sidebar.hive(NEW_HIVE).click(), {
+      target: sidebar.hive(NEW_HIVE),
+      voiceover: 'Back to Meadow.',
+    });
     await expect(hive.heading(NEW_HIVE)).toBeVisible();
     await g.tour([
       [
