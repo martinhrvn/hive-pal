@@ -4,7 +4,7 @@
 //   pnpm guides:take hives
 //
 // Reads the spoken lines from out/guides/<slug>/script.md (a recording or CI
-// run writes it) and writes out/guides/<slug>/take.wav. The take is cached
+// run writes it) and writes out/guides/<slug>/take-<engine>.wav. The take is cached
 // like any other clip. It is not split into lines or used by the recording.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -66,7 +66,8 @@ const text = lines.join('\n\n');
 console.log(
   `[voice] ${slug}: ${lines.length} lines, ${text.length} characters`,
 );
-const clip = await voiceFromEnv().synthesize(text, dir, 'take');
+const voice = voiceFromEnv();
+const clip = await voice.synthesize(text, dir, `take-${voice.name}`);
 if (!clip) {
   console.error('No voice configured (GUIDE_VOICE).');
   process.exit(1);

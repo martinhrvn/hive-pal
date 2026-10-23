@@ -30,39 +30,6 @@ export class NoopVoice implements VoiceProvider {
   }
 }
 
-/**
- * Local TTS through the Piper CLI (https://github.com/rhasspy/piper).
- * Stub: expects `piper` on PATH and a voice model, e.g.
- *   GUIDE_VOICE=piper PIPER_MODEL=~/voices/en_GB-alba-medium.onnx
- */
-export class PiperVoice implements VoiceProvider {
-  readonly name = 'piper';
-
-  constructor(
-    private readonly model: string,
-    private readonly bin = 'piper',
-  ) {}
-
-  async synthesize(text: string, dir: string, id: string): Promise<VoiceClip> {
-    fs.mkdirSync(dir, { recursive: true });
-    const file = path.join(dir, `${id}.wav`);
-    const child = execFile(this.bin, [
-      '--model',
-      this.model,
-      '--output_file',
-      file,
-    ]);
-    child.stdin?.end(text);
-    await new Promise<void>((resolve, reject) => {
-      child.on('error', reject);
-      child.on('exit', code =>
-        code === 0 ? resolve() : reject(new Error(`piper exited with ${code}`)),
-      );
-    });
-    return { file, durationMs: wavDurationMs(file) };
-  }
-}
-
 /** Both cloud engines return 16-bit mono PCM at 24 kHz. */
 const TTS_SAMPLE_RATE = 24_000;
 
@@ -159,13 +126,17 @@ class Retryable extends Error {
 }
 
 /**
- * Base for HTTP engines that return raw PCM: caches each clip under
+ * Base for engines that return raw PCM: caches each clip under
  * VOICE_CACHE_DIR so re-recording neither pays nor waits for
  * unchanged lines, writes the WAV header itself, and waits out per-minute
  * rate limits (the Gemini free tier allows 3 TTS requests a minute).
  */
-abstract class CloudVoice implements VoiceProvider {
+abstract class CachedVoice implements VoiceProvider {
   abstract readonly name: string;
+  /** Sample rate of the PCM that fetchPcm returns. */
+  protected sampleRate = TTS_SAMPLE_RATE;
+  /** Space requests to GUIDE_VOICE_RPM; off for local engines. */
+  protected rateLimited = true;
   /** Everything besides the text that changes the audio. */
   protected abstract cacheKey(): unknown[];
   /** Everything besides the text that changes the audio, for the log. */
@@ -189,7 +160,7 @@ abstract class CloudVoice implements VoiceProvider {
       log(`generating with ${this.name} (${this.describe()})`);
       const started = Date.now();
       const pcm = await this.fetchWithRetry(text);
-      fs.writeFileSync(cached, pcmToWav(pcm, TTS_SAMPLE_RATE));
+      fs.writeFileSync(cached, pcmToWav(pcm, this.sampleRate));
       log(
         `done in ${seconds(Date.now() - started)}, ${seconds(wavDurationMs(cached))} of audio`,
       );
@@ -202,7 +173,7 @@ abstract class CloudVoice implements VoiceProvider {
   private async fetchWithRetry(text: string): Promise<Buffer> {
     for (let attempt = 1; ; attempt++) {
       try {
-        await nextRequestSlot();
+        if (this.rateLimited) await nextRequestSlot();
         return await this.fetchPcm(
           text,
           AbortSignal.timeout(REQUEST_TIMEOUT_MS),
@@ -272,7 +243,7 @@ function retryMs(res: Response, body: string): number {
  * Asks for raw PCM: streamed WAV responses can carry a placeholder data size,
  * which breaks wavDurationMs.
  */
-export class OpenAIVoice extends CloudVoice {
+export class OpenAIVoice extends CachedVoice {
   readonly name = 'openai';
 
   constructor(
@@ -327,7 +298,7 @@ const GEMINI_SEED = 7;
  *   GEMINI_TTS_VOICE   prebuilt voice, default from GUIDE_VOICE_PROFILE (Ludo)
  *   GUIDE_VOICE_STYLE  tone prompt, sent ahead of the text
  */
-export class GeminiVoice extends CloudVoice {
+export class GeminiVoice extends CachedVoice {
   readonly name = 'gemini';
 
   constructor(
@@ -414,6 +385,57 @@ export class GeminiVoice extends CloudVoice {
   }
 }
 
+/**
+ * Local TTS through the Piper CLI (https://github.com/OHF-Voice/piper1-gpl),
+ * free and with no rate limit. devenv provides `piper`; `piper-voice <name>`
+ * downloads a voice model.
+ *   GUIDE_VOICE=piper PIPER_MODEL=~/.cache/hive-pal/piper/en_US-ryan-high.onnx
+ *   PIPER_BIN          default piper
+ * Clips are cached like the cloud ones: starting Piper takes a few seconds,
+ * which would otherwise freeze the video at every cue.
+ */
+export class PiperVoice extends CachedVoice {
+  readonly name = 'piper';
+
+  constructor(
+    private readonly model: string,
+    private readonly bin = 'piper',
+  ) {
+    super();
+    this.rateLimited = false;
+    // Voices come at 16 or 22.05 kHz; the model's config says which.
+    const config = JSON.parse(fs.readFileSync(`${model}.json`, 'utf8')) as {
+      audio?: { sample_rate?: number };
+    };
+    this.sampleRate = config.audio?.sample_rate ?? 22_050;
+  }
+
+  protected cacheKey() {
+    return [path.basename(this.model)];
+  }
+
+  protected describe() {
+    return path.basename(this.model, '.onnx');
+  }
+
+  /** Raw 16-bit mono PCM on stdout (--output-raw). */
+  protected fetchPcm(text: string, signal: AbortSignal): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const child = execFile(
+        this.bin,
+        ['--model', this.model, '--output-raw'],
+        { encoding: 'buffer', maxBuffer: 1 << 30, signal },
+        (err, stdout, stderr) =>
+          err
+            ? reject(new Error(`piper failed: ${err.message}\n${stderr}`))
+            : resolve(stdout),
+      );
+      // One line in: piper speaks each input line as its own utterance.
+      child.stdin?.end(text.replace(/\s*\n\s*/g, ' '));
+    });
+  }
+}
+
 /** The PCM samples of a 24 kHz 16-bit mono WAV. */
 function wavPcm(wav: Buffer): Buffer {
   if (wav.readUInt32LE(24) !== TTS_SAMPLE_RATE || wav.readUInt16LE(34) !== 16)
@@ -469,7 +491,11 @@ export function voiceFromEnv(env = process.env): VoiceProvider {
     case 'piper':
       if (!env.PIPER_MODEL)
         throw new Error('GUIDE_VOICE=piper needs PIPER_MODEL');
-      return new PiperVoice(env.PIPER_MODEL, env.PIPER_BIN);
+      return new PiperVoice(
+        // .env.local values are not shell-expanded, so expand ~ here.
+        env.PIPER_MODEL.replace(/^~(?=\/)/, os.homedir()),
+        env.PIPER_BIN || undefined,
+      );
     case 'openai':
       if (!env.OPENAI_API_KEY)
         throw new Error('GUIDE_VOICE=openai needs OPENAI_API_KEY');

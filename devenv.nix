@@ -6,6 +6,9 @@ let
   # No config runs WebKit, and its build at this pin fails (libmanette missing).
   playwright-browsers =
     pkgs-playwright.playwright-driver.browsers.override { withWebkit = false; };
+  # The main nixpkgs pin builds piper's torch and onnxruntime with CUDA,
+  # which fails; this nixos-unstable pin has a plain, cached piper-tts 1.8.
+  pkgs-piper = import inputs.nixpkgs-piper { system = pkgs.stdenv.system; };
 in {
   packages = with pkgs; [
     nodejs_22
@@ -16,6 +19,8 @@ in {
     go-task
     gh
     prisma-engines
+    # Local voiceover for the living guides (GUIDE_VOICE=piper).
+    pkgs-piper.piper-tts
   ];
 
   env = {
@@ -97,6 +102,22 @@ in {
       echo "Traces (failures only): $(find "$dir" -name 'trace.zip' | wc -l) found under $dir"
       echo "Opening the HTML report; click a failed test and then 'Trace' to open the trace viewer."
       cd "$(git rev-parse --show-toplevel)/apps/e2e" && pnpm exec playwright show-report "$report"
+    '';
+
+    # Download a Piper voice for the guides into ~/.cache/hive-pal/piper.
+    #   piper-voice en_US-ryan-high     (previews: https://rhasspy.github.io/piper-samples/)
+    # Then: GUIDE_VOICE=piper PIPER_MODEL=~/.cache/hive-pal/piper/en_US-ryan-high.onnx
+    piper-voice.exec = ''
+      set -euo pipefail
+      name="''${1:?usage: piper-voice <name>, e.g. en_US-ryan-high}"
+      IFS=- read -r locale speaker quality <<< "$name"
+      dir="''${XDG_CACHE_HOME:-$HOME/.cache}/hive-pal/piper"
+      url="https://huggingface.co/rhasspy/piper-voices/resolve/main/''${locale%%_*}/$locale/$speaker/$quality/$name"
+      mkdir -p "$dir"
+      for ext in onnx onnx.json; do
+        [ -f "$dir/$name.$ext" ] || curl -fL --progress-bar -o "$dir/$name.$ext" "$url.$ext"
+      done
+      echo "PIPER_MODEL=$dir/$name.onnx"
     '';
 
     # Run the smoke suite locally against the pnpm dev stack (http://localhost:5173).

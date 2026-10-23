@@ -237,11 +237,11 @@ The default `NoopVoice` produces captions only. With a provider configured:
 
 Providers (`GUIDE_VOICE`):
 
-| Value    | Engine                                                                | Settings                                                    |
-| -------- | --------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `gemini` | [Gemini TTS](https://ai.google.dev/gemini-api/docs/speech-generation) | `GEMINI_API_KEY`, `GEMINI_TTS_MODEL` (gemini-3.8-flash-tts) |
-| `openai` | [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech)  | `OPENAI_API_KEY`, `OPENAI_TTS_MODEL` (gpt-4o-mini-tts)      |
-| `piper`  | Local [Piper](https://github.com/rhasspy/piper) CLI (stub)            | `PIPER_MODEL`, `PIPER_BIN`                                  |
+| Value    | Engine                                                                      | Settings                                                    |
+| -------- | --------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `gemini` | [Gemini TTS](https://ai.google.dev/gemini-api/docs/speech-generation)       | `GEMINI_API_KEY`, `GEMINI_TTS_MODEL` (gemini-3.8-flash-tts) |
+| `openai` | [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech)        | `OPENAI_API_KEY`, `OPENAI_TTS_MODEL` (gpt-4o-mini-tts)      |
+| `piper`  | Local [Piper](https://github.com/OHF-Voice/piper1-gpl), free, no rate limit | `PIPER_MODEL`, `PIPER_BIN`                                  |
 
 Keys and voice settings can go in the git-ignored `apps/e2e/.env.local`; the
 guides config reads only the `GUIDE_*`, `GEMINI_*`, `OPENAI_*` and `PIPER_*`
@@ -253,6 +253,18 @@ overrides the file:
 GUIDE_VOICE=gemini
 GEMINI_API_KEY=...
 ```
+
+devenv provides `piper`; `piper-voice <name>` downloads a voice
+([previews](https://rhasspy.github.io/piper-samples/)) into
+`~/.cache/hive-pal/piper` and prints its `PIPER_MODEL`:
+
+```bash
+piper-voice en_US-ryan-high
+GUIDE_VOICE=piper PIPER_MODEL=~/.cache/hive-pal/piper/en_US-ryan-high.onnx pnpm guides:voice hives
+```
+
+Piper clips are cached too, since starting Piper for every cue would stall
+the recording; `guides:voice` fills the cache in about a minute.
 
 ### Voice profiles
 
@@ -305,7 +317,7 @@ worker and spaces requests to `GUIDE_VOICE_RPM` per minute (default 9); on a
 ### One take for the whole guide
 
 `pnpm guides:take <slug>` sends the whole voiceover from a run's `script.md`
-as one TTS request and writes `out/guides/<slug>/take.wav`: one request instead
+as one TTS request and writes `out/guides/<slug>/take-<engine>.wav`: one request instead
 of one per line, in a single consistent voice. The take is not split into
 lines, so the recording does not use it yet.
 
