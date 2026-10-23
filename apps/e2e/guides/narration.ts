@@ -11,6 +11,8 @@ export type Cue = {
   text: string;
   /** Secondary line, e.g. a chapter's description. */
   detail?: string;
+  /** The voiceover, when it says more than the caption. */
+  spoken?: string;
   start: number;
   end: number;
   /** Screenshot taken while the cue was on screen, relative to the guide dir. */
@@ -85,6 +87,7 @@ export class Narration {
         lines.push(`## ${c.text}`, '');
         if (c.detail) lines.push(`_${c.detail}_`, '');
       } else lines.push(`**${clock(c.start)}** ${c.text}`, '');
+      if (c.spoken) lines.push(`> 🎙 ${c.spoken}`, '');
       if (c.shot) lines.push(`![${c.id}](${c.shot})`, '');
     }
     return lines.join('\n');

@@ -300,6 +300,10 @@ export class SmokeApi {
     date?: string;
     status?: 'COMPLETED' | 'SCHEDULED';
     notes?: string;
+    temperature?: number;
+    weatherConditions?: string;
+    /** `observationSchema` fields from shared-schemas, passed through. */
+    observations?: Record<string, unknown>;
     actions?: unknown[];
     apiaryId?: string;
   }) {
@@ -310,6 +314,36 @@ export class SmokeApi {
         headers: this.headers(apiaryId),
       }),
       'POST /api/inspections',
+    );
+  }
+
+  async listFrameSizes(): Promise<
+    { id: string; name: string; isBuiltIn: boolean }[]
+  > {
+    return this.json(
+      await this.ctx.get('/api/frame-sizes', { headers: this.headers() }),
+      'GET /api/frame-sizes',
+    );
+  }
+
+  async updateHive(id: string, data: Record<string, unknown>) {
+    return this.json<SeedHive>(
+      await this.ctx.patch(`/api/hives/${id}`, {
+        data: { ...data, id },
+        headers: this.headers(),
+      }),
+      `PATCH /api/hives/${id}`,
+    );
+  }
+
+  /** Replace a hive's box stack (`boxSchema` from shared-schemas). */
+  async setBoxes(hiveId: string, boxes: Record<string, unknown>[]) {
+    return this.json<unknown>(
+      await this.ctx.put(`/api/hives/${hiveId}/boxes`, {
+        data: { boxes },
+        headers: this.headers(),
+      }),
+      `PUT /api/hives/${hiveId}/boxes`,
     );
   }
 

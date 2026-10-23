@@ -78,7 +78,9 @@
         "recentInspections": "Nedávne prehliadky",
         "openMenu": "Otvoriť menu",
         "deleting": "Vymazáva sa...",
-        "tryAgain": "Skúsiť znova"
+        "tryAgain": "Skúsiť znova",
+        "resolve": "Vyriešiť",
+        "dismiss": "Skryť"
     },
     "status": {
         "loading": "Načítava sa...",

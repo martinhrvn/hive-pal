@@ -17,7 +17,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
     await page.goto('/');
     await expect(dashboard.hive('Hive 1')).toBeVisible();
 
-    await g.chapter('Quick check', 'Log what you saw in seconds');
+    await g.intro('Quick check', 'Log what you saw in seconds');
     await g.do(
       'At the hive? Open it on your phone',
       async () => {

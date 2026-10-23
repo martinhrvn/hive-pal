@@ -1,0 +1,28 @@
+{
+  "title": "Managing your hives in Hive Pal: setup, boxes, frame sizes and analytics",
+  "summary": "Everything about hives in Hive Pal: create a hive with a feature photo, autumn feeding target and inspection frequency, see what the daily alerts flag, follow a season on the Analytics charts, and set up the box stack in detail: box types, frame sizes including your own, frame counts, colours, queen excluders, winterizing and maintenance. We finish with the sidebar actions, QR codes, the LLM prompt, and archiving a hive.",
+  "tags": [
+    "hive management",
+    "beehive boxes",
+    "honey super",
+    "frame sizes",
+    "langstroth",
+    "dadant",
+    "autumn feeding",
+    "beekeeping records",
+    "beekeeping software"
+  ],
+  "hashtags": ["beekeeping", "beehive", "hivepal"],
+  "chapters": {
+    "Your hives": null,
+    "Advanced Settings: feeding and inspections": "Autumn feeding and inspection frequency",
+    "Alerts flag what needs your attention": "Daily alerts",
+    "Open Analytics": "Analytics charts",
+    "Frame size: pick from the list": "Frame sizes and custom sizes",
+    "Maximum frames: how many fit in the box": "Frames, colour, excluder, winter",
+    "Add a box": "Adding, moving and removing boxes",
+    "Cleaned the bottom board? Log it": "Maintenance",
+    "QR Code: a label for the hive": "QR codes and the LLM prompt",
+    "When a hive is gone: archive it, or delete it": "Archive or delete"
+  }
+}

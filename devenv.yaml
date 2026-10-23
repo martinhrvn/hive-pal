@@ -4,3 +4,5 @@ inputs:
     url: github:cachix/devenv-nixpkgs/rolling
   nixpkgs-playwright:
     url: github:NixOS/nixpkgs/4bc69b57b6fcb77304813077672217c4f677232f
+  nixpkgs-piper:
+    url: github:NixOS/nixpkgs/fe13242281a67641c0102cdb1087f0ebe586c7df

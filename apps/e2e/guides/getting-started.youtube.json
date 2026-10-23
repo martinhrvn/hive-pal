@@ -1,0 +1,16 @@
+{
+  "title": "Getting started with Hive Pal: account, apiary and hives in 5 minutes",
+  "summary": "A walkthrough of your first few minutes in Hive Pal, the free, open-source beekeeping app. We create an account, set up an apiary with its location and local weather, add hives, arrange them on the apiary minimap, adjust the settings, and take a tour of the dashboard.",
+  "tags": [
+    "beekeeping for beginners",
+    "beekeeping records",
+    "hive inspection app",
+    "apiary management",
+    "beekeeping software"
+  ],
+  "hashtags": ["beekeeping", "beekeepingapp", "hivepal"],
+  "chapters": {
+    "Getting started": "Create your account",
+    "Make it yours": "Make it yours: units, dates and language"
+  }
+}

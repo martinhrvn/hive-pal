@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Wrench, CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -78,25 +77,25 @@ const useMaintenanceAction = (
     setShowCalendar,
     handleMaintenance,
     isPending: createAction.isPending,
+    formatDate,
   };
 };
 
 const getLastMaintenanceLabel = (
   lastMaintenance: ActionResponse | undefined,
   t: (key: string) => string,
+  formatDate: (date: Date | string) => string,
 ) => {
   if (!lastMaintenance) return null;
-  const lastDate = format(new Date(lastMaintenance.date), 'PP');
+  const lastDate = formatDate(lastMaintenance.date);
   const lastStatus =
     lastMaintenance.details?.type === 'MAINTENANCE'
       ? lastMaintenance.details.status
       : null;
-  const statusLabel =
-    lastStatus === 'CLEANED'
-      ? t('inspection:form.actions.maintenance_section.cleaned')
-      : lastStatus === 'REPLACED'
-        ? t('inspection:form.actions.maintenance_section.replaced')
-        : t('inspection:form.actions.maintenance_section.title');
+  const statusKey = lastStatus ? lastStatus.toLowerCase() : 'title';
+  const statusLabel = t(
+    `inspection:form.actions.maintenance_section.${statusKey}`,
+  );
   return `${statusLabel} ${lastDate}`;
 };
 
@@ -115,9 +114,10 @@ export const MaintenancePopover = ({
     setShowCalendar,
     handleMaintenance,
     isPending,
+    formatDate,
   } = useMaintenanceAction(hiveId, component);
 
-  const label = getLastMaintenanceLabel(lastMaintenance, t);
+  const label = getLastMaintenanceLabel(lastMaintenance, t, formatDate);
 
   return (
     <Popover
@@ -129,6 +129,7 @@ export const MaintenancePopover = ({
     >
       <PopoverTrigger asChild>
         <button
+          type="button"
           className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
           title={t('inspection:form.actions.maintenance_section.title')}
         >
@@ -144,6 +145,7 @@ export const MaintenancePopover = ({
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <button
+              type="button"
               className={cn(
                 'flex items-center gap-1 hover:text-foreground transition-colors',
                 showCalendar && 'text-foreground',
@@ -151,7 +153,7 @@ export const MaintenancePopover = ({
               onClick={() => setShowCalendar(!showCalendar)}
             >
               <CalendarIcon className="h-3 w-3" />
-              {format(date, 'PP')}
+              {formatDate(date)}
             </button>
           </div>
 
@@ -169,6 +171,7 @@ export const MaintenancePopover = ({
 
           <div className="flex gap-2">
             <Button
+              type="button"
               size="sm"
               variant="outline"
               disabled={isPending}
@@ -182,6 +185,7 @@ export const MaintenancePopover = ({
               {t('inspection:form.actions.maintenance_section.cleaned')}
             </Button>
             <Button
+              type="button"
               size="sm"
               variant="outline"
               disabled={isPending}
@@ -215,9 +219,10 @@ export const MaintenanceInline = ({
     setShowCalendar,
     handleMaintenance,
     isPending,
+    formatDate,
   } = useMaintenanceAction(hiveId, component);
 
-  const label = getLastMaintenanceLabel(lastMaintenance, t);
+  const label = getLastMaintenanceLabel(lastMaintenance, t, formatDate);
 
   return (
     <div className="space-y-3">
@@ -225,6 +230,7 @@ export const MaintenanceInline = ({
 
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <button
+          type="button"
           className={cn(
             'flex items-center gap-1 hover:text-foreground transition-colors',
             showCalendar && 'text-foreground',
@@ -232,7 +238,7 @@ export const MaintenanceInline = ({
           onClick={() => setShowCalendar(!showCalendar)}
         >
           <CalendarIcon className="h-3 w-3" />
-          {format(date, 'PP')}
+          {formatDate(date)}
         </button>
       </div>
 
@@ -250,6 +256,7 @@ export const MaintenanceInline = ({
 
       <div className="flex gap-2">
         <Button
+          type="button"
           size="sm"
           variant="outline"
           disabled={isPending}
@@ -258,6 +265,7 @@ export const MaintenanceInline = ({
           {t('inspection:form.actions.maintenance_section.cleaned')}
         </Button>
         <Button
+          type="button"
           size="sm"
           variant="outline"
           disabled={isPending}

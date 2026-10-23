@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- YouTube thumbnail (1280×720) in the guides' intro-card look.
+         Filled in by render.mjs through the URL: title, sub, shot, crop, tilt. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,600..800&family=Manrope:wght@500;700&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        box-sizing: border-box;
+      }
+      body {
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        background: #15201e;
+        position: relative;
+        font-family: Manrope, sans-serif;
+      }
+      .hex {
+        position: absolute;
+        inset: 0;
+        opacity: 0.09;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 1 L55 16.5 L55 47.5 L28 63 L1 47.5 L1 16.5 Z M28 63 L28 97 M1 47.5 L-27 63 M55 47.5 L83 63' fill='none' stroke='%23E8C76A' stroke-width='1.5'/%3E%3C/svg%3E");
+        background-size: 84px 145px;
+      }
+      .glow,
+      .glow2 {
+        position: absolute;
+        width: 900px;
+        height: 900px;
+      }
+      .glow {
+        left: -250px;
+        top: -300px;
+        background: radial-gradient(
+          circle,
+          rgba(232, 199, 106, 0.22),
+          transparent 60%
+        );
+      }
+      .glow2 {
+        right: -300px;
+        bottom: -400px;
+        background: radial-gradient(
+          circle,
+          rgba(251, 191, 36, 0.18),
+          transparent 60%
+        );
+      }
+      .text {
+        position: absolute;
+        left: 72px;
+        top: 0;
+        bottom: 0;
+        width: 600px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 26px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: #fde68a;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        font-size: 26px;
+        text-transform: uppercase;
+      }
+      .brand img {
+        width: 64px;
+        height: 64px;
+      }
+      h1 {
+        font-family: 'Bricolage Grotesque';
+        font-variation-settings:
+          'opsz' 96,
+          'wdth' 90;
+        font-weight: 800;
+        font-size: 118px;
+        line-height: 0.92;
+        color: #fffbeb;
+        letter-spacing: -0.02em;
+      }
+      .bar {
+        width: 120px;
+        height: 10px;
+        border-radius: 5px;
+        background: #fbbf24;
+      }
+      .sub {
+        font-size: 38px;
+        font-weight: 700;
+        color: rgba(254, 243, 199, 0.85);
+        line-height: 1.15;
+      }
+      /* The screenshot: a crop of a guide shot, tilted, bleeding off the right edge. */
+      .shot {
+        position: absolute;
+        left: 650px;
+        top: 50%;
+        border-radius: 22px;
+        overflow: hidden;
+        box-shadow:
+          0 30px 80px rgba(0, 0, 0, 0.55),
+          0 0 0 6px rgba(251, 191, 36, 0.9);
+      }
+      .shot img {
+        position: absolute;
+        display: block;
+      }
+      body.no-shot .shot {
+        display: none;
+      }
+      body.no-shot .text {
+        width: 1100px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hex"></div>
+    <div class="glow"></div>
+    <div class="glow2"></div>
+    <div class="shot"><img alt="" /></div>
+    <div class="text">
+      <div class="brand">
+        <img src="../../../frontend/public/hive-pal-logo.png" alt="" />Hive Pal
+      </div>
+      <h1></h1>
+      <div class="bar"></div>
+      <div class="sub"></div>
+    </div>
+    <script>
+      const p = new URLSearchParams(location.search);
+      // "|" starts a new line, so titles can be broken by hand.
+      const lines = s => (s ?? '').split('|').map(l => l.trim());
+      for (const [sel, key] of [
+        ['h1', 'title'],
+        ['.sub', 'sub'],
+      ]) {
+        const el = document.querySelector(sel);
+        lines(p.get(key)).forEach((l, i) => {
+          if (i) el.append(document.createElement('br'));
+          el.append(l);
+        });
+      }
+
+      window.ready = (async () => {
+        await document.fonts.ready;
+        const src = p.get('shot');
+        if (!src) return document.body.classList.add('no-shot');
+        const img = document.querySelector('.shot img');
+        img.src = src;
+        await img.decode();
+        // crop=x,y,w,h in screenshot pixels; default: the whole shot.
+        const [x, y, w, h] = (
+          p.get('crop') ?? `0,0,${img.naturalWidth},${img.naturalHeight}`
+        )
+          .split(',')
+          .map(Number);
+        // Fit the crop into the right side: at most 760 wide (it may run off
+        // the edge) and 440 tall.
+        const scale = Math.min(760 / w, 440 / h);
+        const box = document.querySelector('.shot');
+        Object.assign(box.style, {
+          width: `${w * scale}px`,
+          height: `${h * scale}px`,
+          marginTop: `${(-h * scale) / 2}px`,
+          transform: `rotate(${p.get('tilt') ?? -4}deg)`,
+        });
+        Object.assign(img.style, {
+          width: `${img.naturalWidth * scale}px`,
+          left: `${-x * scale}px`,
+          top: `${-y * scale}px`,
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -112,7 +112,9 @@
     "recentInspections": "Recent Inspections",
     "openMenu": "Open menu",
     "deleting": "Deleting...",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "resolve": "Resolve",
+    "dismiss": "Dismiss"
   },
   "status": {
     "loading": "Loading...",

@@ -13,26 +13,37 @@ A guide is a Playwright spec (`guides/<name>.guide.ts`) that is two things at on
 cd apps/e2e
 pnpm test:guides       # CI mode: the guides as plain e2e tests
 pnpm test:e2e          # smoke suite + guides
+pnpm guides:voice      # GUIDE_PREPARE=1: generate the voiceover into the cache
 pnpm guides:record     # GUIDE=1: record every guide to out/guides/
 pnpm guides:record harvest            # one guide only
 GUIDE_PASSES=desktop,mobile pnpm guides:record   # also a portrait (Shorts) pass
 ```
 
-The target app comes from `BASE_URL` (default `http://localhost:5173`, i.e. `pnpm dev`).
+The target app comes from `BASE_URL`. Recording (`GUIDE=1`) defaults to
+`https://preview.hivepal.app`, so videos show the deployed app; the test runs
+default to `http://localhost:5173` (`pnpm dev`). Set `BASE_URL` to record a
+local change before it is deployed. No account is needed on the target: every
+guide signs up its own throwaway user.
 
 ## Output
 
 `out/guides/<slug>/` (git-ignored), where `<slug>` is the file name without
 `.guide.ts`, with `-mobile` appended for the mobile pass:
 
-| File            | What it is                                                                                   |
-| --------------- | -------------------------------------------------------------------------------------------- |
-| `video.webm`    | Recording made with Playwright's `page.screencast`                                           |
-| `video.mp4`     | H.264 copy (with narration audio when a voice is configured); skipped if `ffmpeg` is missing |
-| `captions.vtt`  | One WebVTT cue per chapter/say/point/do: soft subtitles, translation input, TTS script       |
-| `script.md`     | The whole narration as text with timestamps and a screenshot per cue                         |
-| `shots/*.png`   | Those screenshots                                                                            |
-| `narration.wav` | Voice clips placed at their cue times (only with `GUIDE_VOICE`)                              |
+| File             | What it is                                                                             |
+| ---------------- | -------------------------------------------------------------------------------------- |
+| `video.mp4`      | H.264, 30 fps, with narration audio when a voice is configured; needs `ffmpeg`         |
+| `captions.vtt`   | One WebVTT cue per chapter/say/point/do: soft subtitles, translation input, TTS script |
+| `script.md`      | The whole narration as text with timestamps and a screenshot per cue                   |
+| `shots/*.png`    | Those screenshots                                                                      |
+| `narration.wav`  | Voice clips placed at their cue times (only with `GUIDE_VOICE`)                        |
+| `soundtrack.wav` | Narration with background music (only with `GUIDE_MUSIC`)                              |
+| `youtube.md`     | Title, description with chapters, tags, upload checklist (from `<slug>.youtube.json`)  |
+
+The video is encoded once, at the end: `page.screencast` hands over each
+frame as the browser's JPEG, `FrameRecorder` (`media.ts`) writes them to
+`.frames/` and ffmpeg turns them into one x264 encode (CRF 16). Playwright's
+own recorder encodes real-time VP8, which smears fades and scrolling.
 
 Recording starts at the first `g.*` call, so navigation you do before it is not
 in the video. A failed recording still writes what it got, which shows where the
@@ -70,14 +81,48 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
 
 | Call                             | Guide mode                                                                              | CI mode                              |
 | -------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------ |
-| `g.chapter(title, description?)` | Full-screen title card                                                                  | nothing                              |
+| `g.intro(title, description?)`   | Opening card: logo, title, description; the first frame of the video                    | nothing                              |
+| `g.chapter(title, description?)` | Full-screen chapter card                                                                | nothing                              |
+| `g.outro(opts?)`                 | Closing card: free and open source, links, like / share / subscribe; stays to the end   | nothing                              |
 | `g.say(text, opts?)`             | Caption at the bottom                                                                   | nothing                              |
 | `g.point(locator, text, opts?)`  | Scroll into view, wait until stable, dim the page around it, caption bubble above/below | `expect(locator).toBeVisible()`      |
 | `g.tour([[locator, text], ...])` | `point` for each                                                                        | `expect(...).toBeVisible()` for each |
 | `g.do(text, fn, { target? })`    | Caption while `fn` runs, `target` highlighted first; returns `fn`'s result              | runs `fn`                            |
 
+The intro and chapter cards use the marketing site's look: forest green with
+honey hexagons, the logo, Bricolage Grotesque titles and Manrope text (Google
+Fonts, let through the third-party block in guide mode). Start a guide with
+`g.intro`; it is already on screen when the video starts.
+
+End a full guide with `g.outro()`: the same closing card everywhere (the
+text and links are `OUTRO` in `guide.fixture.ts`), with a spoken line, held
+for at least 15 s. On landscape it keeps to the left half, leaving the right
+half for YouTube's end-screen elements (subscribe button, next videos), which
+can cover the last 5 to 20 s; add them in YouTube Studio over that area. In
+portrait it stays above the bottom 28% that Shorts cover. Shorts can skip it:
+they have no end screens, and 15 s is a quarter of a Short.
+
 Each cue holds for its reading time (12 characters per second, at least 2.5 s);
 pass `{ holdMs }` to override. Nothing in this file waits outside guide mode.
+
+Every call also takes `{ voiceover }`: what the narrator says when it should
+be fuller than the caption. The caption stays short on screen, the voice
+speaks a whole sentence and the cue holds until it ends. Write the
+voiceovers as one continuous script, so lines connect ("This one shows…,"
+→ "and here’s…"), and spell out numbers ("eighteen kilos"). `tour` stops take
+it as a third element, `chapter` as its third argument; script.md lists each
+voiceover under its caption.
+
+```ts
+await g.point(
+  wizard.dateButton,
+  'It’s dated today. Click here to pick another day',
+  {
+    voiceover:
+      'The harvest is dated today. If you took the honey off on another day, click the date and pick the right one.',
+  },
+);
+```
 
 Spotlights and captions are drawn on a "stage" (`overlays.ts`): one element in
 its own shadow root under `<html>`, `aria-hidden` and `pointer-events: none`,
@@ -102,7 +147,7 @@ changes. Other inputs (dates, selects) keep the instant `fill`.
   a fact ("the totals are updated") so the guide fails when the fact is no longer true.
 - **Mix show, do and configure.** Point at what the page tells you, perform the
   main task end to end through the page object, and point at settings without changing them.
-- **Short, friendly captions:** under ~80 characters, written for beekeepers, not developers.
+- **Short, friendly captions:** under ~80 characters, written for beekeepers, not developers. Put the fuller explanation in `voiceover`.
 - **Length follows the format.** A full guide (desktop) has no length limit: it
   runs as long as the flow needs, and chapters let viewers skip around. A short
   (mobile pass, one task only) should stay around 60 seconds.
@@ -190,13 +235,137 @@ The default `NoopVoice` produces captions only. With a provider configured:
 - each cue holds for `max(reading time, audio duration)`, so the video waits for the voice;
 - the clips are positioned by cue start time into `narration.wav` and muxed into `video.mp4`.
 
-`PiperVoice` is a stub for the local [Piper](https://github.com/rhasspy/piper) CLI:
+Providers (`GUIDE_VOICE`):
+
+| Value    | Engine                                                                      | Settings                                                    |
+| -------- | --------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `gemini` | [Gemini TTS](https://ai.google.dev/gemini-api/docs/speech-generation)       | `GEMINI_API_KEY`, `GEMINI_TTS_MODEL` (gemini-3.8-flash-tts) |
+| `openai` | [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech)        | `OPENAI_API_KEY`, `OPENAI_TTS_MODEL` (gpt-4o-mini-tts)      |
+| `piper`  | Local [Piper](https://github.com/OHF-Voice/piper1-gpl), free, no rate limit | `PIPER_MODEL`, `PIPER_BIN`                                  |
+
+Keys and voice settings can go in the git-ignored `apps/e2e/.env.local`; the
+guides config reads only the `GUIDE_*`, `GEMINI_*`, `OPENAI_*` and `PIPER_*`
+variables from it (its `BASE_URL` is for `test:smoke:local`), and the shell
+overrides the file:
 
 ```bash
-GUIDE_VOICE=piper PIPER_MODEL=~/voices/en_GB-alba-medium.onnx pnpm guides:record
+# apps/e2e/.env.local
+GUIDE_VOICE=gemini
+GEMINI_API_KEY=...
 ```
 
+devenv provides `piper`; `piper-voice <name>` downloads a voice
+([previews](https://rhasspy.github.io/piper-samples/)) into
+`~/.cache/hive-pal/piper` and prints its `PIPER_MODEL`:
+
+```bash
+piper-voice en_US-ryan-high
+GUIDE_VOICE=piper PIPER_MODEL=~/.cache/hive-pal/piper/en_US-ryan-high.onnx pnpm guides:voice hives
+```
+
+Piper clips are cached too, since starting Piper for every cue would stall
+the recording; `guides:voice` fills the cache in about a minute.
+
+### Voice profiles
+
+`GUIDE_VOICE_PROFILE` picks a narrator: a tone prompt (or none) plus a
+matching voice for each engine (`VOICE_PROFILES` in `voice.ts`).
+
+| Profile              | Use                                  | Gemini voice | OpenAI voice |
+| -------------------- | ------------------------------------ | ------------ | ------------ |
+| `narrator` (default) | Full guides; no tone prompt          | Ludo         | coral        |
+| `upbeat`             | Shorts: bright, lively, a bit faster | Puck         | nova         |
+| `mentor`             | An experienced beekeeper, relaxed    | Charon       | ash          |
+
+```bash
+pnpm guides:record harvest
+GUIDE_PASSES=mobile GUIDE_VOICE_PROFILE=upbeat pnpm guides:record quick-check
+```
+
+Override one part of a profile with `GUIDE_VOICE_STYLE` (tone prompt; Gemini
+and the gpt-4o OpenAI models; `none` for no prompt), `GEMINI_TTS_VOICE` or `OPENAI_TTS_VOICE`. To add
+a profile, add an entry to `VOICE_PROFILES`.
+
+The cloud providers cache each clip in `~/.cache/hive-pal/guide-voice/`
+(`$XDG_CACHE_HOME` if set, or `GUIDE_VOICE_CACHE`), keyed by engine, model,
+voice, style and text, so re-recording only synthesizes lines that changed.
+The cache lives outside the repo so cleaning `out/` does not throw away
+clips that cost time and money, and every clone and worktree shares it;
+delete the folder to regenerate everything.
+
+Each clip is normalized to the same loudness (-16 LUFS) before mixing, since
+separate requests come back several dB apart. Gemini gets a fixed seed, so a
+line comes out the same every time; with a tone prompt, the prompt also treats
+every line as part of one recording session.
+
+### Generate first, then record
+
+Gemini TTS allows 10 requests a minute even on a paid key (3 on the free
+tier), and a line that is not cached yet freezes the video while it is
+generated. So generate the voiceover first, then record:
+
+```bash
+pnpm guides:voice harvest     # runs the guide as a plain test, fills the cache
+pnpm guides:record harvest    # every line from the cache: no waits
+```
+
+`guides:voice` targets the same app as recording (preview by default), since
+the flow, and so what is said, can differ between deployments. It runs on one
+worker and spaces requests to `GUIDE_VOICE_RPM` per minute (default 9); on a
+429 anyway, it waits as long as the API asks and retries.
+
+### One take for the whole guide
+
+`pnpm guides:take <slug>` sends the whole voiceover from a run's `script.md`
+as one TTS request and writes `out/guides/<slug>/take-<engine>.wav`: one request instead
+of one per line, in a single consistent voice. The take is not split into
+lines, so the recording does not use it yet.
+
 To add another engine, implement `VoiceProvider` and register it in `voiceFromEnv()`.
+
+### Background music
+
+`GUIDE_MUSIC` adds a music bed under the voice: levelled to the voice's
+loudness, then `GUIDE_MUSIC_VOLUME` dB lower (default -16, so it stays
+faint), looped or cut to the video's length, with a 2 s fade in and 3 s fade
+out. `narration.wav` stays voice only; the mix is `soundtrack.wav`, which
+goes into `video.mp4`.
+
+```bash
+# apps/e2e/.env.local
+GUIDE_MUSIC=~/.local/share/hive-pal/guide-music.mp3
+GUIDE_MUSIC_VOLUME=-16   # closer to 0 is louder
+```
+
+Keep the music file outside the repo: stock-music licences (Pixabay and the
+like) allow it in videos but not redistributing the file itself.
+
+## Thumbnails
+
+`pnpm guides:thumbnail <slug>` renders a YouTube thumbnail (1280×720) to
+`out/guides/<slug>/thumbnail.png` from `thumbnail/thumbnail.html`: the
+intro-card look with a title, a subtitle and a tilted crop of one of the
+recording's screenshots.
+
+```bash
+pnpm guides:thumbnail harvest --title "Honey|harvest" \
+  --sub "From frames to kilos,|hive by hive" \
+  --shot 030-point --crop 614,229,692,360 --tilt=-5
+```
+
+`|` breaks a line; `--crop x,y,w,h` is in screenshot pixels; without
+`--shot` the thumbnail is text only. The `living-guide` skill has tips for
+picking the screenshot, and for the video's title and description.
+
+## YouTube metadata
+
+`<slug>.youtube.json` next to a guide holds its title, summary, tags,
+hashtags and chapter markers. Each recording writes `youtube.md` (title,
+description with chapters and links, tags, upload checklist) and
+`youtube.json` next to the video, with chapter times from that recording
+and YouTube's chapter rules checked. `pnpm guides:metadata <slug>`
+regenerates them without recording. The generator is `youtube.ts`; the
+`living-guide` skill explains how to write the JSON.
 
 ## Adding a viewport pass
 

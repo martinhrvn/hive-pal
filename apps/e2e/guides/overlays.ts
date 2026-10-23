@@ -47,7 +47,29 @@ export type StageCommand =
   | { op: 'ring'; box: Box }
   /** Move the cursor to a point; `click` adds a ripple when it arrives. */
   | { op: 'cursor'; x: number; y: number; click: boolean }
-  | { op: 'hide'; parts: ('spot' | 'caption' | 'ring' | 'cursor')[] };
+  /** Full-screen Hive Pal card: the intro, a chapter title or the outro. */
+  | {
+      op: 'card';
+      kind: CardKind;
+      title: string;
+      description?: string;
+      /** Outro: where to find Hive Pal. */
+      links?: CardLink[];
+      /** Outro: like / share / subscribe pills. */
+      cta?: CardCta[];
+      titleSize: number;
+      textSize: number;
+      /** Show without fading in: the first frame of a video. */
+      instant?: boolean;
+    }
+  | {
+      op: 'hide';
+      parts: ('spot' | 'caption' | 'ring' | 'cursor' | 'card')[];
+    };
+
+export type CardKind = 'intro' | 'chapter' | 'outro';
+export type CardLink = { label: string; url: string };
+export type CardCta = { icon: 'like' | 'share' | 'subscribe'; label: string };
 
 function fontSize(viewport: Viewport): number {
   return viewport.width < 600 ? 18 : 22;
@@ -109,6 +131,28 @@ export function captionCommand(text: string, viewport: Viewport): StageCommand {
     maxWidth: Math.min(900, viewport.width - 32),
     fontSize: fontSize(viewport),
     bottom: bottomInset(viewport),
+  };
+}
+
+/** The intro, a chapter or the outro card, sized for the viewport. */
+export function cardCommand(
+  card: {
+    kind: CardKind;
+    title: string;
+    description?: string;
+    links?: CardLink[];
+    cta?: CardCta[];
+    instant?: boolean;
+  },
+  viewport: Viewport,
+): StageCommand {
+  const narrow = viewport.width < 600;
+  const wide = { intro: 64, chapter: 72, outro: 56 }[card.kind];
+  return {
+    op: 'card',
+    ...card,
+    titleSize: narrow ? (card.kind === 'outro' ? 32 : 38) : wide,
+    textSize: narrow ? 18 : card.kind === 'outro' ? 21 : 24,
   };
 }
 
@@ -222,11 +266,119 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
         from { opacity: 0.9; scale: 0.3; }
         to { opacity: 0; scale: 1.4; }
       }
+      /* Hive Pal card: the marketing site's forest section (hexagons in
+         honey, soft amber and emerald glows, Bricolage Grotesque + Manrope). */
+      #card {
+        inset: 0; overflow: hidden; background: #15201e; color: #fffbeb;
+        font-family: Manrope, ui-sans-serif, system-ui, sans-serif;
+        transition: opacity ${timing.fade * 1.5}ms ${ease};
+      }
+      #card .hex {
+        position: absolute; inset: -64px; opacity: 0.07;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='64' viewBox='0 0 56 64'><path d='M28 2l24 14v32L28 62 4 48V16L28 2z' fill='none' stroke='%23E8C76A' stroke-width='1'/></svg>");
+        background-size: 56px 64px; animation: card-drift 24s linear infinite;
+      }
+      @keyframes card-drift { to { translate: 56px 64px; } }
+      #card .glow { position: absolute; border-radius: 50%; }
+      /* Radial gradients, not blur(): a blurred layer gets hard clipped edges
+         in the captured frames. */
+      #card .glow.amber {
+        width: 70vmax; height: 70vmax; top: -32vmax; right: -24vmax;
+        background: radial-gradient(closest-side, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0));
+        animation: card-breathe 9s ease-in-out infinite alternate;
+      }
+      #card .glow.emerald {
+        width: 80vmax; height: 80vmax; bottom: -40vmax; left: -28vmax;
+        background: radial-gradient(closest-side, rgba(16, 185, 129, 0.16), rgba(16, 185, 129, 0));
+        animation: card-breathe 11s ease-in-out infinite alternate-reverse;
+      }
+      @keyframes card-breathe { from { scale: 0.92; } to { scale: 1.08; } }
+      #card .body {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        justify-content: center; padding: 0 9%; gap: 0.9em;
+      }
+      #card.intro .body { align-items: center; text-align: center; }
+      #card .rise {
+        opacity: 0; translate: 0 18px;
+        transition: opacity 600ms ${ease}, translate 600ms ${ease};
+      }
+      #card.on .rise { opacity: 1; translate: 0 0; }
+      #card.on .rise:nth-child(2) { transition-delay: 120ms; }
+      #card.on .rise:nth-child(3) { transition-delay: 240ms; }
+      #card.on .rise:nth-child(4) { transition-delay: 360ms; }
+      #card.on .rise:nth-child(5) { transition-delay: 480ms; }
+      #card.on .rise:nth-child(6) { transition-delay: 600ms; }
+      #card .logo { width: 7em; height: auto; filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.35)); }
+      #card.chapter .logo { display: none; }
+      #card .brand {
+        display: flex; align-items: center; gap: 0.7em;
+        font-size: 0.62em; font-weight: 600; letter-spacing: 0.14em;
+        text-transform: uppercase; color: rgba(253, 230, 138, 0.8);
+      }
+      #card .brand img { width: 1.9em; height: auto; }
+      #card.intro .brand img { display: none; }
+      #card .title {
+        margin: 0; max-width: 16em; line-height: 1.05; color: #fffbeb;
+        font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+        font-variation-settings: 'opsz' 96, 'wdth' 100, 'wght' 600; letter-spacing: -0.02em;
+      }
+      #card .desc { margin: 0; max-width: 30em; line-height: 1.45; color: rgba(255, 251, 235, 0.75); }
+      #card.chapter .desc { position: relative; padding-top: 1em; }
+      #card.chapter .desc::before {
+        content: ''; position: absolute; left: 0; top: 0;
+        width: 3em; height: 3px; border-radius: 2px; background: #fbbf24;
+      }
+      #card .desc:empty { display: none; }
+      /* Outro: on landscape everything sits in the left half, so YouTube's
+         end-screen elements (subscribe, next videos) have the right half. */
+      #card.outro .body { gap: 0.8em; }
+      #card.outro .logo { width: 4.2em; }
+      #card.outro .brand img { display: none; }
+      @media (min-width: 600px) { #card.outro .body { padding-right: 52%; } }
+      /* Portrait (Shorts): centred, above the bottom 28% that YouTube covers
+         with its own buttons, without the description to make room. */
+      @media (max-width: 599px) {
+        #card.outro .body { align-items: center; text-align: center; padding-bottom: 40%; }
+        #card.outro .pill { font-size: 0.8em; }
+        #card.outro .logo { width: 3.2em; }
+        #card.outro .desc { display: none; }
+      }
+      #card .links { display: grid; gap: 0.55em; margin-top: 0.3em; }
+      #card .links:empty, #card .cta:empty { display: none; }
+      #card .link { display: grid; gap: 0.1em; }
+      #card .link .label {
+        font-size: 0.62em; font-weight: 600; letter-spacing: 0.14em;
+        text-transform: uppercase; color: rgba(253, 230, 138, 0.8);
+      }
+      #card .link .url {
+        font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+        font-variation-settings: 'opsz' 48, 'wdth' 100, 'wght' 600; font-size: 1.1em;
+      }
+      #card .cta { display: flex; flex-wrap: wrap; gap: 0.5em; margin-top: 0.5em; }
+      @media (max-width: 599px) { #card .cta { justify-content: center; } }
+      #card .pill {
+        display: inline-flex; align-items: center; gap: 0.45em; padding: 0.4em 0.95em;
+        border-radius: 999px; border: 1.5px solid rgba(251, 191, 36, 0.6);
+        font-weight: 600; font-size: 0.9em;
+      }
+      #card .pill svg { width: 1.15em; height: 1.15em; }
+      #card .pill.subscribe { background: #fbbf24; border-color: #fbbf24; color: #15201e; }
     </style>
     <div id="hole" class="layer"></div>
     <div id="ring" class="layer"></div>
     <div id="tip" class="layer bubble"></div>
     <div id="caption" class="layer bubble"></div>
+    <div id="card" class="layer">
+      <div class="hex"></div><div class="glow amber"></div><div class="glow emerald"></div>
+      <div class="body">
+        <img class="logo rise" src="/hive-pal-logo.png" alt="" />
+        <div class="brand rise"><img src="/hive-pal-logo.png" alt="" />Hive Pal</div>
+        <div class="title rise"></div>
+        <p class="desc rise"></p>
+        <div class="links rise"></div>
+        <div class="cta rise"></div>
+      </div>
+    </div>
     <div id="cursor" class="layer">
       <div id="ripple"></div>
       <svg viewBox="0 0 24 24"><path d="M4 2 L4 20 L9 15.5 L12.5 22.5 L15.5 21 L12 14 L19 14 Z"
@@ -236,6 +388,35 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
     state = { root };
     w.__guideStage = state;
   }
+
+  /** Brand fonts (into the document: shadow roots use its @font-face) and the logo. */
+  const loadCardAssets = async (card: HTMLElement) => {
+    const id = 'hive-pal-guide-fonts';
+    if (!document.getElementById(id)) {
+      const link = document.createElement('link');
+      link.id = id;
+      link.rel = 'stylesheet';
+      link.href =
+        'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Manrope:wght@400;600&display=block';
+      const loaded = new Promise(r => {
+        link.onload = r;
+        link.onerror = r;
+      });
+      document.head.appendChild(link);
+      await Promise.race([loaded, sleep(4000)]);
+    }
+    await Promise.race([
+      Promise.all([
+        document.fonts.load("600 72px 'Bricolage Grotesque'"),
+        document.fonts.load('400 24px Manrope'),
+        document.fonts.load('600 16px Manrope'),
+        ...[...card.querySelectorAll('img')].map(img =>
+          img.decode().catch(() => {}),
+        ),
+      ]),
+      sleep(4000),
+    ]);
+  };
 
   const { root } = state;
   const el = (id: string) => root.getElementById(id) as HTMLElement;
@@ -347,6 +528,74 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
       cursor.style.translate = to;
       return sleep(timing.cursor).then(arrive);
     }
+    case 'card': {
+      const card = el('card');
+      const body = card.querySelector('.body') as HTMLElement;
+      // Already up (the intro is shown before the video starts).
+      if (
+        isOn(card) &&
+        card.classList.contains(cmd.kind) &&
+        card.querySelector('.title')?.textContent === cmd.title
+      )
+        return Promise.resolve();
+      const fill = () => {
+        card.className = `layer ${cmd.kind}`;
+        body.style.fontSize = `${cmd.textSize}px`;
+        const title = card.querySelector('.title') as HTMLElement;
+        title.textContent = cmd.title;
+        title.style.fontSize = `${cmd.titleSize}px`;
+        (card.querySelector('.desc') as HTMLElement).textContent =
+          cmd.description ?? '';
+        const links = card.querySelector('.links') as HTMLElement;
+        links.replaceChildren(
+          ...(cmd.links ?? []).map(l => {
+            const row = document.createElement('div');
+            row.className = 'link';
+            const label = document.createElement('span');
+            label.className = 'label';
+            label.textContent = l.label;
+            const url = document.createElement('span');
+            url.className = 'url';
+            url.textContent = l.url;
+            row.append(label, url);
+            return row;
+          }),
+        );
+        // Drawn icons: headless Chromium may have no emoji font.
+        const icons = {
+          like: '<path d="M7 10v11H3V10h4zm2 11h8.5a2 2 0 0 0 2-1.6l1.3-6.5A2 2 0 0 0 18.8 10H14l.9-4.3A1.6 1.6 0 0 0 13.3 4L9 10v11z"/>',
+          share:
+            '<path d="M14 5l7 7-7 7v-4c-5 0-8.5 1.5-11 5 1-5 4-10 11-11V5z"/>',
+          subscribe:
+            '<path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2z"/>',
+        };
+        const cta = card.querySelector('.cta') as HTMLElement;
+        cta.replaceChildren(
+          ...(cmd.cta ?? []).map(c => {
+            const pill = document.createElement('span');
+            pill.className = `pill ${c.icon}`;
+            pill.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor">${icons[c.icon]}</svg>`;
+            pill.append(c.label);
+            return pill;
+          }),
+        );
+      };
+      return loadCardAssets(card).then(() => {
+        if (cmd.instant) {
+          // Straight to the finished state, no transitions.
+          const all = [card, ...card.querySelectorAll<HTMLElement>('.rise')];
+          all.forEach(e => (e.style.transition = 'none'));
+          fill();
+          card.classList.add('on');
+          void card.offsetWidth;
+          all.forEach(e => (e.style.transition = ''));
+          return;
+        }
+        jump(card, fill);
+        show(card);
+        return sleep(timing.fade * 1.5 + 600);
+      });
+    }
     case 'hide': {
       const ids = cmd.parts.flatMap(p =>
         p === 'spot' ? ['hole', 'tip'] : [p],
@@ -363,6 +612,10 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
       if (cmd.parts.includes('caption')) hide(el('caption'));
       if (cmd.parts.includes('ring')) hide(el('ring'));
       if (cmd.parts.includes('cursor')) hide(el('cursor'));
+      if (cmd.parts.includes('card')) {
+        hide(el('card'));
+        return sleep(timing.fade * 1.5);
+      }
       return sleep(timing.fade);
     }
   }

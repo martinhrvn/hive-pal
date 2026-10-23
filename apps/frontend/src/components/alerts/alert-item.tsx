@@ -1,4 +1,5 @@
 import { X, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import type { AlertResponse } from 'shared-schemas';
 import { cn } from '@/lib/utils';
@@ -17,6 +18,7 @@ export function AlertItem({
 }: AlertItemProps) {
   const { isLoading, config, Icon, handleDismiss, handleResolve, timeAgo } =
     useAlertActions(alert);
+  const { t } = useTranslation('common');
 
   return (
     <div
@@ -38,8 +40,11 @@ export function AlertItem({
       {showActions && (
         <div className="flex items-center gap-1 flex-shrink-0">
           <Button
+            type="button"
             variant="ghost"
             size="sm"
+            aria-label={t('actions.resolve')}
+            title={t('actions.resolve')}
             onClick={handleResolve}
             disabled={isLoading}
             className="h-6 w-6 p-0 hover:bg-green-100 dark:hover:bg-green-900/30"
@@ -47,8 +52,11 @@ export function AlertItem({
             <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
           </Button>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
+            aria-label={t('actions.dismiss')}
+            title={t('actions.dismiss')}
             onClick={handleDismiss}
             disabled={isLoading}
             className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"

@@ -114,7 +114,12 @@
     "removeWinterization": "Zrušiť zazimovanie",
     "winterizeAllBoxes": "Zazimovať všetky nadstavky",
     "unwinterize": "Odzimovať",
-    "winterizeAll": "Zazimovať všetky"
+    "winterizeAll": "Zazimovať všetky",
+    "boxLabel": "Nadstavok {{number}}: {{type}}",
+    "selectBox": "Vybrať {{box}}",
+    "moveUp": "Posunúť nadstavok vyššie",
+    "moveDown": "Posunúť nadstavok nižšie",
+    "removeBox": "Odstrániť nadstavok"
   },
   "card": {
     "showDetails": "Zobraziť podrobnosti",
@@ -178,7 +183,9 @@
     "deletePermanentlyButton": "Odstrániť úľ",
     "deletePermanentlyDeleting": "Odstraňuje sa úľ...",
     "deletePermanentlySuccess": "Úľ {{name}} bol odstránený",
-    "deletePermanentlyFailed": "Úľ sa nepodarilo odstrániť"
+    "deletePermanentlyFailed": "Úľ sa nepodarilo odstrániť",
+    "archiveButton": "Archivovať",
+    "archiving": "Archivuje sa..."
   },
   "form": {
     "selectHive": "Vybrať úľ",

@@ -66,23 +66,23 @@ export function MonthSelectField<T extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <Select
-              onValueChange={value => field.onChange(Number(value))}
-              value={field.value?.toString()}
-            >
+          <Select
+            onValueChange={value => field.onChange(Number(value))}
+            value={field.value?.toString()}
+          >
+            <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder={t('months.selectMonth')} />
               </SelectTrigger>
-              <SelectContent>
-                {MONTHS.map(month => (
-                  <SelectItem key={month.value} value={month.value.toString()}>
-                    {t(`months.${month.key}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FormControl>
+            </FormControl>
+            <SelectContent>
+              {MONTHS.map(month => (
+                <SelectItem key={month.value} value={month.value.toString()}>
+                  {t(`months.${month.key}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>

@@ -302,6 +302,7 @@ export const CompactBoxConfig = ({
                 </div>
                 <div className="flex gap-2 justify-end">
                   <Button
+                    type="button"
                     variant="outline"
                     size="sm"
                     className="h-7 text-xs"
@@ -310,6 +311,7 @@ export const CompactBoxConfig = ({
                     {t('common:actions.cancel')}
                   </Button>
                   <Button
+                    type="button"
                     size="sm"
                     className="h-7 text-xs"
                     onClick={() => {
