@@ -1,5 +1,7 @@
 import { Locator, Page } from '@playwright/test';
+import { BoxEditorPage } from './box-editor.page';
 
+/** `/hives/create` and `/hives/:id/edit` */
 export class HiveFormPage {
   private readonly page: Page;
   readonly nameInput: Locator;
@@ -10,6 +12,21 @@ export class HiveFormPage {
   readonly calendar: Locator;
   /** "Submit" on create, "Save" on edit. */
   readonly submitButton: Locator;
+  /** "Feature Photo (optional)": the picker block, its hidden file input and preview. */
+  readonly featurePhoto: Locator;
+  readonly featurePhotoInput: Locator;
+  readonly featurePhotoPreview: Locator;
+  /** Collapsible "Advanced Settings": autumn feeding and inspection frequency. */
+  readonly advancedSettingsToggle: Locator;
+  readonly autumnStartSelect: Locator;
+  readonly autumnEndSelect: Locator;
+  readonly autumnTargetInput: Locator;
+  readonly inspectionFrequencyInput: Locator;
+  /** Collapsible "Box Configuration" with the "Configure initial box setup" checkbox. */
+  readonly boxConfigToggle: Locator;
+  readonly configureBoxesCheckbox: Locator;
+  /** The simplified box builder shown once boxes are configured. */
+  readonly boxes: BoxEditorPage;
 
   constructor(page: Page) {
     this.page = page;
@@ -21,6 +38,61 @@ export class HiveFormPage {
     });
     this.calendar = page.locator('.rdp-month');
     this.submitButton = page.getByRole('button', { name: /^(Submit|Save)$/ });
+    this.featurePhoto = page
+      .getByText('Feature Photo', { exact: false })
+      .first()
+      .locator('..');
+    this.featurePhotoInput = page.locator('form input[type="file"]');
+    this.featurePhotoPreview = this.featurePhoto.getByRole('img');
+    this.advancedSettingsToggle = page.getByRole('button', {
+      name: 'Advanced Settings',
+    });
+    this.autumnStartSelect = page.getByRole('combobox', {
+      name: 'Autumn Feeding Start',
+    });
+    this.autumnEndSelect = page.getByRole('combobox', {
+      name: 'Autumn Feeding End',
+    });
+    this.autumnTargetInput = page.getByLabel('Target Autumn Feeding (kg)');
+    this.inspectionFrequencyInput = page.getByLabel(
+      'Inspection Frequency (days)',
+    );
+    this.boxConfigToggle = page.getByRole('button', {
+      name: 'Box Configuration',
+    });
+    this.configureBoxesCheckbox = page.getByLabel(
+      'Configure initial box setup',
+    );
+    this.boxes = new BoxEditorPage(page, page.locator('form'));
+  }
+
+  /** Upload a feature photo; it is stored right away, before the form is saved. */
+  async uploadFeaturePhoto(file: string) {
+    const uploaded = this.page.waitForResponse(
+      res =>
+        res.url().includes('/api/photos') && res.request().method() === 'POST',
+    );
+    await this.featurePhotoInput.setInputFiles(file);
+    await uploaded;
+  }
+
+  async openAdvancedSettings() {
+    if (
+      (await this.advancedSettingsToggle.getAttribute('aria-expanded')) !==
+      'true'
+    )
+      await this.advancedSettingsToggle.click();
+  }
+
+  /** English month name, e.g. "August". */
+  async selectMonth(select: Locator, month: string) {
+    await select.click();
+    await this.page.getByRole('option', { name: month, exact: true }).click();
+  }
+
+  async openBoxConfiguration() {
+    if ((await this.boxConfigToggle.getAttribute('aria-expanded')) !== 'true')
+      await this.boxConfigToggle.click();
   }
 
   async openApiaryDropdown() {
