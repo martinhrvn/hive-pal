@@ -47,10 +47,17 @@ export const BoxItem = ({
     return classes[type] || 'bg-gray-100 text-gray-800 border-gray-200';
   };
 
+  const boxLabel = t('boxConfigurator.boxLabel', {
+    number: box.position + 1,
+    type: boxTypeLabel,
+  });
+
   return (
     <div
+      role="group"
+      aria-label={boxLabel}
       className={cn(
-        'relative w-64 rounded border-2 cursor-pointer transition-all',
+        'relative w-64 rounded border-2 transition-all',
         isSelected && isEditing ? 'ring-2 ring-primary ring-offset-2' : '',
         isEditing ? 'hover:shadow-lg' : '',
       )}
@@ -59,7 +66,6 @@ export const BoxItem = ({
         backgroundColor: box.color || defaultColor,
         borderColor: 'rgba(0, 0, 0, 0.2)',
       }}
-      onClick={isEditing ? onSelect : undefined}
     >
       {/* Winterized indicator in upper left */}
       {box.winterized && (
@@ -102,9 +108,11 @@ export const BoxItem = ({
       {isEditing && (
         <div className="absolute -right-12 top-1/2 -translate-y-1/2 flex flex-col gap-1">
           <Button
+            type="button"
             size="icon"
             variant="ghost"
             className="h-8 w-8"
+            aria-label={t('boxConfigurator.moveUp')}
             onClick={e => {
               e.stopPropagation();
               onMoveUp();
@@ -114,9 +122,11 @@ export const BoxItem = ({
             <ChevronUp className="h-4 w-4" />
           </Button>
           <Button
+            type="button"
             size="icon"
             variant="ghost"
             className="h-8 w-8"
+            aria-label={t('boxConfigurator.moveDown')}
             onClick={e => {
               e.stopPropagation();
               onMoveDown();
@@ -126,9 +136,11 @@ export const BoxItem = ({
             <ChevronDown className="h-4 w-4" />
           </Button>
           <Button
+            type="button"
             size="icon"
             variant="ghost"
             className="h-8 w-8 text-destructive"
+            aria-label={t('boxConfigurator.removeBox')}
             onClick={e => {
               e.stopPropagation();
               onRemove();
@@ -147,6 +159,17 @@ export const BoxItem = ({
             'repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px)',
         }}
       />
+
+      {/* Transparent button over the whole box: selects it for editing */}
+      {isEditing && (
+        <button
+          type="button"
+          className="absolute inset-0 cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label={t('boxConfigurator.selectBox', { box: boxLabel })}
+          aria-pressed={isSelected}
+          onClick={onSelect}
+        />
+      )}
     </div>
   );
 };

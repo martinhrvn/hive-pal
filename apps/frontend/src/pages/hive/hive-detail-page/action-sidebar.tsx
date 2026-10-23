@@ -260,6 +260,8 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
             defaultValue:
               'Are you sure you want to remove this hive? The hive will be archived and its data removed from active view.',
           })}
+          confirmLabel={t('hive:manage.archiveButton')}
+          pendingLabel={t('hive:manage.archiving')}
         />
       </ActionSidebarContainer>
 

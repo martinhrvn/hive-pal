@@ -17,6 +17,10 @@ interface DeleteConfirmDialogProps {
   readonly isPending?: boolean;
   readonly title: string;
   readonly description: string;
+  /** Confirm button text; defaults to "Delete". */
+  readonly confirmLabel?: string;
+  /** Confirm button text while pending; defaults to "Deleting...". */
+  readonly pendingLabel?: string;
 }
 
 export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
@@ -26,6 +30,8 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
   isPending = false,
   title,
   description,
+  confirmLabel,
+  pendingLabel,
 }) => {
   const { t } = useTranslation('common');
 
@@ -50,8 +56,10 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
             disabled={isPending}
           >
             {isPending
-              ? t('actions.deleting', { defaultValue: 'Deleting...' })
-              : t('actions.delete', { defaultValue: 'Delete' })}
+              ? (pendingLabel ??
+                t('actions.deleting', { defaultValue: 'Deleting...' }))
+              : (confirmLabel ??
+                t('actions.delete', { defaultValue: 'Delete' }))}
           </Button>
         </DialogFooter>
       </DialogContent>

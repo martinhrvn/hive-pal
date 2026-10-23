@@ -113,7 +113,12 @@
     "removeWinterization": "Remove winterization",
     "winterizeAllBoxes": "Winterize all boxes",
     "unwinterize": "Unwinterize",
-    "winterizeAll": "Winterize All"
+    "winterizeAll": "Winterize All",
+    "boxLabel": "Box {{number}}: {{type}}",
+    "selectBox": "Select {{box}}",
+    "moveUp": "Move box up",
+    "moveDown": "Move box down",
+    "removeBox": "Remove box"
   },
   "card": {
     "showDetails": "Show details",
@@ -231,7 +236,9 @@
     "deletePermanentlyButton": "Delete hive",
     "deletePermanentlyDeleting": "Deleting hive...",
     "deletePermanentlySuccess": "Hive {{name}} was deleted",
-    "deletePermanentlyFailed": "Failed to delete the hive"
+    "deletePermanentlyFailed": "Failed to delete the hive",
+    "archiveButton": "Archive",
+    "archiving": "Archiving..."
   },
   "form": {
     "selectHive": "Select a hive",

@@ -350,6 +350,7 @@ export const BoxConfigPanel = ({
                 </div>
                 <div className="flex gap-2 justify-end">
                   <Button
+                    type="button"
                     variant="outline"
                     size="sm"
                     onClick={() => setShowCustomFields(false)}
@@ -357,6 +358,7 @@ export const BoxConfigPanel = ({
                     {t('common:actions.cancel')}
                   </Button>
                   <Button
+                    type="button"
                     size="sm"
                     onClick={handleCustomSubmit}
                     disabled={
