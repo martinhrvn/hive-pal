@@ -9,7 +9,7 @@ import {
   type SmokeUser,
 } from '../tests/smoke/fixtures';
 import { caption, type Caption } from './captions';
-import { FrameRecorder, mixNarration } from './media';
+import { addMusic, FrameRecorder, mixNarration } from './media';
 import { Narration, readingTimeMs, type Cue, type CueKind } from './narration';
 import {
   captionCommand,
@@ -379,18 +379,23 @@ export class Guide {
     });
     await this.page.waitForTimeout(300).catch(() => {});
     const end = Date.now();
+    const durationMs = narration.now();
     await this.page.screencast.stop();
     narration.write(dir);
     const clips = narration.cues.flatMap(c =>
       c.voice ? [{ clip: c.voice, startMs: c.start }] : [],
     );
     const wav = path.join(dir, 'narration.wav');
-    const hasAudio = await mixNarration(clips, wav);
-    const mp4 = await frames.encode(
-      path.join(dir, 'video.mp4'),
-      hasAudio ? wav : undefined,
-      end,
-    );
+    let audio = (await mixNarration(clips, wav)) ? wav : undefined;
+    // .env.local values are not shell-expanded, so expand ~ here.
+    const music = process.env.GUIDE_MUSIC?.replace(/^~(?=\/)/, os.homedir());
+    if (music) {
+      const soundtrack = path.join(dir, 'soundtrack.wav');
+      const volume = Number(process.env.GUIDE_MUSIC_VOLUME ?? -16);
+      if (await addMusic(music, audio, durationMs, soundtrack, volume))
+        audio = soundtrack;
+    }
+    const mp4 = await frames.encode(path.join(dir, 'video.mp4'), audio, end);
     if (!mp4)
       this.testInfo.annotations.push({
         type: 'guide',

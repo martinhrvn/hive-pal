@@ -1,6 +1,6 @@
 ---
 name: living-guide
-description: Write, voice and record a Hive Pal living guide (narrated Playwright video in apps/e2e/guides). Use when adding or changing a guide, writing its voiceover script, generating the TTS narration, or recording/re-recording guide videos.
+description: Write, voice, record and publish a Hive Pal living guide (narrated Playwright video in apps/e2e/guides). Use when adding or changing a guide, writing its voiceover script, generating the TTS narration, recording guide videos, or making a guide's YouTube thumbnail, title and description.
 ---
 
 # Living guides: script, voice, video
@@ -99,6 +99,10 @@ GUIDE_PASSES=mobile GUIDE_VOICE_PROFILE=upbeat pnpm guides:record quick-check
   second one by mistake throws away the first one's `out/guides/<slug>/`.
 - Run `guides:voice` first. A cache miss during recording freezes the video
   while the clip is generated, and gets rate limited.
+- Background music comes from `GUIDE_MUSIC` (a file outside the repo) at
+  `GUIDE_MUSIC_VOLUME` dB under the voice (default -16). See the README.
+- Gemini also caps each TTS model at 100 requests a day on this key; the
+  quota resets at midnight Pacific. Re-voicing every guide uses most of it.
 - It records `https://preview.hivepal.app` (latest main) by default. Set `BASE_URL`
   only to record an undeployed local change.
 - Run it in the background and wait for it to finish; don't poll with new runs.
@@ -121,3 +125,49 @@ and a screenshot) and `shots/`.
 - Skim `script.md` for lines that no longer match the screen.
 - Report the length, clip count and any failed pass to the user. Don't commit
   `out/`; it is git-ignored.
+
+## 6. Thumbnail
+
+`pnpm guides:thumbnail` renders a 1280×720 PNG from
+`apps/e2e/guides/thumbnail/thumbnail.html`, in the intro-card look: forest
+green, honey hexagons, logo, a big Bricolage title, a subtitle, and a tilted
+crop of one of the guide's screenshots.
+
+```bash
+cd apps/e2e
+pnpm guides:thumbnail harvest --title "Honey|harvest" \
+  --sub "From frames to kilos,|hive by hive" \
+  --shot 030-point --crop 614,229,692,360 --tilt=-5
+# → out/guides/harvest/thumbnail.png
+```
+
+- **Title:** two or three words, split over two lines with `|`. It has to read
+  at phone size, so no more than about 8 characters per line.
+- **Subtitle:** the promise of the video in a few words, also split with `|`.
+- **Screenshot:** pick from the recording's `shots/` (the names are listed in
+  `script.md`). Choose the most visual moment, not the busiest page: a card, a
+  result, something coloured (harvest uses the orange share card). Crop to that
+  element with `--crop x,y,w,h` in screenshot pixels (1920×1080). Avoid
+  captions and the dimmed spotlight in the crop. Leave `--shot` out for a
+  text-only thumbnail.
+- Run it inside the dev shell on NixOS (it launches Chromium):
+  `env -u LD_LIBRARY_PATH devenv shell -- bash -c 'cd apps/e2e && pnpm guides:thumbnail …'`.
+- Look at the PNG before handing it over, then tell the user the command you
+  used, so it can be re-rendered after the next recording.
+
+## 7. YouTube title and description
+
+- **Title:** what the viewer will do, plus "in Hive Pal", e.g. "Recording a
+  honey harvest in Hive Pal: from frames to kilos, hive by hive". Under about
+  70 characters before the colon part.
+- **Description:** two or three plain sentences on what the video covers (for
+  beekeepers; no sales language: Hive Pal is free and open source, with no
+  paid tier), then chapters, then links:
+  - Chapters come from the chapter and intro cues in `captions.vtt`
+    (`awk '/^[0-9]+-(chapter|intro)/{getline t; getline x; print substr(t,4,5), x}' captions.vtt`).
+    YouTube needs the first at `0:00`, at least three, each at least 10 s
+    long. If the guide has fewer chapter cards, split at natural points in
+    the cue list.
+  - Links: https://hivepal.app, https://docs.hivepal.app,
+    https://github.com/martinhrvn/hive-pal, then two or three hashtags.
+- **Subtitles:** upload `captions.vtt` (Subtitles → Upload file → With timing).

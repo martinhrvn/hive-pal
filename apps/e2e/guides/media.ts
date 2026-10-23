@@ -36,6 +36,44 @@ export async function mixNarration(
   return true;
 }
 
+/**
+ * Lay a music bed under the narration: levelled like the voice (-16 LUFS),
+ * then `volumeDb` lower so it stays in the background, looped or cut to the
+ * video's length and faded in and out. Without narration the music plays
+ * alone. Returns false when ffmpeg is unavailable.
+ */
+export async function addMusic(
+  music: string,
+  narration: string | undefined,
+  durationMs: number,
+  out: string,
+  volumeDb = -16,
+): Promise<boolean> {
+  if (!(await hasFfmpeg())) return false;
+  const dur = durationMs / 1000;
+  const fadeOut = Math.min(3, dur / 2);
+  const bed =
+    `[0]atrim=0:${dur},loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000,` +
+    `volume=${volumeDb}dB,afade=t=in:d=2,afade=t=out:st=${dur - fadeOut}:d=${fadeOut}`;
+  const filter = narration
+    ? `${bed}[bed];[1]aresample=48000[voice];[voice][bed]amix=inputs=2:duration=longest:normalize=0`
+    : bed;
+  await run('ffmpeg', [
+    '-y',
+    '-stream_loop',
+    '-1',
+    '-i',
+    music,
+    ...(narration ? ['-i', narration] : []),
+    '-filter_complex',
+    filter,
+    '-t',
+    String(dur),
+    out,
+  ]);
+  return true;
+}
+
 let ffmpeg: Promise<boolean> | undefined;
 export function hasFfmpeg(): Promise<boolean> {
   ffmpeg ??= run('ffmpeg', ['-version']).then(

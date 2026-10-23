@@ -28,6 +28,8 @@ if (fs.existsSync(envLocal)) {
  *   GUIDE_VOICE_PROFILE  narrator (default) | upbeat | mentor
  *   GUIDE_VOICE_RPM TTS requests per minute (default 9)
  *   GUIDE_VOICE_CACHE  voice clip cache (default ~/.cache/hive-pal/guide-voice)
+ *   GUIDE_MUSIC     background music file, mixed faintly under the voice
+ *   GUIDE_MUSIC_VOLUME  music level relative to the voice, in dB (default -16)
  *   BASE_URL        target origin (default: https://preview.hivepal.app when
  *                   recording or preparing, http://localhost:5173 otherwise)
  */

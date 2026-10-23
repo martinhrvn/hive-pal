@@ -30,13 +30,14 @@ guide signs up its own throwaway user.
 `out/guides/<slug>/` (git-ignored), where `<slug>` is the file name without
 `.guide.ts`, with `-mobile` appended for the mobile pass:
 
-| File            | What it is                                                                             |
-| --------------- | -------------------------------------------------------------------------------------- |
-| `video.mp4`     | H.264, 30 fps, with narration audio when a voice is configured; needs `ffmpeg`         |
-| `captions.vtt`  | One WebVTT cue per chapter/say/point/do: soft subtitles, translation input, TTS script |
-| `script.md`     | The whole narration as text with timestamps and a screenshot per cue                   |
-| `shots/*.png`   | Those screenshots                                                                      |
-| `narration.wav` | Voice clips placed at their cue times (only with `GUIDE_VOICE`)                        |
+| File             | What it is                                                                             |
+| ---------------- | -------------------------------------------------------------------------------------- |
+| `video.mp4`      | H.264, 30 fps, with narration audio when a voice is configured; needs `ffmpeg`         |
+| `captions.vtt`   | One WebVTT cue per chapter/say/point/do: soft subtitles, translation input, TTS script |
+| `script.md`      | The whole narration as text with timestamps and a screenshot per cue                   |
+| `shots/*.png`    | Those screenshots                                                                      |
+| `narration.wav`  | Voice clips placed at their cue times (only with `GUIDE_VOICE`)                        |
+| `soundtrack.wav` | Narration with background music (only with `GUIDE_MUSIC`)                              |
 
 The video is encoded once, at the end: `page.screencast` hands over each
 frame as the browser's JPEG, `FrameRecorder` (`media.ts`) writes them to
@@ -292,6 +293,40 @@ worker and spaces requests to `GUIDE_VOICE_RPM` per minute (default 9); on a
 429 anyway, it waits as long as the API asks and retries.
 
 To add another engine, implement `VoiceProvider` and register it in `voiceFromEnv()`.
+
+### Background music
+
+`GUIDE_MUSIC` adds a music bed under the voice: levelled to the voice's
+loudness, then `GUIDE_MUSIC_VOLUME` dB lower (default -16, so it stays
+faint), looped or cut to the video's length, with a 2 s fade in and 3 s fade
+out. `narration.wav` stays voice only; the mix is `soundtrack.wav`, which
+goes into `video.mp4`.
+
+```bash
+# apps/e2e/.env.local
+GUIDE_MUSIC=~/.local/share/hive-pal/guide-music.mp3
+GUIDE_MUSIC_VOLUME=-16   # closer to 0 is louder
+```
+
+Keep the music file outside the repo: stock-music licences (Pixabay and the
+like) allow it in videos but not redistributing the file itself.
+
+## Thumbnails
+
+`pnpm guides:thumbnail <slug>` renders a YouTube thumbnail (1280×720) to
+`out/guides/<slug>/thumbnail.png` from `thumbnail/thumbnail.html`: the
+intro-card look with a title, a subtitle and a tilted crop of one of the
+recording's screenshots.
+
+```bash
+pnpm guides:thumbnail harvest --title "Honey|harvest" \
+  --sub "From frames to kilos,|hive by hive" \
+  --shot 030-point --crop 614,229,692,360 --tilt=-5
+```
+
+`|` breaks a line; `--crop x,y,w,h` is in screenshot pixels; without
+`--shot` the thumbnail is text only. The `living-guide` skill has tips for
+picking the screenshot, and for the video's title and description.
 
 ## Adding a viewport pass
 
