@@ -47,12 +47,16 @@ export type StageCommand =
   | { op: 'ring'; box: Box }
   /** Move the cursor to a point; `click` adds a ripple when it arrives. */
   | { op: 'cursor'; x: number; y: number; click: boolean }
-  /** Full-screen Hive Pal card: the intro, or a chapter title. */
+  /** Full-screen Hive Pal card: the intro, a chapter title or the outro. */
   | {
       op: 'card';
-      kind: 'intro' | 'chapter';
+      kind: CardKind;
       title: string;
       description?: string;
+      /** Outro: where to find Hive Pal. */
+      links?: CardLink[];
+      /** Outro: like / share / subscribe pills. */
+      cta?: CardCta[];
       titleSize: number;
       textSize: number;
       /** Show without fading in: the first frame of a video. */
@@ -62,6 +66,10 @@ export type StageCommand =
       op: 'hide';
       parts: ('spot' | 'caption' | 'ring' | 'cursor' | 'card')[];
     };
+
+export type CardKind = 'intro' | 'chapter' | 'outro';
+export type CardLink = { label: string; url: string };
+export type CardCta = { icon: 'like' | 'share' | 'subscribe'; label: string };
 
 function fontSize(viewport: Viewport): number {
   return viewport.width < 600 ? 18 : 22;
@@ -126,22 +134,25 @@ export function captionCommand(text: string, viewport: Viewport): StageCommand {
   };
 }
 
-/** The intro or a chapter card, sized for the viewport. */
+/** The intro, a chapter or the outro card, sized for the viewport. */
 export function cardCommand(
   card: {
-    kind: 'intro' | 'chapter';
+    kind: CardKind;
     title: string;
     description?: string;
+    links?: CardLink[];
+    cta?: CardCta[];
     instant?: boolean;
   },
   viewport: Viewport,
 ): StageCommand {
   const narrow = viewport.width < 600;
+  const wide = { intro: 64, chapter: 72, outro: 56 }[card.kind];
   return {
     op: 'card',
     ...card,
-    titleSize: narrow ? 38 : card.kind === 'intro' ? 64 : 72,
-    textSize: narrow ? 18 : 24,
+    titleSize: narrow ? (card.kind === 'outro' ? 32 : 38) : wide,
+    textSize: narrow ? 18 : card.kind === 'outro' ? 21 : 24,
   };
 }
 
@@ -295,6 +306,8 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
       #card.on .rise:nth-child(2) { transition-delay: 120ms; }
       #card.on .rise:nth-child(3) { transition-delay: 240ms; }
       #card.on .rise:nth-child(4) { transition-delay: 360ms; }
+      #card.on .rise:nth-child(5) { transition-delay: 480ms; }
+      #card.on .rise:nth-child(6) { transition-delay: 600ms; }
       #card .logo { width: 7em; height: auto; filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.35)); }
       #card.chapter .logo { display: none; }
       #card .brand {
@@ -316,6 +329,40 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
         width: 3em; height: 3px; border-radius: 2px; background: #fbbf24;
       }
       #card .desc:empty { display: none; }
+      /* Outro: on landscape everything sits in the left half, so YouTube's
+         end-screen elements (subscribe, next videos) have the right half. */
+      #card.outro .body { gap: 0.8em; }
+      #card.outro .logo { width: 4.2em; }
+      #card.outro .brand img { display: none; }
+      @media (min-width: 600px) { #card.outro .body { padding-right: 52%; } }
+      /* Portrait (Shorts): centred, above the bottom 28% that YouTube covers
+         with its own buttons, without the description to make room. */
+      @media (max-width: 599px) {
+        #card.outro .body { align-items: center; text-align: center; padding-bottom: 40%; }
+        #card.outro .pill { font-size: 0.8em; }
+        #card.outro .logo { width: 3.2em; }
+        #card.outro .desc { display: none; }
+      }
+      #card .links { display: grid; gap: 0.55em; margin-top: 0.3em; }
+      #card .links:empty, #card .cta:empty { display: none; }
+      #card .link { display: grid; gap: 0.1em; }
+      #card .link .label {
+        font-size: 0.62em; font-weight: 600; letter-spacing: 0.14em;
+        text-transform: uppercase; color: rgba(253, 230, 138, 0.8);
+      }
+      #card .link .url {
+        font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+        font-variation-settings: 'opsz' 48, 'wdth' 100, 'wght' 600; font-size: 1.1em;
+      }
+      #card .cta { display: flex; flex-wrap: wrap; gap: 0.5em; margin-top: 0.5em; }
+      @media (max-width: 599px) { #card .cta { justify-content: center; } }
+      #card .pill {
+        display: inline-flex; align-items: center; gap: 0.45em; padding: 0.4em 0.95em;
+        border-radius: 999px; border: 1.5px solid rgba(251, 191, 36, 0.6);
+        font-weight: 600; font-size: 0.9em;
+      }
+      #card .pill svg { width: 1.15em; height: 1.15em; }
+      #card .pill.subscribe { background: #fbbf24; border-color: #fbbf24; color: #15201e; }
     </style>
     <div id="hole" class="layer"></div>
     <div id="ring" class="layer"></div>
@@ -328,6 +375,8 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
         <div class="brand rise"><img src="/hive-pal-logo.png" alt="" />Hive Pal</div>
         <div class="title rise"></div>
         <p class="desc rise"></p>
+        <div class="links rise"></div>
+        <div class="cta rise"></div>
       </div>
     </div>
     <div id="cursor" class="layer">
@@ -497,6 +546,39 @@ function runStageCommand({ cmd, timing }: StageArgs): Promise<void> {
         title.style.fontSize = `${cmd.titleSize}px`;
         (card.querySelector('.desc') as HTMLElement).textContent =
           cmd.description ?? '';
+        const links = card.querySelector('.links') as HTMLElement;
+        links.replaceChildren(
+          ...(cmd.links ?? []).map(l => {
+            const row = document.createElement('div');
+            row.className = 'link';
+            const label = document.createElement('span');
+            label.className = 'label';
+            label.textContent = l.label;
+            const url = document.createElement('span');
+            url.className = 'url';
+            url.textContent = l.url;
+            row.append(label, url);
+            return row;
+          }),
+        );
+        // Drawn icons: headless Chromium may have no emoji font.
+        const icons = {
+          like: '<path d="M7 10v11H3V10h4zm2 11h8.5a2 2 0 0 0 2-1.6l1.3-6.5A2 2 0 0 0 18.8 10H14l.9-4.3A1.6 1.6 0 0 0 13.3 4L9 10v11z"/>',
+          share:
+            '<path d="M14 5l7 7-7 7v-4c-5 0-8.5 1.5-11 5 1-5 4-10 11-11V5z"/>',
+          subscribe:
+            '<path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2z"/>',
+        };
+        const cta = card.querySelector('.cta') as HTMLElement;
+        cta.replaceChildren(
+          ...(cmd.cta ?? []).map(c => {
+            const pill = document.createElement('span');
+            pill.className = `pill ${c.icon}`;
+            pill.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor">${icons[c.icon]}</svg>`;
+            pill.append(c.label);
+            return pill;
+          }),
+        );
       };
       return loadCardAssets(card).then(() => {
         if (cmd.instant) {

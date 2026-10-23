@@ -1,6 +1,6 @@
 ---
 name: living-guide
-description: Write, voice, record and publish a Hive Pal living guide (narrated Playwright video in apps/e2e/guides). Use when adding or changing a guide, writing its voiceover script, generating the TTS narration, recording guide videos, or making a guide's YouTube thumbnail, title and description.
+description: Write, voice, record and publish a Hive Pal living guide (narrated Playwright video in apps/e2e/guides). Use when adding or changing a guide, writing its voiceover script, generating the TTS narration, recording guide videos, or making a guide's YouTube thumbnail and metadata (title, description, chapters, tags).
 ---
 
 # Living guides: script, voice, video
@@ -16,6 +16,8 @@ read it before writing a new guide. This skill is the workflow.
   the guide. Expose show-only elements as locators so the guide can point at them.
 - Start with `g.intro(title, description)`; use `g.chapter` per section and
   `g.point` / `g.tour` / `g.do` / `g.say` for cues.
+- End full guides with `g.outro()` (the shared closing card with links and
+  like / share / subscribe). Shorts skip it.
 - Assert what you narrate (a plain `expect` next to a caption that states a fact).
 - Use the `demo` fixture for seeded data (Home Apiary, Hive 1–3, one harvest), or
   sign up on screen like `getting-started.guide.ts`.
@@ -155,19 +157,52 @@ pnpm guides:thumbnail harvest --title "Honey|harvest" \
 - Look at the PNG before handing it over, then tell the user the command you
   used, so it can be re-rendered after the next recording.
 
-## 7. YouTube title and description
+## 7. YouTube metadata
 
-- **Title:** what the viewer will do, plus "in Hive Pal", e.g. "Recording a
-  honey harvest in Hive Pal: from frames to kilos, hive by hive". Under about
-  70 characters before the colon part.
-- **Description:** two or three plain sentences on what the video covers (for
-  beekeepers; no sales language: Hive Pal is free and open source, with no
-  paid tier), then chapters, then links:
-  - Chapters come from the chapter and intro cues in `captions.vtt`
-    (`awk '/^[0-9]+-(chapter|intro)/{getline t; getline x; print substr(t,4,5), x}' captions.vtt`).
-    YouTube needs the first at `0:00`, at least three, each at least 10 s
-    long. If the guide has fewer chapter cards, split at natural points in
-    the cue list.
-  - Links: https://hivepal.app, https://docs.hivepal.app,
-    https://github.com/martinhrvn/hive-pal, then two or three hashtags.
-- **Subtitles:** upload `captions.vtt` (Subtitles → Upload file → With timing).
+Each guide has a committed `apps/e2e/guides/<slug>.youtube.json` next to its
+spec. Every recording turns it into `youtube.md` (to copy from) and
+`youtube.json` next to `video.mp4`, with the chapter times taken from that
+recording. To regenerate without recording (after editing the JSON):
+
+```bash
+cd apps/e2e
+pnpm guides:metadata harvest            # or quick-check-mobile for a Short
+```
+
+```json
+{
+  "title": "Recording a honey harvest in Hive Pal: from frames to kilos, hive by hive",
+  "summary": "Two or three plain sentences on what the video covers.",
+  "tags": ["honey harvest", "honey extraction"],
+  "hashtags": ["beekeeping", "honeyharvest", "hivepal"],
+  "chapters": {
+    "Honey harvests": "The harvest overview",
+    "A new harvest starts as a draft": "Frames and weight"
+  }
+}
+```
+
+Writing it:
+
+- **title:** what the viewer will do, plus "in Hive Pal". Under 100
+  characters, ideally about 70 before any colon part. Shorts: a short promise
+  ("Log a hive check in seconds with Hive Pal"); `#Shorts` is added for you.
+- **summary:** two or three plain sentences for beekeepers. No sales
+  language: Hive Pal is free and open source, with no paid tier.
+- **tags:** four to six topic phrases a beekeeper would search for (honey
+  extraction, varroa treatment…); the generic ones (beekeeping, hive pal,
+  open source…) are added from `DEFAULT_TAGS` in `youtube.ts`.
+- **hashtags:** up to three, without `#`.
+- **chapters:** cards (intro, chapters, outro) are chapters already, named
+  after their title. The keys are captions exactly as in `captions.vtt`
+  (curly apostrophes included): map a card's title to rename it, another
+  caption to start a chapter there, or a caption to `null` to drop one.
+  YouTube needs the first at 0:00 (automatic), at least three chapters, and
+  10 s or more each; the generator checks and lists problems under "Check" in
+  `youtube.md` (and as test annotations when recording).
+
+The links (app, docs, GitHub) are added to every description from `LINKS` in
+`youtube.ts`. `youtube.md` also lists what to upload: the video, the
+thumbnail, `captions.vtt` as subtitles (Subtitles → Upload file → With
+timing), and for full guides the end screen (subscribe and one or two videos
+over the right half of the outro card).

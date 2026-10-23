@@ -18,10 +18,14 @@ import {
   spotCommand,
   stage,
   type Box,
+  type CardCta,
+  type CardKind,
+  type CardLink,
   type StageCommand,
   type Viewport,
 } from './overlays';
 import { voiceFromEnv, type VoiceProvider } from './voice';
+import { writeYoutube } from './youtube';
 
 export { expect };
 export { t } from './captions';
@@ -77,6 +81,30 @@ type Recording = {
  * no-op apart from its assertions (`point` still checks visibility, `do`
  * still runs the action), so a guide is an ordinary, fast e2e test in CI.
  */
+/** Long enough for YouTube's end screen (5–20 s at the end of the video). */
+const OUTRO_MS = 15_000;
+
+/** The same closing card on every guide. */
+const OUTRO = {
+  title: 'Free and open source',
+  description:
+    'Built in the open by beekeepers and developers. Use it, share it, and help make it better.',
+  links: [
+    { label: 'Use it online', url: 'hivepal.app' },
+    { label: 'Guides and docs', url: 'docs.hivepal.app' },
+    { label: 'Source code', url: 'github.com/martinhrvn/hive-pal' },
+  ],
+  cta: [
+    { icon: 'like', label: 'Like' },
+    { icon: 'share', label: 'Share' },
+    { icon: 'subscribe', label: 'Subscribe' },
+  ],
+  voiceover:
+    'Hive Pal is free and open source, built in the open by beekeepers and developers. You can use it at hivepal.app, and find the code on GitHub. If this guide helped, give it a like, share it with a fellow beekeeper, and subscribe for more.',
+} satisfies { links: CardLink[]; cta: CardCta[]; [k: string]: unknown };
+
+type OutroOptions = CueOptions & { title?: Caption; description?: Caption };
+
 export class Guide {
   private recording: Recording | null = null;
   private started = false;
@@ -102,17 +130,39 @@ export class Guide {
     await this.card('chapter', title, description, opts);
   }
 
+  /**
+   * Closing card: free and open source, where to find Hive Pal, and like /
+   * share / subscribe. Call it last; it stays up until the video ends. On
+   * landscape it keeps the right half free for YouTube's end screen, which
+   * covers the last 5–20 s, so it holds for at least `OUTRO_MS`.
+   */
+  async outro(opts: OutroOptions = {}) {
+    const { title = OUTRO.title, description = OUTRO.description } = opts;
+    await this.card(
+      'outro',
+      title,
+      description,
+      {
+        voiceover: OUTRO.voiceover,
+        holdMs: OUTRO_MS,
+        ...opts,
+      },
+      { links: OUTRO.links, cta: OUTRO.cta },
+    );
+  }
+
   private async card(
-    kind: 'intro' | 'chapter',
+    kind: CardKind,
     title: Caption,
     description: Caption | undefined,
     opts: CueOptions,
+    extra: { links?: CardLink[]; cta?: CardCta[] } = {},
   ) {
     const text = caption(title);
     const sub = description === undefined ? undefined : caption(description);
     const spoken = spokenLine(sub ? `${text}. ${sub}` : text, opts);
     if (!GUIDE_MODE) return this.prepare(spoken);
-    const card = { kind, title: text, description: sub };
+    const card = { kind, title: text, description: sub, ...extra };
     // The intro is already up when the video starts.
     if (kind === 'intro' && !this.started)
       await this.stage(
@@ -131,7 +181,8 @@ export class Guide {
         await this.stage(cardCommand(card, this.viewport()));
         await shoot();
         await this.waitRest(started, holdMs);
-        await this.stage({ op: 'hide', parts: ['card'] });
+        // The outro is the last frame; everything else gives way to the page.
+        if (kind !== 'outro') await this.stage({ op: 'hide', parts: ['card'] });
       },
       { ...opts, spoken, detail: sub },
     );
@@ -382,6 +433,18 @@ export class Guide {
     const durationMs = narration.now();
     await this.page.screencast.stop();
     narration.write(dir);
+    // Title, description with chapters and tags, from <slug>.youtube.json.
+    const meta = this.testInfo.file.replace(/\.guide\.ts$/, '.youtube.json');
+    if (fs.existsSync(meta))
+      for (const warning of writeYoutube(
+        dir,
+        meta,
+        this.testInfo.project.name === 'guides-mobile',
+      ))
+        this.testInfo.annotations.push({
+          type: 'youtube',
+          description: warning,
+        });
     const clips = narration.cues.flatMap(c =>
       c.voice ? [{ clip: c.voice, startMs: c.start }] : [],
     );

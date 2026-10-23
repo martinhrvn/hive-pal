@@ -304,6 +304,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
     await g.say('That’s it. Happy harvesting!', {
       voiceover: 'And that’s it. Happy harvesting!',
     });
+    await g.outro();
 
     expect(demo.pastHarvest.weightKg).toBe(18);
   });

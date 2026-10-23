@@ -417,5 +417,6 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       voiceover:
         'And that’s it, you’re all set. The next guides go into each part in more detail. Happy beekeeping!',
     });
+    await g.outro();
   });
 });

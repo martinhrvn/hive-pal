@@ -19,7 +19,8 @@
     "test:guides": "playwright test -c playwright.guides.config.ts",
     "guides:voice": "GUIDE_PREPARE=1 playwright test -c playwright.guides.config.ts",
     "guides:record": "GUIDE=1 playwright test -c playwright.guides.config.ts",
-    "guides:thumbnail": "node guides/thumbnail/render.mjs"
+    "guides:thumbnail": "node guides/thumbnail/render.mjs",
+    "guides:metadata": "node --experimental-strip-types --no-warnings guides/youtube-cli.mjs"
   },
   "devDependencies": {
     "@playwright/test": "catalog:playwright",

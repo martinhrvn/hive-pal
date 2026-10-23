@@ -38,6 +38,7 @@ guide signs up its own throwaway user.
 | `shots/*.png`    | Those screenshots                                                                      |
 | `narration.wav`  | Voice clips placed at their cue times (only with `GUIDE_VOICE`)                        |
 | `soundtrack.wav` | Narration with background music (only with `GUIDE_MUSIC`)                              |
+| `youtube.md`     | Title, description with chapters, tags, upload checklist (from `<slug>.youtube.json`)  |
 
 The video is encoded once, at the end: `page.screencast` hands over each
 frame as the browser's JPEG, `FrameRecorder` (`media.ts`) writes them to
@@ -82,6 +83,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
 | -------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------ |
 | `g.intro(title, description?)`   | Opening card: logo, title, description; the first frame of the video                    | nothing                              |
 | `g.chapter(title, description?)` | Full-screen chapter card                                                                | nothing                              |
+| `g.outro(opts?)`                 | Closing card: free and open source, links, like / share / subscribe; stays to the end   | nothing                              |
 | `g.say(text, opts?)`             | Caption at the bottom                                                                   | nothing                              |
 | `g.point(locator, text, opts?)`  | Scroll into view, wait until stable, dim the page around it, caption bubble above/below | `expect(locator).toBeVisible()`      |
 | `g.tour([[locator, text], ...])` | `point` for each                                                                        | `expect(...).toBeVisible()` for each |
@@ -91,6 +93,14 @@ The intro and chapter cards use the marketing site's look: forest green with
 honey hexagons, the logo, Bricolage Grotesque titles and Manrope text (Google
 Fonts, let through the third-party block in guide mode). Start a guide with
 `g.intro`; it is already on screen when the video starts.
+
+End a full guide with `g.outro()`: the same closing card everywhere (the
+text and links are `OUTRO` in `guide.fixture.ts`), with a spoken line, held
+for at least 15 s. On landscape it keeps to the left half, leaving the right
+half for YouTube's end-screen elements (subscribe button, next videos), which
+can cover the last 5 to 20 s; add them in YouTube Studio over that area. In
+portrait it stays above the bottom 28% that Shorts cover. Shorts can skip it:
+they have no end screens, and 15 s is a quarter of a Short.
 
 Each cue holds for its reading time (12 characters per second, at least 2.5 s);
 pass `{ holdMs }` to override. Nothing in this file waits outside guide mode.
@@ -327,6 +337,16 @@ pnpm guides:thumbnail harvest --title "Honey|harvest" \
 `|` breaks a line; `--crop x,y,w,h` is in screenshot pixels; without
 `--shot` the thumbnail is text only. The `living-guide` skill has tips for
 picking the screenshot, and for the video's title and description.
+
+## YouTube metadata
+
+`<slug>.youtube.json` next to a guide holds its title, summary, tags,
+hashtags and chapter markers. Each recording writes `youtube.md` (title,
+description with chapters and links, tags, upload checklist) and
+`youtube.json` next to the video, with chapter times from that recording
+and YouTube's chapter rules checked. `pnpm guides:metadata <slug>`
+regenerates them without recording. The generator is `youtube.ts`; the
+`living-guide` skill explains how to write the JSON.
 
 ## Adding a viewport pass
 
