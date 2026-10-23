@@ -117,8 +117,8 @@ export const VOICE_CACHE_DIR =
 /** Longest rate-limit wait worth sitting through; longer means a daily cap. */
 const MAX_RETRY_WAIT_MS = 2 * 60_000;
 const MAX_RETRIES = 10;
-/** A TTS request that takes longer than this is abandoned and retried. */
-const REQUEST_TIMEOUT_MS = 90_000;
+/** A TTS request that takes longer than this is abandoned and retried (GUIDE_VOICE_TIMEOUT_MS). */
+const REQUEST_TIMEOUT_MS = Number(process.env.GUIDE_VOICE_TIMEOUT_MS) || 90_000;
 
 /** Progress lines, so a long `guides:voice` run shows what it is doing. */
 function log(message: string) {

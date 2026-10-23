@@ -302,6 +302,13 @@ the flow, and so what is said, can differ between deployments. It runs on one
 worker and spaces requests to `GUIDE_VOICE_RPM` per minute (default 9); on a
 429 anyway, it waits as long as the API asks and retries.
 
+### One take for the whole guide
+
+`pnpm guides:take <slug>` sends the whole voiceover from a run's `script.md`
+as one TTS request and writes `out/guides/<slug>/take.wav`: one request instead
+of one per line, in a single consistent voice. The take is not split into
+lines, so the recording does not use it yet.
+
 To add another engine, implement `VoiceProvider` and register it in `voiceFromEnv()`.
 
 ### Background music
