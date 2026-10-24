@@ -33,6 +33,32 @@ export function readingTimeMs(text: string): number {
   );
 }
 
+/** Pause after a voice clip before the next cue starts speaking. */
+export const VOICE_BREATH_MS = 400;
+/** Shortest hold for a voiced cue: the voice carries it, the caption is a glance. */
+const MIN_VOICED_HOLD_MS = 1500;
+
+/**
+ * How long a cue stays up unless the guide says otherwise. Voiced, it follows
+ * the clip and the caption on screen; estimating from the (longer) voiceover
+ * text left seconds of silence after every line. Silent, it is the reading
+ * time of what the narrator would have said.
+ */
+export function defaultHoldMs(
+  caption: string,
+  detail: string | undefined,
+  spoken: string,
+  clip: VoiceClip | null,
+): number {
+  if (!clip) return readingTimeMs(spoken);
+  const onScreen = detail ? `${caption} ${detail}` : caption;
+  return Math.max(
+    MIN_VOICED_HOLD_MS,
+    clip.durationMs + VOICE_BREATH_MS,
+    Math.round((onScreen.length / READING_CHARS_PER_SECOND) * 1000),
+  );
+}
+
 /**
  * The narration track of a guide: every chapter/say/point/do emits a cue.
  * It is written out as WebVTT (soft subtitles, input for translation or TTS)

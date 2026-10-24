@@ -10,7 +10,13 @@ import {
 } from '../tests/smoke/fixtures';
 import { caption, type Caption } from './captions';
 import { addMusic, FrameRecorder, mixNarration } from './media';
-import { Narration, readingTimeMs, type Cue, type CueKind } from './narration';
+import {
+  defaultHoldMs,
+  Narration,
+  VOICE_BREATH_MS,
+  type Cue,
+  type CueKind,
+} from './narration';
 import {
   captionCommand,
   cardCommand,
@@ -42,6 +48,11 @@ export const PREPARE_MODE =
   !GUIDE_MODE &&
   !!process.env.GUIDE_PREPARE &&
   process.env.GUIDE_PREPARE !== '0';
+/**
+ * GUIDE_PREPARE=lines (`pnpm guides:take`): only collect the lines into
+ * voiceover.json, generating nothing.
+ */
+const LINES_ONLY = PREPARE_MODE && process.env.GUIDE_PREPARE === 'lines';
 export const GUIDES_OUT_DIR = path.join(__dirname, '..', 'out', 'guides');
 
 /** Delay between keystrokes when a guide types into a field. */
@@ -110,6 +121,8 @@ export class Guide {
   private started = false;
   private prepareVoice?: VoiceProvider;
   private prepared = 0;
+  /** Every line spoken, in order (prepare mode). */
+  private readonly lines: string[] = [];
   private generated = 0;
 
   constructor(
@@ -293,6 +306,8 @@ export class Guide {
   /** Prepare mode: put the line's voice in the cache. Otherwise a no-op. */
   private async prepare(spoken: string) {
     if (!PREPARE_MODE) return;
+    this.lines.push(spoken);
+    if (LINES_ONLY) return;
     this.prepareVoice ??= voiceFromEnv();
     const n = ++this.prepared;
     console.log(`[voice] ${this.testInfo.title} #${n}: ${spoken}`);
@@ -365,8 +380,8 @@ export class Guide {
     entry.start = narration.now();
     if (clip) entry.voice = clip;
     const holdMs = Math.max(
-      opts.holdMs ?? readingTimeMs(spoken),
-      clip?.durationMs ?? 0,
+      opts.holdMs ?? defaultHoldMs(text, opts.detail, spoken, clip),
+      clip ? clip.durationMs + VOICE_BREATH_MS : 0,
     );
     const shot = `shots/${entry.id}.png`;
     await render(holdMs, async () => {
@@ -417,10 +432,20 @@ export class Guide {
 
   /** Stop recording and write video, captions, script and audio. */
   async finish() {
-    if (PREPARE_MODE)
-      console.log(
-        `[voice] ${this.testInfo.title}: ${this.prepared} lines, ${this.generated} generated, ${this.prepared - this.generated} cached`,
+    if (PREPARE_MODE) {
+      // Exactly what the recording will ask the voice for, so `guides:take`
+      // caches its clips under the keys the recording looks up.
+      const dir = guideDir(this.testInfo);
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(
+        path.join(dir, 'voiceover.json'),
+        `${JSON.stringify(this.lines, null, 2)}\n`,
       );
+      if (!LINES_ONLY)
+        console.log(
+          `[voice] ${this.testInfo.title}: ${this.prepared} lines, ${this.generated} generated, ${this.prepared - this.generated} cached`,
+        );
+    }
     if (!this.recording) return;
     const { narration, dir, frames } = this.recording;
     // Fade out whatever is still on screen before the video ends.

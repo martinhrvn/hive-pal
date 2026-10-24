@@ -21,6 +21,8 @@ in {
     prisma-engines
     # Local voiceover for the living guides (GUIDE_VOICE=piper).
     pkgs-piper.piper-tts
+    # Cuts a whole-guide voiceover take into lines (pnpm guides:take).
+    pkgs-piper.whisper-cpp
   ];
 
   env = {

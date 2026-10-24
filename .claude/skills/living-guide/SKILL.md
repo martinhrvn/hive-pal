@@ -89,6 +89,13 @@ text. Unchanged lines cost nothing; never delete the cache to "fix" something.
   user has to top up.
 - Changing the voice, model or profile invalidates every clip for that guide.
 
+For a single consistent voice across the whole guide, `pnpm guides:take <slug>`
+synthesizes all lines as one take (one request), cuts it into lines with
+Whisper and fills the cache with them; it collects the lines itself with a quick
+plain-test pass, so no earlier recording is needed. Lines it cannot cut cleanly
+are listed; run `guides:voice` afterwards to generate just those, then record.
+Same paid-API rule: ask first.
+
 ## 4. Record the video
 
 ```bash

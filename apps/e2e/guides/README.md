@@ -102,8 +102,9 @@ can cover the last 5 to 20 s; add them in YouTube Studio over that area. In
 portrait it stays above the bottom 28% that Shorts cover. Shorts can skip it:
 they have no end screens, and 15 s is a quarter of a Short.
 
-Each cue holds for its reading time (12 characters per second, at least 2.5 s);
-pass `{ holdMs }` to override. Nothing in this file waits outside guide mode.
+Without a voice, each cue holds for its reading time (12 characters per
+second, at least 2.5 s); with one, it holds for the clip plus a 0.4 s breath
+(and at least as long as the caption on screen takes to read). Pass `{ holdMs }` to override. Nothing in this file waits outside guide mode.
 
 Every call also takes `{ voiceover }`: what the narrator says when it should
 be fuller than the caption. The caption stays short on screen, the voice
@@ -232,7 +233,7 @@ added to the Weblate pipeline alongside the app's locales.
 `voice.ts` defines `VoiceProvider.synthesize(text) → { file, durationMs }`.
 The default `NoopVoice` produces captions only. With a provider configured:
 
-- each cue holds for `max(reading time, audio duration)`, so the video waits for the voice;
+- each cue holds for its clip plus a 0.4 s breath, or the caption's reading time if that is longer, so the video waits for the voice but not much longer;
 - the clips are positioned by cue start time into `narration.wav` and muxed into `video.mp4`.
 
 Providers (`GUIDE_VOICE`):
@@ -316,10 +317,33 @@ worker and spaces requests to `GUIDE_VOICE_RPM` per minute (default 9); on a
 
 ### One take for the whole guide
 
-`pnpm guides:take <slug>` sends the whole voiceover from a run's `script.md`
-as one TTS request and writes `out/guides/<slug>/take-<engine>.wav`: one request instead
-of one per line, in a single consistent voice. The take is not split into
-lines, so the recording does not use it yet.
+`pnpm guides:take <slug>` sends the whole voiceover as one TTS request: one
+request instead of one per line, in a single consistent voice. It first runs
+the guide as a plain test against preview (`GUIDE_PREPARE=lines`: no TTS, no
+video, a few seconds) to collect the lines exactly as the recording will ask
+for them, into `out/guides/<slug>/voiceover.json`. The take is written to
+`out/guides/<slug>/take-<engine>.wav` (and cached like any clip). No
+recording is needed beforehand: take, then record.
+
+The take is then cut back into lines. Whisper (whisper.cpp, `whisper-cli` in
+devenv) transcribes it with word times, the words are aligned to the known
+lines, and each cut goes in the middle of the pause between two lines. Every
+line's clip is stored in the voice cache under the same key as if the engine
+had generated it alone, so the next `guides:record` takes all its lines from
+the take. A line Whisper barely recognises (the engine skipped or changed
+words) or with no pause next to it is left out, along with its neighbours;
+`pnpm guides:voice` generates those one by one.
+
+```bash
+pnpm guides:take harvest
+# Split a take you already have; GUIDE_VOICE picks whose cache keys to fill.
+pnpm guides:take harvest --audio ~/takes/harvest-ludo.wav
+```
+
+`out/guides/<slug>/take-<engine>.txt` is an Audacity label track (Import →
+Labels) to check the cuts by ear. The Whisper model (`base.en`, 148 MB) is
+downloaded into `~/.cache/hive-pal/whisper` on first use; `WHISPER_MODEL`
+points at another ggml model and `WHISPER_BIN` at another binary.
 
 To add another engine, implement `VoiceProvider` and register it in `voiceFromEnv()`.
 

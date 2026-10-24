@@ -78,10 +78,15 @@ function box(
   };
 }
 
+/**
+ * Midnight UTC, `days` days back. The overdue alert counts whole days since
+ * the last visit, so any later hour reads one day short until that hour has
+ * passed today ("9 days since" for a visit seeded ten days ago).
+ */
 function daysAgo(days: number): string {
   const d = new Date();
   d.setUTCDate(d.getUTCDate() - days);
-  d.setUTCHours(10, 0, 0, 0);
+  d.setUTCHours(0, 0, 0, 0);
   return d.toISOString();
 }
 

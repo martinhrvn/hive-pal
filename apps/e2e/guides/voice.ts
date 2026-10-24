@@ -20,6 +20,12 @@ export interface VoiceProvider {
   readonly name: string;
   /** Synthesize `text` into a WAV file inside `dir`. */
   synthesize(text: string, dir: string, id: string): Promise<VoiceClip | null>;
+  /**
+   * Store 16-bit mono `pcm` as this engine's clip for `text`, so synthesize
+   * finds it in the cache. Only cached engines have it; `guides:take` uses
+   * it to cache the lines cut from a whole-guide take.
+   */
+  cache?(text: string, pcm: Buffer, sampleRate: number): void;
 }
 
 /** Default: no audio, captions only. */
@@ -146,13 +152,22 @@ abstract class CachedVoice implements VoiceProvider {
     signal: AbortSignal,
   ): Promise<Buffer>;
 
-  async synthesize(text: string, dir: string, id: string): Promise<VoiceClip> {
-    fs.mkdirSync(dir, { recursive: true });
-    fs.mkdirSync(VOICE_CACHE_DIR, { recursive: true });
+  private cacheFile(text: string): string {
     const key = createHash('sha256')
       .update(JSON.stringify([this.name, ...this.cacheKey(), text]))
       .digest('hex');
-    const cached = path.join(VOICE_CACHE_DIR, `${key}.wav`);
+    return path.join(VOICE_CACHE_DIR, `${key}.wav`);
+  }
+
+  cache(text: string, pcm: Buffer, sampleRate: number) {
+    fs.mkdirSync(VOICE_CACHE_DIR, { recursive: true });
+    fs.writeFileSync(this.cacheFile(text), pcmToWav(pcm, sampleRate));
+  }
+
+  async synthesize(text: string, dir: string, id: string): Promise<VoiceClip> {
+    fs.mkdirSync(dir, { recursive: true });
+    fs.mkdirSync(VOICE_CACHE_DIR, { recursive: true });
+    const cached = this.cacheFile(text);
     const hit = fs.existsSync(cached);
     if (hit) {
       log('cached');
