@@ -57,6 +57,8 @@ export const GUIDES_OUT_DIR = path.join(__dirname, '..', 'out', 'guides');
 
 /** Delay between keystrokes when a guide types into a field. */
 export const TYPING_DELAY_MS = 100;
+/** Room left above an element that `reveal` scrolls to the top. */
+const REVEAL_MARGIN_PX = 24;
 
 export type CueOptions = {
   /** Override the hold time (ms); default is the estimated reading time. */
@@ -78,6 +80,12 @@ function spokenLine(text: string, opts: SpokenOptions): string {
 export type DoOptions = CueOptions & {
   /** Element to highlight briefly before the action runs. */
   target?: Locator;
+  /**
+   * After the action, smooth-scroll this element (`true`: the target) to the
+   * top of the screen, so what the action opened below it is in view: a
+   * tab's content, an accordion's body.
+   */
+  reveal?: Locator | true;
 };
 
 type Recording = {
@@ -288,6 +296,8 @@ export class Guide {
           result = await action();
           await ringFade;
           await this.page.waitForLoadState('networkidle').catch(() => {});
+          const reveal = opts.reveal === true ? opts.target : opts.reveal;
+          if (reveal) await this.scrollToTop(reveal);
           // Let the viewer see the result before the caption goes away.
           await this.page.waitForTimeout(1200);
           await shoot();
@@ -419,6 +429,23 @@ export class Guide {
   /** Scroll into view and wait until the bounding box stops moving. */
   private async stableBox(target: Locator): Promise<Box> {
     await target.scrollIntoViewIfNeeded();
+    return this.settledBox(target);
+  }
+
+  /** Smooth-scroll `target` to just below the top of the screen. */
+  private async scrollToTop(target: Locator) {
+    await target.evaluate((el, margin) => {
+      // Read when the scroll starts; a little room above the target.
+      const previous = el.style.scrollMarginTop;
+      el.style.scrollMarginTop = `${margin}px`;
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.style.scrollMarginTop = previous;
+    }, REVEAL_MARGIN_PX);
+    await this.settledBox(target);
+  }
+
+  /** Wait until the bounding box stops moving (layout, a scroll). */
+  private async settledBox(target: Locator): Promise<Box> {
     let prev = await target.boundingBox();
     for (let i = 0; i < 20; i++) {
       await this.page.waitForTimeout(100);
@@ -652,7 +679,8 @@ export const test = smokeTest.extend<{
   /**
    * Auto fixture, guide mode only: let OpenStreetMap tiles and the Leaflet
    * marker icons (served from unpkg) through the third-party block so maps in
-   * the video are not grey, and Google Fonts for the cards. CI stays offline
+   * the video are not grey, Google Fonts for the cards, and uploaded photos
+   * from the storage host so they are not broken images. CI stays offline
    * (the map still takes clicks). Routes added later win, hence the
    * dependency on blockThirdParty.
    */
@@ -669,6 +697,11 @@ export const test = smokeTest.extend<{
         // Brand fonts for the intro and chapter cards.
         await page.route(/\/\/fonts\.(googleapis|gstatic)\.com\//, route =>
           route.continue(),
+        );
+        // Uploaded photos: presigned URLs on the storage host (S3_ENDPOINT).
+        await page.route(
+          url => url.searchParams.has('X-Amz-Signature'),
+          route => route.continue(),
         );
       }
       await use();

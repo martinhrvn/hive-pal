@@ -281,7 +281,7 @@ export const BoxConfigPanel = ({
               </SelectContent>
             </Select>
             {showCustomFields && (
-              <div className="space-y-3 rounded-md border p-3">
+              <div className="@container space-y-3 rounded-md border p-3">
                 <div className="space-y-2">
                   <Label htmlFor="fs-name">{t('hive:fields.name')}</Label>
                   <Input
@@ -295,7 +295,9 @@ export const BoxConfigPanel = ({
                     )}
                   />
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                {/* Stacked in the narrow side panel: side by side, number inputs
+                    leave no room for the value next to the spinner. */}
+                <div className="grid gap-3 @md:grid-cols-3">
                   <div className="space-y-2">
                     <Label htmlFor="fs-width">
                       {t('hive:boxConfigurator.widthMm')}

@@ -53,8 +53,7 @@ export const BoxItem = ({
   });
 
   return (
-    <div
-      role="group"
+    <fieldset
       aria-label={boxLabel}
       className={cn(
         'relative w-64 rounded border-2 transition-all',
@@ -104,14 +103,15 @@ export const BoxItem = ({
         </div>
       )}
 
-      {/* Controls when editing */}
+      {/* Controls when editing: in a row, so they fit next to the shortest
+          box (a feeder) instead of spilling over the neighbouring boxes'. */}
       {isEditing && (
-        <div className="absolute -right-12 top-1/2 -translate-y-1/2 flex flex-col gap-1">
+        <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 flex gap-0.5">
           <Button
             type="button"
             size="icon"
             variant="ghost"
-            className="h-8 w-8"
+            className="h-7 w-7"
             aria-label={t('boxConfigurator.moveUp')}
             onClick={e => {
               e.stopPropagation();
@@ -125,7 +125,7 @@ export const BoxItem = ({
             type="button"
             size="icon"
             variant="ghost"
-            className="h-8 w-8"
+            className="h-7 w-7"
             aria-label={t('boxConfigurator.moveDown')}
             onClick={e => {
               e.stopPropagation();
@@ -139,7 +139,7 @@ export const BoxItem = ({
             type="button"
             size="icon"
             variant="ghost"
-            className="h-8 w-8 text-destructive"
+            className="h-7 w-7 text-destructive"
             aria-label={t('boxConfigurator.removeBox')}
             onClick={e => {
               e.stopPropagation();
@@ -170,6 +170,6 @@ export const BoxItem = ({
           onClick={onSelect}
         />
       )}
-    </div>
+    </fieldset>
   );
 };

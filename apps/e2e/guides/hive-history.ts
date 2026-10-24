@@ -16,11 +16,12 @@ export async function seedHiveHistory(api: SmokeApi, hiveId: string) {
   const medium = sizeId('Langstroth Medium');
 
   await api.setBoxes(hiveId, [
-    box(0, 'BROOD', 'LANGSTROTH_DEEP', deep, 10, '#3b82f6'),
+    // hasExcluder puts the excluder on top of the box: over the brood.
     {
-      ...box(1, 'HONEY', 'LANGSTROTH_MEDIUM', medium, 10, '#f59e0b'),
+      ...box(0, 'BROOD', 'LANGSTROTH_DEEP', deep, 10, '#3b82f6'),
       hasExcluder: true,
     },
+    box(1, 'HONEY', 'LANGSTROTH_MEDIUM', medium, 10, '#f59e0b'),
     box(2, 'HONEY', 'LANGSTROTH_MEDIUM', medium, 6, '#f59e0b'),
   ]);
 

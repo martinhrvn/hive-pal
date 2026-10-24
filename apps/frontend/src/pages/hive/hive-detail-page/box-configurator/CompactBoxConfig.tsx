@@ -227,7 +227,7 @@ export const CompactBoxConfig = ({
               </SelectContent>
             </Select>
             {showCustomFields && (
-              <div className="space-y-2 rounded-md border p-2 mt-2">
+              <div className="@container space-y-2 rounded-md border p-2 mt-2">
                 <div>
                   <Label htmlFor="fs-name" className="text-xs">
                     {t('hive:fields.name')}
@@ -244,7 +244,8 @@ export const CompactBoxConfig = ({
                     )}
                   />
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                {/* Stacked when narrow, so the values aren't hidden by the spinners. */}
+                <div className="grid gap-2 @md:grid-cols-3">
                   <div>
                     <Label htmlFor="fs-width" className="text-xs">
                       {t('hive:boxConfigurator.widthMm')}

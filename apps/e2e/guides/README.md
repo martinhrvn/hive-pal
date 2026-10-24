@@ -89,6 +89,11 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
 | `g.tour([[locator, text], ...])` | `point` for each                                                                        | `expect(...).toBeVisible()` for each |
 | `g.do(text, fn, { target? })`    | Caption while `fn` runs, `target` highlighted first; returns `fn`'s result              | runs `fn`                            |
 
+`g.do` also takes `{ reveal }` for an action that opens something below
+its target, such as a tab or an accordion: afterwards the page smooth-scrolls
+the target (`true`) or another locator to the top, so what opened is in
+view while the narrator talks about it.
+
 The intro and chapter cards use the marketing site's look: forest green with
 honey hexagons, the logo, Bricolage Grotesque titles and Manrope text (Google
 Fonts, let through the third-party block in guide mode). Start a guide with

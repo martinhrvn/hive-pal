@@ -93,6 +93,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       () => form.openAdvancedSettings(),
       {
         target: form.advancedSettingsToggle,
+        reveal: true,
         voiceover:
           'Under Advanced Settings, you can tune two things for this hive.',
       },
@@ -127,6 +128,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       },
       {
         target: form.boxConfigToggle,
+        reveal: true,
         voiceover:
           'Under Box Configuration, you can set up the boxes the hive starts with.',
       },
@@ -272,6 +274,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
 
     await g.do('Open Analytics', () => hive.tab('Analytics').click(), {
       target: hive.tab('Analytics'),
+      reveal: true,
       voiceover:
         'The Analytics tab turns your inspections into charts, so you can see the whole season at once.',
     });
@@ -334,6 +337,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       () => hive.tab('Settings').click(),
       {
         target: hive.tab('Settings'),
+        reveal: true,
         voiceover:
           'The feeding window, the target and the inspection frequency we set on the form can be changed any time, on the Settings tab.',
       },
@@ -345,8 +349,14 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       voiceover:
         'Now for the box editor, where you keep the hive in the app looking like the hive in your apiary.',
     });
+    await g.do('Fold the menu away for more room', () => sidebar.collapse(), {
+      target: sidebar.toggle,
+      voiceover:
+        'The editor likes a bit of room, so let’s fold the menu away with this button.',
+    });
     await g.do('Open Boxes', () => hive.tab('Boxes').click(), {
       target: hive.tab('Boxes'),
+      reveal: true,
       voiceover: 'Open the Boxes tab.',
     });
     await expect(boxes.boxes).toHaveCount(3);
@@ -561,9 +571,13 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
           'Finally, let’s go back to our new hive and look at the sidebar.',
       },
     );
+    await g.do('Open the menu again', () => sidebar.expand(), {
+      target: sidebar.toggle,
+      voiceover: 'Open the menu again,',
+    });
     await g.do('Back to Meadow', () => sidebar.hive(NEW_HIVE).click(), {
       target: sidebar.hive(NEW_HIVE),
-      voiceover: 'Back to Meadow.',
+      voiceover: 'and go back to Meadow.',
     });
     await expect(hive.heading(NEW_HIVE)).toBeVisible();
     await g.tour([

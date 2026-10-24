@@ -45,6 +45,9 @@ Where it goes: third argument of `intro` / `chapter` (`undefined` for a missing
 description), last options object of `say` / `point` / `do`, third tuple element
 of a `tour` stop.
 
+When a `do` opens a tab or an accordion, add `reveal: true`: the target then
+scrolls to the top so its content is on screen, not below the fold.
+
 Writing rules (each one came from a take that sounded wrong):
 
 - **Every cue gets a voiceover.** Captions alone read as a choppy list of
