@@ -53,7 +53,10 @@ export const BoxItem = ({
   });
 
   return (
-    <fieldset
+    // Not a <fieldset> (Sonar's suggestion): its contents are laid out in an
+    // anonymous box, which collapses everything absolutely positioned here.
+    <div
+      role="group"
       aria-label={boxLabel}
       className={cn(
         'relative w-64 rounded border-2 transition-all',
@@ -170,6 +173,6 @@ export const BoxItem = ({
           onClick={onSelect}
         />
       )}
-    </fieldset>
+    </div>
   );
 };
