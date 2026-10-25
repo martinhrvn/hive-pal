@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUnitFormat } from '@/hooks/use-unit-format';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import { useUpdateHiveBoxes, apiaryHeaderConfig } from './useHives';
+import { invalidateTreatmentTotals } from './useTreatmentProducts';
 import { usePendingBoxUpdatesStore } from '@/stores/pendingBoxUpdatesStore';
 
 // Query keys
@@ -283,6 +284,7 @@ export const useCreateInspection = () => {
       });
       // Frame actions can change the hive's brood-box frame counts
       await queryClient.invalidateQueries({ queryKey: ['hives'] });
+      await invalidateTreatmentTotals(queryClient);
     },
   });
 };
@@ -319,6 +321,7 @@ export const useUpdateInspection = () => {
       });
       // Frame actions can change the hive's brood-box frame counts
       await queryClient.invalidateQueries({ queryKey: ['hives'] });
+      await invalidateTreatmentTotals(queryClient);
     },
   });
 };
@@ -348,6 +351,7 @@ export const useDeleteInspection = () => {
       queryClient.invalidateQueries({ queryKey: INSPECTIONS_KEYS.lists() });
       // Reverting frame actions changes the hive's brood-box frame counts
       queryClient.invalidateQueries({ queryKey: ['hives'] });
+      invalidateTreatmentTotals(queryClient);
     },
     onError: () => {
       toast.error(t('detailSidebar.deleteFailed'));

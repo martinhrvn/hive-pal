@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { apiClient } from '../client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +26,21 @@ const TP_KEYS = {
   apiaryTotals: (apiaryId: string) =>
     [...TP_KEYS.all, 'apiary-totals', apiaryId] as const,
 };
+
+/**
+ * Refetch the applied-ingredient totals (a hive's card, apiary reports).
+ * Call it after anything that adds, changes or removes a treatment: a
+ * standalone action or an inspection with one.
+ */
+export const invalidateTreatmentTotals = (queryClient: QueryClient) =>
+  Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: [...TP_KEYS.all, 'hive-summary'],
+    }),
+    queryClient.invalidateQueries({
+      queryKey: [...TP_KEYS.all, 'apiary-totals'],
+    }),
+  ]);
 
 const errMsg = (e: AxiosError<{ message?: string }>, fallback: string) =>
   e.response?.data?.message ?? fallback;

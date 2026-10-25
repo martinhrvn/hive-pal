@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import { apiaryHeaderConfig } from './useHives';
+import { invalidateTreatmentTotals } from './useTreatmentProducts';
 import {
   ActionFilter,
   ActionResponse,
@@ -40,7 +41,8 @@ export const useActions = (
       if (filters?.startDate) params.append('startDate', filters.startDate);
       if (filters?.endDate) params.append('endDate', filters.endDate);
 
-      const url = `/api/actions${params.toString() ? `?${params.toString()}` : ''}`;
+      const query = params.toString();
+      const url = query ? `/api/actions?${query}` : '/api/actions';
       const response = await apiClient.get<ActionResponse[]>(url);
       return response.data;
     },
@@ -71,6 +73,7 @@ export const useCreateAction = () => {
       queryClient.invalidateQueries({
         queryKey: ACTIONS_KEYS.all,
       });
+      invalidateTreatmentTotals(queryClient);
     },
   });
 };
@@ -96,6 +99,7 @@ export const useUpdateAction = () => {
       queryClient.invalidateQueries({
         queryKey: ACTIONS_KEYS.all,
       });
+      invalidateTreatmentTotals(queryClient);
     },
   });
 };
@@ -113,6 +117,7 @@ export const useDeleteAction = () => {
       queryClient.invalidateQueries({
         queryKey: ACTIONS_KEYS.all,
       });
+      invalidateTreatmentTotals(queryClient);
     },
   });
 };
