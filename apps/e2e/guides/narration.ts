@@ -59,10 +59,15 @@ export function defaultHoldMs(
   );
 }
 
+/** Longest subtitle on screen at once: two lines of about 42 characters. */
+const SUBTITLE_MAX_CHARS = 84;
+const SUBTITLE_LINE_CHARS = 42;
+
 /**
  * The narration track of a guide: every chapter/say/point/do emits a cue.
- * It is written out as WebVTT (soft subtitles, input for translation or TTS)
- * and as a readable markdown script with a screenshot per cue.
+ * It is written out as WebVTT twice: captions.vtt holds the on-screen
+ * captions (chapter times for YouTube, translation input), subtitles.vtt what
+ * the narrator says. Plus a readable markdown script with a screenshot per cue.
  */
 export class Narration {
   readonly cues: Cue[] = [];
@@ -106,6 +111,31 @@ export class Narration {
     return `WEBVTT - ${this.title}\n\n${body}\n`;
   }
 
+  /**
+   * What the narrator says, timed to the voice clip (to the cue without a
+   * voice), in chunks short enough to read: a long line is split at its
+   * sentences and commas, each chunk getting time in proportion to its length.
+   */
+  toSubtitles(): string {
+    const body = this.cues
+      .flatMap(c => {
+        const end = c.voice
+          ? c.start + c.voice.durationMs
+          : Math.max(c.end, c.start + 500);
+        const chunks = subtitleChunks(c.spoken ?? c.text);
+        const chars = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+        let at = c.start;
+        return chunks.map(chunk => {
+          const from = at;
+          at += Math.round(((end - c.start) * chunk.length) / chars);
+          return `${vttTime(from)} --> ${vttTime(at)}\n${wrapLine(chunk)}`;
+        });
+      })
+      .map((cue, i) => `${i + 1}\n${cue}`)
+      .join('\n\n');
+    return `WEBVTT - ${this.title}\n\n${body}\n`;
+  }
+
   toMarkdown(): string {
     const lines = [`# ${this.title}`, ''];
     for (const c of this.cues) {
@@ -122,8 +152,66 @@ export class Narration {
   write(dir: string) {
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, 'captions.vtt'), this.toVtt());
+    fs.writeFileSync(path.join(dir, 'subtitles.vtt'), this.toSubtitles());
     fs.writeFileSync(path.join(dir, 'script.md'), this.toMarkdown());
   }
+}
+
+/**
+ * Splits a line into readable chunks: whole sentences while they fit, a long
+ * sentence at its commas, a long clause at its middle.
+ */
+export function subtitleChunks(text: string): string[] {
+  return pack(pieces(text, /[^.?!…]+[.?!…]*\s*/g), sentence =>
+    pack(pieces(sentence, /[^,;:]+[,;:]*\s*/g), splitLong),
+  );
+}
+
+function pieces(text: string, pattern: RegExp): string[] {
+  return text.match(pattern) ?? [text];
+}
+
+/** Joins pieces up to SUBTITLE_MAX_CHARS; one too long on its own goes to `split`. */
+function pack(parts: string[], split: (part: string) => string[]): string[] {
+  const chunks: string[] = [];
+  let current = '';
+  for (const part of parts) {
+    if (current && (current + part).trim().length > SUBTITLE_MAX_CHARS) {
+      chunks.push(current.trim());
+      current = '';
+    }
+    current += part;
+  }
+  if (current.trim()) chunks.push(current.trim());
+  return chunks.flatMap(chunk =>
+    chunk.length > SUBTITLE_MAX_CHARS ? split(chunk) : [chunk],
+  );
+}
+
+/** A clause still longer than SUBTITLE_MAX_CHARS splits at its middle space. */
+function splitLong(chunk: string): string[] {
+  const cut = middleSpace(chunk);
+  if (chunk.length <= SUBTITLE_MAX_CHARS || cut < 0) return [chunk];
+  return [
+    ...splitLong(chunk.slice(0, cut)),
+    ...splitLong(chunk.slice(cut + 1)),
+  ];
+}
+
+/** Two lines when the chunk does not fit on one. */
+function wrapLine(chunk: string): string {
+  const cut = middleSpace(chunk);
+  if (chunk.length <= SUBTITLE_LINE_CHARS || cut < 0) return chunk;
+  return `${chunk.slice(0, cut)}\n${chunk.slice(cut + 1)}`;
+}
+
+/** Index of the space closest to the middle of `text`, or -1. */
+function middleSpace(text: string): number {
+  const mid = text.length / 2;
+  let best = -1;
+  for (let i = text.indexOf(' '); i >= 0; i = text.indexOf(' ', i + 1))
+    if (best < 0 || Math.abs(i - mid) < Math.abs(best - mid)) best = i;
+  return best;
 }
 
 function vttTime(ms: number): string {

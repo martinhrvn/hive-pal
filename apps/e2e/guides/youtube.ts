@@ -198,7 +198,7 @@ export function writeYoutube(
     '',
     `- Video: \`video.mp4\``,
     `- Thumbnail: ${thumbnail ? '`thumbnail.png`' : 'none yet (`pnpm guides:thumbnail`)'}`,
-    '- Subtitles: `captions.vtt` (Subtitles → Upload file → With timing)',
+    '- Subtitles: `subtitles.vtt` (Subtitles → Upload file → With timing)',
     ...(short
       ? []
       : [

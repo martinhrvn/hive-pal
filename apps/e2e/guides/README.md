@@ -30,15 +30,16 @@ guide signs up its own throwaway user.
 `out/guides/<slug>/` (git-ignored), where `<slug>` is the file name without
 `.guide.ts`, with `-mobile` appended for the mobile pass:
 
-| File             | What it is                                                                             |
-| ---------------- | -------------------------------------------------------------------------------------- |
-| `video.mp4`      | H.264, 30 fps, with narration audio when a voice is configured; needs `ffmpeg`         |
-| `captions.vtt`   | One WebVTT cue per chapter/say/point/do: soft subtitles, translation input, TTS script |
-| `script.md`      | The whole narration as text with timestamps and a screenshot per cue                   |
-| `shots/*.png`    | Those screenshots                                                                      |
-| `narration.wav`  | Voice clips placed at their cue times (only with `GUIDE_VOICE`)                        |
-| `soundtrack.wav` | Narration with background music (only with `GUIDE_MUSIC`)                              |
-| `youtube.md`     | Title, description with chapters, tags, upload checklist (from `<slug>.youtube.json`)  |
+| File             | What it is                                                                                           |
+| ---------------- | ---------------------------------------------------------------------------------------------------- |
+| `video.mp4`      | H.264, 30 fps, with narration audio when a voice is configured; needs `ffmpeg`                       |
+| `captions.vtt`   | One WebVTT cue per chapter/say/point/do with its on-screen caption: chapter times, translation input |
+| `subtitles.vtt`  | What the narrator says, timed to the voice in readable chunks: upload this as YouTube subtitles      |
+| `script.md`      | The whole narration as text with timestamps and a screenshot per cue                                 |
+| `shots/*.png`    | Those screenshots                                                                                    |
+| `narration.wav`  | Voice clips placed at their cue times (only with `GUIDE_VOICE`)                                      |
+| `soundtrack.wav` | Narration with background music (only with `GUIDE_MUSIC`)                                            |
+| `youtube.md`     | Title, description with chapters, tags, upload checklist (from `<slug>.youtube.json`)                |
 
 The video is encoded once, at the end: `page.screencast` hands over each
 frame as the browser's JPEG, `FrameRecorder` (`media.ts`) writes them to

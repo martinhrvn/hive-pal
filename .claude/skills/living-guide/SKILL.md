@@ -127,7 +127,7 @@ GUIDE_PASSES=mobile GUIDE_VOICE_PROFILE=upbeat pnpm guides:record quick-check
 ## 5. Check the result
 
 Output is in `apps/e2e/out/guides/<slug>[-mobile]/`: `video.mp4` (with audio),
-`narration.wav`, `captions.vtt`, `script.md` (each caption with its 🎙 voiceover
+`narration.wav`, `captions.vtt`, `subtitles.vtt`, `script.md` (each caption with its 🎙 voiceover
 and a screenshot) and `shots/`.
 
 - Confirm `video.mp4` has an audio stream and a sensible length:
@@ -213,6 +213,6 @@ Writing it:
 
 The links (app, docs, GitHub) are added to every description from `LINKS` in
 `youtube.ts`. `youtube.md` also lists what to upload: the video, the
-thumbnail, `captions.vtt` as subtitles (Subtitles → Upload file → With
+thumbnail, `subtitles.vtt` (the voiceover, not the on-screen captions) as subtitles (Subtitles → Upload file → With
 timing), and for full guides the end screen (subscribe and one or two videos
 over the right half of the outro card).
