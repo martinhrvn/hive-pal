@@ -6,7 +6,10 @@ import type {
   ActionResponse,
   QueenResponse,
 } from 'shared-schemas';
-import { transformActionsForApi } from '@/api/hooks/useInspections';
+import {
+  transformActionsForApi,
+  treatmentDetails,
+} from '@/api/hooks/useInspections';
 import type {
   ActionData,
   FeedingActionData,
@@ -56,16 +59,9 @@ const buildActionPayload = (
       } as CreateStandaloneAction['details'];
       break;
     }
-    case 'TREATMENT': {
-      const a = action as TreatmentActionData;
-      details = {
-        type: 'TREATMENT',
-        product: a.treatmentType,
-        quantity: a.amount,
-        unit: a.unit,
-      } as CreateStandaloneAction['details'];
+    case 'TREATMENT':
+      details = treatmentDetails(action as TreatmentActionData);
       break;
-    }
     case 'FRAME': {
       const a = action as FramesActionData;
       details = {

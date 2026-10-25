@@ -12,6 +12,7 @@ import { Plus } from 'lucide-react';
 import { ActionDateTimeField } from './action-date-time-field';
 import { ActionsSection } from '@/pages/inspection/components/inspection-form/actions';
 import { useCreateAction } from '@/api/hooks/useActions';
+import { treatmentDetails } from '@/api/hooks/useInspections';
 import { CreateStandaloneAction } from 'shared-schemas';
 import { toast } from 'sonner';
 import { useForm, FormProvider, Controller } from 'react-hook-form';
@@ -95,14 +96,7 @@ export const AddActionDialog = ({
             waterAddedMl: feedingAction.waterAddedMl,
           };
         } else if (action.type === 'TREATMENT') {
-          // Treatment: treatmentType -> product, amount -> quantity
-          const treatmentAction = action as TreatmentActionData;
-          details = {
-            type: 'TREATMENT',
-            product: treatmentAction.treatmentType,
-            quantity: treatmentAction.amount,
-            unit: treatmentAction.unit,
-          };
+          details = treatmentDetails(action as TreatmentActionData);
         } else if (action.type === 'FRAME') {
           // Frame: frames -> quantity
           const frameAction = action as FramesActionData;

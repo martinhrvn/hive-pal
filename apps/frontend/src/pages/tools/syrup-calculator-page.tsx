@@ -75,8 +75,9 @@ const VOLUME_INPUT_UNIT: Record<UnitPreference, string> = {
   imperial: 'qt',
 };
 
+/** Rounds to `decimals` and drops trailing decimal zeros: 1.50 → "1.5", 310 → "310". */
 function formatNum(value: number, decimals: number = 0): string {
-  return value.toFixed(decimals).replace(/\.?0+$/, '') || '0';
+  return String(Number(value.toFixed(decimals)));
 }
 
 /**

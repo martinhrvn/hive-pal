@@ -15,11 +15,13 @@ import {
   UpdateInspection,
   UpdateInspectionResponse,
   HiveDetailResponse,
+  TreatmentActionDetails,
 } from 'shared-schemas';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import type {
   InspectionFormData,
   ActionData,
+  TreatmentActionData,
 } from '@/pages/inspection/components/inspection-form/schema.ts';
 import { useNavigate } from 'react-router-dom';
 import { useUnitFormat } from '@/hooks/use-unit-format';
@@ -59,7 +61,8 @@ export const useInspections = (filters?: InspectionFilter) => {
       if (filters?.endDate) params.append('endDate', filters.endDate);
       if (filters?.status) params.append('status', filters.status);
 
-      const url = `/api/inspections${params.toString() ? `?${params.toString()}` : ''}`;
+      const query = params.toString();
+      const url = query ? `/api/inspections?${query}` : '/api/inspections';
       const response = await apiClient.get<InspectionResponse[]>(url);
       return response.data;
     },
@@ -142,6 +145,27 @@ export const useInspection = (id: string, options = {}) => {
   });
 };
 
+/**
+ * A treatment form entry as API details. Shared by inspections, the hive's
+ * Add Actions dialog and Bulk Add, so none of them drops the catalog product
+ * (which drives ingredient totals and withdrawal) or the mite counts.
+ */
+export const treatmentDetails = (
+  action: TreatmentActionData,
+): TreatmentActionDetails => ({
+  type: ActionType.TREATMENT,
+  product: action.treatmentType,
+  productId: action.productId ?? null,
+  quantity: action.amount,
+  unit: action.unit,
+  miteCountMethod:
+    (action.miteCountMethod as TreatmentActionDetails['miteCountMethod']) ??
+    null,
+  miteCountBefore: action.miteCountBefore ?? null,
+  miteCountAfter: action.miteCountAfter ?? null,
+  miteSampleSize: action.miteSampleSize ?? null,
+});
+
 // Transform form-shape actions into API CreateAction[]. Shared between the
 // single-inspection upsert flow and the bulk-add flow.
 export const transformActionsForApi = (
@@ -175,24 +199,7 @@ export const transformActionsForApi = (
           return {
             type: action.type,
             notes: action.notes,
-            details: {
-              type: action.type,
-              product: action.treatmentType,
-              productId: action.productId ?? null,
-              quantity: action.amount,
-              unit: action.unit,
-              miteCountMethod:
-                (action.miteCountMethod as
-                  | 'NATURAL_DROP'
-                  | 'SUGAR_ROLL'
-                  | 'ALCOHOL_WASH'
-                  | 'CO2'
-                  | 'OTHER'
-                  | null) ?? null,
-              miteCountBefore: action.miteCountBefore ?? null,
-              miteCountAfter: action.miteCountAfter ?? null,
-              miteSampleSize: action.miteSampleSize ?? null,
-            },
+            details: treatmentDetails(action),
           };
         case 'FRAME':
           return {
