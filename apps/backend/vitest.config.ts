@@ -36,6 +36,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    // better-auth 1.7.13's oauth-provider plugin validates the issuer/baseURL
+    // at init, so modules that construct `betterAuth()` at import time need a
+    // valid BETTER_AUTH_URL even in the env-less unit project.
+    env: {
+      BETTER_AUTH_URL: 'http://localhost:3000',
+    },
     setupFiles: ['reflect-metadata'],
     reporters: ['default', ['junit', {}]],
     outputFile: { junit: './test-results/junit.xml' },
