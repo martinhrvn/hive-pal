@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaService } from '../prisma/prisma.service';
 import { LoggerModule } from '../logger/logger.module';
 import { HiveModule } from '../hives/hive.module';
 import { InspectionsModule } from '../inspections/inspections.module';
@@ -25,7 +24,6 @@ import { ContextBuilderService } from './context-builder.service';
     AssistantRepository,
     AssistantAiService,
     ContextBuilderService,
-    PrismaService,
   ],
 })
 export class AssistantModule {}

@@ -3,7 +3,6 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { parseByteLimit } from '../utils/byte-limit';
 import { LoggerModule } from '../logger/logger.module';
-import { PrismaService } from '../prisma/prisma.service';
 import { AccountTransferController } from './account-transfer.controller';
 import { AccountTransferService } from './account-transfer.service';
 import { AccountTransferExportRunner } from './account-transfer.export.runner';
@@ -30,7 +29,6 @@ const DEFAULT_MAX_IMPORT_SIZE = 2 * 1024 * 1024 * 1024; // 2 GB
   ],
   controllers: [AccountTransferController],
   providers: [
-    PrismaService,
     AccountTransferService,
     AccountTransferExportRunner,
     AccountTransferImportRunner,

@@ -5,7 +5,6 @@ import { parseByteLimit } from '../utils/byte-limit';
 import { PhotosController } from './photos.controller';
 import { InspectionPhotosController } from './inspection-photos.controller';
 import { PhotosService } from './photos.service';
-import { PrismaService } from '../prisma/prisma.service';
 import { LoggerModule } from '../logger/logger.module';
 
 @Module({
@@ -25,7 +24,7 @@ import { LoggerModule } from '../logger/logger.module';
     }),
   ],
   controllers: [PhotosController, InspectionPhotosController],
-  providers: [PhotosService, PrismaService],
+  providers: [PhotosService],
   exports: [PhotosService],
 })
 export class PhotosModule {}

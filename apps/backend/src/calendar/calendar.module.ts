@@ -4,7 +4,6 @@ import { CalendarController } from './calendar.controller';
 import { CalendarService } from './calendar.service';
 import { ICalService } from './ical.service';
 import { ICalTokenService } from './ical-token.service';
-import { PrismaService } from '../prisma/prisma.service';
 import { ActionsModule } from '../actions/actions.module';
 import { UsersModule } from '../users/users.module';
 import { MetricsService } from '../metrics/metrics.service';
@@ -26,7 +25,6 @@ import { LoggerModule } from '../logger/logger.module';
     CalendarService,
     ICalService,
     ICalTokenService,
-    PrismaService,
     MetricsService,
     InspectionStatusUpdaterService,
   ],

@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { parseByteLimit } from '../utils/byte-limit';
 import { DocumentsController } from './documents.controller';
 import { DocumentsService } from './documents.service';
-import { PrismaService } from '../prisma/prisma.service';
 import { LoggerModule } from '../logger/logger.module';
 
 @Module({
@@ -24,7 +23,7 @@ import { LoggerModule } from '../logger/logger.module';
     }),
   ],
   controllers: [DocumentsController],
-  providers: [DocumentsService, PrismaService],
+  providers: [DocumentsService],
   exports: [DocumentsService],
 })
 export class DocumentsModule {}

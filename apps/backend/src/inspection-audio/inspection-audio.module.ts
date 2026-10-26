@@ -6,7 +6,6 @@ import { InspectionAudioController } from './inspection-audio.controller';
 import { ApiaryAudioController } from './apiary-audio.controller';
 import { InspectionAudioService } from './inspection-audio.service';
 import { InspectionAudioScheduler } from './inspection-audio.scheduler';
-import { PrismaService } from '../prisma/prisma.service';
 import { LoggerModule } from '../logger/logger.module';
 import { InspectionsModule } from '../inspections/inspections.module';
 
@@ -28,7 +27,7 @@ import { InspectionsModule } from '../inspections/inspections.module';
     }),
   ],
   controllers: [InspectionAudioController, ApiaryAudioController],
-  providers: [InspectionAudioService, InspectionAudioScheduler, PrismaService],
+  providers: [InspectionAudioService, InspectionAudioScheduler],
   exports: [InspectionAudioService],
 })
 export class InspectionAudioModule {}

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { ApiariesModule } from '../apiaries/apiaries.module';
 import { HiveModule } from '../hives/hive.module';
 import { QueensModule } from '../queens/queens.module';
@@ -29,6 +28,6 @@ import { McpScopeService } from './mcp-scope.service';
     UsersModule,
   ],
   controllers: [McpController, WellKnownController],
-  providers: [McpServerFactory, McpScopeService, PrismaService],
+  providers: [McpServerFactory, McpScopeService],
 })
 export class McpModule {}

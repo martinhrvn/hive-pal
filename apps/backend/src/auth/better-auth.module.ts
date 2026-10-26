@@ -16,8 +16,7 @@ import { authDeps } from './auth-deps';
       disableGlobalAuthGuard: true,
     }),
   ],
-  providers: [PrismaService],
-  exports: [ThallespAuthModule, PrismaService],
+  exports: [ThallespAuthModule],
 })
 export class BetterAuthModule implements OnModuleInit {
   constructor(

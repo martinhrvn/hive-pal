@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { EnvController } from './env.controller';
 import { BetterAuthModule } from './auth/better-auth.module';
+import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -61,6 +62,7 @@ const NO_STORE_FILES = /(?:^|[\\/])(?:sw\.js|registerSW\.js|index\.html)$/;
 @Module({
   imports: [
     SentryModule.forRoot(),
+    PrismaModule,
     ConfigModule.forRoot({ isGlobal: true }),
     EventEmitterModule.forRoot(),
     // Single app-wide scheduler. Must be registered exactly once — the

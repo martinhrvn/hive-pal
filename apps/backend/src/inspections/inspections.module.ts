@@ -2,7 +2,6 @@ import { Module, forwardRef } from '@nestjs/common';
 import { InspectionsService } from './inspections.service';
 import { InspectionsController } from './inspections.controller';
 import { InspectionStatusUpdaterService } from './inspection-status-updater.service';
-import { PrismaService } from '../prisma/prisma.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { LoggerModule } from '../logger/logger.module';
 import { ActionsModule } from '../actions/actions.module';
@@ -24,7 +23,6 @@ import { PrometheusModule } from '../health/prometheus/prometheus.module';
   providers: [
     InspectionsService,
     InspectionStatusUpdaterService,
-    PrismaService,
     MetricsService,
   ],
   exports: [InspectionsService],

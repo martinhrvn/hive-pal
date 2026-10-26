@@ -4,7 +4,6 @@ import { UsersService } from './users.service';
 import { EquipmentService } from './equipment.service';
 import { FeedTypesService } from './feed-types.service';
 import { UsersStatsService } from './users-stats.service';
-import { PrismaService } from '../prisma/prisma.service';
 import { LoggerModule } from '../logger/logger.module';
 
 @Module({
@@ -15,7 +14,6 @@ import { LoggerModule } from '../logger/logger.module';
     EquipmentService,
     FeedTypesService,
     UsersStatsService,
-    PrismaService,
   ],
   exports: [UsersService, EquipmentService, FeedTypesService],
 })

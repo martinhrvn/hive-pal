@@ -3,7 +3,6 @@ import { AlertsController } from './alerts.controller';
 import { AlertsService } from './alerts.service';
 import { AlertsScheduler } from './alerts.scheduler';
 import { AlertsEventHandler } from './alerts.event-handler';
-import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { InspectionOverdueChecker, VirginQueenChecker } from './checkers';
 
@@ -13,7 +12,6 @@ import { InspectionOverdueChecker, VirginQueenChecker } from './checkers';
     AlertsService,
     AlertsScheduler,
     AlertsEventHandler,
-    PrismaService,
     CustomLoggerService,
     InspectionOverdueChecker,
     VirginQueenChecker,

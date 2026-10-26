@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { parseByteLimit } from '../utils/byte-limit';
 import { QuickChecksController } from './quick-checks.controller';
 import { QuickChecksService } from './quick-checks.service';
-import { PrismaService } from '../prisma/prisma.service';
 import { LoggerModule } from '../logger/logger.module';
 
 @Module({
@@ -24,7 +23,7 @@ import { LoggerModule } from '../logger/logger.module';
     }),
   ],
   controllers: [QuickChecksController],
-  providers: [QuickChecksService, PrismaService],
+  providers: [QuickChecksService],
   exports: [QuickChecksService],
 })
 export class QuickChecksModule {}
