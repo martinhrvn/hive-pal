@@ -105,8 +105,9 @@ text and links are `OUTRO` in `guide.fixture.ts`), with a spoken line, held
 for at least 15 s. On landscape it keeps to the left half, leaving the right
 half for YouTube's end-screen elements (subscribe button, next videos), which
 can cover the last 5 to 20 s; add them in YouTube Studio over that area. In
-portrait it stays above the bottom 28% that Shorts cover. Shorts can skip it:
-they have no end screens, and 15 s is a quarter of a Short.
+portrait it stays above the bottom 28% that Shorts cover. Shorts end with
+`g.outro({ short: true })` instead: hivepal.app only and a one-line goodbye
+(`SHORT_OUTRO`), held just for its clip, since Shorts have no end screens.
 
 Without a voice, each cue holds for its reading time (12 characters per
 second, at least 2.5 s); with one, it holds for the clip plus a 0.4 s breath
@@ -204,8 +205,11 @@ native drag and drop, which needs a mouse.
 ### Shorts
 
 A short is a guide about one task, recorded in the mobile pass only (portrait,
-for Shorts/Reels). It still runs on desktop in CI, so it skips the desktop pass
-in guide mode only:
+for Shorts/Reels). It opens straight on the app, not on an intro card: viewers
+decide in the first second, so the first cue is a `g.say` whose caption is the
+hook (a question works: "Found queen cells?") and whose voiceover says it out
+loud. It ends with `g.outro({ short: true })`. It still runs on desktop in CI,
+so it skips the desktop pass in guide mode only:
 
 ```ts
 test.skip(
@@ -412,6 +416,8 @@ without it, headless Chromium records viewport-sized frames. In portrait,
 captions keep the bottom 28% of the frame free, where YouTube draws the Short's
 title and buttons (`bottomInset` in `overlays.ts`).
 
-`GUIDE_PASSES=desktop,mobile` records both; CI mode always runs desktop only. The mobile layout hides the sidebar behind a menu, so a
+`GUIDE_PASSES=desktop,mobile` records both. A plain run takes it too
+(`GUIDE_PASSES=mobile pnpm test:guides <slug>` checks a Short at phone size
+without recording); without it, and so in CI, it runs desktop only. The mobile layout hides the sidebar behind a menu, so a
 guide that navigates through the sidebar needs a page-object method that opens the
 menu first.

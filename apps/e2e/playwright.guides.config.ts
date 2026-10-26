@@ -22,7 +22,7 @@ if (fs.existsSync(envLocal)) {
  *   (default)       headless e2e run: no video, no pauses
  *   GUIDE=1         record video, captions.vtt and script.md to out/guides/
  *   GUIDE_PREPARE=1 generate the voiceover into the cache first (guides:voice)
- *   GUIDE_PASSES    viewport passes to record, e.g. "desktop,mobile"
+ *   GUIDE_PASSES    viewport passes, e.g. "desktop,mobile" (default desktop)
  *   GUIDE_LOCALE    caption + browser locale (default en)
  *   GUIDE_VOICE     voiceover provider: none (default) | piper | openai | gemini
  *   GUIDE_VOICE_PROFILE  narrator (default) | upbeat | mentor
@@ -60,7 +60,8 @@ const PASSES = {
 } as const;
 type Pass = keyof typeof PASSES;
 
-const passes = (GUIDE ? (process.env.GUIDE_PASSES ?? 'desktop') : 'desktop')
+// Plain runs honour it too, to check a Short's phone layout without recording.
+const passes = (process.env.GUIDE_PASSES ?? 'desktop')
   .split(',')
   .map(p => p.trim() as Pass);
 

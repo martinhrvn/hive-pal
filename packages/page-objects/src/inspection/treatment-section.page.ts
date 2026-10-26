@@ -12,8 +12,9 @@ export class TreatmentSectionPageObject {
     return this.page.getByRole('spinbutton', { name: 'Amount ' });
   }
 
+  /** The product picker; not the first combobox, a date field can come before it. */
   getTreatmentTypeField() {
-    return this.page.getByRole('combobox').first();
+    return this.page.locator('[data-test="treatment-product-select"]');
   }
 
   getProductNameField() {
@@ -45,10 +46,9 @@ export class TreatmentSectionPageObject {
   }
 
   async fillTreatmentForm(treatmentType: string, amount: string, productName?: string) {
-    if (treatmentType !== 'Oxalic Acid') {
-      await this.getTreatmentTypeField().click();
-      await this.selectTreatmentType(treatmentType);
-    }
+    // Nothing is preselected: every product has to be picked.
+    await this.getTreatmentTypeField().click();
+    await this.selectTreatmentType(treatmentType);
     if (treatmentType === 'Other') {
       await this.getProductNameField().fill(productName ?? 'Custom Treatment');
     }

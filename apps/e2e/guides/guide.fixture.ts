@@ -122,7 +122,22 @@ const OUTRO = {
     'Hive Pal is free and open source, built in the open by beekeepers and developers. You can use it at hivepal.app, and find the code on GitHub. If this guide helped, give it a like, share it with a fellow beekeeper, and subscribe for more.',
 } satisfies { links: CardLink[]; cta: CardCta[]; [k: string]: unknown };
 
-type OutroOptions = CueOptions & { title?: Caption; description?: Caption };
+/**
+ * A Short's closing card: one link and a one-line voiceover. Shorts have no
+ * end screen, so it holds only for its clip; the viewer is already swiping.
+ */
+const SHORT_OUTRO = {
+  links: [{ label: 'Try it free', url: 'hivepal.app' }],
+  voiceover:
+    'Hive Pal is free and open source. Try it at hivepal.app, and subscribe for more.',
+} satisfies { links: CardLink[]; voiceover: string };
+
+type OutroOptions = CueOptions & {
+  title?: Caption;
+  description?: Caption;
+  /** A Short's version: hivepal.app only, a short line, no end-screen hold. */
+  short?: boolean;
+};
 
 export class Guide {
   private recording: Recording | null = null;
@@ -155,20 +170,27 @@ export class Guide {
    * Closing card: free and open source, where to find Hive Pal, and like /
    * share / subscribe. Call it last; it stays up until the video ends. On
    * landscape it keeps the right half free for YouTube's end screen, which
-   * covers the last 5–20 s, so it holds for at least `OUTRO_MS`.
+   * covers the last 5–20 s, so it holds for at least `OUTRO_MS`. Shorts pass
+   * `short: true`: just hivepal.app and a one-line goodbye.
    */
   async outro(opts: OutroOptions = {}) {
-    const { title = OUTRO.title, description = OUTRO.description } = opts;
+    const {
+      title = OUTRO.title,
+      description = OUTRO.description,
+      short,
+      ...cue
+    } = opts;
+    const content = short ? SHORT_OUTRO : OUTRO;
     await this.card(
       'outro',
       title,
       description,
       {
-        voiceover: OUTRO.voiceover,
-        holdMs: OUTRO_MS,
-        ...opts,
+        voiceover: content.voiceover,
+        ...(short ? {} : { holdMs: OUTRO_MS }),
+        ...cue,
       },
-      { links: OUTRO.links, cta: OUTRO.cta },
+      { links: content.links, cta: OUTRO.cta },
     );
   }
 

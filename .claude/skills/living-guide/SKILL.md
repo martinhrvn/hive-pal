@@ -17,7 +17,11 @@ read it before writing a new guide. This skill is the workflow.
 - Start with `g.intro(title, description)`; use `g.chapter` per section and
   `g.point` / `g.tour` / `g.do` / `g.say` for cues.
 - End full guides with `g.outro()` (the shared closing card with links and
-  like / share / subscribe). Shorts skip it.
+  like / share / subscribe).
+- Shorts skip the intro card and open on the app: the first cue is a `g.say`
+  with the hook as its caption (a question: "Found queen cells?") and as its
+  voiceover. They end with `g.outro({ short: true })` (hivepal.app, one line,
+  no end-screen hold).
 - Assert what you narrate (a plain `expect` next to a caption that states a fact).
 - Use the `demo` fixture for seeded data (Home Apiary, Hive 1–3, one harvest), or
   sign up on screen like `getting-started.guide.ts`.

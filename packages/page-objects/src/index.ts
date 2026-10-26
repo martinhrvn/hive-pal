@@ -17,3 +17,4 @@ export * from './files';
 export * from './harvest';
 export * from './share';
 export * from './marketing';
+export * from './tools';

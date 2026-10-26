@@ -13,12 +13,16 @@ work, **P3** is power features and the long tail.
 
 ## Done
 
-| File                       | Format   | Covers                                                                                                                       |
-| -------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `getting-started.guide.ts` | Guide ✅ | Sign-up, apiary, first hives, hive layout, settings, dashboard tour                                                          |
-| `harvest.guide.ts`         | Guide ✅ | Recording a harvest: frames, weights, split between hives, finalize                                                          |
-| `quick-check.guide.ts`     | Short ✅ | Quick check at the hive: tags, note, timeline                                                                                |
-| `hives.guide.ts`           | Guide    | Creating a hive, alerts, todos, analytics, the box editor in detail, sidebar actions, archiving (script done; voice pending) |
+| File                         | Format   | Covers                                                                                                                       |
+| ---------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `getting-started.guide.ts`   | Guide ✅ | Sign-up, apiary, first hives, hive layout, settings, dashboard tour                                                          |
+| `harvest.guide.ts`           | Guide ✅ | Recording a harvest: frames, weights, split between hives, finalize                                                          |
+| `quick-check.guide.ts`       | Short ✅ | Quick check at the hive: tags, note, timeline                                                                                |
+| `mobile-inspection.guide.ts` | Short    | Full inspection in the mobile wizard: counters, queen, photo and note, review (script done; voice pending)                   |
+| `brood-timeline.guide.ts`    | Short    | Queen cell timing on the free brood timeline: emergence date, castes compared (script done; voice pending)                   |
+| `syrup-calculator.guide.ts`  | Short    | The free syrup calculator: 2:1 for autumn, 1:1 for spring, how much sugar and water (script done; voice pending)             |
+| `varroa-treatment.guide.ts`  | Short    | Logging a treatment from Add Entry: product, amount, timeline, active ingredients (script done; voice pending)               |
+| `hives.guide.ts`             | Guide    | Creating a hive, alerts, todos, analytics, the box editor in detail, sidebar actions, archiving (script done; voice pending) |
 
 ## Hives
 
@@ -36,7 +40,6 @@ work, **P3** is power features and the long tail.
 | Idea                       | Format | P   | Flow                                                                                                                     | Notes                                                                                                               |
 | -------------------------- | ------ | --- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
 | **Your first inspection**  | Guide  | P1  | Create inspection: weather, observations, scores, notes, photos, box changes; then the detail page and the hive timeline | The core flow; long, use chapters                                                                                   |
-| Inspecting on your phone   | Short  | P1  | Mobile wizard: frame counter, tap scales, step by step                                                                   | Mobile-first, a natural Short                                                                                       |
 | Inspect with your voice    | Guide  | P1  | Audio quick inspection: record, transcript, AI draft, review and save                                                    | 🟡 Fake mic input (`--use-file-for-fake-audio-capture`) plus a transcription worker on preview, or mocked responses |
 | Talk, don't type           | Short  | P1  | Same, phone only, the "hands on the frames" pitch                                                                        | 🟡 Same as above                                                                                                    |
 | Scheduling inspections     | Guide  | P2  | Schedule one, see it on the calendar and dashboard, reminders in settings, turn it into a real inspection                |                                                                                                                     |
@@ -79,8 +82,6 @@ These work without an account, so they also make good marketing Shorts.
 
 | Idea                     | Format | P   | Flow                                                          | Notes |
 | ------------------------ | ------ | --- | ------------------------------------------------------------- | ----- |
-| Syrup calculator         | Short  | P2  | 1:1 vs 2:1, how much sugar and water                          |       |
-| Brood timeline           | Short  | P2  | From egg to bee: what happens when, queen cell timing         |       |
 | Swarm management methods | Guide  | P3  | Overview, then artificial swarm, Pagden, Demaree side by side |       |
 | One method each          | Shorts | P3  | Artificial swarm / Pagden / Demaree, one Short each           |       |
 | Liebefelder method       | Short  | P3  | Estimating colony strength by eye                             |       |

@@ -6,3 +6,4 @@ export * from './inspection-form.page';
 export * from './inspection-list.page';
 export * from './inspection-detail.page';
 export * from './schedule.page';
+export * from './mobile-wizard.page';
