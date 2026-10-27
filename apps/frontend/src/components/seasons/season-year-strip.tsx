@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MoreHorizontal, Plus } from 'lucide-react';
 import { isDateInSeason, type Season } from 'shared-schemas';
@@ -56,7 +56,8 @@ interface SeasonYearStripProps {
 /**
  * The year as one strip: each season as a segment, the remaining days as the
  * year-round default. Inside a `SeasonsEditorProvider` the strip is editable:
- * clicking a season opens its editor, clicking a gap adds a season, and each
+ * clicking a season opens its editor, clicking a gap adds a season covering
+ * the whole gap (across the new year when it touches both ends), and each
  * season's overflow menu carries edit/delete controls.
  */
 export function SeasonYearStrip({
@@ -67,6 +68,8 @@ export function SeasonYearStrip({
 }: SeasonYearStripProps) {
   const { t, i18n } = useTranslation('common');
   const segments = useMemo(() => buildYearStripSegments(seasons), [seasons]);
+  // Both halves of a gap across the new year light up together.
+  const [hoveredGap, setHoveredGap] = useState<number>();
   const todayIndex = stripDayIndex(today.getMonth() + 1, today.getDate());
   const monthLabels = useMemo(
     () => formatMonthLabels(i18n.language),
@@ -82,6 +85,8 @@ export function SeasonYearStrip({
             segment={segment}
             baseFrequencyDays={baseFrequencyDays}
             today={today}
+            hoveredGap={hoveredGap}
+            onHoverGap={setHoveredGap}
           />
         ))}
         <div
@@ -129,10 +134,15 @@ function StripSegment({
   segment,
   baseFrequencyDays,
   today,
+  hoveredGap,
+  onHoverGap,
 }: {
   segment: YearStripSegment;
   baseFrequencyDays?: number;
   today: Date;
+  /** `gapStart` of the year-round gap under the pointer. */
+  hoveredGap?: number;
+  onHoverGap: (gapStart: number | undefined) => void;
 }) {
   const editor = useSeasonEditor();
   const { t } = useTranslation('common');
@@ -210,20 +220,24 @@ function StripSegment({
     );
   }
 
-  // Editable year-round gap: click to add a season covering it.
+  // Editable year-round gap: click to add a season covering the whole gap,
+  // so Jan – Mar and Oct – Dec around the new year become one season.
   if (editor && !isSeason) {
-    const start = stripIndexToMonthDay(segment.start);
-    const end = stripIndexToMonthDay(segment.end);
+    const start = stripIndexToMonthDay(segment.gapStart);
+    const end = stripIndexToMonthDay(segment.gapEnd);
     return (
       <button
         type="button"
         aria-label={t('season.strip.addSeason')}
         data-test="strip-year-round"
         onClick={() => editor.addSeason(start, end)}
+        onPointerEnter={() => onHoverGap(segment.gapStart)}
+        onPointerLeave={() => onHoverGap(undefined)}
         className={cn(
           'group/round absolute inset-y-0 px-1.5 text-left text-xs transition-colors',
           segment.end < STRIP_DAYS - 1 && 'border-r border-background',
           'text-muted-foreground hover:bg-muted',
+          hoveredGap === segment.gapStart && 'bg-muted',
           'focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
         )}
         style={segmentStyle}

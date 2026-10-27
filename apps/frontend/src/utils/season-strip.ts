@@ -32,12 +32,24 @@ export type YearStripSegment =
       start: number;
       end: number;
     }
-  | { kind: 'yearRound'; start: number; end: number };
+  | {
+      kind: 'yearRound';
+      start: number;
+      end: number;
+      /**
+       * The whole uncovered stretch this segment belongs to. A gap across the
+       * new year (Nov – Feb) is drawn at both ends of the strip; both halves
+       * share it, and `gapStart > gapEnd` marks the wrap.
+       */
+      gapStart: number;
+      gapEnd: number;
+    };
 
 /**
  * Lay the seasons out on one calendar year. A season that wraps the year
  * (Nov – Feb) becomes two segments; days no season covers become year-round
- * segments. Segments are sorted, inclusive and never overlap for a valid list.
+ * segments, and a gap across the new year keeps its full extent on both
+ * halves. Segments are sorted, inclusive and never overlap for a valid list.
  */
 export function buildYearStripSegments(seasons: Season[]): YearStripSegment[] {
   const seasonSegments: YearStripSegment[] = seasons.flatMap(
@@ -65,17 +77,30 @@ export function buildYearStripSegments(seasons: Season[]): YearStripSegment[] {
   let cursor = 0;
   for (const segment of seasonSegments) {
     if (segment.start > cursor) {
-      segments.push({
-        kind: 'yearRound',
-        start: cursor,
-        end: segment.start - 1,
-      });
+      segments.push(yearRound(cursor, segment.start - 1));
     }
     segments.push(segment);
     cursor = Math.max(cursor, segment.end + 1);
   }
   if (cursor < STRIP_DAYS) {
-    segments.push({ kind: 'yearRound', start: cursor, end: STRIP_DAYS - 1 });
+    segments.push(yearRound(cursor, STRIP_DAYS - 1));
+  }
+
+  // Dec 31 and Jan 1 are neighbours: gaps touching both ends of the strip are
+  // one stretch across the new year.
+  const first = segments[0];
+  const last = segments.at(-1);
+  if (
+    first?.kind === 'yearRound' &&
+    last?.kind === 'yearRound' &&
+    first !== last
+  ) {
+    first.gapStart = last.gapStart = last.start;
+    first.gapEnd = last.gapEnd = first.end;
   }
   return segments;
+}
+
+function yearRound(start: number, end: number): YearStripSegment {
+  return { kind: 'yearRound', start, end, gapStart: start, gapEnd: end };
 }

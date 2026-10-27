@@ -96,3 +96,13 @@ const EditableHarness = ({
 export const Editable = () => (
   <EditableHarness initialSeasons={[SPRING, AUTUMN, WINTER]} />
 );
+
+const EARLY_AUTUMN: Season = {
+  ...AUTUMN,
+  end: { month: 9, day: 30 },
+};
+
+/** Spring and autumn only: the winter gap spans the new year. */
+export const EditableWinterGap = () => (
+  <EditableHarness initialSeasons={[SPRING, EARLY_AUTUMN]} />
+);

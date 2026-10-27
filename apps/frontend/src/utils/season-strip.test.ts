@@ -30,7 +30,13 @@ describe('stripDayIndex', () => {
 describe('buildYearStripSegments', () => {
   it('is one year-round segment without seasons', () => {
     expect(buildYearStripSegments([])).toEqual([
-      { kind: 'yearRound', start: 0, end: STRIP_DAYS - 1 },
+      {
+        kind: 'yearRound',
+        start: 0,
+        end: STRIP_DAYS - 1,
+        gapStart: 0,
+        gapEnd: STRIP_DAYS - 1,
+      },
     ]);
   });
 
@@ -62,5 +68,32 @@ describe('buildYearStripSegments', () => {
       { kind: 'yearRound' },
       { kind: 'season', start: stripDayIndex(11, 15), end: STRIP_DAYS - 1 },
     ]);
+  });
+
+  it('joins the gaps at both ends into one stretch across the new year', () => {
+    const segments = buildYearStripSegments([
+      season('autumn', [8, 1], [9, 30]),
+      season('spring', [4, 1], [5, 31]),
+    ]);
+    const wrapped = {
+      gapStart: stripDayIndex(10, 1),
+      gapEnd: stripDayIndex(3, 31),
+    };
+    expect(segments[0]).toMatchObject({
+      kind: 'yearRound',
+      start: 0,
+      ...wrapped,
+    });
+    expect(segments.at(-1)).toMatchObject({
+      kind: 'yearRound',
+      end: STRIP_DAYS - 1,
+      ...wrapped,
+    });
+    // Gaps in the middle of the year stay their own.
+    expect(segments[2]).toMatchObject({
+      kind: 'yearRound',
+      gapStart: stripDayIndex(6, 1),
+      gapEnd: stripDayIndex(7, 31),
+    });
   });
 });

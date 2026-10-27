@@ -5,6 +5,7 @@ const NO_SEASONS = 'components/seasons/season-year-strip/NoSeasons';
 const NO_YEAR_ROUND =
   'components/seasons/season-year-strip/NoYearRoundInterval';
 const EDITABLE = 'components/seasons/season-year-strip/Editable';
+const WINTER_GAP = 'components/seasons/season-year-strip/EditableWinterGap';
 
 test('lays out seasons and the year-round gaps', async ({ mount }) => {
   const component = await mount(DEFAULT);
@@ -81,4 +82,16 @@ test('deletes a season from the strip menu', async ({ mount, page }) => {
     .getByRole('button', { name: 'Remove season' })
     .click();
   await expect(component.getByTestId('season-card')).toHaveCount(2);
+});
+
+test('adds one season across the new year from either end', async ({
+  mount,
+}) => {
+  const component = await mount(WINTER_GAP);
+
+  // Jan – Feb half of the Oct – Feb gap.
+  await component.getByTestId('strip-year-round').first().click();
+  await expect(component.getByTestId('season-card')).toHaveCount(3);
+  // The new season wraps the year, so it covers both ends of the strip.
+  await expect(component.getByTestId('strip-year-round')).toHaveCount(1);
 });
