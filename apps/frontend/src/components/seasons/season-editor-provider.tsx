@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import type { Season } from 'shared-schemas';
+import { longestFreeRange } from '@/utils/season-strip';
 import {
   SeasonEditorContext,
   createSeason,
@@ -34,7 +35,11 @@ export function SeasonsEditorProvider({ children }: { children: ReactNode }) {
       editingId,
       setEditing,
       addSeason: (start, end) => {
-        const season = createSeason(start, end);
+        // Without dates, fill the longest stretch no season covers yet.
+        const free = start
+          ? undefined
+          : longestFreeRange(getValues('seasons') ?? []);
+        const season = createSeason(start ?? free?.start, end ?? free?.end);
         append(season);
         setEditing(season.id, true);
       },

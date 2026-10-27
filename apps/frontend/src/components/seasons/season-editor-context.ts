@@ -28,7 +28,10 @@ export interface SeasonEditorContextValue {
   editingId: string | null;
   /** Open a season (closing any other) or close it. */
   setEditing: (id: string, editing: boolean) => void;
-  /** Append a season (optionally spanning a date range) and open it. */
+  /**
+   * Append a season and open it. Without a range it fills the longest stretch
+   * no season covers.
+   */
   addSeason: (
     start?: { month: number; day: number },
     end?: { month: number; day: number },

@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 
 const STORY = 'components/seasons/season-list-field/Default';
 const WITH_SEASON = 'components/seasons/season-list-field/WithSeason';
+const WITH_NEIGHBOURS = 'components/seasons/season-list-field/WithNeighbours';
+const OVERLAPPING = 'components/seasons/season-list-field/Overlapping';
 
 test('adds a feeding season and saves its target', async ({ mount }) => {
   const component = await mount(STORY);
@@ -73,19 +75,84 @@ test('saves a season without inspections', async ({ mount }) => {
   );
 });
 
-test('flags overlapping seasons', async ({ mount }) => {
+test('shows which days overlap and opens the season to fix', async ({
+  mount,
+  page,
+}) => {
+  const component = await mount(OVERLAPPING);
+  const alert = component.getByTestId('season-overlap');
+
+  // The unnamed season is identified by its dates, not a stock name.
+  await expect(alert).toContainText('"Spring"');
+  await expect(alert).toContainText('both cover May 15 – May 31');
+  await expect(alert).not.toContainText('Autumn feeding');
+
+  await component.getByTestId('edit-overlapping-season').click();
+  await expect(component.getByLabel('Starts')).toHaveText('May 15');
+  // The days spring holds would cut it in two, so start after it instead.
+  await component.getByLabel('Starts').click();
+  await page.getByRole('button', { name: /next month/i }).click();
+  await page
+    .getByRole('grid')
+    .getByRole('button', { name: /June 1st/ })
+    .click();
+  await expect(alert).toHaveCount(0);
+});
+
+test('adds a season in the longest free stretch', async ({ mount }) => {
   const component = await mount(WITH_SEASON);
 
-  // The new season defaults to Mar-May, which overlaps the existing Spring.
   await component.getByTestId('add-season').click();
-  await expect(component.getByTestId('season-overlap')).toBeVisible();
-  // The unnamed new season is identified by its dates, not a stock name.
-  await expect(component.getByTestId('season-overlap')).toContainText(
-    '"Spring"',
+  await expect(component.getByLabel('Starts')).toHaveText('June 1');
+  await expect(component.getByLabel('Ends')).toHaveText('February 29');
+  await expect(component.getByTestId('season-overlap')).toHaveCount(0);
+});
+
+test('shortens the next season to make room, with an undo', async ({
+  mount,
+  page,
+}) => {
+  const component = await mount(WITH_NEIGHBOURS);
+
+  await component.getByTestId('edit-season').first().click();
+  await component.getByLabel('Ends').click();
+  await expect(
+    page.getByText('Dotted days belong to another season'),
+  ).toBeVisible();
+  await page.getByRole('button', { name: /next month/i }).click();
+  await page
+    .getByRole('grid')
+    .getByRole('button', { name: /June 15th/ })
+    .click();
+
+  const note = component.getByTestId('season-shortened');
+  await expect(note).toContainText('Shortened "Summer" to Jun 16 – Aug 31.');
+  await expect(component.getByLabel('Ends')).toHaveText('June 15');
+  await expect(component.getByTestId('season-overlap')).toHaveCount(0);
+
+  await component.getByTestId('undo-shortened').click();
+  await expect(note).toHaveCount(0);
+  await expect(component.getByLabel('Ends')).toHaveText('May 31');
+  await expect(component.getByTestId('season-card').nth(1)).toContainText(
+    'Jun 1 – Aug 31',
   );
-  await expect(component.getByTestId('season-overlap')).not.toContainText(
-    'Autumn feeding',
-  );
+});
+
+test('blocks days that would swallow another season', async ({
+  mount,
+  page,
+}) => {
+  const component = await mount(WITH_NEIGHBOURS);
+
+  await component.getByTestId('edit-season').first().click();
+  await component.getByLabel('Ends').click();
+  const next = page.getByRole('button', { name: /next month/i });
+  for (let step = 0; step < 4; step += 1) await next.click();
+  // Spring ending in September would cover all of summer.
+  await expect(page.getByText('September', { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('grid').getByRole('button', { name: /September 10th/ }),
+  ).toBeDisabled();
 });
 
 test('removes a season', async ({ mount }) => {

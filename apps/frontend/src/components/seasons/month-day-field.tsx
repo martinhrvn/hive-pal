@@ -19,26 +19,21 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { formatMonthDay } from '@/utils/season-format';
-import { stripDayIndex } from '@/utils/season-strip';
+import { rangeCovers } from '@/utils/season-strip';
 
 /** Leap year the calendar shows, so Feb 29 is a day you can pick. */
 const REFERENCE_YEAR = 2000;
 const FIRST_MONTH = new Date(REFERENCE_YEAR, 0, 1);
 const LAST_MONTH = new Date(REFERENCE_YEAR, 11, 1);
 
+type MonthDayRange = { start: SeasonMonthDay; end: SeasonMonthDay };
+
 function toDate(value: SeasonMonthDay): Date {
   return new Date(REFERENCE_YEAR, value.month - 1, value.day);
 }
 
-/** Whether a day falls in the season, including one across the new year. */
-function inRange(
-  date: Date,
-  range: { start: SeasonMonthDay; end: SeasonMonthDay },
-) {
-  const day = stripDayIndex(date.getMonth() + 1, date.getDate());
-  const start = stripDayIndex(range.start.month, range.start.day);
-  const end = stripDayIndex(range.end.month, range.end.day);
-  return start <= end ? day >= start && day <= end : day >= start || day <= end;
+function toMonthDay(date: Date): SeasonMonthDay {
+  return { month: date.getMonth() + 1, day: date.getDate() };
 }
 
 interface MonthDayFieldProps<T extends FieldValues> {
@@ -47,7 +42,13 @@ interface MonthDayFieldProps<T extends FieldValues> {
   label: string;
   disabled?: boolean;
   /** The whole season, shaded in the calendar so you see what you change. */
-  range?: { start: SeasonMonthDay; end: SeasonMonthDay };
+  range?: MonthDayRange;
+  /** Other seasons; their days are marked, as picking one shortens them. */
+  taken?: MonthDayRange[];
+  /** Days that cannot be picked. */
+  isBlocked?: (day: SeasonMonthDay) => boolean;
+  /** Handles a picked day instead of setting the field. */
+  onPick?: (day: SeasonMonthDay) => void;
 }
 
 /**
@@ -60,6 +61,9 @@ export function MonthDayField<T extends FieldValues>({
   label,
   disabled,
   range,
+  taken = [],
+  isBlocked,
+  onPick,
 }: MonthDayFieldProps<T>) {
   const { t, i18n } = useTranslation('common');
   const [open, setOpen] = useState(false);
@@ -112,21 +116,34 @@ export function MonthDayField<T extends FieldValues>({
                     formatCaption: date =>
                       date.toLocaleDateString(i18n.language, { month: 'long' }),
                   }}
-                  modifiers={
-                    range
-                      ? { inSeason: date => inRange(date, range) }
-                      : undefined
+                  disabled={
+                    isBlocked ? date => isBlocked(toMonthDay(date)) : undefined
                   }
-                  modifiersClassNames={{ inSeason: 'bg-muted' }}
+                  modifiers={{
+                    inSeason: date =>
+                      !!range && rangeCovers(range, toMonthDay(date)),
+                    taken: date =>
+                      taken.some(other => rangeCovers(other, toMonthDay(date))),
+                  }}
+                  modifiersClassNames={{
+                    inSeason: 'bg-muted',
+                    // A dot under the number: another season's day.
+                    taken:
+                      'after:pointer-events-none after:absolute after:bottom-1 after:left-1/2 after:size-1 after:-translate-x-1/2 after:rounded-full after:bg-muted-foreground',
+                  }}
                   onSelect={date => {
-                    field.onChange({
-                      month: date.getMonth() + 1,
-                      day: date.getDate(),
-                    });
+                    const day = toMonthDay(date);
+                    if (onPick) onPick(day);
+                    else field.onChange(day);
                     setOpen(false);
                   }}
                   autoFocus
                 />
+                {taken.length > 0 && (
+                  <p className="max-w-64 px-3 pb-3 text-xs text-muted-foreground">
+                    {t('season.takenHint')}
+                  </p>
+                )}
               </PopoverContent>
             </Popover>
             <FormMessage />

@@ -50,3 +50,32 @@ const SPRING: Season = {
 export const Default = () => <Harness />;
 
 export const WithSeason = () => <Harness initialSeasons={[SPRING]} />;
+
+const SUMMER: Season = {
+  id: '33333333-3333-4333-8333-333333333333',
+  name: 'Summer',
+  start: { month: 6, day: 1 },
+  end: { month: 8, day: 31 },
+  inspectionFrequencyDays: 10,
+  feeding: { enabled: false, targetKg: null },
+};
+
+/** Spring runs straight into summer. */
+export const WithNeighbours = () => (
+  <Harness initialSeasons={[SPRING, SUMMER]} />
+);
+
+/** An unnamed season that shares the end of May with spring. */
+export const Overlapping = () => (
+  <Harness
+    initialSeasons={[
+      SPRING,
+      {
+        ...SUMMER,
+        name: '',
+        start: { month: 5, day: 15 },
+        end: { month: 7, day: 31 },
+      },
+    ]}
+  />
+);

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormContext, useWatch, type FieldPath } from 'react-hook-form';
 import { AlertCircle, Plus, Trash2 } from 'lucide-react';
@@ -23,6 +23,11 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { NumberField } from '@/components/common/number-field';
 import { formatSeasonRange, getSeasonLabel } from '@/utils/season-format';
+import {
+  claimSeasonDays,
+  sharedRange,
+  type ShortenedSeason,
+} from '@/utils/season-strip';
 import {
   useSeasonEditor,
   type SeasonFormValues,
@@ -170,6 +175,122 @@ function ToggleRow({
   );
 }
 
+const DATE_UPDATE = { shouldDirty: true, shouldValidate: true } as const;
+const EDGES = ['start', 'end'] as const;
+
+/**
+ * A season's start and end. Picking a day another season holds shortens that
+ * season to make room, with an undo; days that would swallow or split another
+ * season can't be picked.
+ */
+function SeasonDates({
+  index,
+  season,
+  disabled,
+}: {
+  index: number;
+  season: Season;
+  disabled?: boolean;
+}) {
+  const { t, i18n } = useTranslation('common');
+  const { control, setValue } = useFormContext<SeasonFormValues>();
+  const seasons = (useWatch({ control, name: 'seasons' }) ?? []) as Season[];
+  const [undo, setUndo] = useState<{
+    shortened: ShortenedSeason[];
+    previous: ShortenedSeason[];
+  } | null>(null);
+
+  const others = seasons.filter((_, otherIndex) => otherIndex !== index);
+  const withEdge = (edge: (typeof EDGES)[number], day: Season['start']) => ({
+    start: season.start,
+    end: season.end,
+    [edge]: day,
+  });
+  const writeRanges = (ranges: ShortenedSeason[]) => {
+    for (const range of ranges) {
+      setValue(`seasons.${range.index}.start`, range.start, DATE_UPDATE);
+      setValue(`seasons.${range.index}.end`, range.end, DATE_UPDATE);
+    }
+  };
+
+  const dateField = (edge: (typeof EDGES)[number]) => (
+    <MonthDayField
+      key={edge}
+      control={control}
+      name={`seasons.${index}.${edge}`}
+      label={t(`season.${edge}`)}
+      range={season}
+      taken={others}
+      isBlocked={day =>
+        claimSeasonDays(seasons, index, withEdge(edge, day)) === null
+      }
+      onPick={day => {
+        const range = withEdge(edge, day);
+        const shortened = claimSeasonDays(seasons, index, range);
+        if (!shortened) return;
+        const changes = [{ index, ...range }, ...shortened];
+        const previous = changes.map(change => ({
+          index: change.index,
+          start: seasons[change.index].start,
+          end: seasons[change.index].end,
+        }));
+        writeRanges(changes);
+        setUndo(shortened.length > 0 ? { shortened, previous } : null);
+      }}
+      disabled={disabled}
+    />
+  );
+
+  // Unnamed seasons are told apart by their dates before the change.
+  const shortenedLabel = (shortened: ShortenedSeason) => {
+    const before = undo?.previous.find(
+      range => range.index === shortened.index,
+    );
+    return (
+      getSeasonLabel(seasons[shortened.index] ?? {}) ??
+      (before ? formatSeasonRange(before, i18n.language) : '')
+    );
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {EDGES.map(dateField)}
+      </div>
+      {undo && (
+        <div
+          role="status"
+          className="flex items-center gap-3 rounded-md bg-muted px-3 py-2 text-sm"
+          data-test="season-shortened"
+        >
+          <p className="flex-1">
+            {undo.shortened
+              .map(shortened =>
+                t('season.shortened', {
+                  name: shortenedLabel(shortened),
+                  range: formatSeasonRange(shortened, i18n.language),
+                }),
+              )
+              .join(' ')}
+          </p>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              writeRanges(undo.previous);
+              setUndo(null);
+            }}
+            data-test="undo-shortened"
+          >
+            {t('season.undo')}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SeasonEditor({
   index,
   season,
@@ -227,22 +348,7 @@ function SeasonEditor({
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <MonthDayField
-          control={control}
-          name={`seasons.${index}.start`}
-          label={t('season.start')}
-          range={season}
-          disabled={disabled}
-        />
-        <MonthDayField
-          control={control}
-          name={`seasons.${index}.end`}
-          label={t('season.end')}
-          range={season}
-          disabled={disabled}
-        />
-      </div>
+      <SeasonDates index={index} season={season} disabled={disabled} />
 
       <div className="space-y-4">
         <ToggleRow
@@ -367,6 +473,13 @@ export function SeasonListField({
     if (!season) return '';
     return getSeasonLabel(season) ?? formatSeasonRange(season, i18n.language);
   };
+  const overlapping = overlap?.map(index => seasons?.[index]);
+  const shared =
+    overlapping?.[0] &&
+    overlapping[1] &&
+    sharedRange(overlapping[0], overlapping[1]);
+  // The later season is the one to fix; open it unless it already is.
+  const clashing = overlapping?.[1];
 
   return (
     <div className="space-y-4" data-test="season-list">
@@ -400,10 +513,25 @@ export function SeasonListField({
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>{t('season.overlapTitle')}</AlertTitle>
           <AlertDescription>
-            {t('season.overlap', {
-              first: overlapLabel(overlap[0]),
-              second: overlapLabel(overlap[1]),
-            })}
+            <p>
+              {t('season.overlap', {
+                first: overlapLabel(overlap[0]),
+                second: overlapLabel(overlap[1]),
+                range: shared ? formatSeasonRange(shared, i18n.language) : '',
+              })}
+            </p>
+            {clashing && editingId !== clashing.id && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-2"
+                onClick={() => setEditing(clashing.id, true)}
+                data-test="edit-overlapping-season"
+              >
+                {t('season.editSeason', { name: overlapLabel(overlap[1]) })}
+              </Button>
+            )}
           </AlertDescription>
         </Alert>
       )}

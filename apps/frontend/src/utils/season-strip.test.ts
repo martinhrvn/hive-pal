@@ -4,6 +4,9 @@ import {
   STRIP_DAYS,
   buildInspectionTicks,
   buildYearStripSegments,
+  claimSeasonDays,
+  longestFreeRange,
+  sharedRange,
   sortSeasonsByStart,
   stripDayIndex,
 } from './season-strip';
@@ -168,5 +171,89 @@ describe('sortSeasonsByStart', () => {
       season('late-winter', [1, 15], [2, 10]),
     ]);
     expect(sorted.map(s => s.id)).toEqual(['late-winter', 'spring', 'winter']);
+  });
+});
+
+const md = (month: number, day: number) => ({ month, day });
+
+describe('claimSeasonDays', () => {
+  const spring = season('spring', [3, 1], [5, 31]);
+  const summer = season('summer', [6, 1], [8, 31]);
+  const winter = season('winter', [11, 15], [2, 15]);
+
+  it('changes nothing when the days are free', () => {
+    expect(
+      claimSeasonDays([spring, summer], 0, {
+        start: md(3, 1),
+        end: md(5, 15),
+      }),
+    ).toEqual([]);
+  });
+
+  it('shortens the season it reaches into from that side', () => {
+    // Spring ends later, so summer starts the day after.
+    expect(
+      claimSeasonDays([spring, summer], 0, {
+        start: md(3, 1),
+        end: md(6, 20),
+      }),
+    ).toEqual([{ index: 1, start: md(6, 21), end: md(8, 31) }]);
+    // Spring starts earlier, so winter ends the day before, across the year.
+    expect(
+      claimSeasonDays([spring, winter], 0, {
+        start: md(2, 1),
+        end: md(5, 31),
+      }),
+    ).toEqual([{ index: 1, start: md(11, 15), end: md(1, 31) }]);
+  });
+
+  it('refuses to cover a season whole or cut one in two', () => {
+    expect(
+      claimSeasonDays([spring, summer], 0, {
+        start: md(3, 1),
+        end: md(9, 30),
+      }),
+    ).toBeNull();
+    expect(
+      claimSeasonDays([spring, summer], 0, {
+        start: md(7, 1),
+        end: md(7, 10),
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('sharedRange', () => {
+  it('finds the days two seasons share, across the new year too', () => {
+    expect(
+      sharedRange(
+        { start: md(3, 1), end: md(5, 31) },
+        { start: md(5, 15), end: md(7, 1) },
+      ),
+    ).toEqual({ start: md(5, 15), end: md(5, 31) });
+    expect(
+      sharedRange(
+        { start: md(11, 15), end: md(2, 15) },
+        { start: md(2, 1), end: md(3, 31) },
+      ),
+    ).toEqual({ start: md(2, 1), end: md(2, 15) });
+    expect(
+      sharedRange(
+        { start: md(3, 1), end: md(5, 31) },
+        { start: md(6, 1), end: md(7, 1) },
+      ),
+    ).toBeUndefined();
+  });
+});
+
+describe('longestFreeRange', () => {
+  it('picks the longest stretch no season covers', () => {
+    expect(
+      longestFreeRange([
+        season('spring', [3, 1], [5, 31]),
+        season('winter', [11, 15], [2, 15]),
+      ]),
+    ).toEqual({ start: md(6, 1), end: md(11, 14) });
+    expect(longestFreeRange([])).toBeUndefined();
   });
 });

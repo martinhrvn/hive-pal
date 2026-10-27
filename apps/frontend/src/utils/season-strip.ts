@@ -189,6 +189,123 @@ function stretchOf(segment: YearStripSegment, baseFrequencyDays?: number) {
   };
 }
 
+type MonthDay = { month: number; day: number };
+type MonthDayRange = { start: MonthDay; end: MonthDay };
+/** Inclusive strip day indexes; `start > end` wraps across the new year. */
+type Span = { start: number; end: number };
+
+const wrapIndex = (index: number) =>
+  ((index % STRIP_DAYS) + STRIP_DAYS) % STRIP_DAYS;
+
+function spanOf(range: MonthDayRange): Span {
+  return {
+    start: stripDayIndex(range.start.month, range.start.day),
+    end: stripDayIndex(range.end.month, range.end.day),
+  };
+}
+
+function rangeOf(span: Span): MonthDayRange {
+  return {
+    start: stripIndexToMonthDay(span.start),
+    end: stripIndexToMonthDay(span.end),
+  };
+}
+
+function spanCovers(span: Span, index: number): boolean {
+  return span.start <= span.end
+    ? index >= span.start && index <= span.end
+    : index >= span.start || index <= span.end;
+}
+
+function spanLength(span: Span): number {
+  return wrapIndex(span.end - span.start) + 1;
+}
+
+/** Two stretches of the year meet when one holds the other's first day. */
+function spansOverlap(a: Span, b: Span): boolean {
+  return spanCovers(a, b.start) || spanCovers(b, a.start);
+}
+
+/** Whether a day of the year falls in the range, across the new year too. */
+export function rangeCovers(range: MonthDayRange, day: MonthDay): boolean {
+  return spanCovers(spanOf(range), stripDayIndex(day.month, day.day));
+}
+
+/**
+ * The first stretch of days two overlapping ranges share, or `undefined` when
+ * they don't overlap.
+ */
+export function sharedRange(
+  a: MonthDayRange,
+  b: MonthDayRange,
+): MonthDayRange | undefined {
+  const spanA = spanOf(a);
+  const spanB = spanOf(b);
+  if (!spansOverlap(spanA, spanB)) return undefined;
+  const start = spanCovers(spanA, spanB.start) ? spanB.start : spanA.start;
+  const length = Math.min(
+    wrapIndex(spanA.end - start),
+    wrapIndex(spanB.end - start),
+  );
+  return rangeOf({ start, end: wrapIndex(start + length) });
+}
+
+export interface ShortenedSeason {
+  index: number;
+  start: MonthDay;
+  end: MonthDay;
+}
+
+/**
+ * Give season `index` the days in `range`, shortening each season it now
+ * overlaps from the side it overlaps. Returns the shortened seasons (empty
+ * when nothing clashes), or `null` when a season would be covered whole or
+ * cut in two, which shortening cannot fix.
+ */
+export function claimSeasonDays(
+  seasons: MonthDayRange[],
+  index: number,
+  range: MonthDayRange,
+): ShortenedSeason[] | null {
+  const claimed = spanOf(range);
+  const shortened: ShortenedSeason[] = [];
+
+  for (const [otherIndex, other] of seasons.entries()) {
+    if (otherIndex === index) continue;
+    const span = spanOf(other);
+    if (!spansOverlap(claimed, span)) continue;
+
+    const startInside = spanCovers(claimed, span.start);
+    const endInside = spanCovers(claimed, span.end);
+    // Both ends inside: covered whole. Neither: the claim sits in its middle.
+    if (startInside === endInside) return null;
+
+    const next = startInside
+      ? { start: wrapIndex(claimed.end + 1), end: span.end }
+      : { start: span.start, end: wrapIndex(claimed.start - 1) };
+    if (spanLength(next) >= spanLength(span) || spansOverlap(claimed, next)) {
+      return null;
+    }
+    shortened.push({ index: otherIndex, ...rangeOf(next) });
+  }
+  return shortened;
+}
+
+/**
+ * The longest stretch no season covers, for a new season to fill, or
+ * `undefined` when there are no seasons yet or every day is taken.
+ */
+export function longestFreeRange(seasons: Season[]): MonthDayRange | undefined {
+  if (seasons.length === 0) return undefined;
+  let longest: Span | undefined;
+  for (const segment of buildYearStripSegments(seasons)) {
+    if (segment.kind !== 'yearRound') continue;
+    const gap = { start: segment.gapStart, end: segment.gapEnd };
+    if (!longest || spanLength(gap) > spanLength(longest)) longest = gap;
+  }
+  return longest && rangeOf(longest);
+}
+
 /** Seasons in calendar order of their start date (Jan → Dec). */
 export function sortSeasonsByStart<T extends Season>(seasons: T[]): T[] {
   return [...seasons].sort(
