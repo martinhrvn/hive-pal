@@ -125,3 +125,19 @@ test('dims the rest of the year while a season is open', async ({ mount }) => {
     component.getByRole('button', { name: 'Spring build-up', exact: true }),
   ).not.toHaveClass(/opacity-50/);
 });
+
+test('keeps one season open at a time', async ({ mount }) => {
+  const component = await mount(EDITABLE);
+
+  await component
+    .getByRole('button', { name: 'Spring build-up', exact: true })
+    .click();
+  // Opening another season, from its row this time, closes the first.
+  await component
+    .getByTestId('edit-season')
+    .filter({ hasText: 'Winter prep' })
+    .click();
+  const name = component.getByRole('textbox', { name: 'Name' });
+  await expect(name).toHaveCount(1);
+  await expect(name).toHaveValue('Winter prep');
+});

@@ -12,7 +12,7 @@ export const ROLE_TONES: Record<
   feeding: {
     segment: 'bg-honey-muted',
     swatch: 'border border-honey bg-honey-muted',
-    tick: 'stroke-honey',
+    tick: 'stroke-honey/55',
   },
   paused: {
     segment: 'bg-hatch',
@@ -22,11 +22,11 @@ export const ROLE_TONES: Record<
   inspect: {
     segment: 'bg-success-muted',
     swatch: 'border border-success bg-success-muted',
-    tick: 'stroke-success',
+    tick: 'stroke-success/55',
   },
   yearRound: {
     segment: 'bg-background',
     swatch: 'border bg-background',
-    tick: 'stroke-muted-foreground/60',
+    tick: 'stroke-muted-foreground/35',
   },
 };

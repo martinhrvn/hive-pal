@@ -356,7 +356,7 @@ export function SeasonListField({
   // to edit.
   if (!editor) return null;
 
-  const { fields, editingIds, setEditing, addSeason, removeSeason } = editor;
+  const { fields, editingId, setEditing, addSeason, removeSeason } = editor;
 
   const overlap = findOverlappingSeasonPair(seasons ?? []);
   // Unnamed seasons are told apart by their dates.
@@ -381,7 +381,7 @@ export function SeasonListField({
               <SeasonRow
                 key={field.id}
                 index={index}
-                editing={editingIds.has(seasonId)}
+                editing={editingId === seasonId}
                 baseFrequencyDays={baseFrequencyDays}
                 disabled={disabled}
                 onEdit={() => setEditing(seasonId, true)}

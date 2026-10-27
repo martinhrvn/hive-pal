@@ -9,7 +9,7 @@ import {
 } from './season-editor-context';
 
 /**
- * Owns the `seasons` field array plus which seasons are expanded, so the year
+ * Owns the `seasons` field array plus the one season open for editing, so the year
  * strip and the card list can both add, edit and remove seasons. Must be
  * rendered inside the form (`FormProvider`).
  */
@@ -19,22 +19,19 @@ export function SeasonsEditorProvider({ children }: { children: ReactNode }) {
     control,
     name: 'seasons',
   });
-  const [editingIds, setEditingIds] = useState<ReadonlySet<string>>(
-    () => new Set(),
-  );
+  // One season at a time: two open editors read as one confusing form.
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const value = useMemo<SeasonEditorContextValue>(() => {
     const setEditing = (id: string, editing: boolean) =>
-      setEditingIds(current => {
-        const next = new Set(current);
-        if (editing) next.add(id);
-        else next.delete(id);
-        return next;
+      setEditingId(current => {
+        if (editing) return id;
+        return current === id ? null : current;
       });
 
     return {
       fields,
-      editingIds,
+      editingId,
       setEditing,
       addSeason: (start, end) => {
         const season = createSeason(start, end);
@@ -47,7 +44,7 @@ export function SeasonsEditorProvider({ children }: { children: ReactNode }) {
         if (index >= 0) remove(index);
       },
     };
-  }, [fields, editingIds, append, remove, getValues]);
+  }, [fields, editingId, append, remove, getValues]);
 
   return (
     <SeasonEditorContext.Provider value={value}>

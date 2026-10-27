@@ -24,8 +24,9 @@ export function createSeason(
 export interface SeasonEditorContextValue {
   /** Field-array entries; `id` is the array's own key, not the season id. */
   fields: { id: string }[];
-  /** Season ids currently expanded for editing. */
-  editingIds: ReadonlySet<string>;
+  /** The one season open in the editor, by its own id. */
+  editingId: string | null;
+  /** Open a season (closing any other) or close it. */
   setEditing: (id: string, editing: boolean) => void;
   /** Append a season (optionally spanning a date range) and open it. */
   addSeason: (

@@ -46,7 +46,7 @@ const percent = (days: number) => `${(days / STRIP_DAYS) * 100}%`;
 const segmentRole = (segment: YearStripSegment): StripRole =>
   segment.kind === 'season' ? seasonRole(segment.season) : 'yearRound';
 
-/** How a segment reads while seasons are open in the editor. */
+/** How a segment reads while a season is open in the editor. */
 type Focus = 'editing' | 'dimmed' | undefined;
 
 interface SeasonYearStripProps {
@@ -76,7 +76,7 @@ export function SeasonYearStrip({
   className,
 }: SeasonYearStripProps) {
   const { t, i18n } = useTranslation('common');
-  const editingIds = useSeasonEditor()?.editingIds;
+  const editingId = useSeasonEditor()?.editingId;
   const segments = useMemo(() => buildYearStripSegments(seasons), [seasons]);
   const ticks = useMemo(
     () => buildInspectionTicks(segments, baseFrequencyDays),
@@ -91,11 +91,11 @@ export function SeasonYearStrip({
   );
   const roles = new Set(segments.map(segmentRole));
 
-  // While seasons are open in the editor, they stand out and the rest of the
+  // While a season is open in the editor, it stands out and the rest of the
   // year steps back.
   const focusOf = (seasonId?: string): Focus => {
-    if (!editingIds?.size) return undefined;
-    return seasonId && editingIds.has(seasonId) ? 'editing' : 'dimmed';
+    if (!editingId) return undefined;
+    return seasonId === editingId ? 'editing' : 'dimmed';
   };
 
   return (
@@ -156,7 +156,7 @@ export function SeasonYearStrip({
           <li className="flex items-center gap-1.5">
             <span
               aria-hidden
-              className="mx-1 h-3 w-0.5 rounded-full bg-muted-foreground"
+              className="mx-1 h-2.5 w-px bg-muted-foreground/70"
             />
             {t('season.strip.key.tick')}
           </li>
@@ -206,9 +206,9 @@ function StripRhythm({
           key={`${tick.seasonId ?? 'year-round'}-${tick.index}`}
           x1={tick.index + 0.5}
           x2={tick.index + 0.5}
-          y1={56}
+          y1={66}
           y2={84}
-          strokeWidth={2}
+          strokeWidth={1.25}
           strokeLinecap="round"
           className={cn(
             ROLE_TONES[tick.role].tick,
