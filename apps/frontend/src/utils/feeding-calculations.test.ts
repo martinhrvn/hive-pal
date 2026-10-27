@@ -124,6 +124,17 @@ describe('getFeedingSeasonProgress', () => {
     expect(progress?.remainingKg).toBeCloseTo(10);
   });
 
+  it('reports overfeeding above 100%', () => {
+    const progress = getFeedingSeasonProgress(
+      [feeding('inside', new Date(2026, 8, 10), 18000)],
+      { seasons: [autumn] },
+      null,
+      new Date(2026, 8, 15),
+    );
+    expect(progress?.percentage).toBeCloseTo(150);
+    expect(progress?.remainingKg).toBe(0);
+  });
+
   it('falls back to the most recently completed feeding season', () => {
     const actions = [feeding('inside', new Date(2026, 8, 10), 2000)];
     const progress = getFeedingSeasonProgress(

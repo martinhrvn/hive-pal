@@ -210,8 +210,9 @@ export function getFeedingSeasonProgress(
     relevant.window.start,
     relevant.window.end,
   );
-  const percentage =
-    targetKg > 0 ? Math.min((totals.sugarKg / targetKg) * 100, 100) : 0;
+  // Not capped: overfeeding (e.g. 150%) must stay visible. Progress bars
+  // clamp the value themselves.
+  const percentage = targetKg > 0 ? (totals.sugarKg / targetKg) * 100 : 0;
 
   return {
     season: relevant.season,

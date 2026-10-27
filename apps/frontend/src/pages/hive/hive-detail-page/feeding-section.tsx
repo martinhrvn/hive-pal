@@ -239,7 +239,7 @@ const ProgressBlock = ({ progress }: { progress: FeedingSeasonProgress }) => {
         {formatWeight(progress.targetKg).label}
       </div>
       <Progress
-        value={percentage}
+        value={Math.min(percentage, 100)}
         className="h-2"
         color={progressColor(percentage)}
       />
