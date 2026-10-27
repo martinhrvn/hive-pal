@@ -34,7 +34,7 @@ import {
   type SeasonSource,
 } from 'shared-schemas';
 import { useUpdateHive } from '@/api/hooks';
-import { NumberInputField } from '../components/hive-settings-fields';
+import { NumberField } from '@/components/common/number-field';
 import { SeasonListField } from '@/components/seasons/season-list-field';
 import { SeasonSummaryList } from '@/components/seasons/season-summary-list';
 import { SeasonYearStrip } from '@/components/seasons/season-year-strip';
@@ -328,7 +328,7 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
                       </p>
                     </div>
                   ) : (
-                    <NumberInputField
+                    <NumberField
                       control={form.control}
                       name="inspection.frequencyDays"
                       label={t('hive:settings.inspectionFrequency')}

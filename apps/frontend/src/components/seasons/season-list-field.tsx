@@ -5,7 +5,6 @@ import {
   useFormContext,
   useFormState,
   useWatch,
-  type FieldPath,
 } from 'react-hook-form';
 import { AlertCircle, Pencil, Plus, Trash2 } from 'lucide-react';
 import {
@@ -19,7 +18,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,6 +25,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { NumberField } from '@/components/common/number-field';
 import { randomUUID } from '@/lib/uuid';
 import { formatSeasonRange, getSeasonLabel } from '@/utils/season-format';
 import { MonthDayField } from './month-day-field';
@@ -73,57 +72,6 @@ const isSameSeason = (a: Season, b: Season) =>
   a.feeding.enabled === b.feeding.enabled &&
   (a.feeding.targetKg ?? null) === (b.feeding.targetKg ?? null);
 
-function OptionalNumberField({
-  name,
-  label,
-  description,
-  placeholder,
-  disabled,
-  min,
-  max,
-  step,
-}: {
-  name: FieldPath<SeasonListFormValues>;
-  label: string;
-  description?: string;
-  placeholder?: string;
-  disabled?: boolean;
-  min?: number;
-  max?: number;
-  step?: string;
-}) {
-  const { control } = useFormContext<SeasonListFormValues>();
-  return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <Input
-              type="number"
-              min={min}
-              max={max}
-              step={step}
-              placeholder={placeholder}
-              disabled={disabled}
-              value={(field.value as number | null | undefined) ?? ''}
-              onChange={event =>
-                field.onChange(
-                  event.target.value === '' ? null : event.target.valueAsNumber,
-                )
-              }
-            />
-          </FormControl>
-          {description && <FormDescription>{description}</FormDescription>}
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
 interface SeasonCardProps {
   index: number;
   /** The season as last saved; `undefined` for a season added since. */
@@ -144,9 +92,11 @@ function SeasonCard({
   index,
   saved,
   editing,
+  baseFrequencyDays,
+  disabled,
   onEdit,
   onDoneEditing,
-  ...props
+  onRemove,
 }: SeasonCardProps) {
   const { t } = useTranslation('common');
   const { control, setValue, getFieldState } =
@@ -170,7 +120,7 @@ function SeasonCard({
             variant="ghost"
             size="icon"
             aria-label={t('season.edit')}
-            disabled={props.disabled}
+            disabled={disabled}
             onClick={onEdit}
             data-test="edit-season"
           >
@@ -181,8 +131,8 @@ function SeasonCard({
             variant="ghost"
             size="icon"
             aria-label={t('season.remove')}
-            disabled={props.disabled}
-            onClick={props.onRemove}
+            disabled={disabled}
+            onClick={onRemove}
             data-test="remove-season"
           >
             <Trash2 className="h-4 w-4" />
@@ -207,8 +157,10 @@ function SeasonCard({
     <SeasonEditor
       index={index}
       season={season}
+      baseFrequencyDays={baseFrequencyDays}
+      disabled={disabled}
+      onRemove={onRemove}
       onCancel={onCancel}
-      {...props}
     />
   );
 }
@@ -328,7 +280,8 @@ function SeasonEditor({
         />
 
         {!season.inspectionsPaused && (
-          <OptionalNumberField
+          <NumberField
+            control={control}
             name={`seasons.${index}.inspectionFrequencyDays`}
             label={t('season.inspectionInterval')}
             description={t('season.inspectionIntervalHint')}
@@ -338,6 +291,7 @@ function SeasonEditor({
             min={1}
             max={365}
             disabled={disabled}
+            nullable
           />
         )}
       </div>
@@ -378,13 +332,15 @@ function SeasonEditor({
         />
 
         {season.feeding.enabled && (
-          <OptionalNumberField
+          <NumberField
+            control={control}
             name={`seasons.${index}.feeding.targetKg`}
             label={t('season.feedingTarget')}
             placeholder="12"
             min={0.1}
             step="0.1"
             disabled={disabled}
+            nullable
           />
         )}
       </div>

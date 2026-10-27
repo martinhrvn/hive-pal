@@ -1,6 +1,22 @@
 import type { TFunction } from 'i18next';
 import { daysInMonth, isBuiltInSeasonId } from 'shared-schemas';
 
+// `Intl.DateTimeFormat` construction is expensive; cache one formatter per
+// locale (called once per row in every season list/strip).
+const rangeFormatters = new Map<string, Intl.DateTimeFormat>();
+
+function getRangeFormatter(locale: string): Intl.DateTimeFormat {
+  let formatter = rangeFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, {
+      month: 'short',
+      day: 'numeric',
+    });
+    rangeFormatters.set(locale, formatter);
+  }
+  return formatter;
+}
+
 /** Localized, compact label for a season's month/day range (e.g. "Mar 1 – May 31"). */
 export function formatSeasonRange(
   season: {
@@ -20,10 +36,7 @@ export function formatSeasonRange(
     season.end.month - 1,
     Math.min(season.end.day, daysInMonth(season.end.month, 2000)),
   );
-  const formatter = new Intl.DateTimeFormat(locale, {
-    month: 'short',
-    day: 'numeric',
-  });
+  const formatter = getRangeFormatter(locale);
   return `${formatter.format(start)} – ${formatter.format(end)}`;
 }
 

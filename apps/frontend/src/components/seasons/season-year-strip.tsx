@@ -84,7 +84,7 @@ export function SeasonYearStrip({
           style={{ left: percent(todayIndex) }}
         />
       </div>
-      <div className="relative h-4 text-[0.65rem] text-muted-foreground">
+      <div className="relative h-4 text-xs text-muted-foreground">
         {monthLabels.map(({ month, narrow, short }) => (
           <span
             key={month}

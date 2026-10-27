@@ -26,16 +26,85 @@ interface FeedingSectionProps {
   variant?: 'card' | 'inline';
 }
 
-const progressColor = (percentage: number) => {
-  if (percentage >= 100) return 'bg-green-500';
-  if (percentage >= 75) return 'bg-blue-500';
-  return 'bg-orange-500';
+const progressTone = (percentage: number): 'success' | 'info' | 'warning' => {
+  if (percentage >= 100) return 'success';
+  if (percentage >= 75) return 'info';
+  return 'warning';
 };
 
-const progressTextColor = (percentage: number) => {
-  if (percentage >= 100) return 'text-green-600';
-  if (percentage >= 75) return 'text-blue-600';
-  return 'text-orange-600';
+// `Progress` hardcodes its indicator to `bg-primary`, so the fill colour is
+// overridden per status tone (semantic tokens, light + dark safe).
+const PROGRESS_BAR_CLASS = {
+  success: '[&_[data-slot="progress-indicator"]]:bg-success',
+  info: '[&_[data-slot="progress-indicator"]]:bg-info',
+  warning: '[&_[data-slot="progress-indicator"]]:bg-warning',
+} as const;
+
+const PROGRESS_TEXT_CLASS = {
+  success: 'text-success-foreground',
+  info: 'text-info-foreground',
+  warning: 'text-warning-foreground',
+} as const;
+
+const progressBarClass = (percentage: number) =>
+  PROGRESS_BAR_CLASS[progressTone(percentage)];
+
+const progressTextColor = (percentage: number) =>
+  PROGRESS_TEXT_CLASS[progressTone(percentage)];
+
+const MobileFeedingSummary = ({
+  totals,
+  progress,
+  seasonLabel,
+}: {
+  totals: FeedingTotals;
+  progress: FeedingSeasonProgress | null;
+  seasonLabel: string | null;
+}) => {
+  const { t } = useTranslation('hive');
+  const { formatWeight } = useUnitFormat();
+  const percentage = progress?.percentage ?? 0;
+  const percentageLabel = percentage.toFixed(0);
+
+  return (
+    <div className="sm:hidden space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-4">
+          <div>
+            <span className="text-xs text-muted-foreground">
+              {t('feeding.yearLabel')}
+            </span>
+            <span className="ml-1 text-sm font-semibold">
+              {formatWeight(totals.currentYearSugarKg).label}
+            </span>
+          </div>
+          {progress && (
+            <div>
+              <span className="text-xs text-muted-foreground">
+                {seasonLabel}
+              </span>
+              <span className="ml-1 text-sm font-semibold">
+                {formatWeight(progress.sugarKg).label}
+              </span>
+            </div>
+          )}
+        </div>
+        {progress && (
+          <span
+            className={`text-sm font-bold ${progressTextColor(percentage)}`}
+          >
+            {percentageLabel}%
+          </span>
+        )}
+      </div>
+      {progress && percentage < 100 && (
+        <Progress
+          value={percentage}
+          className={`h-1.5 ${progressBarClass(percentage)}`}
+        />
+      )}
+    </div>
+  );
 };
 
 const InlineFeedingSummary = ({
@@ -54,36 +123,11 @@ const InlineFeedingSummary = ({
 
   return (
     <div data-test="hive-feeding-summary">
-      {/* Mobile compact view */}
-      <div className="sm:hidden flex items-center justify-between gap-2">
-        <div className="flex items-center gap-4">
-          <div>
-            <span className="text-xs text-muted-foreground">
-              {t('feeding.yearLabel')}
-            </span>
-            <span className="text-sm font-semibold ml-1">
-              {formatWeight(totals.currentYearSugarKg).label}
-            </span>
-          </div>
-          {progress && (
-            <div>
-              <span className="text-xs text-muted-foreground">
-                {seasonLabel}
-              </span>
-              <span className="text-sm font-semibold ml-1">
-                {formatWeight(progress.sugarKg).label}
-              </span>
-            </div>
-          )}
-        </div>
-        {progress && (
-          <span
-            className={`text-sm font-bold ${progressTextColor(percentage)}`}
-          >
-            {percentageLabel}%
-          </span>
-        )}
-      </div>
+      <MobileFeedingSummary
+        totals={totals}
+        progress={progress}
+        seasonLabel={seasonLabel}
+      />
       {/* Desktop compact view */}
       <div className="hidden sm:flex items-center gap-4">
         <div className="flex items-center gap-1">
@@ -112,8 +156,7 @@ const InlineFeedingSummary = ({
             {percentage < 100 && (
               <Progress
                 value={percentage}
-                className="h-1.5 w-16"
-                color={progressColor(percentage)}
+                className={`h-1.5 w-16 ${progressBarClass(percentage)}`}
               />
             )}
           </>
@@ -240,8 +283,7 @@ const ProgressBlock = ({ progress }: { progress: FeedingSeasonProgress }) => {
       </div>
       <Progress
         value={Math.min(percentage, 100)}
-        className="h-2"
-        color={progressColor(percentage)}
+        className={`h-2 ${progressBarClass(percentage)}`}
       />
       {progress.remainingKg > 0 && (
         <div className="text-xs text-muted-foreground">
@@ -265,52 +307,13 @@ const FeedingCard = ({
   seasonLabel: string | null;
   seasonRange: string | null;
 }) => {
-  const { t } = useTranslation('hive');
-  const { formatWeight } = useUnitFormat();
-  const percentage = progress?.percentage ?? 0;
-  const percentageLabel = percentage.toFixed(0);
-
   return (
     <Card className="p-3 sm:p-6" data-test="hive-feeding-summary">
-      {/* Mobile compact view */}
-      <div className="sm:hidden space-y-2">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div>
-              <span className="text-xs text-muted-foreground">
-                {t('feeding.yearLabel')}
-              </span>
-              <span className="text-sm font-semibold ml-1">
-                {formatWeight(totals.currentYearSugarKg).label}
-              </span>
-            </div>
-            {progress && (
-              <div>
-                <span className="text-xs text-muted-foreground">
-                  {seasonLabel}
-                </span>
-                <span className="text-sm font-semibold ml-1">
-                  {formatWeight(progress.sugarKg).label}
-                </span>
-              </div>
-            )}
-          </div>
-          {progress && (
-            <span
-              className={`text-sm font-bold ${progressTextColor(percentage)}`}
-            >
-              {percentageLabel}%
-            </span>
-          )}
-        </div>
-        {progress && percentage < 100 && (
-          <Progress
-            value={percentage}
-            className="h-1.5"
-            color={progressColor(percentage)}
-          />
-        )}
-      </div>
+      <MobileFeedingSummary
+        totals={totals}
+        progress={progress}
+        seasonLabel={seasonLabel}
+      />
 
       {/* Desktop view */}
       <div className="hidden sm:block space-y-8">

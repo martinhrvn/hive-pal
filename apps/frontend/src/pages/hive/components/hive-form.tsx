@@ -63,7 +63,8 @@ import {
   FeaturePhotoPicker,
   FeaturePhotoPickerRef,
 } from '@/components/feature-photo-picker';
-import { NumberInputField, defaultHiveSettings } from './hive-settings-fields';
+import { defaultHiveSettings } from './hive-settings-fields';
+import { NumberField } from '@/components/common/number-field';
 
 const hiveSchema = z.object({
   name: z.string(),
@@ -381,7 +382,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <NumberInputField
+              <NumberField
                 control={form.control}
                 name="settings.inspection.frequencyDays"
                 label={t('hive:settings.inspectionFrequency')}
