@@ -1,12 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma } from '@/prisma/client';
 import { CustomLoggerService } from '../logger/logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { FileUploadService } from '../storage/file-upload.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
+import { HiveUpdatedEvent } from '../events/hive.events';
 import {
   ApiaryResponse,
   ApiaryListResponse,
+  ApplyApiarySeasonsResponse,
   CreateApiary,
   UpdateApiary,
   apiarySettingsSchema,
@@ -20,6 +27,7 @@ export class ApiariesService {
     private logger: CustomLoggerService,
     private fileUpload: FileUploadService,
     private prometheus: PrometheusService,
+    private eventEmitter: EventEmitter2,
   ) {
     this.logger.setContext('ApiariesService');
   }
@@ -200,6 +208,71 @@ export class ApiariesService {
       );
       throw error;
     }
+  }
+
+  /**
+   * Copy the apiary's season template into every hive in the apiary. This is
+   * the explicit bulk action behind "Apply to all hives"; it replaces any
+   * hive-owned seasons and drops the legacy autumn feeding setting.
+   */
+  async applySeasonsToHives(
+    apiaryId: string,
+    userId: string,
+  ): Promise<ApplyApiarySeasonsResponse> {
+    this.logger.log(`Applying seasons of apiary ${apiaryId} to its hives`);
+
+    const apiary = await this.prisma.apiary.findFirst({
+      where: { id: apiaryId, userId },
+      select: { id: true, settings: true },
+    });
+
+    if (!apiary) {
+      throw new NotFoundException();
+    }
+
+    const seasons = this.parseSettings(apiary.settings)?.seasons ?? [];
+    if (seasons.length === 0) {
+      throw new BadRequestException(
+        'Add at least one season before applying it to the hives',
+      );
+    }
+
+    const hives = await this.prisma.hive.findMany({
+      where: { apiaryId },
+      select: { id: true, settings: true },
+    });
+
+    if (hives.length === 0) {
+      return { updated: 0 };
+    }
+
+    await this.prisma.$transaction(
+      hives.map((hive) => {
+        const existing = {
+          ...((hive.settings as Record<string, unknown> | null) ?? {}),
+        };
+        delete existing.autumnFeeding;
+        return this.prisma.hive.update({
+          where: { id: hive.id },
+          data: {
+            settings: { ...existing, seasons },
+          },
+        });
+      }),
+    );
+
+    // Re-run the alert checkers for each hive after the transaction commits.
+    for (const hive of hives) {
+      this.eventEmitter.emit(
+        'hive.updated',
+        new HiveUpdatedEvent(hive.id, apiaryId, userId, 'settings'),
+      );
+    }
+
+    this.logger.log(
+      `Applied seasons of apiary ${apiaryId} to ${hives.length} hives`,
+    );
+    return { updated: hives.length };
   }
 
   async remove(id: string, userId: string) {

@@ -63,11 +63,7 @@ import {
   FeaturePhotoPicker,
   FeaturePhotoPickerRef,
 } from '@/components/feature-photo-picker';
-import {
-  MonthSelectField,
-  NumberInputField,
-  defaultHiveSettings,
-} from './hive-settings-fields';
+import { NumberInputField, defaultHiveSettings } from './hive-settings-fields';
 
 const hiveSchema = z.object({
   name: z.string(),
@@ -385,27 +381,6 @@ export const HiveForm: React.FC<HiveFormProps> = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <MonthSelectField
-                control={form.control}
-                name="settings.autumnFeeding.startMonth"
-                label={t('hive:settings.feedingStart')}
-              />
-
-              <MonthSelectField
-                control={form.control}
-                name="settings.autumnFeeding.endMonth"
-                label={t('hive:settings.feedingEnd')}
-              />
-
-              <NumberInputField
-                control={form.control}
-                name="settings.autumnFeeding.amountKg"
-                label={t('hive:settings.targetFeedingKg')}
-                step="0.1"
-                min={0}
-                placeholder="12"
-              />
-
               <NumberInputField
                 control={form.control}
                 name="settings.inspection.frequencyDays"
@@ -414,8 +389,13 @@ export const HiveForm: React.FC<HiveFormProps> = ({
                 max={365}
                 placeholder="7"
                 fallback={7}
+                description={t('hive:settings.inspectionFrequencyDescription')}
               />
             </div>
+
+            <p className="text-sm text-muted-foreground">
+              {t('hive:settings.seasonsOnApiaryHint')}
+            </p>
           </CollapsibleContent>
         </Collapsible>
 

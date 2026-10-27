@@ -13,7 +13,7 @@ export class HiveDetailPage {
   readonly established: Locator;
   /** "Brood Nest Stats" chips (or score cards) in the header. */
   readonly stats: Locator;
-  /** Inline "Year: … Autumn: … %" feeding summary; only after a feeding. */
+  /** Inline "Year: … <season>: … %" feeding summary; only after a feeding. */
   readonly feedingSummary: Locator;
   readonly panel: Locator;
   /** Overview tab. */
@@ -24,8 +24,8 @@ export class HiveDetailPage {
   readonly addEntryButton: Locator;
   /** Analytics tab: the period select ("Last 6 months"). */
   readonly periodSelect: Locator;
-  /** Settings tab. */
-  readonly autumnFeedingSettings: Locator;
+  /** Settings tab: the seasons section (inherited or hive-specific). */
+  readonly seasonsSettings: Locator;
   readonly inspectionScheduleSettings: Locator;
 
   constructor(page: Page) {
@@ -53,9 +53,9 @@ export class HiveDetailPage {
       .getByText('Brood Nest Stats', { exact: true })
       .locator('..');
     this.feedingSummary = page
-      .getByText('Autumn:', { exact: true })
+      .locator('[data-test="hive-feeding-summary"]')
       .filter({ visible: true })
-      .locator('xpath=../..');
+      .first();
     this.panel = page.getByRole('tabpanel');
     this.todosCard = card(page, 'Todos');
     this.todoInput = this.todosCard.getByRole('textbox', {
@@ -70,9 +70,10 @@ export class HiveDetailPage {
     });
     this.addEntryButton = page.getByRole('button', { name: 'Add Entry' });
     this.periodSelect = this.panel.getByRole('combobox').first();
-    this.autumnFeedingSettings = page
-      .getByRole('heading', { name: 'Autumn Feeding' })
-      .locator('..');
+    this.seasonsSettings = page
+      .getByRole('heading', { name: 'Seasons' })
+      .filter({ visible: true })
+      .first();
     this.inspectionScheduleSettings = page
       .getByRole('heading', { name: 'Inspection Schedule' })
       .locator('..');

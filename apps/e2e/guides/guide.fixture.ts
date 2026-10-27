@@ -584,7 +584,30 @@ export type Demo = {
  * harvest (Hive 1: 6 + Hive 2: 4 frames, 18 kg, 45 days ago).
  */
 async function seedDemo(user: SmokeUser): Promise<Demo> {
-  await user.api.updateApiary(user.apiaryId, { name: DEMO_APIARY_NAME });
+  await user.api.updateApiary(user.apiaryId, {
+    name: DEMO_APIARY_NAME,
+    settings: {
+      inspectionType: 'data_driven',
+      seasons: [
+        {
+          id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+          name: 'Spring build-up',
+          start: { month: 3, day: 1 },
+          end: { month: 5, day: 31 },
+          inspectionFrequencyDays: 5,
+          feeding: { enabled: false, targetKg: null },
+        },
+        {
+          id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+          name: 'Autumn feeding',
+          start: { month: 8, day: 1 },
+          end: { month: 10, day: 31 },
+          inspectionFrequencyDays: null,
+          feeding: { enabled: true, targetKg: 12 },
+        },
+      ],
+    },
+  });
   const hives = {} as Record<DemoHiveName, SeedHive>;
   for (const name of DEMO_HIVES)
     hives[name] = await user.api.createHive({ name });

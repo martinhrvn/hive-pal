@@ -29,6 +29,7 @@ import {
   ApiaryResponse,
   ApiaryListResponse,
   ApiaryMapPoint,
+  ApplyApiarySeasonsResponse,
 } from 'shared-schemas';
 
 @UseGuards(JwtAuthGuard)
@@ -86,6 +87,17 @@ export class ApiariesController {
   ): Promise<ApiaryResponse> {
     this.logger.log(`Updating apiary with ID ${id} for user ${req.user.id}`);
     return this.apiariesService.update(id, updateApiaryDto, req.user.id);
+  }
+
+  @Post(':id/seasons/apply')
+  applySeasons(
+    @Param('id') id: string,
+    @Req() req: RequestWithUser,
+  ): Promise<ApplyApiarySeasonsResponse> {
+    this.logger.log(
+      `Applying apiary ${id} seasons to its hives for user ${req.user.id}`,
+    );
+    return this.apiariesService.applySeasonsToHives(id, req.user.id);
   }
 
   @Delete(':id')

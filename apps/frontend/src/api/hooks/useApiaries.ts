@@ -5,6 +5,7 @@ import {
   UpdateApiary,
   ApiaryResponse,
   ApiaryListResponse,
+  ApplyApiarySeasonsResponse,
 } from 'shared-schemas';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { logApiError } from '../errorLogger';
@@ -121,9 +122,35 @@ export const useUpdateApiary = () => {
       await queryClient.invalidateQueries({
         queryKey: APIARIES_KEYS.lists(),
       });
+      // Season templates are inherited by hives, so their cached settings and
+      // feeding/inspection summaries may have changed too.
+      await queryClient.invalidateQueries({ queryKey: ['hives'] });
     },
     onError: (error, variables) => {
       logApiError(error, `/api/apiaries/${variables.id}`, 'PATCH');
+    },
+  });
+};
+
+/** Copy the apiary's season template into every hive in the apiary. */
+export const useApplyApiarySeasons = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (apiaryId: string) => {
+      const response = await apiClient.post<ApplyApiarySeasonsResponse>(
+        `/api/apiaries/${apiaryId}/seasons/apply`,
+      );
+      return response.data;
+    },
+    onSuccess: async (_data, apiaryId) => {
+      await queryClient.invalidateQueries({
+        queryKey: APIARIES_KEYS.detail(apiaryId),
+      });
+      await queryClient.invalidateQueries({ queryKey: ['hives'] });
+    },
+    onError: error => {
+      logApiError(error, '/api/apiaries/seasons/apply', 'POST');
     },
   });
 };

@@ -32,12 +32,31 @@
       "overview": "Prehľad",
       "hives": "Úle",
       "location": "Poloha",
+      "seasons": "Sezóny",
       "sharing": "Zdieľanie"
     },
     "apiaryInformation": "Informácie o včelnici",
     "locationMap": "Mapa polohy",
     "apiaryLocation": "Poloha včelnice",
     "noCoordinates": "Pre túto včelnicu nie sú k dispozícii súradnice polohy"
+  },
+  "seasons": {
+    "title": "Sezóny",
+    "description": "Definujte sezóny, ktoré používajú všetky úle v tejto včelnici. Úle ich dedia, kým si nenastavia vlastné.",
+    "emptyNotice": "Bez sezón používajú úle v tejto včelnici základný interval prehliadok a nemajú cieľ kŕmenia.",
+    "save": "Uložiť sezóny",
+    "saving": "Ukladá sa...",
+    "saveSuccess": "Sezóny včelnice boli uložené",
+    "saveError": "Sezóny včelnice sa nepodarilo uložiť",
+    "validationError": "Sezóny sa nepodarilo uložiť — skontrolujte prekrývajúce sa dátumy a ciele kŕmenia.",
+    "applyToAll": "Použiť pre všetky úle",
+    "saveFirst": "Najprv uložte sezóny, potom ich použite pre úle.",
+    "applySuccess": "Sezóny boli použité pre {{count}} úľov",
+    "applyError": "Sezóny sa nepodarilo použiť pre úle",
+    "applyConfirmTitle": "Použiť sezóny pre všetky úle?",
+    "applyConfirmDescription": "Týmto sa nahradia vlastné sezóny všetkých úľov v tejto včelnici vrátane pôvodného nastavenia jesenného kŕmenia.",
+    "applyConfirm": "Použiť pre všetky úle",
+    "applying": "Používa sa..."
   },
   "fields": {
     "name": "Názov",

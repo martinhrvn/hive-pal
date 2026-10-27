@@ -4,9 +4,14 @@ import {
   InspectionResponse,
   InspectionStatus,
   ActionResponse,
+  getActiveSeason,
+  getBaseInspectionFrequencyDays,
+  getEffectiveInspectionFrequencyDays,
+  getEffectiveSeasons,
 } from 'shared-schemas';
 import i18n from '@/lib/i18n';
 import { getDateLocale } from '@/utils/locale-utils.ts';
+import { formatSeasonRange, getSeasonLabel } from '@/utils/season-format';
 
 function formatDate(date: string | Date): string {
   return format(new Date(date), 'P', { locale: getDateLocale(i18n.language) });
@@ -332,32 +337,66 @@ export function generateHivePrompt(
   }
 
   // Hive settings
-  if (hive.settings) {
+  if (hive.settings || hive.apiarySettings) {
     lines.push(
       '## ' +
         i18n.t('hive:llmPrompt.textArea.hiveSettings', {
           defaultValue: 'Hive Settings',
         }),
     );
-    if (hive.settings.inspection) {
-      lines.push(
-        '- ' +
-          i18n.t('hive:llmPrompt.textArea.inspectionFrequency', {
-            frequencyDays: hive.settings.inspection.frequencyDays,
-            defaultValue: 'Inspection frequency: every {{frequencyDays}} days',
-          }),
-      );
+    lines.push(
+      '- ' +
+        i18n.t('hive:llmPrompt.textArea.inspectionFrequency', {
+          frequencyDays: getBaseInspectionFrequencyDays(hive.settings),
+          defaultValue: 'Inspection frequency: every {{frequencyDays}} days',
+        }),
+    );
+
+    const { seasons, source } = getEffectiveSeasons(
+      hive.settings,
+      hive.apiarySettings,
+    );
+    lines.push(
+      '- ' +
+        i18n.t('hive:llmPrompt.textArea.seasons', {
+          source: i18n.t(`common:season.source.${source}`),
+          count: seasons.length,
+          defaultValue: 'Seasons ({{source}}):',
+        }),
+    );
+    for (const season of seasons) {
+      const name = getSeasonLabel(season) ?? i18n.t('common:season.unnamed');
+      lines.push(`  - ${name}: ${formatSeasonRange(season, i18n.language)}`);
+      if (season.inspectionFrequencyDays != null) {
+        lines.push(
+          `    - ${i18n.t('hive:llmPrompt.textArea.seasonInspection', {
+            days: season.inspectionFrequencyDays,
+            defaultValue: 'Inspect every {{days}} days',
+          })}`,
+        );
+      }
+      if (season.feeding.enabled && season.feeding.targetKg != null) {
+        lines.push(
+          `    - ${i18n.t('hive:llmPrompt.textArea.seasonFeeding', {
+            amountKg: season.feeding.targetKg,
+            defaultValue: 'Feed {{amountKg}} kg sugar',
+          })}`,
+        );
+      }
     }
-    if (hive.settings.autumnFeeding) {
-      const af = hive.settings.autumnFeeding;
+
+    const active = getActiveSeason(hive.settings, hive.apiarySettings);
+    if (active) {
       lines.push(
         '- ' +
-          i18n.t('hive:llmPrompt.textArea.autumnFeeding', {
-            amountKg: af.amountKg,
-            startMonth: af.startMonth,
-            endMonth: af.endMonth,
+          i18n.t('hive:llmPrompt.textArea.activeSeason', {
+            name: getSeasonLabel(active) ?? i18n.t('common:season.unnamed'),
+            days: getEffectiveInspectionFrequencyDays(
+              hive.settings,
+              hive.apiarySettings,
+            ),
             defaultValue:
-              'Autumn feeding: {{amountKg}}kg, months {{startMonth}}-{{endMonth}}',
+              'Active season: {{name}} (inspect every {{days}} days)',
           }),
       );
     }

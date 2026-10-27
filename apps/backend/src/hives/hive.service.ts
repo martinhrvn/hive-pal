@@ -36,6 +36,7 @@ import {
   HiveSettings,
   isVariantCompatible,
   parseApiaryInspectionType,
+  parseApiarySettings,
 } from 'shared-schemas';
 import { safeJsonParse } from '../utils/safe-json-parse';
 import { getStoredOrCalculatedScore } from '../utils/score-utils';
@@ -132,13 +133,10 @@ export class HiveService {
     this.logger.log(`Creating new hive in apiary ${apiaryId}`);
     await this.assertApiaryWritable(apiaryId, filter);
 
-    // Apply default settings if not provided
+    // Apply default settings if not provided. Seasons are intentionally not
+    // part of the defaults: a new hive inherits its apiary's season template
+    // (or the built-in default feeding season) until it is customised.
     const defaultSettings = {
-      autumnFeeding: {
-        startMonth: 8,
-        endMonth: 10,
-        amountKg: 12,
-      },
       inspection: {
         frequencyDays: 7,
         calendarEnabled: true,
@@ -479,6 +477,7 @@ export class HiveService {
       lastInspectionDate: latestCompletedInspection?.date?.toISOString(),
       settings: (hive.settings as HiveSettings) || undefined,
       inspectionType: parseApiaryInspectionType(hive.apiary?.settings),
+      apiarySettings: parseApiarySettings(hive.apiary?.settings),
       ...featurePhotoFields,
       boxes: hive.boxes.map((box) => ({
         id: box.id,

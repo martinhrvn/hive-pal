@@ -11,6 +11,8 @@ export interface HiveContext {
   hiveId: string;
   name: string;
   settings: any;
+  /** Apiary-level settings (season templates) this hive inherits from. */
+  apiarySettings?: any;
   lastInspectionDate?: Date;
   status: string;
   apiaryId?: string;

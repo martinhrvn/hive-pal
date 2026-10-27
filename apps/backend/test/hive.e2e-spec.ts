@@ -201,6 +201,78 @@ describe('Hives (e2e)', () => {
     expect(hive?.status).toBe('INACTIVE');
   });
 
+  it('stores hive seasons and returns the apiary season template', async () => {
+    const hiveSeason = {
+      id: '22222222-2222-4222-8222-222222222222',
+      name: 'Spring',
+      start: { month: 3, day: 1 },
+      end: { month: 5, day: 31 },
+      inspectionFrequencyDays: 5,
+      feeding: { enabled: false, targetKg: null },
+    };
+    const apiarySeason = {
+      id: '33333333-3333-4333-8333-333333333333',
+      name: 'Autumn feeding',
+      start: { month: 8, day: 1 },
+      end: { month: 10, day: 31 },
+      inspectionFrequencyDays: null,
+      feeding: { enabled: true, targetKg: 12 },
+    };
+
+    await request(app.getHttpServer())
+      .patch(`/hives/${testHiveId}`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .send({
+        id: testHiveId,
+        settings: {
+          seasons: [hiveSeason],
+          inspection: { frequencyDays: 7, calendarEnabled: true },
+        },
+      })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .patch(`/apiaries/${apiaryId}`)
+      .set('Cookie', authCookie)
+      .send({
+        settings: {
+          inspectionType: 'data_driven',
+          seasons: [apiarySeason],
+        },
+      })
+      .expect(200);
+
+    const response = await request(app.getHttpServer())
+      .get(`/hives/${testHiveId}`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .expect(200);
+
+    expect(response.body.settings.seasons).toHaveLength(1);
+    expect(response.body.settings.seasons[0].name).toBe('Spring');
+    expect(response.body.apiarySettings.seasons[0].name).toBe('Autumn feeding');
+  });
+
+  it('applies the apiary season template to its hives', async () => {
+    const applied = await request(app.getHttpServer())
+      .post(`/apiaries/${apiaryId}/seasons/apply`)
+      .set('Cookie', authCookie)
+      .expect(201);
+
+    expect(applied.body.updated).toBeGreaterThan(0);
+
+    const response = await request(app.getHttpServer())
+      .get(`/hives/${testHiveId}`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .expect(200);
+
+    expect(response.body.settings.seasons).toHaveLength(1);
+    expect(response.body.settings.seasons[0].name).toBe('Autumn feeding');
+    expect(response.body.settings.autumnFeeding).toBeUndefined();
+  });
+
   it.skip('should update boxes for a hive', async () => {
     const boxData = {
       boxes: [

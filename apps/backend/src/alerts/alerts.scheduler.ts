@@ -9,6 +9,7 @@ import { CURRENT_QUEEN_STATUSES } from 'shared-schemas';
 
 // What the checkers need to know about a hive
 const hiveCheckInclude = {
+  apiary: { select: { settings: true } },
   inspections: {
     select: { date: true },
     orderBy: { date: 'desc' },
@@ -39,6 +40,7 @@ const toHiveContext = (hive: HiveForChecking): HiveContext => ({
   hiveId: hive.id,
   name: hive.name,
   settings: hive.settings,
+  apiarySettings: hive.apiary?.settings,
   lastInspectionDate: hive.inspections[0]?.date,
   status: hive.status,
   apiaryId: hive.apiaryId || undefined,

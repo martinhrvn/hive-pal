@@ -16,11 +16,8 @@ export class HiveFormPage {
   readonly featurePhoto: Locator;
   readonly featurePhotoInput: Locator;
   readonly featurePhotoPreview: Locator;
-  /** Collapsible "Advanced Settings": autumn feeding and inspection frequency. */
+  /** Collapsible "Advanced Settings": base inspection frequency. */
   readonly advancedSettingsToggle: Locator;
-  readonly autumnStartSelect: Locator;
-  readonly autumnEndSelect: Locator;
-  readonly autumnTargetInput: Locator;
   readonly inspectionFrequencyInput: Locator;
   /** Collapsible "Box Configuration" with the "Configure initial box setup" checkbox. */
   readonly boxConfigToggle: Locator;
@@ -47,13 +44,6 @@ export class HiveFormPage {
     this.advancedSettingsToggle = page.getByRole('button', {
       name: 'Advanced Settings',
     });
-    this.autumnStartSelect = page.getByRole('combobox', {
-      name: 'Autumn Feeding Start',
-    });
-    this.autumnEndSelect = page.getByRole('combobox', {
-      name: 'Autumn Feeding End',
-    });
-    this.autumnTargetInput = page.getByLabel('Target Autumn Feeding (kg)');
     this.inspectionFrequencyInput = page.getByLabel(
       'Inspection Frequency (days)',
     );
@@ -82,12 +72,6 @@ export class HiveFormPage {
       'true'
     )
       await this.advancedSettingsToggle.click();
-  }
-
-  /** English month name, e.g. "August". */
-  async selectMonth(select: Locator, month: string) {
-    await select.click();
-    await this.page.getByRole('option', { name: month, exact: true }).click();
   }
 
   async openBoxConfiguration() {

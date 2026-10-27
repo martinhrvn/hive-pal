@@ -5,7 +5,12 @@ import {
   CheckerContext,
   AlertIssue,
 } from '../interfaces';
-import { AlertSeverity } from 'shared-schemas';
+import {
+  AlertSeverity,
+  getEffectiveInspectionFrequencyDays,
+  type ApiarySeasonSettings,
+  type HiveSeasonSettings,
+} from 'shared-schemas';
 
 @Injectable()
 export class InspectionOverdueChecker extends HiveChecker {
@@ -25,10 +30,13 @@ export class InspectionOverdueChecker extends HiveChecker {
       return issues;
     }
 
-    // Get inspection frequency from hive settings (default 7 days)
-    const settings = hive.settings as
-      { inspection?: { frequencyDays?: number } } | null | undefined;
-    const inspectionFrequency = settings?.inspection?.frequencyDays ?? 7;
+    // Effective interval for today: an active season's override, otherwise
+    // the hive's base frequency (default 7 days).
+    const inspectionFrequency = getEffectiveInspectionFrequencyDays(
+      hive.settings as HiveSeasonSettings | null | undefined,
+      hive.apiarySettings as ApiarySeasonSettings | null | undefined,
+      context.currentTime,
+    );
 
     // If no last inspection date, consider it overdue immediately
     if (!hive.lastInspectionDate) {

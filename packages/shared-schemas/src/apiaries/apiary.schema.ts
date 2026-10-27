@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { seasonListSchema } from '../seasons';
 
 export const inspectionTypeEnum = z.enum(['subjective', 'data_driven']);
 export type InspectionType = z.infer<typeof inspectionTypeEnum>;
@@ -6,6 +7,12 @@ export type InspectionType = z.infer<typeof inspectionTypeEnum>;
 export const apiarySettingsSchema = z
   .object({
     inspectionType: inspectionTypeEnum.default('data_driven'),
+    /**
+     * Season templates shared by the apiary's hives. Hives inherit these
+     * until they store their own `seasons` list. An explicit empty list means
+     * "no seasons" (base inspection interval, no feeding target).
+     */
+    seasons: seasonListSchema.optional(),
   })
   .optional();
 export type ApiarySettings = z.infer<typeof apiarySettingsSchema>;
@@ -57,3 +64,11 @@ export type UpdateApiary = z.infer<typeof updateApiarySchema>;
 export type ApiaryResponse = z.infer<typeof apiaryResponseSchema>;
 export type ApiaryListResponse = z.infer<typeof apiaryListResponseSchema>;
 export type ApiaryMapPoint = z.infer<typeof apiaryMapPointSchema>;
+
+/** Response of `POST /apiaries/:id/seasons/apply`. */
+export const applyApiarySeasonsResponseSchema = z.object({
+  updated: z.number().int().nonnegative(),
+});
+export type ApplyApiarySeasonsResponse = z.infer<
+  typeof applyApiarySeasonsResponseSchema
+>;
