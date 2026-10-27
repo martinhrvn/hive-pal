@@ -142,7 +142,9 @@ Customize hive-specific settings:
 
 #### Inspection Schedule
 
-- **Base frequency**: The interval used outside seasons (default 7 days)
+- **Year-round interval**: Used on days no season covers (default 7 days). While the
+  hive inherits the apiary schedule and the apiary sets a year-round interval, that one
+  applies instead
 - **Season overrides**: A season can set its own inspection interval; the calendar and overdue alerts follow it
 - **Calendar feed**: Include the hive's scheduled inspections in the iCal subscription
 
@@ -153,14 +155,16 @@ Seasons replace the old fixed autumn feeding window. They are defined once per a
 
 - **Name**: e.g. Spring build-up, Late summer, Winter prep
 - **Start / end**: Month and day; seasons may wrap the year (e.g. Nov 15 – Feb 28)
-- **Inspection override**: Optional interval in days; empty means the hive's base interval
+- **Inspection override**: Optional interval in days; empty means the year-round interval
 - **Feeding season**: Tick it and set a target in kg of sugar. Feeding progress is tracked
   against that target inside the season's window, so you can split feeding across
   several seasons.
 
-A hive inherits the apiary template until you press **Customise for this hive** on its
-Settings tab. Customised seasons are a full copy you can edit, including dates; **Use
-apiary seasons** returns the hive to the template. Hives that still have the old autumn
+The Settings tab shows the hive's year as a strip, with a summary of each season one tap
+away. A hive inherits the apiary schedule (seasons and year-round interval) until you
+press **Customise for this hive**. That copies both, and you can then edit dates,
+intervals and feeding targets; **Use apiary seasons** returns the hive to the apiary
+schedule. Hives that still have the old autumn
 feeding setting show it as one feeding season and convert it the next time the settings
 are saved.
 

@@ -90,16 +90,22 @@ The top section of your dashboard shows a visual grid layout of all hives in the
 
 ### Seasons
 
-Owners can open the **Seasons** tab on the apiary to define the shared calendar for its hives:
+Owners can open the **Seasons** tab on the apiary to define the shared schedule for its
+hives. A strip at the top shows the whole year: each season as a coloured segment and
+the days in between as **Year-round**. Tap a segment for a summary of its inspection
+interval and feeding target.
 
+- **Year-round** sets the inspection interval for every day no season covers. Leave it
+  empty to let each hive keep its own interval.
 - Add a season with a name, start/end month and day, an optional inspection interval,
   and (optionally) a feeding target in kg of sugar.
 - Seasons must not overlap; a date can only belong to one season.
-- Hives inherit the template. They keep using it when the template changes, unless they
-  customise their own seasons on the hive's Settings tab.
-- **Apply to all hives** copies the saved template into every hive in the apiary. It
-  replaces hive-specific seasons and the old autumn feeding settings, so it asks for
-  confirmation first.
+- Hives inherit the year-round interval and the seasons together, as one schedule. They
+  keep following it when it changes, unless they customise their own on the hive's
+  Settings tab.
+- **Apply to all hives** copies the saved schedule into every hive in the apiary. It
+  replaces hive-specific seasons, year-round intervals and the old autumn feeding
+  settings, so it asks for confirmation first.
 
 If no template is saved, hives fall back to the built-in autumn feeding season
 (Aug 1 – Oct 31, 12 kg) and their own base inspection interval.

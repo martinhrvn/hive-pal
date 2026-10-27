@@ -1,4 +1,8 @@
-import { seasonListSchema, type Season } from './season.schema';
+import {
+  seasonListSchema,
+  yearRoundScheduleSchema,
+  type Season,
+} from './season.schema';
 import {
   clampDayToMonth,
   daysInMonth,
@@ -53,6 +57,7 @@ export interface HiveSeasonSettings {
 /** Apiary settings fields the season resolver understands. */
 export interface ApiarySeasonSettings {
   seasons?: unknown;
+  yearRound?: unknown;
 }
 
 export type SeasonSource = 'hive' | 'legacy' | 'apiary' | 'default';
@@ -60,6 +65,18 @@ export type SeasonSource = 'hive' | 'legacy' | 'apiary' | 'default';
 export interface EffectiveSeasons {
   seasons: Season[];
   source: SeasonSource;
+}
+
+/** Where a hive's year-round base inspection interval comes from. */
+export type BaseIntervalSource = 'hive' | 'apiary' | 'default';
+
+/**
+ * Everything that decides a hive's inspection schedule: its seasons and the
+ * year-round base interval that applies on days no season covers.
+ */
+export interface EffectiveSchedule extends EffectiveSeasons {
+  baseInspectionFrequencyDays: number;
+  baseSource: BaseIntervalSource;
 }
 
 export interface SeasonWindow {
@@ -183,28 +200,73 @@ function positiveDays(value: number | null | undefined): number | undefined {
     : undefined;
 }
 
-/** Base (season-independent) inspection interval for a hive. */
+/** True when the hive owns its schedule instead of inheriting the apiary's. */
+export function isHiveOwnedSeasonSource(source: SeasonSource): boolean {
+  return source === 'hive' || source === 'legacy';
+}
+
+/** The apiary's year-round inspection interval, if it sets one. */
+export function getApiaryYearRoundFrequencyDays(
+  apiarySettings?: ApiarySeasonSettings | null,
+): number | undefined {
+  if (apiarySettings?.yearRound == null) return undefined;
+  const parsed = yearRoundScheduleSchema.safeParse(apiarySettings.yearRound);
+  return parsed.success
+    ? positiveDays(parsed.data.inspectionFrequencyDays)
+    : undefined;
+}
+
+/**
+ * Resolve a hive's whole schedule. Seasons and the year-round base interval
+ * are inherited together: a hive that owns its seasons also owns its base
+ * interval. An inheriting hive uses the apiary's year-round interval when the
+ * apiary sets one, otherwise its own stored interval, otherwise 7 days.
+ */
+export function getEffectiveSchedule(
+  hiveSettings?: HiveSeasonSettings | null,
+  apiarySettings?: ApiarySeasonSettings | null,
+): EffectiveSchedule {
+  const effective = getEffectiveSeasons(hiveSettings, apiarySettings);
+  const apiaryDays = isHiveOwnedSeasonSource(effective.source)
+    ? undefined
+    : getApiaryYearRoundFrequencyDays(apiarySettings);
+  if (apiaryDays != null) {
+    return {
+      ...effective,
+      baseInspectionFrequencyDays: apiaryDays,
+      baseSource: 'apiary',
+    };
+  }
+  const hiveDays = positiveDays(hiveSettings?.inspection?.frequencyDays);
+  return {
+    ...effective,
+    baseInspectionFrequencyDays: hiveDays ?? DEFAULT_INSPECTION_FREQUENCY_DAYS,
+    baseSource: hiveDays == null ? 'default' : 'hive',
+  };
+}
+
+/** Year-round (season-independent) inspection interval for a hive. */
 export function getBaseInspectionFrequencyDays(
   hiveSettings?: HiveSeasonSettings | null,
+  apiarySettings?: ApiarySeasonSettings | null,
 ): number {
-  return (
-    positiveDays(hiveSettings?.inspection?.frequencyDays) ??
-    DEFAULT_INSPECTION_FREQUENCY_DAYS
-  );
+  return getEffectiveSchedule(hiveSettings, apiarySettings)
+    .baseInspectionFrequencyDays;
 }
 
 /**
  * Inspection interval in force on `date`: the active season's override when
- * set, otherwise the hive's base interval, otherwise 7 days.
+ * set, otherwise the year-round base interval (see getEffectiveSchedule).
  */
 export function getEffectiveInspectionFrequencyDays(
   hiveSettings?: HiveSeasonSettings | null,
   apiarySettings?: ApiarySeasonSettings | null,
   date: Date = new Date(),
 ): number {
+  const schedule = getEffectiveSchedule(hiveSettings, apiarySettings);
   return getInspectionFrequencyForSeasons(
-    getEffectiveSeasons(hiveSettings, apiarySettings).seasons,
-    getBaseInspectionFrequencyDays(hiveSettings),
+    schedule.seasons,
+    schedule.baseInspectionFrequencyDays,
     date,
   );
 }

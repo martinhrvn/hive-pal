@@ -42,8 +42,8 @@
   },
   "seasons": {
     "title": "Seasons",
-    "description": "Define the seasons used by every hive in this apiary. Hives inherit them until they customise their own.",
-    "emptyNotice": "With no seasons, hives in this apiary use their base inspection interval and have no feeding target.",
+    "description": "Set the year-round defaults and the seasons that override them. Hives inherit this schedule until they customise their own.",
+    "emptyNotice": "With no seasons, hives in this apiary use the year-round inspection interval all year and have no feeding target.",
     "save": "Save seasons",
     "saving": "Saving...",
     "saveSuccess": "Apiary seasons saved",
@@ -54,9 +54,17 @@
     "applySuccess": "Seasons applied to {{count}} hives",
     "applyError": "Failed to apply the seasons to the hives",
     "applyConfirmTitle": "Apply seasons to all hives?",
-    "applyConfirmDescription": "This replaces every hive's own seasons in this apiary, including the old autumn feeding settings.",
+    "applyConfirmDescription": "This replaces every hive's own seasons and year-round inspection interval in this apiary, including the old autumn feeding settings.",
     "applyConfirm": "Apply to all hives",
-    "applying": "Applying..."
+    "applying": "Applying...",
+    "scheduleTitle": "Schedule",
+    "yearRound": {
+      "title": "Year-round",
+      "description": "Applies on every day no season covers.",
+      "inspectionInterval": "Inspection interval (days)",
+      "inspectionIntervalPlaceholder": "Each hive's own",
+      "inspectionIntervalHint": "Leave empty to let each hive keep its own interval."
+    }
   },
   "fields": {
     "name": "Name",

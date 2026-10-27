@@ -4,6 +4,7 @@ import {
   LEGACY_AUTUMN_SEASON_ID,
   getActiveFeedingSeason,
   getEffectiveInspectionFrequencyDays,
+  getEffectiveSchedule,
   getEffectiveSeasons,
   getRelevantFeedingSeason,
   getSeasonWindow,
@@ -198,6 +199,58 @@ describe('inspection frequency', () => {
     expect(getEffectiveInspectionFrequencyDays(null, null)).toBe(
       DEFAULT_INSPECTION_FREQUENCY_DAYS,
     );
+  });
+});
+
+describe('getEffectiveSchedule', () => {
+  const apiary = {
+    seasons: [season({ inspectionFrequencyDays: 3 })],
+    yearRound: { inspectionFrequencyDays: 14 },
+  };
+
+  it('inherits the apiary year-round interval with its seasons', () => {
+    const schedule = getEffectiveSchedule(
+      { inspection: { frequencyDays: 7 } },
+      apiary,
+    );
+    expect(schedule.source).toBe('apiary');
+    expect(schedule.baseInspectionFrequencyDays).toBe(14);
+    expect(schedule.baseSource).toBe('apiary');
+    expect(
+      getEffectiveInspectionFrequencyDays(
+        { inspection: { frequencyDays: 7 } },
+        apiary,
+        new Date(2026, 7, 15),
+      ),
+    ).toBe(14);
+  });
+
+  it('keeps the hive interval when the hive owns its seasons', () => {
+    const schedule = getEffectiveSchedule(
+      { inspection: { frequencyDays: 10 }, seasons: [] },
+      apiary,
+    );
+    expect(schedule.source).toBe('hive');
+    expect(schedule.baseInspectionFrequencyDays).toBe(10);
+    expect(schedule.baseSource).toBe('hive');
+  });
+
+  it('falls back to the hive interval when the apiary sets none', () => {
+    const schedule = getEffectiveSchedule(
+      { inspection: { frequencyDays: 10 } },
+      { seasons: apiary.seasons, yearRound: { inspectionFrequencyDays: null } },
+    );
+    expect(schedule.baseInspectionFrequencyDays).toBe(10);
+    expect(schedule.baseSource).toBe('hive');
+  });
+
+  it('applies the apiary interval even without apiary seasons', () => {
+    const schedule = getEffectiveSchedule(
+      {},
+      { yearRound: { inspectionFrequencyDays: 21 } },
+    );
+    expect(schedule.source).toBe('default');
+    expect(schedule.baseInspectionFrequencyDays).toBe(21);
   });
 });
 

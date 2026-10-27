@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -23,7 +23,9 @@ import {
 } from '@/components/ui/card';
 import { toast } from 'sonner';
 import {
+  getApiaryYearRoundFrequencyDays,
   getEffectiveSeasons,
+  isHiveOwnedSeasonSource,
   seasonListSchema,
   type ApiarySeasonSettings,
   type HiveDetailResponse,
@@ -35,6 +37,7 @@ import { useUpdateHive } from '@/api/hooks';
 import { NumberInputField } from '../components/hive-settings-fields';
 import { SeasonListField } from '@/components/seasons/season-list-field';
 import { SeasonSummaryList } from '@/components/seasons/season-summary-list';
+import { SeasonYearStrip } from '@/components/seasons/season-year-strip';
 
 const DEFAULT_INSPECTION = { frequencyDays: 7, calendarEnabled: true };
 
@@ -87,9 +90,6 @@ const buildFormValues = (hive?: HiveDetailResponse): HiveSettingsFormData => {
   };
 };
 
-const isHiveOwnedSource = (source: SeasonSource) =>
-  source === 'hive' || source === 'legacy';
-
 export const HiveSettings: React.FC<HiveSettingsProps> = ({
   hive,
   onHiveUpdated,
@@ -110,7 +110,15 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
     [hive?.apiarySettings],
   );
 
-  const [isCustom, setIsCustom] = useState(isHiveOwnedSource(initialSource));
+  // Set when the apiary has a year-round interval: hives that inherit the
+  // apiary schedule use it instead of their own.
+  const apiaryYearRoundDays = getApiaryYearRoundFrequencyDays(
+    hive?.apiarySettings as ApiarySeasonSettings | undefined,
+  );
+
+  const [isCustom, setIsCustom] = useState(
+    isHiveOwnedSeasonSource(initialSource),
+  );
 
   const form = useForm<
     z.input<typeof hiveSettingsFormSchema>,
@@ -126,15 +134,27 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
   useEffect(() => {
     if (!hive) return;
     form.reset(buildFormValues(hive));
-    setIsCustom(isHiveOwnedSource(resolveSeasons(hive).source));
+    setIsCustom(isHiveOwnedSeasonSource(resolveSeasons(hive).source));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hive?.id]);
 
-  const source: SeasonSource = isCustom
-    ? initialSource === 'legacy'
-      ? 'legacy'
-      : 'hive'
-    : inherited.source;
+  const customSource: SeasonSource =
+    initialSource === 'legacy' ? 'legacy' : 'hive';
+  const source: SeasonSource = isCustom ? customSource : inherited.source;
+
+  const formSeasons = useWatch({ control: form.control, name: 'seasons' });
+  const formFrequencyDays = useWatch({
+    control: form.control,
+    name: 'inspection.frequencyDays',
+  });
+  const inheritsYearRound = !isCustom && apiaryYearRoundDays != null;
+  // What the strip shows: the schedule this hive will follow once saved.
+  const stripSeasons = isCustom
+    ? ((formSeasons ?? []) as Season[])
+    : inherited.seasons;
+  const stripBaseDays = inheritsYearRound
+    ? apiaryYearRoundDays
+    : formFrequencyDays;
 
   const onSubmit = (data: HiveSettingsFormData) => {
     if (!hive?.id) return;
@@ -180,7 +200,25 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
       shouldDirty: true,
       shouldValidate: true,
     });
+    // Back to inheriting: the hive's own stored interval is the fallback
+    // again, so undo the copy taken when customising.
+    form.setValue(
+      'inspection.frequencyDays',
+      initialValues.inspection.frequencyDays,
+      { shouldDirty: true },
+    );
     setIsCustom(false);
+  };
+
+  // Seasons and the year-round interval are one schedule: customising copies
+  // both, so the hive starts from exactly what it followed before.
+  const customiseSchedule = () => {
+    if (apiaryYearRoundDays != null) {
+      form.setValue('inspection.frequencyDays', apiaryYearRoundDays, {
+        shouldDirty: true,
+      });
+    }
+    setIsCustom(true);
   };
 
   if (!hive) {
@@ -200,6 +238,11 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
               onSubmit={form.handleSubmit(onSubmit, onInvalid)}
               className="space-y-6"
             >
+              <SeasonYearStrip
+                seasons={stripSeasons}
+                baseFrequencyDays={stripBaseDays}
+              />
+
               {/* Seasons */}
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-2 border-b pb-2">
@@ -244,7 +287,7 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => setIsCustom(true)}
+                      onClick={customiseSchedule}
                     >
                       {t('common:season.customise')}
                     </Button>
@@ -264,18 +307,37 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <NumberInputField
-                    control={form.control}
-                    name="inspection.frequencyDays"
-                    label={t('hive:settings.inspectionFrequency')}
-                    min={1}
-                    max={365}
-                    placeholder="7"
-                    fallback={7}
-                    description={t(
-                      'hive:settings.inspectionFrequencyDescription',
-                    )}
-                  />
+                  {inheritsYearRound ? (
+                    <div
+                      className="space-y-1 rounded-lg border p-4"
+                      data-test="inherited-year-round"
+                    >
+                      <p className="text-sm font-medium">
+                        {t('hive:settings.inspectionFrequency')}
+                      </p>
+                      <p className="text-sm">
+                        {t('common:season.inspectionEvery', {
+                          days: apiaryYearRoundDays,
+                        })}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {t('hive:settings.inspectionFrequencyInherited')}
+                      </p>
+                    </div>
+                  ) : (
+                    <NumberInputField
+                      control={form.control}
+                      name="inspection.frequencyDays"
+                      label={t('hive:settings.inspectionFrequency')}
+                      min={1}
+                      max={365}
+                      placeholder="7"
+                      fallback={7}
+                      description={t(
+                        'hive:settings.inspectionFrequencyDescription',
+                      )}
+                    />
+                  )}
 
                   <FormField
                     control={form.control}

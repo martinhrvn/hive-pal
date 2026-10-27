@@ -4,8 +4,7 @@ import {
   InspectionResponse,
   InspectionStatus,
   ActionResponse,
-  getBaseInspectionFrequencyDays,
-  getEffectiveSeasons,
+  getEffectiveSchedule,
   getInspectionFrequencyForSeasons,
   isDateInSeason,
 } from 'shared-schemas';
@@ -338,6 +337,11 @@ export function generateHivePrompt(
 
   // Hive settings
   if (hive.settings || hive.apiarySettings) {
+    const {
+      seasons,
+      source,
+      baseInspectionFrequencyDays: baseFrequency,
+    } = getEffectiveSchedule(hive.settings, hive.apiarySettings);
     lines.push(
       '## ' +
         i18n.t('hive:llmPrompt.textArea.hiveSettings', {
@@ -347,14 +351,9 @@ export function generateHivePrompt(
     lines.push(
       '- ' +
         i18n.t('hive:llmPrompt.textArea.inspectionFrequency', {
-          frequencyDays: getBaseInspectionFrequencyDays(hive.settings),
+          frequencyDays: baseFrequency,
           defaultValue: 'Inspection frequency: every {{frequencyDays}} days',
         }),
-    );
-
-    const { seasons, source } = getEffectiveSeasons(
-      hive.settings,
-      hive.apiarySettings,
     );
     lines.push(
       '- ' +
@@ -392,11 +391,7 @@ export function generateHivePrompt(
         '- ' +
           i18n.t('hive:llmPrompt.textArea.activeSeason', {
             name: getSeasonDisplayName(active, i18n.t),
-            days: getInspectionFrequencyForSeasons(
-              seasons,
-              getBaseInspectionFrequencyDays(hive.settings),
-              now,
-            ),
+            days: getInspectionFrequencyForSeasons(seasons, baseFrequency, now),
             defaultValue:
               'Active season: {{name}} (inspect every {{days}} days)',
           }),

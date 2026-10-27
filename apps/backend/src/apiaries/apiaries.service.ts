@@ -18,6 +18,7 @@ import {
   UpdateApiary,
   apiarySettingsSchema,
   ApiarySettings,
+  getApiaryYearRoundFrequencyDays,
 } from 'shared-schemas';
 
 @Injectable()
@@ -191,12 +192,12 @@ export class ApiariesService {
     try {
       const { settings, ...rest } = updateApiaryDto;
       let data: Prisma.ApiaryUpdateInput = rest;
-      let seasonsChanged = false;
+      let scheduleChanged = false;
 
       if (settings !== undefined) {
         // Settings is one JSON column holding independent keys (inspection
-        // type, season templates). Merge so a client that only sends some
-        // keys — e.g. the apiary edit form — never wipes the others.
+        // type, seasons, year-round defaults). Merge so a client that only
+        // sends some keys — e.g. the apiary edit form — never wipes the others.
         const existing = await this.prisma.apiary.findFirst({
           where: { id, userId },
           select: { settings: true },
@@ -207,8 +208,9 @@ export class ApiariesService {
         const current =
           (existing.settings as Record<string, unknown> | null) ?? {};
         const merged = { ...current, ...settings };
-        seasonsChanged =
-          JSON.stringify(current.seasons) !== JSON.stringify(merged.seasons);
+        scheduleChanged = (['seasons', 'yearRound'] as const).some(
+          (key) => JSON.stringify(current[key]) !== JSON.stringify(merged[key]),
+        );
         data = { ...rest, settings: merged };
       }
 
@@ -220,9 +222,9 @@ export class ApiariesService {
         },
       });
 
-      // Hives inherit the apiary's seasons, so their effective inspection
+      // Hives inherit the apiary's schedule, so their effective inspection
       // interval may have changed: re-run the alert checkers for them.
-      if (seasonsChanged) {
+      if (scheduleChanged) {
         const hives = await this.prisma.hive.findMany({
           where: { apiaryId: id },
           select: { id: true },
@@ -248,9 +250,10 @@ export class ApiariesService {
   }
 
   /**
-   * Copy the apiary's season template into every hive in the apiary. This is
-   * the explicit bulk action behind "Apply to all hives"; it replaces any
-   * hive-owned seasons and drops the legacy autumn feeding setting.
+   * Copy the apiary's schedule (seasons and year-round inspection interval)
+   * into every hive in the apiary. This is the explicit bulk action behind
+   * "Apply to all hives"; it replaces any hive-owned seasons and drops the
+   * legacy autumn feeding setting.
    */
   async applySeasonsToHives(
     apiaryId: string,
@@ -267,7 +270,9 @@ export class ApiariesService {
       throw new NotFoundException();
     }
 
-    const seasons = this.parseSettings(apiary.settings)?.seasons ?? [];
+    const settings = this.parseSettings(apiary.settings);
+    const seasons = settings?.seasons ?? [];
+    const yearRoundDays = getApiaryYearRoundFrequencyDays(settings);
     if (seasons.length === 0) {
       throw new BadRequestException(
         'Add at least one season before applying it to the hives',
@@ -289,6 +294,14 @@ export class ApiariesService {
           ...((hive.settings as Record<string, unknown> | null) ?? {}),
         };
         delete existing.autumnFeeding;
+        // The hive now owns its schedule, so it also takes over the apiary's
+        // year-round interval (keeping its own calendar toggle).
+        if (yearRoundDays != null) {
+          existing.inspection = {
+            ...(existing.inspection ?? {}),
+            frequencyDays: yearRoundDays,
+          };
+        }
         return this.prisma.hive.update({
           where: { id: hive.id },
           data: {

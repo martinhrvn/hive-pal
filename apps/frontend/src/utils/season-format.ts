@@ -49,3 +49,22 @@ export function getSeasonDisplayName(
       : t('common:season.untitled'))
   );
 }
+
+/** Localized labels for the twelve months, narrow ("J") and short ("Jan"). */
+export function formatMonthLabels(
+  locale: string,
+): { month: number; narrow: string; short: string }[] {
+  return Array.from({ length: 12 }, (_, index) => {
+    const date = new Date(2000, index, 1);
+    return {
+      month: index + 1,
+      narrow: date.toLocaleDateString(locale, { month: 'narrow' }),
+      short: date.toLocaleDateString(locale, { month: 'short' }),
+    };
+  });
+}
+
+/** Localized month and day, e.g. "October 27". */
+export function formatMonthDay(date: Date, locale: string): string {
+  return date.toLocaleDateString(locale, { month: 'long', day: 'numeric' });
+}

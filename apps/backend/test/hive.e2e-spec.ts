@@ -255,6 +255,12 @@ describe('Hives (e2e)', () => {
   });
 
   it('applies the apiary season template to its hives', async () => {
+    await request(app.getHttpServer())
+      .patch(`/apiaries/${apiaryId}`)
+      .set('Cookie', authCookie)
+      .send({ settings: { yearRound: { inspectionFrequencyDays: 12 } } })
+      .expect(200);
+
     const applied = await request(app.getHttpServer())
       .post(`/apiaries/${apiaryId}/seasons/apply`)
       .set('Cookie', authCookie)
@@ -271,6 +277,9 @@ describe('Hives (e2e)', () => {
     expect(response.body.settings.seasons).toHaveLength(1);
     expect(response.body.settings.seasons[0].name).toBe('Autumn feeding');
     expect(response.body.settings.autumnFeeding).toBeUndefined();
+    // The hive owns its schedule now, including the year-round interval.
+    expect(response.body.settings.inspection.frequencyDays).toBe(12);
+    expect(response.body.settings.inspection.calendarEnabled).toBe(true);
   });
 
   it.skip('should update boxes for a hive', async () => {

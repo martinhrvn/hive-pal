@@ -45,7 +45,7 @@ export class HiveFormPage {
       name: 'Advanced Settings',
     });
     this.inspectionFrequencyInput = page.getByLabel(
-      'Inspection Frequency (days)',
+      'Year-round inspection interval (days)',
     );
     this.boxConfigToggle = page.getByRole('button', {
       name: 'Box Configuration',

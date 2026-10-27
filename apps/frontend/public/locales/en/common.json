@@ -211,7 +211,14 @@
     "inheritedHint": "These seasons come from the apiary. Customise them to change dates, feeding or inspection intervals for this hive.",
     "customHint": "These seasons apply to this hive only. Reset to inherit the apiary seasons again.",
     "customise": "Customise for this hive",
-    "useApiarySeasons": "Use apiary seasons"
+    "useApiarySeasons": "Use apiary seasons",
+    "strip": {
+      "today": "Today is {{date}}.",
+      "yearRound": "Year-round",
+      "yearRoundHint": "No season covers these days, so the year-round settings apply.",
+      "hiveInterval": "Each hive uses its own inspection interval",
+      "fromYearRound": "(year-round)"
+    }
   },
   "weather": {
     "selectHiveToView": "Select a hive with an apiary to view weather",

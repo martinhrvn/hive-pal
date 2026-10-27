@@ -177,7 +177,14 @@
         "inheritedHint": "Tieto sezóny pochádzajú z včelnice. Upravte ich, ak chcete pre tento úľ zmeniť dátumy, kŕmenie alebo interval prehliadok.",
         "customHint": "Tieto sezóny platia len pre tento úľ. Obnovením sa opäť začnú používať sezóny včelnice.",
         "customise": "Upraviť pre tento úľ",
-        "useApiarySeasons": "Použiť sezóny včelnice"
+        "useApiarySeasons": "Použiť sezóny včelnice",
+        "strip": {
+            "today": "Dnes je {{date}}.",
+            "yearRound": "Celoročne",
+            "yearRoundHint": "Tieto dni nepokrýva žiadna sezóna, preto platia celoročné nastavenia.",
+            "hiveInterval": "Každý úľ používa vlastný interval prehliadok",
+            "fromYearRound": "(celoročne)"
+        }
     },
     "weather": {
         "selectHiveToView": "Vyberte úľ s včelnicou na zobrazenie počasia",

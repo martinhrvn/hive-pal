@@ -7,12 +7,12 @@ import {
   InspectionStatus,
   ActionResponse,
   ActionType,
-  getBaseInspectionFrequencyDays,
-  getEffectiveSeasons,
+  getEffectiveSchedule,
   getInspectionFrequencyForSeasons,
   isBuiltInSeasonId,
   isDateInSeason,
   type Season,
+  type BaseIntervalSource,
   type SeasonSource,
 } from 'shared-schemas';
 import { HiveService } from '../hives/hive.service';
@@ -38,6 +38,12 @@ const SEASON_SOURCE_LABELS: Record<SeasonSource, string> = {
   hive: 'hive-specific',
   legacy: 'legacy autumn feeding',
   apiary: 'apiary template',
+  default: 'Hive Pal default',
+};
+
+const BASE_SOURCE_LABELS: Record<BaseIntervalSource, string> = {
+  hive: 'hive-specific',
+  apiary: 'apiary year-round default',
   default: 'Hive Pal default',
 };
 
@@ -307,12 +313,14 @@ export class ContextBuilderService {
     // Hive settings
     if (hive.settings || hive.apiarySettings) {
       lines.push('## Hive Settings');
-      const baseFrequency = getBaseInspectionFrequencyDays(hive.settings);
-      lines.push(`- Base inspection frequency: every ${baseFrequency} days`);
-
-      const { seasons, source } = getEffectiveSeasons(
-        hive.settings,
-        hive.apiarySettings,
+      const {
+        seasons,
+        source,
+        baseInspectionFrequencyDays: baseFrequency,
+        baseSource,
+      } = getEffectiveSchedule(hive.settings, hive.apiarySettings);
+      lines.push(
+        `- Year-round inspection frequency (outside seasons): every ${baseFrequency} days (${BASE_SOURCE_LABELS[baseSource]})`,
       );
       lines.push(`- Seasons (${SEASON_SOURCE_LABELS[source]}):`);
       if (seasons.length === 0) {

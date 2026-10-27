@@ -123,3 +123,15 @@ export const seasonListSchema = z
   });
 
 export type SeasonList = z.infer<typeof seasonListSchema>;
+
+/**
+ * Settings that apply all year on days no season covers. Seasons override
+ * them. Only the inspection interval for now; the inspection checklist will
+ * live here too.
+ */
+export const yearRoundScheduleSchema = z.object({
+  /** Empty means hives fall back to their own base interval. */
+  inspectionFrequencyDays: z.number().int().min(1).max(365).nullish(),
+});
+
+export type YearRoundSchedule = z.infer<typeof yearRoundScheduleSchema>;

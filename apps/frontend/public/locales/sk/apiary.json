@@ -42,8 +42,8 @@
   },
   "seasons": {
     "title": "Sezóny",
-    "description": "Definujte sezóny, ktoré používajú všetky úle v tejto včelnici. Úle ich dedia, kým si nenastavia vlastné.",
-    "emptyNotice": "Bez sezón používajú úle v tejto včelnici základný interval prehliadok a nemajú cieľ kŕmenia.",
+    "description": "Nastavte celoročné predvolené hodnoty a sezóny, ktoré ich prepíšu. Úle tento harmonogram preberajú, kým si nenastavia vlastný.",
+    "emptyNotice": "Bez sezón používajú úle v tejto včelnici celoročný interval prehliadok po celý rok a nemajú cieľ kŕmenia.",
     "save": "Uložiť sezóny",
     "saving": "Ukladá sa...",
     "saveSuccess": "Sezóny včelnice boli uložené",
@@ -54,9 +54,17 @@
     "applySuccess": "Sezóny boli použité pre {{count}} úľov",
     "applyError": "Sezóny sa nepodarilo použiť pre úle",
     "applyConfirmTitle": "Použiť sezóny pre všetky úle?",
-    "applyConfirmDescription": "Týmto sa nahradia vlastné sezóny všetkých úľov v tejto včelnici vrátane pôvodného nastavenia jesenného kŕmenia.",
+    "applyConfirmDescription": "Týmto sa nahradia vlastné sezóny a celoročný interval prehliadok všetkých úľov vo včelnici vrátane starých nastavení jesenného kŕmenia.",
     "applyConfirm": "Použiť pre všetky úle",
-    "applying": "Používa sa..."
+    "applying": "Používa sa...",
+    "scheduleTitle": "Harmonogram",
+    "yearRound": {
+      "title": "Celoročne",
+      "description": "Platí v každý deň, ktorý nepokrýva žiadna sezóna.",
+      "inspectionInterval": "Interval prehliadok (dni)",
+      "inspectionIntervalPlaceholder": "Vlastný pre každý úľ",
+      "inspectionIntervalHint": "Nechajte prázdne, ak má každý úľ ponechať vlastný interval."
+    }
   },
   "fields": {
     "name": "Názov",

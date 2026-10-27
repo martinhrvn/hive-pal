@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { seasonListSchema } from '../seasons';
+import { seasonListSchema, yearRoundScheduleSchema } from '../seasons';
 
 export const inspectionTypeEnum = z.enum(['subjective', 'data_driven']);
 export type InspectionType = z.infer<typeof inspectionTypeEnum>;
@@ -13,6 +13,11 @@ export const apiarySettingsSchema = z
      * "no seasons" (base inspection interval, no feeding target).
      */
     seasons: seasonListSchema.optional(),
+    /**
+     * Year-round defaults inherited together with `seasons`: they apply on
+     * days no season covers, for hives that do not own their schedule.
+     */
+    yearRound: yearRoundScheduleSchema.optional(),
   })
   .optional();
 export type ApiarySettings = z.infer<typeof apiarySettingsSchema>;
@@ -27,8 +32,17 @@ export const createApiarySchema = z.object({
   settings: apiarySettingsSchema,
 });
 
-// Schema for updating apiaries
-export const updateApiarySchema = createApiarySchema.partial();
+// Schema for updating apiaries. Settings are a patch merged into the stored
+// value, so no defaults: an omitted key must stay as it is.
+export const updateApiarySchema = createApiarySchema.partial().extend({
+  settings: z
+    .object({
+      inspectionType: inspectionTypeEnum.optional(),
+      seasons: seasonListSchema.optional(),
+      yearRound: yearRoundScheduleSchema.optional(),
+    })
+    .optional(),
+});
 
 export const apiaryRoleEnum = z.enum(['OWNER', 'EDITOR', 'VIEWER']);
 export type ApiaryRole = z.infer<typeof apiaryRoleEnum>;
