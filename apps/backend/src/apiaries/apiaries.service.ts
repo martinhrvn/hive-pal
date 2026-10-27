@@ -189,13 +189,50 @@ export class ApiariesService {
     this.logger.debug(`Update data: ${JSON.stringify(updateApiaryDto)}`);
 
     try {
+      const { settings, ...rest } = updateApiaryDto;
+      let data: Prisma.ApiaryUpdateInput = rest;
+      let seasonsChanged = false;
+
+      if (settings !== undefined) {
+        // Settings is one JSON column holding independent keys (inspection
+        // type, season templates). Merge so a client that only sends some
+        // keys — e.g. the apiary edit form — never wipes the others.
+        const existing = await this.prisma.apiary.findFirst({
+          where: { id, userId },
+          select: { settings: true },
+        });
+        if (!existing) {
+          throw new NotFoundException();
+        }
+        const current =
+          (existing.settings as Record<string, unknown> | null) ?? {};
+        const merged = { ...current, ...settings };
+        seasonsChanged =
+          JSON.stringify(current.seasons) !== JSON.stringify(merged.seasons);
+        data = { ...rest, settings: merged };
+      }
+
       const updatedApiary = await this.prisma.apiary.update({
         where: { id, userId },
-        data: updateApiaryDto,
+        data,
         include: {
           featurePhoto: { select: { id: true, storageKey: true } },
         },
       });
+
+      // Hives inherit the apiary's seasons, so their effective inspection
+      // interval may have changed: re-run the alert checkers for them.
+      if (seasonsChanged) {
+        const hives = await this.prisma.hive.findMany({
+          where: { apiaryId: id },
+          select: { id: true },
+        });
+        this.emitSettingsUpdated(
+          hives.map((hive) => hive.id),
+          id,
+          userId,
+        );
+      }
 
       this.logger.log(`Apiary ${id} updated successfully`);
       return this.mapApiaryToResponse(updatedApiary, userId);
@@ -262,17 +299,29 @@ export class ApiariesService {
     );
 
     // Re-run the alert checkers for each hive after the transaction commits.
-    for (const hive of hives) {
-      this.eventEmitter.emit(
-        'hive.updated',
-        new HiveUpdatedEvent(hive.id, apiaryId, userId, 'settings'),
-      );
-    }
+    this.emitSettingsUpdated(
+      hives.map((hive) => hive.id),
+      apiaryId,
+      userId,
+    );
 
     this.logger.log(
       `Applied seasons of apiary ${apiaryId} to ${hives.length} hives`,
     );
     return { updated: hives.length };
+  }
+
+  private emitSettingsUpdated(
+    hiveIds: string[],
+    apiaryId: string,
+    userId: string,
+  ) {
+    for (const hiveId of hiveIds) {
+      this.eventEmitter.emit(
+        'hive.updated',
+        new HiveUpdatedEvent(hiveId, apiaryId, userId, 'settings'),
+      );
+    }
   }
 
   async remove(id: string, userId: string) {

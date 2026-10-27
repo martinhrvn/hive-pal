@@ -156,6 +156,36 @@ describe('Apiaries (e2e)', () => {
     expect(apiary?.location).toBe('New Location');
   });
 
+  it('should keep saved seasons when the settings update omits them', async () => {
+    const seasons = [
+      {
+        id: '3f1c2d4e-5a6b-4c7d-8e9f-0a1b2c3d4e5f',
+        name: 'Spring',
+        start: { month: 3, day: 1 },
+        end: { month: 5, day: 31 },
+        inspectionFrequencyDays: 3,
+        feeding: { enabled: false },
+      },
+    ];
+
+    await request(app.getHttpServer())
+      .patch(`/apiaries/${testApiaryId}`)
+      .set('Cookie', authCookie)
+      .send({ settings: { inspectionType: 'data_driven', seasons } })
+      .expect(200);
+
+    // The apiary edit form only knows about the inspection type.
+    const response = await request(app.getHttpServer())
+      .patch(`/apiaries/${testApiaryId}`)
+      .set('Cookie', authCookie)
+      .send({ name: 'Renamed', settings: { inspectionType: 'subjective' } })
+      .expect(200);
+
+    expect(response.body.settings.inspectionType).toBe('subjective');
+    expect(response.body.settings.seasons).toHaveLength(1);
+    expect(response.body.settings.seasons[0].name).toBe('Spring');
+  });
+
   it('should delete an apiary', async () => {
     await request(app.getHttpServer())
       .delete(`/apiaries/${testApiaryId}`)
