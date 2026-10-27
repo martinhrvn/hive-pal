@@ -79,4 +79,20 @@ describe('InspectionOverdueChecker', () => {
       }),
     ).toEqual([]);
   });
+
+  it('keeps the interval in force after the last inspection when a season starts', () => {
+    // Last inspected Feb 26 on the 14-day base; spring (3 days) starts Mar 1.
+    // The calendar puts the next inspection on Mar 12, so Mar 5 is not overdue.
+    const subject = hive({
+      settings: { inspection: { frequencyDays: 14 }, seasons: [spring(3)] },
+      lastInspectionDate: new Date(2026, 1, 26),
+    });
+    expect(
+      checker.checkHive(subject, {
+        userId: 'u',
+        apiaryId: 'a',
+        currentTime: new Date(2026, 2, 5),
+      }),
+    ).toEqual([]);
+  });
 });

@@ -193,10 +193,44 @@ export function getEffectiveInspectionFrequencyDays(
   apiarySettings?: ApiarySeasonSettings | null,
   date: Date = new Date(),
 ): number {
-  const active = getActiveSeason(hiveSettings, apiarySettings, date);
-  return (
-    positiveDays(active?.inspectionFrequencyDays) ??
-    getBaseInspectionFrequencyDays(hiveSettings)
+  return getInspectionFrequencyForSeasons(
+    getEffectiveSeasons(hiveSettings, apiarySettings).seasons,
+    getBaseInspectionFrequencyDays(hiveSettings),
+    date,
+  );
+}
+
+/**
+ * Pure variant of {@link getEffectiveInspectionFrequencyDays} for callers that
+ * evaluate many dates: resolve the seasons and base interval once, then call
+ * this per date.
+ */
+export function getInspectionFrequencyForSeasons(
+  seasons: Season[],
+  baseDays: number,
+  date: Date,
+): number {
+  const active = seasons.find(season => isDateInSeason(season, date));
+  return positiveDays(active?.inspectionFrequencyDays) ?? baseDays;
+}
+
+/**
+ * Interval that decides when the inspection after `lastInspection` is due:
+ * the one in force the day after it. The overdue alert and the calendar
+ * projection both use this, so a season starting or ending between the last
+ * inspection and today cannot make them disagree.
+ */
+export function getInspectionDueFrequencyDays(
+  hiveSettings: HiveSeasonSettings | null | undefined,
+  apiarySettings: ApiarySeasonSettings | null | undefined,
+  lastInspection: Date,
+): number {
+  const dayAfter = new Date(lastInspection);
+  dayAfter.setDate(dayAfter.getDate() + 1);
+  return getEffectiveInspectionFrequencyDays(
+    hiveSettings,
+    apiarySettings,
+    dayAfter,
   );
 }
 

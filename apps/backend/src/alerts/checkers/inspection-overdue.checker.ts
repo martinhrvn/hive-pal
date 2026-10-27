@@ -8,6 +8,7 @@ import {
 import {
   AlertSeverity,
   getEffectiveInspectionFrequencyDays,
+  getInspectionDueFrequencyDays,
   type ApiarySeasonSettings,
   type HiveSeasonSettings,
 } from 'shared-schemas';
@@ -30,13 +31,9 @@ export class InspectionOverdueChecker extends HiveChecker {
       return issues;
     }
 
-    // Effective interval for today: an active season's override, otherwise
-    // the hive's base frequency (default 7 days).
-    const inspectionFrequency = getEffectiveInspectionFrequencyDays(
-      hive.settings as HiveSeasonSettings | null | undefined,
-      hive.apiarySettings as ApiarySeasonSettings | null | undefined,
-      context.currentTime,
-    );
+    const hiveSettings = hive.settings as HiveSeasonSettings | null | undefined;
+    const apiarySettings = hive.apiarySettings as
+      ApiarySeasonSettings | null | undefined;
 
     // If no last inspection date, consider it overdue immediately
     if (!hive.lastInspectionDate) {
@@ -46,12 +43,25 @@ export class InspectionOverdueChecker extends HiveChecker {
         severity: 'MEDIUM',
         metadata: {
           daysSinceLastInspection: null as number | null,
-          expectedFrequencyDays: inspectionFrequency,
+          expectedFrequencyDays: getEffectiveInspectionFrequencyDays(
+            hiveSettings,
+            apiarySettings,
+            context.currentTime,
+          ),
           hiveName: hive.name,
         },
       });
       return issues;
     }
+
+    // The interval in force the day after the last inspection, as the
+    // calendar projection uses: a season starting or ending since then does
+    // not move the due date.
+    const inspectionFrequency = getInspectionDueFrequencyDays(
+      hiveSettings,
+      apiarySettings,
+      hive.lastInspectionDate,
+    );
 
     // Calculate days since last inspection
     const daysSinceLastInspection = Math.floor(
