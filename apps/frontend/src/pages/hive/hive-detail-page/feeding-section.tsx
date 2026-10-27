@@ -9,7 +9,7 @@ import {
   type FeedingSeasonProgress,
   type FeedingTotals,
 } from '@/utils/feeding-calculations';
-import { formatSeasonRange, getSeasonLabel } from '@/utils/season-format';
+import { formatSeasonRange, getSeasonDisplayName } from '@/utils/season-format';
 import { Info, Target } from 'lucide-react';
 import {
   Tooltip,
@@ -370,7 +370,7 @@ export const FeedingSection: React.FC<FeedingSectionProps> = ({
     hive?.apiarySettings,
   );
   const seasonLabel = progress
-    ? (getSeasonLabel(progress.season) ?? t('common:season.unnamed'))
+    ? getSeasonDisplayName(progress.season, t)
     : null;
   const seasonRange = progress
     ? formatSeasonRange(progress.season, i18n.language)

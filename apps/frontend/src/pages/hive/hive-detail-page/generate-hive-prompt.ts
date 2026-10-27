@@ -11,7 +11,7 @@ import {
 } from 'shared-schemas';
 import i18n from '@/lib/i18n';
 import { getDateLocale } from '@/utils/locale-utils.ts';
-import { formatSeasonRange, getSeasonLabel } from '@/utils/season-format';
+import { formatSeasonRange, getSeasonDisplayName } from '@/utils/season-format';
 
 function formatDate(date: string | Date): string {
   return format(new Date(date), 'P', { locale: getDateLocale(i18n.language) });
@@ -365,7 +365,7 @@ export function generateHivePrompt(
         }),
     );
     for (const season of seasons) {
-      const name = getSeasonLabel(season) ?? i18n.t('common:season.unnamed');
+      const name = getSeasonDisplayName(season, i18n.t);
       lines.push(`  - ${name}: ${formatSeasonRange(season, i18n.language)}`);
       if (season.inspectionFrequencyDays != null) {
         lines.push(
@@ -391,7 +391,7 @@ export function generateHivePrompt(
       lines.push(
         '- ' +
           i18n.t('hive:llmPrompt.textArea.activeSeason', {
-            name: getSeasonLabel(active) ?? i18n.t('common:season.unnamed'),
+            name: getSeasonDisplayName(active, i18n.t),
             days: getInspectionFrequencyForSeasons(
               seasons,
               getBaseInspectionFrequencyDays(hive.settings),

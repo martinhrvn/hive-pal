@@ -1,4 +1,5 @@
-import { daysInMonth } from 'shared-schemas';
+import type { TFunction } from 'i18next';
+import { daysInMonth, isBuiltInSeasonId } from 'shared-schemas';
 
 /** Localized, compact label for a season's month/day range (e.g. "Mar 1 – May 31"). */
 export function formatSeasonRange(
@@ -30,4 +31,21 @@ export function formatSeasonRange(
 export function getSeasonLabel(season: { name?: string }): string | undefined {
   const name = season.name?.trim();
   return name ? name : undefined;
+}
+
+/**
+ * Display name for a season: its own name, "Autumn feeding" for the seasons
+ * Hive Pal synthesized from legacy/default settings, otherwise a generic
+ * "Unnamed season".
+ */
+export function getSeasonDisplayName(
+  season: { id?: string; name?: string },
+  t: TFunction,
+): string {
+  return (
+    getSeasonLabel(season) ??
+    (isBuiltInSeasonId(season.id)
+      ? t('common:season.unnamed')
+      : t('common:season.untitled'))
+  );
 }

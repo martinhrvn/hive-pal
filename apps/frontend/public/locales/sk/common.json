@@ -165,6 +165,7 @@
         "overlapTitle": "Sezóny sa prekrývajú",
         "overlap": "\"{{first}}\" a \"{{second}}\" majú aspoň jeden spoločný deň. Dátum môže patriť len do jednej sezóny.",
         "unnamed": "Jesenné kŕmenie",
+        "untitled": "Nepomenovaná sezóna",
         "noneConfigured": "Nie sú nastavené žiadne sezóny.",
         "sourceLabel": "Sezóny z",
         "source": {

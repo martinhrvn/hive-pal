@@ -14,6 +14,15 @@ export const DEFAULT_INSPECTION_FREQUENCY_DAYS = 7;
 export const LEGACY_AUTUMN_SEASON_ID = '00000000-0000-4000-8000-000000000001';
 export const DEFAULT_FEEDING_SEASON_ID = '00000000-0000-4000-8000-000000000002';
 
+/**
+ * True for the seasons Hive Pal synthesizes (legacy autumn feeding, built-in
+ * default). Unnamed, they are labelled "Autumn feeding"; any other unnamed
+ * season gets a generic label.
+ */
+export function isBuiltInSeasonId(id: string | undefined): boolean {
+  return id === LEGACY_AUTUMN_SEASON_ID || id === DEFAULT_FEEDING_SEASON_ID;
+}
+
 /** The feeding window Hive Pal used before seasons existed. */
 export const DEFAULT_FEEDING_SEASON: Season = {
   id: DEFAULT_FEEDING_SEASON_ID,

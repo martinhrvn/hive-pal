@@ -8,6 +8,7 @@ import {
 import { AlertCircle, Plus, Trash2 } from 'lucide-react';
 import {
   findOverlappingSeasonPair,
+  isBuiltInSeasonId,
   isDateInSeason,
   type Season,
 } from 'shared-schemas';
@@ -23,7 +24,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { getSeasonLabel } from '@/utils/season-format';
+import { formatSeasonRange, getSeasonLabel } from '@/utils/season-format';
 import { MonthDayField } from './month-day-field';
 
 interface SeasonListFormValues {
@@ -132,7 +133,7 @@ function SeasonCard({
                     {...field}
                   />
                 </FormControl>
-                {!season?.name?.trim() && (
+                {!season?.name?.trim() && isBuiltInSeasonId(season?.id) && (
                   <p className="text-xs text-muted-foreground">
                     {t('common:season.unnamedHint')}
                   </p>
@@ -246,7 +247,7 @@ export function SeasonListField({
   baseFrequencyDays,
   disabled,
 }: SeasonListFieldProps) {
-  const { t } = useTranslation(['common', 'hive']);
+  const { t, i18n } = useTranslation(['common', 'hive']);
   const { control } = useFormContext<SeasonListFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -255,9 +256,12 @@ export function SeasonListField({
   const seasons = useWatch({ control, name: 'seasons' }) as
     Season[] | undefined;
   const overlap = findOverlappingSeasonPair(seasons ?? []);
-  const overlapLabel = (index: number) =>
-    getSeasonLabel(seasons?.[index] ?? {}) ??
-    t('common:season.unnamed', { number: index + 1 });
+  // Unnamed seasons are told apart by their dates.
+  const overlapLabel = (index: number) => {
+    const season = seasons?.[index];
+    if (!season) return '';
+    return getSeasonLabel(season) ?? formatSeasonRange(season, i18n.language);
+  };
 
   return (
     <div className="space-y-4" data-test="season-list">

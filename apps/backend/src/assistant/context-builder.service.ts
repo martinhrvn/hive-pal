@@ -10,6 +10,7 @@ import {
   getBaseInspectionFrequencyDays,
   getEffectiveSeasons,
   getInspectionFrequencyForSeasons,
+  isBuiltInSeasonId,
   isDateInSeason,
   type Season,
   type SeasonSource,
@@ -41,7 +42,8 @@ const SEASON_SOURCE_LABELS: Record<SeasonSource, string> = {
 };
 
 function seasonLabel(season: Season): string {
-  return season.name || 'Autumn feeding';
+  if (season.name) return season.name;
+  return isBuiltInSeasonId(season.id) ? 'Autumn feeding' : 'Unnamed season';
 }
 
 function formatSeasonRange(season: Season): string {

@@ -199,6 +199,7 @@
     "overlapTitle": "Seasons overlap",
     "overlap": "\"{{first}}\" and \"{{second}}\" share at least one day. A date can only belong to one season.",
     "unnamed": "Autumn feeding",
+    "untitled": "Unnamed season",
     "noneConfigured": "No seasons configured.",
     "sourceLabel": "Seasons from",
     "source": {

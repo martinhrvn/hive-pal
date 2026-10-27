@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { isDateInSeason, type Season, type SeasonSource } from 'shared-schemas';
 import { Badge } from '@/components/ui/badge';
-import { formatSeasonRange, getSeasonLabel } from '@/utils/season-format';
+import { formatSeasonRange, getSeasonDisplayName } from '@/utils/season-format';
 
 interface SeasonSummaryListProps {
   seasons: Season[];
@@ -27,7 +27,7 @@ export function SeasonSummaryList({ seasons, source }: SeasonSummaryListProps) {
       ) : (
         <ul className="space-y-2">
           {seasons.map(season => {
-            const label = getSeasonLabel(season) ?? t('season.unnamed');
+            const label = getSeasonDisplayName(season, t);
             const active = isDateInSeason(season, new Date());
             return (
               <li
