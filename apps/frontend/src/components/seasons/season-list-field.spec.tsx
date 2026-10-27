@@ -18,7 +18,10 @@ test('adds a feeding season and saves its target', async ({ mount }) => {
   await component.getByRole('button', { name: 'Save' }).click();
   await expect(component.getByTestId('saved')).toContainText('Winter prep');
   await expect(component.getByTestId('saved')).toContainText('"enabled":true');
-  // Saved, the season reads as a summary row.
+
+  // Saving keeps the editor open; "Done" collapses it to a summary row.
+  await expect(component.getByLabel('Name')).toHaveCount(1);
+  await component.getByTestId('done-season').click();
   await expect(component.getByLabel('Name')).toHaveCount(0);
   await expect(component.getByTestId('season-card')).toContainText(
     'Feed 12 kg sugar',
@@ -35,16 +38,13 @@ test('shows a saved season as a summary until edited', async ({ mount }) => {
 
   await component.getByTestId('edit-season').click();
   await component.getByLabel('Name').fill('Early spring');
-  await component.getByTestId('cancel-season-edit').click();
-  await expect(component.getByLabel('Name')).toHaveCount(0);
-  await expect(card).toContainText('Spring');
-  await expect(card).not.toContainText('Early spring');
-
-  await component.getByTestId('edit-season').click();
-  await component.getByLabel('Name').fill('Early spring');
-  await component.getByRole('button', { name: 'Save' }).click();
+  // "Done" collapses the editor and keeps the edits.
+  await component.getByTestId('done-season').click();
   await expect(component.getByLabel('Name')).toHaveCount(0);
   await expect(card).toContainText('Early spring');
+
+  await component.getByRole('button', { name: 'Save' }).click();
+  await expect(component.getByTestId('saved')).toContainText('Early spring');
 });
 
 test('saves a season without inspections', async ({ mount }) => {
@@ -66,6 +66,8 @@ test('saves a season without inspections', async ({ mount }) => {
   await expect(component.getByTestId('saved')).toContainText(
     '"inspectionFrequencyDays":null',
   );
+
+  await component.getByTestId('done-season').click();
   await expect(component.getByTestId('season-card')).toContainText(
     'No inspections',
   );

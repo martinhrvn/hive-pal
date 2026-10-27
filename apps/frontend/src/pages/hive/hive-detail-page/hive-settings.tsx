@@ -35,6 +35,7 @@ import {
 } from 'shared-schemas';
 import { useUpdateHive } from '@/api/hooks';
 import { NumberField } from '@/components/common/number-field';
+import { SeasonsEditorProvider } from '@/components/seasons/season-editor-provider';
 import { SeasonListField } from '@/components/seasons/season-list-field';
 import { SeasonSummaryList } from '@/components/seasons/season-summary-list';
 import { SeasonYearStrip } from '@/components/seasons/season-year-strip';
@@ -241,35 +242,33 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
               onSubmit={form.handleSubmit(onSubmit, onInvalid)}
               className="space-y-6"
             >
-              <SeasonYearStrip
-                seasons={stripSeasons}
-                baseFrequencyDays={stripBaseDays}
-              />
+              {isCustom ? (
+                <SeasonsEditorProvider>
+                  <SeasonYearStrip
+                    seasons={stripSeasons}
+                    baseFrequencyDays={stripBaseDays}
+                  />
 
-              {/* Seasons */}
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center gap-2 border-b pb-2">
-                  <h3 className="text-lg font-medium">
-                    {t('common:season.title')}
-                  </h3>
-                  <Badge variant="secondary">
-                    {t(`common:season.source.${source}`)}
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {isCustom
-                    ? t('common:season.customHint')
-                    : t('common:season.inheritedHint')}
-                </p>
+                  {/* Seasons */}
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap items-center gap-2 border-b pb-2">
+                      <h3 className="text-lg font-medium">
+                        {t('common:season.title')}
+                      </h3>
+                      <Badge variant="secondary">
+                        {t(`common:season.source.${source}`)}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {t('common:season.customHint')}
+                    </p>
 
-                {source === 'legacy' && isCustom && (
-                  <p className="text-sm text-muted-foreground">
-                    {t('hive:settings.legacySeasonsHint')}
-                  </p>
-                )}
+                    {source === 'legacy' && (
+                      <p className="text-sm text-muted-foreground">
+                        {t('hive:settings.legacySeasonsHint')}
+                      </p>
+                    )}
 
-                {isCustom ? (
-                  <>
                     <SeasonListField
                       baseFrequencyDays={form.watch('inspection.frequencyDays')}
                     />
@@ -280,9 +279,29 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
                     >
                       {t('common:season.useApiarySeasons')}
                     </Button>
-                  </>
-                ) : (
-                  <>
+                  </div>
+                </SeasonsEditorProvider>
+              ) : (
+                <>
+                  <SeasonYearStrip
+                    seasons={stripSeasons}
+                    baseFrequencyDays={stripBaseDays}
+                  />
+
+                  {/* Seasons */}
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap items-center gap-2 border-b pb-2">
+                      <h3 className="text-lg font-medium">
+                        {t('common:season.title')}
+                      </h3>
+                      <Badge variant="secondary">
+                        {t(`common:season.source.${source}`)}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {t('common:season.inheritedHint')}
+                    </p>
+
                     <SeasonSummaryList
                       seasons={inherited.seasons}
                       source={inherited.source}
@@ -294,9 +313,9 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
                     >
                       {t('common:season.customise')}
                     </Button>
-                  </>
-                )}
-              </div>
+                  </div>
+                </>
+              )}
 
               {/* Inspection Settings */}
               <div className="space-y-4">
@@ -367,7 +386,12 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
                 </div>
               </div>
 
-              <div className="flex justify-end pt-4">
+              <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-end gap-2 rounded-lg border bg-card/95 p-2 shadow-sm backdrop-blur">
+                {form.formState.isDirty && (
+                  <span className="mr-auto text-sm text-muted-foreground">
+                    {t('common:unsavedChanges')}
+                  </span>
+                )}
                 <Button type="submit" disabled={isPending}>
                   {isPending
                     ? t('hive:settings.saving')

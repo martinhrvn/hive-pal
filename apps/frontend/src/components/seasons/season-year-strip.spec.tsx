@@ -4,6 +4,7 @@ const DEFAULT = 'components/seasons/season-year-strip/Default';
 const NO_SEASONS = 'components/seasons/season-year-strip/NoSeasons';
 const NO_YEAR_ROUND =
   'components/seasons/season-year-strip/NoYearRoundInterval';
+const EDITABLE = 'components/seasons/season-year-strip/Editable';
 
 test('lays out seasons and the year-round gaps', async ({ mount }) => {
   const component = await mount(DEFAULT);
@@ -52,4 +53,32 @@ test('explains when hives keep their own interval', async ({ mount, page }) => {
   await expect(page.getByTestId('strip-popover')).toContainText(
     'Each hive uses its own inspection interval',
   );
+});
+
+test('opens a season for editing from the strip', async ({ mount }) => {
+  const component = await mount(EDITABLE);
+
+  await component.getByRole('button', { name: 'Spring build-up' }).click();
+  await expect(component.getByRole('textbox', { name: 'Name' })).toHaveValue(
+    'Spring build-up',
+  );
+});
+
+test('adds a season by clicking a year-round gap', async ({ mount }) => {
+  const component = await mount(EDITABLE);
+
+  await component.getByTestId('strip-year-round').first().click();
+  await expect(component.getByTestId('season-card')).toHaveCount(4);
+  await expect(component.getByRole('textbox', { name: 'Name' })).toHaveCount(1);
+});
+
+test('deletes a season from the strip menu', async ({ mount, page }) => {
+  const component = await mount(EDITABLE);
+
+  await component.getByTestId('strip-season-more').first().click();
+  await page
+    .locator('[data-slot="popover-content"]')
+    .getByRole('button', { name: 'Remove season' })
+    .click();
+  await expect(component.getByTestId('season-card')).toHaveCount(2);
 });

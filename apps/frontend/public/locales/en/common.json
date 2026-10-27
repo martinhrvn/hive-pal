@@ -185,6 +185,7 @@
     "start": "Starts",
     "end": "Ends",
     "day": "Day",
+    "done": "Done",
     "add": "Add season",
     "remove": "Remove season",
     "edit": "Edit season",
@@ -221,9 +222,12 @@
       "yearRound": "Year-round",
       "yearRoundHint": "No season covers these days, so the year-round settings apply.",
       "hiveInterval": "Each hive uses its own inspection interval",
-      "fromYearRound": "(year-round)"
+      "fromYearRound": "(year-round)",
+      "addSeason": "Add season here",
+      "more": "More options"
     }
   },
+  "unsavedChanges": "Unsaved changes",
   "weather": {
     "selectHiveToView": "Select a hive with an apiary to view weather",
     "unableToLoad": "Unable to load weather data",

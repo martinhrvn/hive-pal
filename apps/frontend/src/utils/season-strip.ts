@@ -15,6 +15,15 @@ export function stripDayIndex(month: number, day: number): number {
   );
 }
 
+/** Inverse of {@link stripDayIndex}: a month/day pair for a strip day index. */
+export function stripIndexToMonthDay(index: number): {
+  month: number;
+  day: number;
+} {
+  const date = new Date(Date.UTC(REFERENCE_YEAR, 0, 1) + index * DAY_MS);
+  return { month: date.getUTCMonth() + 1, day: date.getUTCDate() };
+}
+
 export type YearStripSegment =
   | {
       kind: 'season';

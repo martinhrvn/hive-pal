@@ -151,6 +151,7 @@
         "start": "Začína",
         "end": "Končí",
         "day": "Deň",
+        "done": "Hotovo",
         "add": "Pridať sezónu",
         "remove": "Odstrániť sezónu",
         "edit": "Upraviť sezónu",
@@ -187,9 +188,12 @@
             "yearRound": "Celoročne",
             "yearRoundHint": "Tieto dni nepokrýva žiadna sezóna, preto platia celoročné nastavenia.",
             "hiveInterval": "Každý úľ používa vlastný interval prehliadok",
-            "fromYearRound": "(celoročne)"
+            "fromYearRound": "(celoročne)",
+            "addSeason": "Pridať sezónu sem",
+            "more": "Ďalšie možnosti"
         }
     },
+    "unsavedChanges": "Neuložené zmeny",
     "weather": {
         "selectHiveToView": "Vyberte úľ s včelnicou na zobrazenie počasia",
         "unableToLoad": "Nie je možné načítať údaje o počasí",

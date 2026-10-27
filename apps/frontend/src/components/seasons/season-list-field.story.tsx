@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { seasonListSchema, type Season } from 'shared-schemas';
 import { Button } from '@/components/ui/button';
 import { SeasonListField } from './season-list-field';
+import { SeasonsEditorProvider } from './season-editor-provider';
 
 const schema = z.object({ seasons: seasonListSchema });
 
@@ -27,7 +28,9 @@ const Harness = ({ initialSeasons = [] }: { initialSeasons?: Season[] }) => {
           form.reset(data);
         })}
       >
-        <SeasonListField baseFrequencyDays={7} />
+        <SeasonsEditorProvider>
+          <SeasonListField baseFrequencyDays={7} />
+        </SeasonsEditorProvider>
         <Button type="submit">Save</Button>
         <pre data-test="saved">{saved}</pre>
       </form>

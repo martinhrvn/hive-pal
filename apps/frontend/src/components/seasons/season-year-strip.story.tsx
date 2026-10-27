@@ -1,4 +1,9 @@
-import type { Season } from 'shared-schemas';
+import { FormProvider, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { seasonListSchema, type Season } from 'shared-schemas';
+import { SeasonsEditorProvider } from './season-editor-provider';
+import { SeasonListField } from './season-list-field';
 import { SeasonYearStrip } from './season-year-strip';
 
 const SPRING: Season = {
@@ -55,4 +60,39 @@ export const NoYearRoundInterval = () => (
   <Frame>
     <SeasonYearStrip seasons={[AUTUMN]} today={TODAY} />
   </Frame>
+);
+
+const schema = z.object({ seasons: seasonListSchema });
+
+const EditableHarness = ({
+  initialSeasons = [],
+}: {
+  initialSeasons?: Season[];
+}) => {
+  const form = useForm<z.input<typeof schema>, unknown, z.infer<typeof schema>>(
+    {
+      resolver: zodResolver(schema),
+      defaultValues: { seasons: initialSeasons },
+    },
+  );
+
+  return (
+    <FormProvider {...form}>
+      <SeasonsEditorProvider>
+        <div className="max-w-3xl space-y-6 p-4">
+          <SeasonYearStrip
+            seasons={(form.watch('seasons') ?? []) as Season[]}
+            baseFrequencyDays={7}
+            today={TODAY}
+          />
+          <SeasonListField baseFrequencyDays={7} />
+        </div>
+      </SeasonsEditorProvider>
+    </FormProvider>
+  );
+};
+
+/** Strip + list wired together: click a season to edit, a gap to add. */
+export const Editable = () => (
+  <EditableHarness initialSeasons={[SPRING, AUTUMN, WINTER]} />
 );

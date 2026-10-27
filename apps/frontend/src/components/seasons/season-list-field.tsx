@@ -1,11 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  useFieldArray,
-  useFormContext,
-  useFormState,
-  useWatch,
-} from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { AlertCircle, Pencil, Plus, Trash2 } from 'lucide-react';
 import {
   findOverlappingSeasonPair,
@@ -26,14 +21,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { NumberField } from '@/components/common/number-field';
-import { randomUUID } from '@/lib/uuid';
 import { formatSeasonRange, getSeasonLabel } from '@/utils/season-format';
+import {
+  useSeasonEditor,
+  type SeasonFormValues,
+} from './season-editor-context';
 import { MonthDayField } from './month-day-field';
 import { SeasonSummaryRow } from './season-summary-list';
-
-interface SeasonListFormValues {
-  seasons: Season[];
-}
 
 interface SeasonListFieldProps {
   /** Base hive inspection interval, shown as the override placeholder. */
@@ -41,77 +35,38 @@ interface SeasonListFieldProps {
   disabled?: boolean;
 }
 
-/** A new, empty season. Dates are a starting point the user can change. */
-function newSeason(): Season {
-  return {
-    id: randomUUID(),
-    name: '',
-    start: { month: 3, day: 1 },
-    end: { month: 5, day: 31 },
-    inspectionFrequencyDays: null,
-    feeding: { enabled: false, targetKg: null },
-  };
-}
-
-const cloneSeason = (season: Season): Season => ({
-  ...season,
-  start: { ...season.start },
-  end: { ...season.end },
-  feeding: { ...season.feeding },
-});
-
-/** True when the form's season still matches what was last saved. */
-const isSameSeason = (a: Season, b: Season) =>
-  a.name === b.name &&
-  a.start.month === b.start.month &&
-  a.start.day === b.start.day &&
-  a.end.month === b.end.month &&
-  a.end.day === b.end.day &&
-  (a.inspectionFrequencyDays ?? null) === (b.inspectionFrequencyDays ?? null) &&
-  Boolean(a.inspectionsPaused) === Boolean(b.inspectionsPaused) &&
-  a.feeding.enabled === b.feeding.enabled &&
-  (a.feeding.targetKg ?? null) === (b.feeding.targetKg ?? null);
-
 interface SeasonCardProps {
   index: number;
-  /** The season as last saved; `undefined` for a season added since. */
-  saved?: Season;
   editing: boolean;
   baseFrequencyDays?: number;
   disabled?: boolean;
   onEdit: () => void;
-  onDoneEditing: () => void;
+  onDone: () => void;
   onRemove: () => void;
 }
 
 /**
- * A saved season reads as a summary row until the user edits it. New,
- * changed or invalid seasons always show the editor.
+ * A season reads as a summary row until it is expanded. Expanding is explicit
+ * (the pencil, or clicking its segment on the year strip), so saving the
+ * schedule never collapses the editor you are working in.
  */
 function SeasonCard({
   index,
-  saved,
   editing,
   baseFrequencyDays,
   disabled,
   onEdit,
-  onDoneEditing,
+  onDone,
   onRemove,
 }: SeasonCardProps) {
   const { t } = useTranslation('common');
-  const { control, setValue, getFieldState } =
-    useFormContext<SeasonListFormValues>();
-  const formState = useFormState({ control, name: `seasons.${index}` });
+  const { control } = useFormContext<SeasonFormValues>();
   const season = useWatch({ control, name: `seasons.${index}` }) as
     Season | undefined;
-  const invalid = getFieldState(`seasons.${index}`, formState).invalid;
 
   if (!season) return null;
 
-  const showEditor =
-    editing || !saved || invalid || !isSameSeason(season, saved);
-
-  if (!showEditor) {
+  if (!editing) {
     return (
       <div className="rounded-lg border p-3" data-test="season-card">
         <SeasonSummaryRow season={season}>
@@ -142,25 +97,14 @@ function SeasonCard({
     );
   }
 
-  // Cancel only makes sense for a season that has a saved version to restore.
-  const onCancel = saved
-    ? () => {
-        setValue(`seasons.${index}`, cloneSeason(saved), {
-          shouldDirty: true,
-          shouldValidate: true,
-        });
-        onDoneEditing();
-      }
-    : undefined;
-
   return (
     <SeasonEditor
       index={index}
       season={season}
       baseFrequencyDays={baseFrequencyDays}
       disabled={disabled}
+      onDone={onDone}
       onRemove={onRemove}
-      onCancel={onCancel}
     />
   );
 }
@@ -170,23 +114,32 @@ function SeasonEditor({
   season,
   baseFrequencyDays,
   disabled,
-  onCancel,
+  onDone,
   onRemove,
 }: {
   index: number;
   season: Season;
   baseFrequencyDays?: number;
   disabled?: boolean;
-  onCancel?: () => void;
+  onDone: () => void;
   onRemove: () => void;
 }) {
   const { t } = useTranslation('common');
-  const { control, setValue, getValues } =
-    useFormContext<SeasonListFormValues>();
+  const { control, setValue, getValues } = useFormContext<SeasonFormValues>();
   const active = isDateInSeason(season, new Date());
+  const ref = useRef<HTMLDivElement>(null);
+
+  // When opened from the year strip (off-screen), bring the editor into view.
+  useEffect(() => {
+    ref.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, []);
 
   return (
-    <div className="space-y-4 rounded-lg border p-4" data-test="season-card">
+    <div
+      ref={ref}
+      className="space-y-4 rounded-lg border p-4"
+      data-test="season-card"
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 space-y-2">
           <FormField
@@ -345,20 +298,18 @@ function SeasonEditor({
         )}
       </div>
 
-      {onCancel && (
-        <div className="flex justify-end">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={disabled}
-            onClick={onCancel}
-            data-test="cancel-season-edit"
-          >
-            {t('actions.cancel')}
-          </Button>
-        </div>
-      )}
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          disabled={disabled}
+          onClick={onDone}
+          data-test="done-season"
+        >
+          {t('season.done')}
+        </Button>
+      </div>
     </div>
   );
 }
@@ -368,40 +319,24 @@ function SeasonEditor({
  * by per-hive customisation. Validation is provided by the form schema
  * (`seasonListSchema`); overlapping seasons are also flagged inline.
  *
- * Seasons that match the form's default values (what was last saved) show as
- * summary rows; resetting the form after a save collapses edited seasons back
- * into rows.
+ * Seasons expand and collapse explicitly; the form's save does not touch the
+ * open/closed state.
  */
 export function SeasonListField({
   baseFrequencyDays,
   disabled,
 }: SeasonListFieldProps) {
   const { t, i18n } = useTranslation('common');
-  const { control, formState } = useFormContext<SeasonListFormValues>();
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'seasons',
-  });
+  const { control } = useFormContext<SeasonFormValues>();
+  const editor = useSeasonEditor();
   const seasons = useWatch({ control, name: 'seasons' }) as
     Season[] | undefined;
-  const savedSeasons = formState.defaultValues?.seasons as Season[] | undefined;
-  const [editingIds, setEditingIds] = useState<ReadonlySet<string>>(
-    () => new Set(),
-  );
-  // A form reset (after saving) closes every open editor.
-  const [prevSavedSeasons, setPrevSavedSeasons] = useState(savedSeasons);
-  if (savedSeasons !== prevSavedSeasons) {
-    setPrevSavedSeasons(savedSeasons);
-    setEditingIds(new Set());
-  }
 
-  const setEditing = (id: string, editing: boolean) =>
-    setEditingIds(current => {
-      const next = new Set(current);
-      if (editing) next.add(id);
-      else next.delete(id);
-      return next;
-    });
+  // Outside a SeasonsEditorProvider (e.g. a read-only embed) there is nothing
+  // to edit.
+  if (!editor) return null;
+
+  const { fields, editingIds, setEditing, addSeason, removeSeason } = editor;
 
   const overlap = findOverlappingSeasonPair(seasons ?? []);
   // Unnamed seasons are told apart by their dates.
@@ -426,13 +361,12 @@ export function SeasonListField({
           <SeasonCard
             key={field.id}
             index={index}
-            saved={savedSeasons?.find(season => season.id === seasonId)}
             editing={editingIds.has(seasonId)}
             baseFrequencyDays={baseFrequencyDays}
             disabled={disabled}
             onEdit={() => setEditing(seasonId, true)}
-            onDoneEditing={() => setEditing(seasonId, false)}
-            onRemove={() => remove(index)}
+            onDone={() => setEditing(seasonId, false)}
+            onRemove={() => removeSeason(seasonId)}
           />
         );
       })}
@@ -454,7 +388,7 @@ export function SeasonListField({
         type="button"
         variant="outline"
         disabled={disabled}
-        onClick={() => append(newSeason())}
+        onClick={() => addSeason()}
         data-test="add-season"
       >
         <Plus className="mr-2 h-4 w-4" />
