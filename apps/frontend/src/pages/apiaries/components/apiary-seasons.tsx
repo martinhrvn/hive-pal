@@ -19,21 +19,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
+import { NumberField } from '@/components/common/number-field';
 import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
 import { SeasonsEditorProvider } from '@/components/seasons/season-editor-provider';
 import { SeasonListField } from '@/components/seasons/season-list-field';
 import { SeasonYearStrip } from '@/components/seasons/season-year-strip';
 import { useApplyApiarySeasons, useUpdateApiary } from '@/api/hooks';
+import { sortSeasonsByStart } from '@/utils/season-strip';
 
 const apiarySeasonsFormSchema = z.object({
   seasons: seasonListSchema,
@@ -56,8 +49,9 @@ const defaultTemplate = (): Season => ({
  */
 const templateSeasons = (apiary: ApiaryResponse): Season[] => {
   if (apiary.settings?.seasons !== undefined) {
-    // Clone: the form must never mutate the cached apiary settings.
-    return apiary.settings.seasons.map(season => ({
+    // Clone: the form must never mutate the cached apiary settings. Saved
+    // seasons list in calendar order.
+    return sortSeasonsByStart(apiary.settings.seasons).map(season => ({
       ...season,
       start: { ...season.start },
       end: { ...season.end },
@@ -109,12 +103,13 @@ export function ApiarySeasons({ apiary }: ApiarySeasonsProps) {
   });
 
   const onSubmit = (data: ApiarySeasonsFormData) => {
+    const seasons = sortSeasonsByStart(data.seasons);
     updateApiary(
       {
         id: apiary.id,
         data: {
           settings: {
-            seasons: data.seasons,
+            seasons,
             yearRound: {
               inspectionFrequencyDays:
                 data.yearRound.inspectionFrequencyDays ?? null,
@@ -124,9 +119,8 @@ export function ApiarySeasons({ apiary }: ApiarySeasonsProps) {
       },
       {
         onSuccess: () => {
-          // Saved values become the new baseline: edited seasons collapse
-          // back into summary rows.
-          form.reset(data);
+          // Saved values, in calendar order, become the new baseline.
+          form.reset({ ...data, seasons });
           toast.success(t('apiary:seasons.saveSuccess'));
         },
         onError: () => {
@@ -172,6 +166,20 @@ export function ApiarySeasons({ apiary }: ApiarySeasonsProps) {
                 />
 
                 <section className="space-y-3">
+                  <h3 className="border-b pb-2 text-lg font-medium">
+                    {t('common:season.title')}
+                  </h3>
+                  <SeasonListField
+                    baseFrequencyDays={watchedYearRoundDays ?? undefined}
+                  />
+                  {(watchedSeasons ?? []).length === 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      {t('apiary:seasons.emptyNotice')}
+                    </p>
+                  )}
+                </section>
+
+                <section className="space-y-3">
                   <div className="border-b pb-2">
                     <h3 className="text-lg font-medium">
                       {t('apiary:seasons.yearRound.title')}
@@ -180,58 +188,23 @@ export function ApiarySeasons({ apiary }: ApiarySeasonsProps) {
                       {t('apiary:seasons.yearRound.description')}
                     </p>
                   </div>
-                  <FormField
-                    control={form.control}
-                    name="yearRound.inspectionFrequencyDays"
-                    render={({ field }) => (
-                      <FormItem className="max-w-xs">
-                        <FormLabel>
-                          {t('apiary:seasons.yearRound.inspectionInterval')}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min={1}
-                            max={365}
-                            placeholder={t(
-                              'apiary:seasons.yearRound.inspectionIntervalPlaceholder',
-                            )}
-                            value={field.value ?? ''}
-                            onChange={event =>
-                              field.onChange(
-                                event.target.value === ''
-                                  ? null
-                                  : Number(event.target.value),
-                              )
-                            }
-                            onBlur={field.onBlur}
-                            name={field.name}
-                            ref={field.ref}
-                            data-test="year-round-interval"
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          {t('apiary:seasons.yearRound.inspectionIntervalHint')}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="max-w-xs">
+                    <NumberField
+                      control={form.control}
+                      name="yearRound.inspectionFrequencyDays"
+                      label={t('apiary:seasons.yearRound.inspectionInterval')}
+                      description={t(
+                        'apiary:seasons.yearRound.inspectionIntervalHint',
+                      )}
+                      placeholder={t(
+                        'apiary:seasons.yearRound.inspectionIntervalPlaceholder',
+                      )}
+                      min={1}
+                      max={365}
+                      nullable
+                    />
+                  </div>
                 </section>
-
-                <section className="space-y-3">
-                  <h3 className="border-b pb-2 text-lg font-medium">
-                    {t('common:season.title')}
-                  </h3>
-                  <SeasonListField
-                    baseFrequencyDays={watchedYearRoundDays ?? undefined}
-                  />
-                </section>
-                {(watchedSeasons ?? []).length === 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    {t('apiary:seasons.emptyNotice')}
-                  </p>
-                )}
 
                 <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-end gap-2 rounded-lg border bg-card/95 p-2 shadow-sm backdrop-blur">
                   {form.formState.isDirty && (

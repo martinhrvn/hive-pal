@@ -59,7 +59,10 @@ test('explains when hives keep their own interval', async ({ mount, page }) => {
 test('opens a season for editing from the strip', async ({ mount }) => {
   const component = await mount(EDITABLE);
 
-  await component.getByRole('button', { name: 'Spring build-up' }).click();
+  // Exact: the season's list row is a button whose name includes it too.
+  await component
+    .getByRole('button', { name: 'Spring build-up', exact: true })
+    .click();
   await expect(component.getByRole('textbox', { name: 'Name' })).toHaveValue(
     'Spring build-up',
   );
@@ -94,4 +97,31 @@ test('adds one season across the new year from either end', async ({
   await expect(component.getByTestId('season-card')).toHaveCount(3);
   // The new season wraps the year, so it covers both ends of the strip.
   await expect(component.getByTestId('strip-year-round')).toHaveCount(1);
+});
+
+test('keys the colours by what each season does', async ({ mount }) => {
+  const component = await mount(
+    'components/seasons/season-year-strip/AllRoles',
+  );
+
+  const key = component.getByTestId('strip-key');
+  await expect(key).toContainText('Inspections');
+  await expect(key).toContainText('Feeding');
+  await expect(key).toContainText('No inspections');
+  await expect(key).toContainText('Year-round');
+  await expect(key).toContainText('One inspection');
+});
+
+test('dims the rest of the year while a season is open', async ({ mount }) => {
+  const component = await mount(EDITABLE);
+
+  await component
+    .getByRole('button', { name: 'Spring build-up', exact: true })
+    .click();
+  await expect(
+    component.getByRole('button', { name: 'Winter prep', exact: true }),
+  ).toHaveClass(/opacity-50/);
+  await expect(
+    component.getByRole('button', { name: 'Spring build-up', exact: true }),
+  ).not.toHaveClass(/opacity-50/);
 });

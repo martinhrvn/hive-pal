@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { AlertCircle, Pencil, Plus, Trash2 } from 'lucide-react';
+import { useFormContext, useWatch, type FieldPath } from 'react-hook-form';
+import { AlertCircle, Plus, Trash2 } from 'lucide-react';
 import {
   findOverlappingSeasonPair,
   isBuiltInSeasonId,
@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -35,7 +36,7 @@ interface SeasonListFieldProps {
   disabled?: boolean;
 }
 
-interface SeasonCardProps {
+interface SeasonRowProps {
   index: number;
   editing: boolean;
   baseFrequencyDays?: number;
@@ -47,10 +48,10 @@ interface SeasonCardProps {
 
 /**
  * A season reads as a summary row until it is expanded. Expanding is explicit
- * (the pencil, or clicking its segment on the year strip), so saving the
+ * (clicking the row, or its segment on the year strip), so saving the
  * schedule never collapses the editor you are working in.
  */
-function SeasonCard({
+function SeasonRow({
   index,
   editing,
   baseFrequencyDays,
@@ -58,7 +59,7 @@ function SeasonCard({
   onEdit,
   onDone,
   onRemove,
-}: SeasonCardProps) {
+}: SeasonRowProps) {
   const { t } = useTranslation('common');
   const { control } = useFormContext<SeasonFormValues>();
   const season = useWatch({ control, name: `seasons.${index}` }) as
@@ -66,46 +67,106 @@ function SeasonCard({
 
   if (!season) return null;
 
-  if (!editing) {
+  if (editing) {
     return (
-      <div className="rounded-lg border p-3" data-test="season-card">
-        <SeasonSummaryRow season={season}>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label={t('season.edit')}
-            disabled={disabled}
-            onClick={onEdit}
-            data-test="edit-season"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label={t('season.remove')}
-            disabled={disabled}
-            onClick={onRemove}
-            data-test="remove-season"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </SeasonSummaryRow>
-      </div>
+      <SeasonEditor
+        index={index}
+        season={season}
+        baseFrequencyDays={baseFrequencyDays}
+        disabled={disabled}
+        onDone={onDone}
+        onRemove={onRemove}
+      />
     );
   }
 
   return (
-    <SeasonEditor
-      index={index}
-      season={season}
-      baseFrequencyDays={baseFrequencyDays}
-      disabled={disabled}
-      onDone={onDone}
-      onRemove={onRemove}
-    />
+    <li className="flex items-center gap-1 pr-2" data-test="season-card">
+      <button
+        type="button"
+        aria-expanded={false}
+        disabled={disabled}
+        onClick={onEdit}
+        data-test="edit-season"
+        className="min-w-0 flex-1 px-3 py-2.5 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring disabled:pointer-events-none"
+      >
+        <SeasonSummaryRow
+          season={season}
+          baseFrequencyDays={baseFrequencyDays}
+        />
+      </button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label={t('season.remove')}
+        disabled={disabled}
+        onClick={onRemove}
+        data-test="remove-season"
+        className="text-muted-foreground"
+      >
+        <Trash2 className="size-4" />
+      </Button>
+    </li>
+  );
+}
+
+/**
+ * A switch with its label and hint, and the value it unlocks below it (an
+ * interval, a feeding target) while it is on.
+ */
+function ToggleRow({
+  name,
+  label,
+  hint,
+  inverted = false,
+  disabled,
+  testId,
+  onToggle,
+  children,
+}: {
+  name: FieldPath<SeasonFormValues>;
+  label: string;
+  hint: string;
+  /** The field stores the opposite of the switch (`inspectionsPaused`). */
+  inverted?: boolean;
+  disabled?: boolean;
+  testId: string;
+  /** Runs after the field changes, with the switch's new state. */
+  onToggle?: (on: boolean) => void;
+  children?: ReactNode;
+}) {
+  const { control } = useFormContext<SeasonFormValues>();
+
+  return (
+    <div className="space-y-3">
+      <FormField
+        control={control}
+        name={name}
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-start gap-3">
+            <FormControl>
+              <Switch
+                checked={inverted ? !field.value : Boolean(field.value)}
+                disabled={disabled}
+                data-test={testId}
+                className="mt-0.5"
+                onCheckedChange={on => {
+                  field.onChange(inverted ? !on : on);
+                  onToggle?.(on);
+                }}
+              />
+            </FormControl>
+            <div className="space-y-0.5">
+              <FormLabel>{label}</FormLabel>
+              <FormDescription className="text-xs">{hint}</FormDescription>
+            </div>
+          </FormItem>
+        )}
+      />
+      {/* Indented to the label, past the switch. */}
+      {children && <div className="max-w-xs pl-11">{children}</div>}
+    </div>
   );
 }
 
@@ -127,7 +188,7 @@ function SeasonEditor({
   const { t } = useTranslation('common');
   const { control, setValue, getValues } = useFormContext<SeasonFormValues>();
   const active = isDateInSeason(season, new Date());
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLLIElement>(null);
 
   // When opened from the year strip (off-screen), bring the editor into view.
   useEffect(() => {
@@ -135,50 +196,35 @@ function SeasonEditor({
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className="space-y-4 rounded-lg border p-4"
-      data-test="season-card"
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 space-y-2">
-          <FormField
-            control={control}
-            name={`seasons.${index}.name`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('season.name')}</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder={t('season.namePlaceholder')}
-                    disabled={disabled}
-                    {...field}
-                  />
-                </FormControl>
-                {!season.name?.trim() && isBuiltInSeasonId(season.id) && (
-                  <p className="text-xs text-muted-foreground">
-                    {t('season.unnamedHint')}
-                  </p>
-                )}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="flex items-center gap-1 pt-6">
-          {active && <Badge variant="secondary">{t('season.activeNow')}</Badge>}
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label={t('season.remove')}
-            disabled={disabled}
-            onClick={onRemove}
-            data-test="remove-season"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
+    <li ref={ref} className="space-y-5 bg-muted/30 p-4" data-test="season-card">
+      <div className="flex items-start gap-3">
+        <FormField
+          control={control}
+          name={`seasons.${index}.name`}
+          render={({ field }) => (
+            <FormItem className="flex-1">
+              <FormLabel>{t('season.name')}</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t('season.namePlaceholder')}
+                  disabled={disabled}
+                  {...field}
+                />
+              </FormControl>
+              {!season.name?.trim() && isBuiltInSeasonId(season.id) && (
+                <p className="text-xs text-muted-foreground">
+                  {t('season.unnamedHint')}
+                </p>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {active && (
+          <Badge variant="secondary" className="mt-7">
+            {t('season.activeNow')}
+          </Badge>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -196,112 +242,86 @@ function SeasonEditor({
         />
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
-        <FormField
-          control={control}
+      <div className="space-y-4">
+        <ToggleRow
           name={`seasons.${index}.inspectionsPaused`}
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-              <div className="space-y-0.5">
-                <FormLabel>{t('season.inspections')}</FormLabel>
-                <p className="text-xs text-muted-foreground">
-                  {t('season.inspectionsHint')}
-                </p>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={!field.value}
-                  disabled={disabled}
-                  data-test="season-inspections"
-                  onCheckedChange={checked => {
-                    field.onChange(!checked);
-                    // A paused season has no interval to override.
-                    if (!checked) {
-                      setValue(
-                        `seasons.${index}.inspectionFrequencyDays`,
-                        null,
-                        {
-                          shouldDirty: true,
-                        },
-                      );
-                    }
-                  }}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-
-        {!season.inspectionsPaused && (
-          <NumberField
-            control={control}
-            name={`seasons.${index}.inspectionFrequencyDays`}
-            label={t('season.inspectionInterval')}
-            description={t('season.inspectionIntervalHint')}
-            placeholder={
-              baseFrequencyDays ? String(baseFrequencyDays) : undefined
+          label={t('season.inspections')}
+          hint={t('season.inspectionsHint')}
+          inverted
+          disabled={disabled}
+          testId="season-inspections"
+          onToggle={on => {
+            // A paused season has no interval to override.
+            if (!on) {
+              setValue(`seasons.${index}.inspectionFrequencyDays`, null, {
+                shouldDirty: true,
+              });
             }
-            min={1}
-            max={365}
-            disabled={disabled}
-            nullable
-          />
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
-        <FormField
-          control={control}
-          name={`seasons.${index}.feeding.enabled`}
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-              <div className="space-y-0.5">
-                <FormLabel>{t('season.feeding')}</FormLabel>
-                <p className="text-xs text-muted-foreground">
-                  {t('season.feedingHint')}
-                </p>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={Boolean(field.value)}
-                  disabled={disabled}
-                  data-test="season-feeding"
-                  onCheckedChange={checked => {
-                    field.onChange(checked);
-                    if (
-                      checked &&
-                      getValues(`seasons.${index}.feeding.targetKg`) == null
-                    ) {
-                      setValue(`seasons.${index}.feeding.targetKg`, 12, {
-                        shouldDirty: true,
-                        shouldValidate: true,
-                      });
-                    }
-                  }}
-                />
-              </FormControl>
-            </FormItem>
+          }}
+        >
+          {!season.inspectionsPaused && (
+            <NumberField
+              control={control}
+              name={`seasons.${index}.inspectionFrequencyDays`}
+              label={t('season.inspectionInterval')}
+              description={t('season.inspectionIntervalHint')}
+              placeholder={
+                baseFrequencyDays ? String(baseFrequencyDays) : undefined
+              }
+              min={1}
+              max={365}
+              disabled={disabled}
+              nullable
+            />
           )}
-        />
+        </ToggleRow>
 
-        {season.feeding.enabled && (
-          <NumberField
-            control={control}
-            name={`seasons.${index}.feeding.targetKg`}
-            label={t('season.feedingTarget')}
-            placeholder="12"
-            min={0.1}
-            step="0.1"
-            disabled={disabled}
-            nullable
-          />
-        )}
+        <ToggleRow
+          name={`seasons.${index}.feeding.enabled`}
+          label={t('season.feeding')}
+          hint={t('season.feedingHint')}
+          disabled={disabled}
+          testId="season-feeding"
+          onToggle={on => {
+            if (on && getValues(`seasons.${index}.feeding.targetKg`) == null) {
+              setValue(`seasons.${index}.feeding.targetKg`, 12, {
+                shouldDirty: true,
+                shouldValidate: true,
+              });
+            }
+          }}
+        >
+          {season.feeding.enabled && (
+            <NumberField
+              control={control}
+              name={`seasons.${index}.feeding.targetKg`}
+              label={t('season.feedingTarget')}
+              placeholder="12"
+              min={0.1}
+              step="0.1"
+              disabled={disabled}
+              nullable
+            />
+          )}
+        </ToggleRow>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-2 border-t pt-3">
         <Button
           type="button"
           variant="ghost"
+          size="sm"
+          disabled={disabled}
+          onClick={onRemove}
+          data-test="remove-season"
+          className="text-destructive hover:text-destructive"
+        >
+          <Trash2 className="size-4" />
+          {t('season.remove')}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
           size="sm"
           disabled={disabled}
           onClick={onDone}
@@ -310,7 +330,7 @@ function SeasonEditor({
           {t('season.done')}
         </Button>
       </div>
-    </div>
+    </li>
   );
 }
 
@@ -348,28 +368,30 @@ export function SeasonListField({
 
   return (
     <div className="space-y-4" data-test="season-list">
-      {fields.length === 0 && (
+      {fields.length === 0 ? (
         <p className="text-sm italic text-muted-foreground">
           {t('season.empty')}
         </p>
+      ) : (
+        <ul className="divide-y overflow-hidden rounded-lg border">
+          {fields.map((field, index) => {
+            // `field.id` is the field array's own key, not the season id.
+            const seasonId = seasons?.[index]?.id ?? field.id;
+            return (
+              <SeasonRow
+                key={field.id}
+                index={index}
+                editing={editingIds.has(seasonId)}
+                baseFrequencyDays={baseFrequencyDays}
+                disabled={disabled}
+                onEdit={() => setEditing(seasonId, true)}
+                onDone={() => setEditing(seasonId, false)}
+                onRemove={() => removeSeason(seasonId)}
+              />
+            );
+          })}
+        </ul>
       )}
-
-      {fields.map((field, index) => {
-        // `field.id` is the field array's own key, not the season id.
-        const seasonId = seasons?.[index]?.id ?? field.id;
-        return (
-          <SeasonCard
-            key={field.id}
-            index={index}
-            editing={editingIds.has(seasonId)}
-            baseFrequencyDays={baseFrequencyDays}
-            disabled={disabled}
-            onEdit={() => setEditing(seasonId, true)}
-            onDone={() => setEditing(seasonId, false)}
-            onRemove={() => removeSeason(seasonId)}
-          />
-        );
-      })}
 
       {overlap && (
         <Alert variant="destructive" data-test="season-overlap">

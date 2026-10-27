@@ -106,3 +106,25 @@ const EARLY_AUTUMN: Season = {
 export const EditableWinterGap = () => (
   <EditableHarness initialSeasons={[SPRING, EARLY_AUTUMN]} />
 );
+
+const CLOSED_WINTER: Season = {
+  ...WINTER,
+  inspectionFrequencyDays: null,
+  inspectionsPaused: true,
+};
+
+/** Every role at once: inspect, feeding, paused and year-round days. */
+export const AllRoles = () => (
+  <Frame>
+    <SeasonYearStrip
+      seasons={[SPRING, AUTUMN, CLOSED_WINTER]}
+      baseFrequencyDays={10}
+      today={TODAY}
+    />
+  </Frame>
+);
+
+/** The editable strip with every role, as the apiary seasons page shows it. */
+export const EditableAllRoles = () => (
+  <EditableHarness initialSeasons={[SPRING, AUTUMN, CLOSED_WINTER]} />
+);

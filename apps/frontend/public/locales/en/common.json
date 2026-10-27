@@ -206,7 +206,6 @@
     "unnamed": "Autumn feeding",
     "untitled": "Unnamed season",
     "noneConfigured": "No seasons configured.",
-    "sourceLabel": "Seasons from",
     "source": {
       "hive": "This hive",
       "legacy": "Previous autumn feeding settings",
@@ -224,7 +223,14 @@
       "hiveInterval": "Each hive uses its own inspection interval",
       "fromYearRound": "(year-round)",
       "addSeason": "Add season here",
-      "more": "More options"
+      "more": "More options",
+      "key": {
+        "inspect": "Inspections",
+        "feeding": "Feeding",
+        "paused": "No inspections",
+        "yearRound": "Year-round",
+        "tick": "One inspection"
+      }
     }
   },
   "unsavedChanges": "Unsaved changes",

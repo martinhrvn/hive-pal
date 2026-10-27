@@ -39,6 +39,7 @@ import { SeasonsEditorProvider } from '@/components/seasons/season-editor-provid
 import { SeasonListField } from '@/components/seasons/season-list-field';
 import { SeasonSummaryList } from '@/components/seasons/season-summary-list';
 import { SeasonYearStrip } from '@/components/seasons/season-year-strip';
+import { sortSeasonsByStart } from '@/utils/season-strip';
 
 const DEFAULT_INSPECTION = { frequencyDays: 7, calendarEnabled: true };
 
@@ -57,8 +58,9 @@ interface HiveSettingsProps {
   onHiveUpdated: () => void;
 }
 
+/** A form-owned copy of the seasons, in calendar order. */
 const cloneSeasons = (seasons: Season[]): Season[] =>
-  seasons.map(season => ({
+  sortSeasonsByStart(seasons).map(season => ({
     ...season,
     start: { ...season.start },
     end: { ...season.end },
@@ -163,6 +165,7 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
     // Preserve unknown settings keys, but replace the season source when the
     // user chose to inherit (dropping both hive seasons and the legacy field).
     const baseSettings = { ...(hive.settings ?? {}) };
+    const seasons = sortSeasonsByStart(data.seasons);
     delete baseSettings.seasons;
     delete baseSettings.autumnFeeding;
 
@@ -174,16 +177,15 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
           settings: {
             ...baseSettings,
             inspection: data.inspection,
-            ...(isCustom ? { seasons: data.seasons } : {}),
+            ...(isCustom ? { seasons } : {}),
           },
         },
         apiaryId: hive.apiaryId,
       },
       {
         onSuccess: () => {
-          // Saved values become the new baseline: edited seasons collapse
-          // back into summary rows.
-          form.reset(data);
+          // Saved values, in calendar order, become the new baseline.
+          form.reset({ ...data, seasons });
           toast.success(t('hive:settings.updateSuccess'));
           onHiveUpdated();
         },
@@ -229,6 +231,56 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
     return <div>{t('common:status.loading')}</div>;
   }
 
+  // The strip and the season list; editable inside a SeasonsEditorProvider
+  // once the hive has its own seasons.
+  const seasonsSchedule = (
+    <>
+      <SeasonYearStrip
+        seasons={stripSeasons}
+        baseFrequencyDays={stripBaseDays}
+      />
+
+      <div className="space-y-4">
+        <div className="space-y-1 border-b pb-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-lg font-medium">{t('common:season.title')}</h3>
+            <Badge variant="secondary">
+              {t(`common:season.source.${source}`)}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {isCustom
+              ? t('common:season.customHint')
+              : t('common:season.inheritedHint')}
+          </p>
+          {source === 'legacy' && (
+            <p className="text-sm text-muted-foreground">
+              {t('hive:settings.legacySeasonsHint')}
+            </p>
+          )}
+        </div>
+
+        {isCustom ? (
+          <SeasonListField baseFrequencyDays={formFrequencyDays} />
+        ) : (
+          <SeasonSummaryList
+            seasons={inherited.seasons}
+            baseFrequencyDays={stripBaseDays}
+          />
+        )}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={isCustom ? useApiarySeasons : customiseSchedule}
+        >
+          {isCustom
+            ? t('common:season.useApiarySeasons')
+            : t('common:season.customise')}
+        </Button>
+      </div>
+    </>
+  );
+
   return (
     <div className="space-y-6">
       <Card>
@@ -243,78 +295,9 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
               className="space-y-6"
             >
               {isCustom ? (
-                <SeasonsEditorProvider>
-                  <SeasonYearStrip
-                    seasons={stripSeasons}
-                    baseFrequencyDays={stripBaseDays}
-                  />
-
-                  {/* Seasons */}
-                  <div className="space-y-4">
-                    <div className="flex flex-wrap items-center gap-2 border-b pb-2">
-                      <h3 className="text-lg font-medium">
-                        {t('common:season.title')}
-                      </h3>
-                      <Badge variant="secondary">
-                        {t(`common:season.source.${source}`)}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {t('common:season.customHint')}
-                    </p>
-
-                    {source === 'legacy' && (
-                      <p className="text-sm text-muted-foreground">
-                        {t('hive:settings.legacySeasonsHint')}
-                      </p>
-                    )}
-
-                    <SeasonListField
-                      baseFrequencyDays={form.watch('inspection.frequencyDays')}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={useApiarySeasons}
-                    >
-                      {t('common:season.useApiarySeasons')}
-                    </Button>
-                  </div>
-                </SeasonsEditorProvider>
+                <SeasonsEditorProvider>{seasonsSchedule}</SeasonsEditorProvider>
               ) : (
-                <>
-                  <SeasonYearStrip
-                    seasons={stripSeasons}
-                    baseFrequencyDays={stripBaseDays}
-                  />
-
-                  {/* Seasons */}
-                  <div className="space-y-4">
-                    <div className="flex flex-wrap items-center gap-2 border-b pb-2">
-                      <h3 className="text-lg font-medium">
-                        {t('common:season.title')}
-                      </h3>
-                      <Badge variant="secondary">
-                        {t(`common:season.source.${source}`)}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {t('common:season.inheritedHint')}
-                    </p>
-
-                    <SeasonSummaryList
-                      seasons={inherited.seasons}
-                      source={inherited.source}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={customiseSchedule}
-                    >
-                      {t('common:season.customise')}
-                    </Button>
-                  </div>
-                </>
+                seasonsSchedule
               )}
 
               {/* Inspection Settings */}

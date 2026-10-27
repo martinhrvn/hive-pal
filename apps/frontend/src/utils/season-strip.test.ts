@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import type { Season } from 'shared-schemas';
 import {
   STRIP_DAYS,
+  buildInspectionTicks,
   buildYearStripSegments,
+  sortSeasonsByStart,
   stripDayIndex,
 } from './season-strip';
 
@@ -95,5 +97,76 @@ describe('buildYearStripSegments', () => {
       gapStart: stripDayIndex(6, 1),
       gapEnd: stripDayIndex(7, 31),
     });
+  });
+});
+
+describe('buildInspectionTicks', () => {
+  const withInterval = (s: Season, days: number | null): Season => ({
+    ...s,
+    inspectionFrequencyDays: days,
+  });
+  const ticksFor = (seasons: Season[], base?: number) =>
+    buildInspectionTicks(buildYearStripSegments(seasons), base);
+
+  it('spaces ticks by each season interval', () => {
+    const spring = withInterval(season('spring', [3, 1], [5, 31]), 5);
+    const ticks = ticksFor([spring], 30).filter(t => t.seasonId === 'spring');
+    // 92 days at 5-day spacing, starting half an interval in (day 2 … 87).
+    expect(ticks).toHaveLength(18);
+    expect(ticks[0].index).toBe(stripDayIndex(3, 1) + 2);
+    expect(ticks[1].index - ticks[0].index).toBe(5);
+    expect(ticks[0].role).toBe('inspect');
+  });
+
+  it('falls back to the base interval, including on year-round days', () => {
+    const ticks = ticksFor([season('spring', [3, 1], [5, 31])], 10);
+    expect(ticks.some(t => t.seasonId === 'spring')).toBe(true);
+    expect(ticks.some(t => t.role === 'yearRound')).toBe(true);
+  });
+
+  it('draws no ticks in a season without inspections', () => {
+    const winter = {
+      ...season('winter', [11, 1], [2, 28]),
+      inspectionsPaused: true,
+    };
+    expect(ticksFor([winter], 7).filter(t => t.seasonId === 'winter')).toEqual(
+      [],
+    );
+  });
+
+  it('keeps the rhythm of a season across the new year', () => {
+    const winter = withInterval(season('winter', [12, 20], [1, 20]), 10);
+    const indexes = ticksFor([winter])
+      .filter(t => t.seasonId === 'winter')
+      .map(t => t.index);
+    // Dec 25, Jan 4 (wrapped), Jan 14: one walk, not one per half.
+    expect(indexes).toEqual([
+      stripDayIndex(12, 25),
+      stripDayIndex(1, 4),
+      stripDayIndex(1, 14),
+    ]);
+  });
+
+  it('has no rhythm when the interval is unknown', () => {
+    expect(ticksFor([season('spring', [3, 1], [5, 31])])).toEqual([]);
+  });
+
+  it('marks feeding seasons', () => {
+    const autumn: Season = {
+      ...withInterval(season('autumn', [8, 1], [10, 31]), 14),
+      feeding: { enabled: true, targetKg: 12 },
+    };
+    expect(ticksFor([autumn])[0].role).toBe('feeding');
+  });
+});
+
+describe('sortSeasonsByStart', () => {
+  it('orders seasons from January to December', () => {
+    const sorted = sortSeasonsByStart([
+      season('winter', [11, 1], [2, 28]),
+      season('spring', [3, 1], [5, 31]),
+      season('late-winter', [1, 15], [2, 10]),
+    ]);
+    expect(sorted.map(s => s.id)).toEqual(['late-winter', 'spring', 'winter']);
   });
 });

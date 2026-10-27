@@ -172,7 +172,6 @@
         "unnamed": "Jesenné kŕmenie",
         "untitled": "Nepomenovaná sezóna",
         "noneConfigured": "Nie sú nastavené žiadne sezóny.",
-        "sourceLabel": "Sezóny z",
         "source": {
             "hive": "Tento úľ",
             "legacy": "Pôvodné nastavenie jesenného kŕmenia",
@@ -190,7 +189,14 @@
             "hiveInterval": "Každý úľ používa vlastný interval prehliadok",
             "fromYearRound": "(celoročne)",
             "addSeason": "Pridať sezónu sem",
-            "more": "Ďalšie možnosti"
+            "more": "Ďalšie možnosti",
+            "key": {
+                "inspect": "Prehliadky",
+                "feeding": "Kŕmenie",
+                "paused": "Bez prehliadok",
+                "yearRound": "Celoročne",
+                "tick": "Jedna prehliadka"
+            }
         }
     },
     "unsavedChanges": "Neuložené zmeny",
