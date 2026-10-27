@@ -83,6 +83,19 @@ export function seasonFromLegacy(legacy: LegacyAutumnFeeding): Season {
   };
 }
 
+/**
+ * True when the legacy value is the Aug–Oct / 12 kg default that hive creation
+ * and the 2025 settings migration stamped onto every hive. Nobody chose it, so
+ * it must not shadow the apiary's season template.
+ */
+export function isDefaultLegacyAutumnFeeding(
+  legacy: LegacyAutumnFeeding,
+): boolean {
+  return (
+    legacy.startMonth === 8 && legacy.endMonth === 10 && legacy.amountKg === 12
+  );
+}
+
 /** Validate a stored season list, returning `[]` for malformed data. */
 export function parseSeasons(raw: unknown): Season[] {
   const parsed = seasonListSchema.safeParse(raw);
@@ -93,8 +106,9 @@ export function parseSeasons(raw: unknown): Season[] {
  * Resolve the seasons that actually govern a hive.
  *
  * A hive-owned list (even an explicit empty one) wins over the apiary
- * template, and the legacy autumn feeding window wins over the template so
- * existing hives keep behaving exactly as before. When nothing is configured
+ * template. A customised legacy autumn feeding window also wins, so hives the
+ * user tuned keep behaving as before; the untouched legacy default does not
+ * (it equals the built-in default season anyway). When nothing is configured
  * anywhere, the historical default autumn feeding season applies.
  */
 export function getEffectiveSeasons(
@@ -106,7 +120,10 @@ export function getEffectiveSeasons(
     if (parsed.success) return { seasons: parsed.data, source: 'hive' };
   }
 
-  if (hiveSettings?.autumnFeeding != null) {
+  if (
+    hiveSettings?.autumnFeeding != null &&
+    !isDefaultLegacyAutumnFeeding(hiveSettings.autumnFeeding)
+  ) {
     return {
       seasons: [seasonFromLegacy(hiveSettings.autumnFeeding)],
       source: 'legacy',

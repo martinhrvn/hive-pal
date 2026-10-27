@@ -136,6 +136,21 @@ describe('getEffectiveSeasons', () => {
     });
   });
 
+  it('ignores the untouched legacy default in favour of the apiary template', () => {
+    const result = getEffectiveSeasons(
+      { autumnFeeding: { startMonth: 8, endMonth: 10, amountKg: 12 } },
+      { seasons: [season()] },
+    );
+    expect(result.source).toBe('apiary');
+
+    const noTemplate = getEffectiveSeasons(
+      { autumnFeeding: { startMonth: 8, endMonth: 10, amountKg: 12 } },
+      {},
+    );
+    expect(noTemplate.source).toBe('default');
+    expect(noTemplate.seasons).toEqual([DEFAULT_FEEDING_SEASON]);
+  });
+
   it('falls back to the apiary template, then the historical default', () => {
     expect(getEffectiveSeasons({}, { seasons: [season()] }).source).toBe(
       'apiary',
