@@ -4,10 +4,10 @@ import {
   InspectionResponse,
   InspectionStatus,
   ActionResponse,
-  getActiveSeason,
   getBaseInspectionFrequencyDays,
-  getEffectiveInspectionFrequencyDays,
   getEffectiveSeasons,
+  getInspectionFrequencyForSeasons,
+  isDateInSeason,
 } from 'shared-schemas';
 import i18n from '@/lib/i18n';
 import { getDateLocale } from '@/utils/locale-utils.ts';
@@ -385,15 +385,17 @@ export function generateHivePrompt(
       }
     }
 
-    const active = getActiveSeason(hive.settings, hive.apiarySettings);
+    const now = new Date();
+    const active = seasons.find(season => isDateInSeason(season, now));
     if (active) {
       lines.push(
         '- ' +
           i18n.t('hive:llmPrompt.textArea.activeSeason', {
             name: getSeasonLabel(active) ?? i18n.t('common:season.unnamed'),
-            days: getEffectiveInspectionFrequencyDays(
-              hive.settings,
-              hive.apiarySettings,
+            days: getInspectionFrequencyForSeasons(
+              seasons,
+              getBaseInspectionFrequencyDays(hive.settings),
+              now,
             ),
             defaultValue:
               'Active season: {{name}} (inspect every {{days}} days)',

@@ -92,7 +92,10 @@ const HiveCard: React.FC<{
     () => apiaries?.find(apiary => apiary.id === hive.apiaryId)?.settings,
     [apiaries, hive.apiaryId],
   );
-  const activeFeedingSeason = getActiveFeedingSeason(settings, apiarySettings);
+  const activeFeedingSeason = useMemo(
+    () => getActiveFeedingSeason(settings, apiarySettings),
+    [settings, apiarySettings],
+  );
   const { data: actions } = useActions(
     { hiveId: hive.id },
     {

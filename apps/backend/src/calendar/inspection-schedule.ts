@@ -1,6 +1,8 @@
 import { addDays, format, isBefore, startOfDay } from 'date-fns';
 import {
-  getEffectiveInspectionFrequencyDays,
+  getBaseInspectionFrequencyDays,
+  getEffectiveSeasons,
+  getInspectionFrequencyForSeasons,
   type ApiarySeasonSettings,
   type HiveSeasonSettings,
 } from 'shared-schemas';
@@ -47,12 +49,11 @@ export function buildScheduledInspectionEvents(
     if (hive.status !== 'ACTIVE') continue;
     if (hive.settings?.inspection?.calendarEnabled === false) continue;
 
+    // Resolve (and validate) the seasons once per hive, not once per date.
+    const { seasons } = getEffectiveSeasons(hive.settings, hive.apiarySettings);
+    const baseDays = getBaseInspectionFrequencyDays(hive.settings);
     const frequencyAt = (date: Date) =>
-      getEffectiveInspectionFrequencyDays(
-        hive.settings,
-        hive.apiarySettings,
-        date,
-      );
+      getInspectionFrequencyForSeasons(seasons, baseDays, date);
 
     let nextDue: Date;
     let isOverdue: boolean;

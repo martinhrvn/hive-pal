@@ -7,10 +7,10 @@ import {
   InspectionStatus,
   ActionResponse,
   ActionType,
-  getActiveSeason,
   getBaseInspectionFrequencyDays,
-  getEffectiveInspectionFrequencyDays,
   getEffectiveSeasons,
+  getInspectionFrequencyForSeasons,
+  isDateInSeason,
   type Season,
   type SeasonSource,
 } from 'shared-schemas';
@@ -327,11 +327,13 @@ export class ContextBuilderService {
         lines.push(`  - ${seasonLabel(season)}: ${details.join(', ')}`);
       }
 
-      const active = getActiveSeason(hive.settings, hive.apiarySettings);
+      const now = new Date();
+      const active = seasons.find((season) => isDateInSeason(season, now));
       if (active) {
-        const effective = getEffectiveInspectionFrequencyDays(
-          hive.settings,
-          hive.apiarySettings,
+        const effective = getInspectionFrequencyForSeasons(
+          seasons,
+          baseFrequency,
+          now,
         );
         lines.push(
           `- Active season: ${seasonLabel(active)} (inspect every ${effective} days)`,

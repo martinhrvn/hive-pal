@@ -316,10 +316,18 @@ export function getRelevantFeedingSeason(
   apiarySettings?: ApiarySeasonSettings | null,
   date: Date = new Date(),
 ): RelevantFeedingSeason | undefined {
-  const feedingSeasons = getEffectiveSeasons(
-    hiveSettings,
-    apiarySettings,
-  ).seasons.filter(isFeedingSeason);
+  return findRelevantFeedingSeason(
+    getEffectiveSeasons(hiveSettings, apiarySettings).seasons,
+    date,
+  );
+}
+
+/** Pure variant of {@link getRelevantFeedingSeason} over resolved seasons. */
+export function findRelevantFeedingSeason(
+  seasons: Season[],
+  date: Date = new Date(),
+): RelevantFeedingSeason | undefined {
+  const feedingSeasons = seasons.filter(isFeedingSeason);
   if (feedingSeasons.length === 0) return undefined;
 
   const active = feedingSeasons.find(season => isDateInSeason(season, date));

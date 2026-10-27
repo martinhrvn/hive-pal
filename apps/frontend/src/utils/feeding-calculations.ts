@@ -1,6 +1,6 @@
 import {
+  findRelevantFeedingSeason,
   getEffectiveSeasons,
-  getRelevantFeedingSeason,
   type ActionResponse,
   type ApiarySeasonSettings,
   type HiveSeasonSettings,
@@ -199,7 +199,8 @@ export function getFeedingSeasonProgress(
   apiarySettings?: ApiarySeasonSettings | null,
   now: Date = new Date(),
 ): FeedingSeasonProgress | null {
-  const relevant = getRelevantFeedingSeason(hiveSettings, apiarySettings, now);
+  const { seasons, source } = getEffectiveSeasons(hiveSettings, apiarySettings);
+  const relevant = findRelevantFeedingSeason(seasons, now);
   if (!relevant) return null;
 
   const targetKg = relevant.season.feeding.targetKg ?? 0;
@@ -213,7 +214,7 @@ export function getFeedingSeasonProgress(
 
   return {
     season: relevant.season,
-    source: getEffectiveSeasons(hiveSettings, apiarySettings).source,
+    source,
     window: relevant.window,
     isActive: relevant.isActive,
     sugarKg: totals.sugarKg,
