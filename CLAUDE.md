@@ -153,5 +153,5 @@ When a focused change (a bug fix or feature in a few components) modifies a fron
 - **Dates**: display dates with `useDateFormat()` (`apps/frontend/src/hooks/use-date-format.ts`), which respects the user's date format and week start, not raw date-fns `format`.
 
 ### Handling modifications / push
- - do not push any modifications to github
+ - never push straight to `main`; pushing feature-branch work to its feature branch (e.g. `feat/seasons`) is fine
  - when the user explicitly asks for a handoff (e.g. "package these changes", "give me a zip"), put modified files in a .zip archive with the relevant repository structure. Do not do this for normal edits.
