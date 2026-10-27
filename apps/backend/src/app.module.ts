@@ -59,6 +59,12 @@ import { AccountTransferModule } from './account-transfer/account-transfer.modul
 // ServeStaticModule setHeaders hook below).
 const NO_STORE_FILES = /(?:^|[\\/])(?:sw\.js|registerSW\.js|index\.html)$/;
 
+// Hashed build output lives under /assets and is content-addressed: a given
+// filename never changes its contents, so it can be cached forever. Revalidating
+// these on every request is what turns a stale tab's reference to a deleted
+// hash into a 404 — caching them immutably keeps them usable once fetched.
+const IMMUTABLE_ASSETS = /[\\/]assets[\\/]/;
+
 @Module({
   imports: [
     SentryModule.forRoot(),
@@ -82,11 +88,16 @@ const NO_STORE_FILES = /(?:^|[\\/])(?:sw\.js|registerSW\.js|index\.html)$/;
           // cached sw.js for up to 24h, which is how clients stay stuck on the
           // previous build after a deploy — the new worker is never fetched, so
           // no update is offered. Hashed files under /assets are content-
-          // addressed and stay cacheable.
+          // addressed and cacheable immutably.
           if (NO_STORE_FILES.test(filePath)) {
             res.setHeader(
               'Cache-Control',
               'no-cache, no-store, must-revalidate',
+            );
+          } else if (IMMUTABLE_ASSETS.test(filePath)) {
+            res.setHeader(
+              'Cache-Control',
+              'public, max-age=31536000, immutable',
             );
           }
         },
