@@ -1,7 +1,10 @@
 import { addDays, format, isBefore, startOfDay } from 'date-fns';
 import {
+  findNextInspectionDue,
   getEffectiveSchedule,
   getInspectionFrequencyForSeasons,
+  isInspectionPausedOn,
+  nextInspectableDay,
   type ApiarySeasonSettings,
   type HiveSeasonSettings,
 } from 'shared-schemas';
@@ -54,16 +57,28 @@ export function buildScheduledInspectionEvents(
     const frequencyAt = (date: Date) =>
       getInspectionFrequencyForSeasons(seasons, baseDays, date);
 
-    let nextDue: Date;
+    let nextDue: Date | undefined;
     let isOverdue: boolean;
 
     if (!hive.lastInspectionDate) {
       nextDue = today;
       isOverdue = true;
     } else {
-      const last = startOfDay(hive.lastInspectionDate);
-      nextDue = addDays(last, frequencyAt(addDays(last, 1)));
+      nextDue = findNextInspectionDue(
+        seasons,
+        baseDays,
+        hive.lastInspectionDate,
+      );
+      if (!nextDue) continue; // Inspections are paused all year.
       isOverdue = isBefore(nextDue, today);
+    }
+
+    // Nothing is overdue in a season without inspections: the hive is due
+    // again the day it ends.
+    if (isOverdue && isInspectionPausedOn(seasons, today)) {
+      nextDue = nextInspectableDay(seasons, today);
+      if (!nextDue) continue;
+      isOverdue = false;
     }
 
     if (isOverdue) {
@@ -76,11 +91,11 @@ export function buildScheduledInspectionEvents(
         isOverdue: true,
         isAllDay: true,
       });
-      nextDue = addDays(today, todayFrequency);
+      nextDue = nextInspectableDay(seasons, addDays(today, todayFrequency));
     }
 
-    let currentDate = nextDue;
-    while (!isBefore(futureLimit, currentDate)) {
+    let currentDate: Date | undefined = nextDue;
+    while (currentDate && !isBefore(futureLimit, currentDate)) {
       if (!isBefore(currentDate, today)) {
         const frequency = frequencyAt(currentDate);
         events.push({
@@ -90,7 +105,11 @@ export function buildScheduledInspectionEvents(
           description: `Scheduled inspection for ${hive.name} (every ${frequency} days)`,
           isAllDay: true,
         });
-        currentDate = addDays(currentDate, frequency);
+        // A due date inside a season without inspections waits for its end.
+        currentDate = nextInspectableDay(
+          seasons,
+          addDays(currentDate, frequency),
+        );
       } else {
         currentDate = addDays(currentDate, 1);
       }

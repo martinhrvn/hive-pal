@@ -285,24 +285,60 @@ export function getInspectionFrequencyForSeasons(
   return positiveDays(active?.inspectionFrequencyDays) ?? baseDays;
 }
 
+const startOfLocalDay = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+const addLocalDays = (date: Date, days: number) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+
+/** True when the season containing `date` has no inspections. */
+export function isInspectionPausedOn(seasons: Season[], date: Date): boolean {
+  return Boolean(
+    seasons.find(season => isDateInSeason(season, date))?.inspectionsPaused,
+  );
+}
+
 /**
- * Interval that decides when the inspection after `lastInspection` is due:
- * the one in force the day after it. The overdue alert and the calendar
- * projection both use this, so a season starting or ending between the last
- * inspection and today cannot make them disagree.
+ * First day on or after `date` (at local midnight) when inspections are not
+ * paused. `undefined` when paused seasons cover the whole year.
  */
-export function getInspectionDueFrequencyDays(
-  hiveSettings: HiveSeasonSettings | null | undefined,
-  apiarySettings: ApiarySeasonSettings | null | undefined,
+export function nextInspectableDay(
+  seasons: Season[],
+  date: Date,
+): Date | undefined {
+  for (let offset = 0; offset <= 366; offset += 1) {
+    const day = addLocalDays(date, offset);
+    if (!isInspectionPausedOn(seasons, day)) return day;
+  }
+  return undefined;
+}
+
+/**
+ * Day (local midnight) the inspection after `lastInspection` is due: after
+ * the interval in force the day after it, moved past any season without
+ * inspections it lands in. An inspection right before such a season is due
+ * the day the season ends. `undefined` when inspections are paused all year.
+ *
+ * The overdue alert and the calendar projection both use this, so a season
+ * starting or ending between the last inspection and today cannot make them
+ * disagree.
+ */
+export function findNextInspectionDue(
+  seasons: Season[],
+  baseDays: number,
   lastInspection: Date,
-): number {
-  const dayAfter = new Date(lastInspection);
-  dayAfter.setDate(dayAfter.getDate() + 1);
-  return getEffectiveInspectionFrequencyDays(
-    hiveSettings,
-    apiarySettings,
+): Date | undefined {
+  const last = startOfLocalDay(lastInspection);
+  const dayAfter = addLocalDays(last, 1);
+  if (isInspectionPausedOn(seasons, dayAfter)) {
+    return nextInspectableDay(seasons, dayAfter);
+  }
+  const frequency = getInspectionFrequencyForSeasons(
+    seasons,
+    baseDays,
     dayAfter,
   );
+  return nextInspectableDay(seasons, addLocalDays(last, frequency));
 }
 
 /**

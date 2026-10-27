@@ -98,7 +98,10 @@ interval and feeding target.
 - **Year-round** sets the inspection interval for every day no season covers. Leave it
   empty to let each hive keep its own interval.
 - Add a season with a name, start/end month and day, an optional inspection interval,
-  and (optionally) a feeding target in kg of sugar.
+  and (optionally) a feeding target in kg of sugar. Turn **Inspections** off for a
+  season with no inspections at all, such as winter: nothing is scheduled or overdue
+  until it ends.
+- Saved seasons show as one-line summaries; use the pencil to edit one.
 - Seasons must not overlap; a date can only belong to one season.
 - Hives inherit the year-round interval and the seasons together, as one schedule. They
   keep following it when it changes, unless they customise their own on the hive's

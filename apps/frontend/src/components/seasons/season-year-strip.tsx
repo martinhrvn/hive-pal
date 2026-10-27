@@ -207,17 +207,21 @@ function SeasonSummary({
         {formatSeasonRange(season, i18n.language)}
       </p>
       <ul className="space-y-1">
-        <li>
-          {interval == null
-            ? t('season.strip.hiveInterval')
-            : t('season.inspectionEvery', { days: interval })}
-          {season.inspectionFrequencyDays == null && interval != null && (
-            <span className="text-muted-foreground">
-              {' '}
-              {t('season.strip.fromYearRound')}
-            </span>
-          )}
-        </li>
+        {season.inspectionsPaused ? (
+          <li>{t('season.noInspections')}</li>
+        ) : (
+          <li>
+            {interval == null
+              ? t('season.strip.hiveInterval')
+              : t('season.inspectionEvery', { days: interval })}
+            {season.inspectionFrequencyDays == null && interval != null && (
+              <span className="text-muted-foreground">
+                {' '}
+                {t('season.strip.fromYearRound')}
+              </span>
+            )}
+          </li>
+        )}
         {feedingTarget != null && (
           <li>{t('season.feedingTargetValue', { amount: feedingTarget })}</li>
         )}

@@ -180,6 +180,9 @@ export const HiveSettings: React.FC<HiveSettingsProps> = ({
       },
       {
         onSuccess: () => {
+          // Saved values become the new baseline: edited seasons collapse
+          // back into summary rows.
+          form.reset(data);
           toast.success(t('hive:settings.updateSuccess'));
           onHiveUpdated();
         },

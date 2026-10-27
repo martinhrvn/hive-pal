@@ -32,6 +32,11 @@ export const seasonSchema = z
     start: seasonMonthDaySchema,
     end: seasonMonthDaySchema,
     inspectionFrequencyDays: z.number().int().min(1).max(365).nullish(),
+    /**
+     * No inspections are due in this season (e.g. winter): nothing is
+     * scheduled and nothing turns overdue until the season ends.
+     */
+    inspectionsPaused: z.boolean().optional(),
     feeding: seasonFeedingSchema.default({ enabled: false }),
   })
   .superRefine((season, ctx) => {

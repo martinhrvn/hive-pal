@@ -421,6 +421,8 @@
       "seasonInspection": "Prehliadka každých {{days}} dní",
       "seasonFeeding": "Nakŕmiť {{amountKg}} kg cukru",
       "activeSeason": "Aktívna sezóna: {{name}} (prehliadka každých {{days}} dní)",
+      "seasonNoInspections": "Bez prehliadok",
+      "activeSeasonNoInspections": "Aktívna sezóna: {{name}} (bez prehliadok)",
       "recentInspections": "Nedávne prehliadky (posledných {{completedInspections}})",
       "temperature": "Teplota: {{temperature}}°C",
       "weather": "Počasie: {{weatherConditions}}",

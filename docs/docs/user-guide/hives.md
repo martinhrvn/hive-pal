@@ -146,6 +146,9 @@ Customize hive-specific settings:
   hive inherits the apiary schedule and the apiary sets a year-round interval, that one
   applies instead
 - **Season overrides**: A season can set its own inspection interval; the calendar and overdue alerts follow it
+- **Seasons without inspections**: Turn **Inspections** off for a season such as winter.
+  Nothing is scheduled or flagged overdue inside it, and the next inspection is due the
+  day it ends
 - **Calendar feed**: Include the hive's scheduled inspections in the iCal subscription
 
 #### Seasons
@@ -155,7 +158,8 @@ Seasons replace the old fixed autumn feeding window. They are defined once per a
 
 - **Name**: e.g. Spring build-up, Late summer, Winter prep
 - **Start / end**: Month and day; seasons may wrap the year (e.g. Nov 15 – Feb 28)
-- **Inspection override**: Optional interval in days; empty means the year-round interval
+- **Inspections**: On by default, with an optional interval in days (empty means the
+  year-round interval). Turn it off for a season without inspections, e.g. winter
 - **Feeding season**: Tick it and set a target in kg of sugar. Feeding progress is tracked
   against that target inside the season's window, so you can split feeding across
   several seasons.

@@ -123,6 +123,9 @@ export function ApiarySeasons({ apiary }: ApiarySeasonsProps) {
       },
       {
         onSuccess: () => {
+          // Saved values become the new baseline: edited seasons collapse
+          // back into summary rows.
+          form.reset(data);
           toast.success(t('apiary:seasons.saveSuccess'));
         },
         onError: () => {

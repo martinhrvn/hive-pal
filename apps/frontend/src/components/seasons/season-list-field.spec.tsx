@@ -10,7 +10,7 @@ test('adds a feeding season and saves its target', async ({ mount }) => {
   await expect(component.getByTestId('season-card')).toHaveCount(1);
 
   await component.getByLabel('Name').fill('Winter prep');
-  await component.getByRole('switch').click();
+  await component.getByTestId('season-feeding').click();
   await expect(component.getByLabel('Feeding target (kg sugar)')).toHaveValue(
     '12',
   );
@@ -18,6 +18,57 @@ test('adds a feeding season and saves its target', async ({ mount }) => {
   await component.getByRole('button', { name: 'Save' }).click();
   await expect(component.getByTestId('saved')).toContainText('Winter prep');
   await expect(component.getByTestId('saved')).toContainText('"enabled":true');
+  // Saved, the season reads as a summary row.
+  await expect(component.getByLabel('Name')).toHaveCount(0);
+  await expect(component.getByTestId('season-card')).toContainText(
+    'Feed 12 kg sugar',
+  );
+});
+
+test('shows a saved season as a summary until edited', async ({ mount }) => {
+  const component = await mount(WITH_SEASON);
+  const card = component.getByTestId('season-card');
+
+  await expect(card).toContainText('Spring');
+  await expect(card).toContainText('Inspect every 5 days');
+  await expect(component.getByLabel('Name')).toHaveCount(0);
+
+  await component.getByTestId('edit-season').click();
+  await component.getByLabel('Name').fill('Early spring');
+  await component.getByTestId('cancel-season-edit').click();
+  await expect(component.getByLabel('Name')).toHaveCount(0);
+  await expect(card).toContainText('Spring');
+  await expect(card).not.toContainText('Early spring');
+
+  await component.getByTestId('edit-season').click();
+  await component.getByLabel('Name').fill('Early spring');
+  await component.getByRole('button', { name: 'Save' }).click();
+  await expect(component.getByLabel('Name')).toHaveCount(0);
+  await expect(card).toContainText('Early spring');
+});
+
+test('saves a season without inspections', async ({ mount }) => {
+  const component = await mount(WITH_SEASON);
+
+  await component.getByTestId('edit-season').click();
+  await expect(
+    component.getByLabel('Inspection interval (days)'),
+  ).toBeVisible();
+  await component.getByTestId('season-inspections').click();
+  await expect(component.getByLabel('Inspection interval (days)')).toHaveCount(
+    0,
+  );
+
+  await component.getByRole('button', { name: 'Save' }).click();
+  await expect(component.getByTestId('saved')).toContainText(
+    '"inspectionsPaused":true',
+  );
+  await expect(component.getByTestId('saved')).toContainText(
+    '"inspectionFrequencyDays":null',
+  );
+  await expect(component.getByTestId('season-card')).toContainText(
+    'No inspections',
+  );
 });
 
 test('flags overlapping seasons', async ({ mount }) => {

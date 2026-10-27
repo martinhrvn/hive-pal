@@ -96,6 +96,85 @@ function getActionLabel(action: ActionResponse): string {
   }
 }
 
+/** Inspection schedule and seasons, when the hive or its apiary sets any. */
+function appendScheduleSection(lines: string[], hive: HiveDetailResponse) {
+  if (!hive.settings && !hive.apiarySettings) return;
+  const {
+    seasons,
+    source,
+    baseInspectionFrequencyDays: baseFrequency,
+  } = getEffectiveSchedule(hive.settings, hive.apiarySettings);
+  lines.push(
+    '## ' +
+      i18n.t('hive:llmPrompt.textArea.hiveSettings', {
+        defaultValue: 'Hive Settings',
+      }),
+  );
+  lines.push(
+    '- ' +
+      i18n.t('hive:llmPrompt.textArea.inspectionFrequency', {
+        frequencyDays: baseFrequency,
+        defaultValue: 'Inspection frequency: every {{frequencyDays}} days',
+      }),
+  );
+  lines.push(
+    '- ' +
+      i18n.t('hive:llmPrompt.textArea.seasons', {
+        source: i18n.t(`common:season.source.${source}`),
+        count: seasons.length,
+        defaultValue: 'Seasons ({{source}}):',
+      }),
+  );
+  for (const season of seasons) {
+    const name = getSeasonDisplayName(season, i18n.t);
+    lines.push(`  - ${name}: ${formatSeasonRange(season, i18n.language)}`);
+    if (season.inspectionsPaused) {
+      lines.push(
+        `    - ${i18n.t('hive:llmPrompt.textArea.seasonNoInspections', {
+          defaultValue: 'No inspections',
+        })}`,
+      );
+    } else if (season.inspectionFrequencyDays != null) {
+      lines.push(
+        `    - ${i18n.t('hive:llmPrompt.textArea.seasonInspection', {
+          days: season.inspectionFrequencyDays,
+          defaultValue: 'Inspect every {{days}} days',
+        })}`,
+      );
+    }
+    if (season.feeding.enabled && season.feeding.targetKg != null) {
+      lines.push(
+        `    - ${i18n.t('hive:llmPrompt.textArea.seasonFeeding', {
+          amountKg: season.feeding.targetKg,
+          defaultValue: 'Feed {{amountKg}} kg sugar',
+        })}`,
+      );
+    }
+  }
+
+  const now = new Date();
+  const active = seasons.find(season => isDateInSeason(season, now));
+  if (active?.inspectionsPaused) {
+    lines.push(
+      '- ' +
+        i18n.t('hive:llmPrompt.textArea.activeSeasonNoInspections', {
+          name: getSeasonDisplayName(active, i18n.t),
+          defaultValue: 'Active season: {{name}} (no inspections)',
+        }),
+    );
+  } else if (active) {
+    lines.push(
+      '- ' +
+        i18n.t('hive:llmPrompt.textArea.activeSeason', {
+          name: getSeasonDisplayName(active, i18n.t),
+          days: getInspectionFrequencyForSeasons(seasons, baseFrequency, now),
+          defaultValue: 'Active season: {{name}} (inspect every {{days}} days)',
+        }),
+    );
+  }
+  lines.push('');
+}
+
 export function generateHivePrompt(
   hive: HiveDetailResponse,
   inspections: InspectionResponse[] | undefined,
@@ -335,70 +414,7 @@ export function generateHivePrompt(
     lines.push('');
   }
 
-  // Hive settings
-  if (hive.settings || hive.apiarySettings) {
-    const {
-      seasons,
-      source,
-      baseInspectionFrequencyDays: baseFrequency,
-    } = getEffectiveSchedule(hive.settings, hive.apiarySettings);
-    lines.push(
-      '## ' +
-        i18n.t('hive:llmPrompt.textArea.hiveSettings', {
-          defaultValue: 'Hive Settings',
-        }),
-    );
-    lines.push(
-      '- ' +
-        i18n.t('hive:llmPrompt.textArea.inspectionFrequency', {
-          frequencyDays: baseFrequency,
-          defaultValue: 'Inspection frequency: every {{frequencyDays}} days',
-        }),
-    );
-    lines.push(
-      '- ' +
-        i18n.t('hive:llmPrompt.textArea.seasons', {
-          source: i18n.t(`common:season.source.${source}`),
-          count: seasons.length,
-          defaultValue: 'Seasons ({{source}}):',
-        }),
-    );
-    for (const season of seasons) {
-      const name = getSeasonDisplayName(season, i18n.t);
-      lines.push(`  - ${name}: ${formatSeasonRange(season, i18n.language)}`);
-      if (season.inspectionFrequencyDays != null) {
-        lines.push(
-          `    - ${i18n.t('hive:llmPrompt.textArea.seasonInspection', {
-            days: season.inspectionFrequencyDays,
-            defaultValue: 'Inspect every {{days}} days',
-          })}`,
-        );
-      }
-      if (season.feeding.enabled && season.feeding.targetKg != null) {
-        lines.push(
-          `    - ${i18n.t('hive:llmPrompt.textArea.seasonFeeding', {
-            amountKg: season.feeding.targetKg,
-            defaultValue: 'Feed {{amountKg}} kg sugar',
-          })}`,
-        );
-      }
-    }
-
-    const now = new Date();
-    const active = seasons.find(season => isDateInSeason(season, now));
-    if (active) {
-      lines.push(
-        '- ' +
-          i18n.t('hive:llmPrompt.textArea.activeSeason', {
-            name: getSeasonDisplayName(active, i18n.t),
-            days: getInspectionFrequencyForSeasons(seasons, baseFrequency, now),
-            defaultValue:
-              'Active season: {{name}} (inspect every {{days}} days)',
-          }),
-      );
-    }
-    lines.push('');
-  }
+  appendScheduleSection(lines, hive);
 
   // Recent inspections
   const completedInspections = (inspections ?? [])
@@ -553,7 +569,8 @@ export function generateHivePrompt(
         );
         for (const action of insp.actions) {
           const label = getActionLabel(action as ActionResponse);
-          lines.push(`  - ${label}${action.notes ? ` — ${action.notes}` : ''}`);
+          const notes = action.notes ? ` — ${action.notes}` : '';
+          lines.push(`  - ${label}${notes}`);
         }
       }
 

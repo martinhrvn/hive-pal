@@ -15,6 +15,17 @@ const spring = (inspectionFrequencyDays: number): Season => ({
   feeding: { enabled: false, targetKg: null },
 });
 
+// Nov 1 - Feb 28, wrapping the year, with no inspections.
+const winter: Season = {
+  id: '33333333-3333-4333-8333-333333333333',
+  name: 'Winter',
+  start: { month: 11, day: 1 },
+  end: { month: 2, day: 28 },
+  inspectionFrequencyDays: null,
+  inspectionsPaused: true,
+  feeding: { enabled: false, targetKg: null },
+};
+
 const hive = (
   overrides: Partial<InspectionScheduleHive> = {},
 ): InspectionScheduleHive => ({
@@ -86,6 +97,56 @@ describe('buildScheduledInspectionEvents', () => {
       dtstart: new Date(2026, 3, 15),
     });
     expect(events[1].dtstart).toEqual(new Date(2026, 3, 22));
+  });
+
+  it('schedules nothing during a season without inspections', () => {
+    // Last inspected Oct 20 on a 7-day interval: Oct 27, then winter.
+    const events = buildScheduledInspectionEvents(
+      [
+        hive({
+          lastInspectionDate: new Date(2026, 9, 20),
+          settings: { inspection: { frequencyDays: 7 }, seasons: [winter] },
+        }),
+      ],
+      new Date(2026, 9, 21),
+      6,
+    );
+    expect(events.map((event) => event.dtstart)).toEqual([
+      new Date(2026, 9, 27),
+    ]);
+  });
+
+  it('is due the day a season without inspections ends', () => {
+    // Due Nov 3, inside winter: moved to Mar 1, then every 7 days.
+    const events = buildScheduledInspectionEvents(
+      [
+        hive({
+          lastInspectionDate: new Date(2026, 9, 27),
+          settings: { inspection: { frequencyDays: 7 }, seasons: [winter] },
+        }),
+      ],
+      new Date(2027, 1, 20),
+      3,
+    );
+    expect(events.map((event) => event.dtstart)).toEqual([
+      new Date(2027, 2, 1),
+      new Date(2027, 2, 8),
+    ]);
+  });
+
+  it('is not overdue during a season without inspections', () => {
+    const events = buildScheduledInspectionEvents(
+      [
+        hive({
+          lastInspectionDate: null,
+          settings: { inspection: { frequencyDays: 7 }, seasons: [winter] },
+        }),
+      ],
+      new Date(2027, 0, 10),
+      8,
+    );
+    expect(events.some((event) => event.isOverdue)).toBe(false);
+    expect(events[0].dtstart).toEqual(new Date(2027, 2, 1));
   });
 
   it('skips hives with calendar scheduling disabled or inactive', () => {

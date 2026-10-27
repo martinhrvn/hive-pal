@@ -21,9 +21,11 @@ const Harness = ({ initialSeasons = [] }: { initialSeasons?: Season[] }) => {
     <FormProvider {...form}>
       <form
         className="max-w-2xl space-y-4 p-4"
-        onSubmit={form.handleSubmit(data =>
-          setSaved(JSON.stringify(data.seasons)),
-        )}
+        onSubmit={form.handleSubmit(data => {
+          setSaved(JSON.stringify(data.seasons));
+          // As the real forms do after a successful save.
+          form.reset(data);
+        })}
       >
         <SeasonListField baseFrequencyDays={7} />
         <Button type="submit">Save</Button>

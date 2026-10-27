@@ -467,6 +467,8 @@
       "seasonInspection": "Inspect every {{days}} days",
       "seasonFeeding": "Feed {{amountKg}} kg sugar",
       "activeSeason": "Active season: {{name}} (inspect every {{days}} days)",
+      "seasonNoInspections": "No inspections",
+      "activeSeasonNoInspections": "Active season: {{name}} (no inspections)",
       "recentInspections": "Recent Inspections (last {{completedInspections}})",
       "temperature": "Temperature: {{temperature}}°C",
       "weather": "Weather: {{weatherConditions}}",

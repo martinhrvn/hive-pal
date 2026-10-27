@@ -328,7 +328,9 @@ export class ContextBuilderService {
       }
       for (const season of seasons) {
         const details = [formatSeasonRange(season)];
-        if (season.inspectionFrequencyDays != null) {
+        if (season.inspectionsPaused) {
+          details.push('no inspections');
+        } else if (season.inspectionFrequencyDays != null) {
           details.push(`inspect every ${season.inspectionFrequencyDays} days`);
         }
         if (season.feeding.enabled && season.feeding.targetKg != null) {
@@ -339,7 +341,9 @@ export class ContextBuilderService {
 
       const now = new Date();
       const active = seasons.find((season) => isDateInSeason(season, now));
-      if (active) {
+      if (active?.inspectionsPaused) {
+        lines.push(`- Active season: ${seasonLabel(active)} (no inspections)`);
+      } else if (active) {
         const effective = getInspectionFrequencyForSeasons(
           seasons,
           baseFrequency,
