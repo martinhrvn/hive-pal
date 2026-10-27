@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { randomUUID } from '@/lib/uuid';
 import { formatSeasonRange, getSeasonLabel } from '@/utils/season-format';
 import { MonthDayField } from './month-day-field';
 
@@ -40,7 +41,7 @@ interface SeasonListFieldProps {
 /** A new, empty season. Dates are a starting point the user can change. */
 function newSeason(): Season {
   return {
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     name: '',
     start: { month: 3, day: 1 },
     end: { month: 5, day: 31 },
