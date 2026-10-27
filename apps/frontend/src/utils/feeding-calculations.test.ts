@@ -68,6 +68,17 @@ describe('calculateFeedingTotals', () => {
     ];
     expect(calculateFeedingTotals(actions).totalSugarKg).toBeCloseTo(2);
   });
+
+  it('treats a legacy syrup record without a unit as liters', () => {
+    const legacy = feeding('a', new Date(2026, 8, 10), 0, {
+      unit: '',
+      sugarG: undefined,
+      concentration: '1:1',
+    });
+    const totals = calculateFeedingTotals([legacy]);
+    expect(totals.totalSyrupLiters).toBeCloseTo(2);
+    expect(totals.totalSugarKg).toBeGreaterThan(0);
+  });
 });
 
 describe('calculateFeedingTotalsInWindow', () => {

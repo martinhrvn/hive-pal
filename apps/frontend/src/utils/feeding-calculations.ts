@@ -88,7 +88,8 @@ function volumeToMl(amount: number, unit: string): number {
   if (unit === 'fl oz') return amount * 29.5735;
   if (unit === 'qt') return amount * 946.353;
   if (unit === 'gal') return amount * 3785.41;
-  return 0;
+  // Legacy records may have no or an unknown unit: assume liters, as before.
+  return amount * 1000;
 }
 
 function legacySugarGrams(details: FeedingDetails, syrupMl: number): number {
