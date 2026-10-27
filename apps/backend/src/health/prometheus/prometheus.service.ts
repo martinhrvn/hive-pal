@@ -5,7 +5,7 @@ import {
   Counter,
   Gauge,
   Histogram,
-} from 'prom-client';
+} from '@prometheus-io/client';
 import { CustomLoggerService } from '../../logger/logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -51,16 +51,16 @@ const businessCounterConfigs: Record<
 @Injectable()
 export class PrometheusService {
   // --- Operational metrics ---
-  private readonly apiCallsCounter: Counter;
-  private readonly apiErrorsCounter: Counter;
-  private readonly httpRequestDuration: Histogram;
+  private readonly apiCallsCounter: Counter<string>;
+  private readonly apiErrorsCounter: Counter<string>;
+  private readonly httpRequestDuration: Histogram<string>;
 
   // --- Business event counters (emitted on create) ---
-  private readonly hivesCreatedCounter: Counter;
-  private readonly apiariesCreatedCounter: Counter;
-  private readonly queensCreatedCounter: Counter;
-  private readonly inspectionsCreatedCounter: Counter;
-  private readonly weatherFetchesCounter: Counter;
+  private readonly hivesCreatedCounter: Counter<string>;
+  private readonly apiariesCreatedCounter: Counter<string>;
+  private readonly queensCreatedCounter: Counter<string>;
+  private readonly inspectionsCreatedCounter: Counter<string>;
+  private readonly weatherFetchesCounter: Counter<string>;
 
   constructor(
     private readonly logger: CustomLoggerService,
@@ -80,7 +80,7 @@ export class PrometheusService {
       labelNames: API_ERROR_LABELS,
     });
 
-    this.httpRequestDuration = new Histogram({
+    this.httpRequestDuration = new Histogram<string>({
       name: 'hivepal_http_request_duration_seconds',
       help: 'Duration of HTTP requests in seconds',
       labelNames: API_CALL_LABELS,
@@ -107,8 +107,8 @@ export class PrometheusService {
     this.registerBusinessGauges();
   }
 
-  private createCounter(config: CounterConfig): Counter {
-    return new Counter(config);
+  private createCounter(config: CounterConfig): Counter<string> {
+    return new Counter<string>(config);
   }
 
   private init(): void {
@@ -206,7 +206,7 @@ export class PrometheusService {
   ): void {
     const logger = this.logger;
 
-    new Gauge({
+    new Gauge<'status'>({
       name,
       help,
       labelNames: ['status'],

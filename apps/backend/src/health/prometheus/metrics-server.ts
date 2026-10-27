@@ -1,5 +1,5 @@
 import { createServer, Server } from 'http';
-import { register } from 'prom-client';
+import { register } from '@prometheus-io/client';
 import { CustomLoggerService } from '../../logger/logger.service';
 
 /**
@@ -9,7 +9,7 @@ import { CustomLoggerService } from '../../logger/logger.service';
  * `/metrics` surface can stay unpublished (reachable only on the internal
  * Docker network) while the public `:3000` API never exposes metrics.
  *
- * It reads the same process-global prom-client `register` that
+ * It reads the same process-global @prometheus-io/client `register` that
  * PrometheusService / PrometheusInterceptor populate, so there is no metric
  * duplication.
  */
