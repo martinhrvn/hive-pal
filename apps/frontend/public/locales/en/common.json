@@ -184,7 +184,7 @@
     "unnamedHint": "Shown as \"Autumn feeding\" until you give it a name.",
     "start": "Starts",
     "end": "Ends",
-    "day": "Day",
+    "pickDay": "Pick a day",
     "done": "Done",
     "add": "Add season",
     "remove": "Remove season",

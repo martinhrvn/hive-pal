@@ -232,12 +232,14 @@ function SeasonEditor({
           control={control}
           name={`seasons.${index}.start`}
           label={t('season.start')}
+          range={season}
           disabled={disabled}
         />
         <MonthDayField
           control={control}
           name={`seasons.${index}.end`}
           label={t('season.end')}
+          range={season}
           disabled={disabled}
         />
       </div>

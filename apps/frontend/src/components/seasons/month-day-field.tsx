@@ -1,6 +1,11 @@
+import { useState } from 'react';
 import { Control, FieldPath, FieldValues } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { daysInMonth } from 'shared-schemas';
+import { CalendarIcon } from 'lucide-react';
+import type { SeasonMonthDay } from 'shared-schemas';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   FormControl,
   FormField,
@@ -9,115 +14,121 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { formatMonthDay } from '@/utils/season-format';
+import { stripDayIndex } from '@/utils/season-strip';
 
-const MONTHS = [
-  { value: 1, key: 'january' },
-  { value: 2, key: 'february' },
-  { value: 3, key: 'march' },
-  { value: 4, key: 'april' },
-  { value: 5, key: 'may' },
-  { value: 6, key: 'june' },
-  { value: 7, key: 'july' },
-  { value: 8, key: 'august' },
-  { value: 9, key: 'september' },
-  { value: 10, key: 'october' },
-  { value: 11, key: 'november' },
-  { value: 12, key: 'december' },
-] as const;
+/** Leap year the calendar shows, so Feb 29 is a day you can pick. */
+const REFERENCE_YEAR = 2000;
+const FIRST_MONTH = new Date(REFERENCE_YEAR, 0, 1);
+const LAST_MONTH = new Date(REFERENCE_YEAR, 11, 1);
+
+function toDate(value: SeasonMonthDay): Date {
+  return new Date(REFERENCE_YEAR, value.month - 1, value.day);
+}
+
+/** Whether a day falls in the season, including one across the new year. */
+function inRange(
+  date: Date,
+  range: { start: SeasonMonthDay; end: SeasonMonthDay },
+) {
+  const day = stripDayIndex(date.getMonth() + 1, date.getDate());
+  const start = stripDayIndex(range.start.month, range.start.day);
+  const end = stripDayIndex(range.end.month, range.end.day);
+  return start <= end ? day >= start && day <= end : day >= start || day <= end;
+}
 
 interface MonthDayFieldProps<T extends FieldValues> {
   control: Control<T>;
   name: FieldPath<T>;
   label: string;
   disabled?: boolean;
+  /** The whole season, shaded in the calendar so you see what you change. */
+  range?: { start: SeasonMonthDay; end: SeasonMonthDay };
 }
 
 /**
- * A month + day picker bound to a `{ month, day }` form field. Day options
- * follow the selected month, and the day clamps down when the month shrinks.
+ * A day of the year (no year) bound to a `{ month, day }` form field: a
+ * button showing "March 1" that opens a calendar of a single year.
  */
 export function MonthDayField<T extends FieldValues>({
   control,
   name,
   label,
   disabled,
+  range,
 }: MonthDayFieldProps<T>) {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
+  const [open, setOpen] = useState(false);
+  const now = new Date();
+  const today = new Date(REFERENCE_YEAR, now.getMonth(), now.getDate());
 
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => {
-        const value = (field.value ?? {}) as {
-          month?: number;
-          day?: number;
-        };
-        const month = value.month ?? 1;
-        const day = value.day ?? 1;
-        const days = daysInMonth(month, 2000);
+        const value = field.value as SeasonMonthDay | undefined;
+        const selected = value ? toDate(value) : undefined;
 
         return (
           <FormItem>
             <FormLabel>{label}</FormLabel>
-            <div className="flex gap-2">
-              <Select
-                disabled={disabled}
-                value={value.month?.toString()}
-                onValueChange={nextMonth => {
-                  const parsedMonth = Number(nextMonth);
-                  field.onChange({
-                    month: parsedMonth,
-                    day: Math.min(day, daysInMonth(parsedMonth, 2000)),
-                  });
-                }}
-              >
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
                 <FormControl>
-                  <SelectTrigger className="min-w-0 flex-1">
-                    <SelectValue placeholder={t('months.selectMonth')} />
-                  </SelectTrigger>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={disabled}
+                    className={cn(
+                      'w-full justify-start text-left font-normal',
+                      !selected && 'text-muted-foreground',
+                    )}
+                  >
+                    <CalendarIcon className="size-4" />
+                    {selected
+                      ? formatMonthDay(selected, i18n.language)
+                      : t('season.pickDay')}
+                  </Button>
                 </FormControl>
-                <SelectContent>
-                  {MONTHS.map(monthOption => (
-                    <SelectItem
-                      key={monthOption.value}
-                      value={monthOption.value.toString()}
-                    >
-                      {t(`months.${monthOption.key}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select
-                disabled={disabled}
-                value={value.day?.toString()}
-                onValueChange={nextDay => {
-                  field.onChange({ month, day: Number(nextDay) });
-                }}
-              >
-                <FormControl>
-                  <SelectTrigger className="w-20">
-                    <SelectValue placeholder={t('season.day')} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {Array.from({ length: days }, (_, index) => index + 1).map(
-                    dayOption => (
-                      <SelectItem key={dayOption} value={dayOption.toString()}>
-                        {dayOption}
-                      </SelectItem>
-                    ),
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  required
+                  selected={selected}
+                  defaultMonth={selected ?? today}
+                  today={today}
+                  startMonth={FIRST_MONTH}
+                  endMonth={LAST_MONTH}
+                  showOutsideDays={false}
+                  // Weekdays belong to one year; a season repeats every year.
+                  hideWeekdays
+                  formatters={{
+                    formatCaption: date =>
+                      date.toLocaleDateString(i18n.language, { month: 'long' }),
+                  }}
+                  modifiers={
+                    range
+                      ? { inSeason: date => inRange(date, range) }
+                      : undefined
+                  }
+                  modifiersClassNames={{ inSeason: 'bg-muted' }}
+                  onSelect={date => {
+                    field.onChange({
+                      month: date.getMonth() + 1,
+                      day: date.getDate(),
+                    });
+                    setOpen(false);
+                  }}
+                  autoFocus
+                />
+              </PopoverContent>
+            </Popover>
             <FormMessage />
           </FormItem>
         );

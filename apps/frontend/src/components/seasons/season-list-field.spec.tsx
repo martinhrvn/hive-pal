@@ -95,3 +95,29 @@ test('removes a season', async ({ mount }) => {
   await expect(component.getByTestId('season-card')).toHaveCount(0);
   await expect(component.getByText('No seasons yet')).toBeVisible();
 });
+
+test('picks a start day from a calendar of the year', async ({
+  mount,
+  page,
+}) => {
+  const component = await mount(WITH_SEASON);
+
+  await component.getByTestId('edit-season').click();
+  const starts = component.getByLabel('Starts');
+  await expect(starts).toHaveText('March 1');
+
+  // The calendar opens on the current start and has no year or weekdays.
+  await starts.click();
+  const calendar = page.getByRole('grid');
+  await expect(page.getByText('March', { exact: true })).toBeVisible();
+  await expect(page.getByRole('columnheader')).toHaveCount(0);
+  await calendar.getByRole('button', { name: /15/ }).click();
+
+  await expect(calendar).toHaveCount(0);
+  await expect(starts).toHaveText('March 15');
+
+  await component.getByRole('button', { name: 'Save' }).click();
+  await expect(component.getByTestId('saved')).toContainText(
+    '"start":{"month":3,"day":15}',
+  );
+});
