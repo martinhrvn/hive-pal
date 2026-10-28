@@ -26,6 +26,19 @@ export class HiveDetailPage {
   readonly periodSelect: Locator;
   /** Settings tab: the seasons section (inherited or hive-specific). */
   readonly seasonsSettings: Locator;
+  /** Settings tab: where the seasons come from ("The apiary", "This hive", …). */
+  readonly seasonsSourceBadge: Locator;
+  /** Settings tab: read-only season rows while the hive inherits the apiary. */
+  readonly seasonsSummary: Locator;
+  /** Settings tab: the year strip (read-only or editable). */
+  readonly seasonYearStrip: Locator;
+  /** Settings tab: loads the apiary schedule into the hive's own copy. */
+  readonly customiseSeasonsButton: Locator;
+  /** Settings tab: drops the hive's copy and follows the apiary again. */
+  readonly useApiarySeasonsButton: Locator;
+  /** Settings tab: the year-round interval inherited from the apiary. */
+  readonly inheritedYearRound: Locator;
+  readonly saveSettingsButton: Locator;
   readonly inspectionScheduleSettings: Locator;
 
   constructor(page: Page) {
@@ -74,9 +87,58 @@ export class HiveDetailPage {
       .getByRole('heading', { name: 'Seasons' })
       .filter({ visible: true })
       .first();
+    this.seasonsSourceBadge = page
+      .locator('[data-slot="badge"]')
+      .filter({
+        hasText:
+          /^(The apiary|This hive|Previous autumn feeding settings|Hive Pal default)$/,
+      })
+      .first();
+    this.seasonsSummary = page.locator('[data-test="season-summary"]');
+    this.seasonYearStrip = page.locator('[data-test="season-year-strip"]');
+    this.customiseSeasonsButton = page.getByRole('button', {
+      name: 'Customise for this hive',
+    });
+    this.useApiarySeasonsButton = page.getByRole('button', {
+      name: 'Use apiary seasons',
+    });
+    this.inheritedYearRound = page.locator(
+      '[data-test="inherited-year-round"]',
+    );
+    this.saveSettingsButton = this.panel.getByRole('button', {
+      name: /^(Save Settings|Saving\.\.\.)$/,
+    });
     this.inspectionScheduleSettings = page
       .getByRole('heading', { name: 'Inspection Schedule' })
       .locator('..');
+  }
+
+  /** A read-only season row, while the hive inherits its schedule. */
+  seasonSummaryRow(name: string): Locator {
+    return this.seasonsSummary
+      .locator('[data-test="season-summary-row"]')
+      .filter({ hasText: name });
+  }
+
+  /** Copy the apiary schedule into this hive, so it can be edited here. */
+  async customiseSeasons() {
+    await this.customiseSeasonsButton.click();
+  }
+
+  /** Drop the hive's own copy and follow the apiary schedule again. */
+  async useApiarySeasons() {
+    await this.useApiarySeasonsButton.click();
+  }
+
+  /** Save the settings and wait for the API call. */
+  async saveSettings() {
+    const saved = this.page.waitForResponse(
+      res =>
+        /\/api\/hives\/[^/]+$/.test(res.url()) &&
+        res.request().method() === 'PATCH',
+    );
+    await this.saveSettingsButton.click();
+    await saved;
   }
 
   /** A chart card on the Analytics tab by its title, e.g. "Colony Strength". */

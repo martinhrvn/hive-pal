@@ -1,0 +1,16 @@
+{
+  "title": "Seasons in Hive Pal: one schedule for the apiary and its hives",
+  "summary": "Plan the whole year for an apiary: seasons with their own inspection interval and feeding target, a winter without inspections, and a year-round fallback for the days in between. Then apply the schedule to every hive in one go, and see how one hive can keep its own copy or follow the apiary again.",
+  "tags": [
+    "beekeeping seasons",
+    "inspection schedule",
+    "feeding schedule",
+    "apiary management"
+  ],
+  "hashtags": ["beekeeping", "seasons", "hivepal"],
+  "chapters": {
+    "Plan the year once, and every hive follows it": "Seasons overview",
+    "Shape the year": "A winter without inspections",
+    "Hives follow the apiary": "Apply to hives, or inherit"
+  }
+}
