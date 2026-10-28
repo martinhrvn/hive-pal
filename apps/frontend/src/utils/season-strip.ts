@@ -132,6 +132,18 @@ export interface InspectionTick {
 }
 
 /**
+ * A usable inspection interval in whole days, or `undefined` when the value
+ * cannot drive the strip. Form inputs briefly hold 0, negative, decimal or
+ * NaN values while being typed; the schema rejects those on save, but the
+ * strip must never step by them — a negative step would loop forever.
+ */
+function intervalDays(value: number | null | undefined): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 1
+    ? Math.floor(value)
+    : undefined;
+}
+
+/**
  * Inspections implied by each stretch's interval, as strip day indexes. The
  * real schedule counts from the last inspection; this only shows the rhythm,
  * so ticks start half an interval into each stretch. A stretch across the new
@@ -150,13 +162,13 @@ export function buildInspectionTicks(
     walked.add(stretch.key);
 
     const { start, end, interval, role, seasonId } = stretch;
+    // `stretchOf` validates the interval; this keeps the loop safe even if
+    // that ever changes.
+    const step = intervalDays(interval);
+    if (step == null) continue;
     const length =
       end >= start ? end - start + 1 : STRIP_DAYS - start + end + 1;
-    for (
-      let offset = Math.floor(interval / 2);
-      offset < length;
-      offset += interval
-    ) {
+    for (let offset = Math.floor(step / 2); offset < length; offset += step) {
       ticks.push({ index: (start + offset) % STRIP_DAYS, role, seasonId });
     }
   }
@@ -166,19 +178,22 @@ export function buildInspectionTicks(
 /** The whole stretch a segment belongs to, or `null` when it has no rhythm. */
 function stretchOf(segment: YearStripSegment, baseFrequencyDays?: number) {
   if (segment.kind === 'yearRound') {
-    if (!baseFrequencyDays) return null;
+    const interval = intervalDays(baseFrequencyDays);
+    if (interval == null) return null;
     return {
       key: `gap-${segment.gapStart}`,
       start: segment.gapStart,
       end: segment.gapEnd,
-      interval: baseFrequencyDays,
+      interval,
       role: 'yearRound' as const,
       seasonId: undefined,
     };
   }
   const { season } = segment;
-  const interval = season.inspectionFrequencyDays ?? baseFrequencyDays;
-  if (season.inspectionsPaused || !interval) return null;
+  const interval = intervalDays(
+    season.inspectionFrequencyDays ?? baseFrequencyDays,
+  );
+  if (season.inspectionsPaused || interval == null) return null;
   return {
     key: `season-${season.id}`,
     start: stripDayIndex(season.start.month, season.start.day),

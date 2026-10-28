@@ -116,7 +116,7 @@ describe('buildScheduledInspectionEvents', () => {
     ]);
   });
 
-  it('is due the day a season without inspections ends', () => {
+  it('is due the first day after a season without inspections ends', () => {
     // Due Nov 3, inside winter: moved to Mar 1, then every 7 days.
     const events = buildScheduledInspectionEvents(
       [

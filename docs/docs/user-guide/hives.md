@@ -148,7 +148,7 @@ Customize hive-specific settings:
 - **Season overrides**: A season can set its own inspection interval; the calendar and overdue alerts follow it
 - **Seasons without inspections**: Turn **Inspections** off for a season such as winter.
   Nothing is scheduled or flagged overdue inside it, and the next inspection is due the
-  day it ends
+  first day after it ends
 - **Calendar feed**: Include the hive's scheduled inspections in the iCal subscription
 
 #### Seasons

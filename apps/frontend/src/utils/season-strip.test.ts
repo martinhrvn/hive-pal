@@ -154,6 +154,20 @@ describe('buildInspectionTicks', () => {
     expect(ticksFor([season('spring', [3, 1], [5, 31])])).toEqual([]);
   });
 
+  it('ignores an interval that cannot drive the strip', () => {
+    // A negative step used to loop forever while the field was being edited.
+    for (const days of [-5, 0, Number.NaN, Number.POSITIVE_INFINITY]) {
+      const spring = withInterval(season('spring', [3, 1], [5, 31]), days);
+      expect(
+        ticksFor([spring], 7).filter(t => t.seasonId === 'spring'),
+      ).toEqual([]);
+    }
+  });
+
+  it('does not step year-round ticks by an invalid base interval', () => {
+    expect(ticksFor([season('spring', [3, 1], [5, 31])], -5)).toEqual([]);
+  });
+
   it('marks feeding seasons', () => {
     const autumn: Season = {
       ...withInterval(season('autumn', [8, 1], [10, 31]), 14),

@@ -54,7 +54,7 @@ function firstDue(
     return { due, isOverdue };
   }
   // Nothing is overdue in a season without inspections: the hive is due
-  // again the day it ends.
+  // again the first day after it ends.
   const resumes = nextInspectableDay(seasons, today);
   return resumes ? { due: resumes, isOverdue: false } : undefined;
 }

@@ -317,7 +317,8 @@ export function nextInspectableDay(
  * Day (local midnight) the inspection after `lastInspection` is due: after
  * the interval in force the day after it, moved past any season without
  * inspections it lands in. An inspection right before such a season is due
- * the day the season ends. `undefined` when inspections are paused all year.
+ * the first day after it ends. `undefined` when inspections are paused all
+ * year.
  *
  * The overdue alert and the calendar projection both use this, so a season
  * starting or ending between the last inspection and today cannot make them
