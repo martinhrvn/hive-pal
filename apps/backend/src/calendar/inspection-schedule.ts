@@ -7,6 +7,7 @@ import {
   nextInspectableDay,
   type ApiarySeasonSettings,
   type HiveSeasonSettings,
+  type Season,
 } from 'shared-schemas';
 
 export interface ProjectedInspectionEvent {
@@ -29,6 +30,82 @@ export interface InspectionScheduleHive {
 
 export const INSPECTION_FUTURE_WEEKS = 6;
 
+const isScheduled = (hive: InspectionScheduleHive) =>
+  hive.status === 'ACTIVE' &&
+  hive.settings?.inspection?.calendarEnabled !== false;
+
+/**
+ * Where a hive's projection starts and whether that day is overdue, or
+ * `undefined` when nothing can be scheduled.
+ */
+function firstDue(
+  hive: InspectionScheduleHive,
+  seasons: Season[],
+  baseDays: number,
+  today: Date,
+): { due: Date; isOverdue: boolean } | undefined {
+  const last = hive.lastInspectionDate;
+  const due = last ? findNextInspectionDue(seasons, baseDays, last) : today;
+  if (!due) return undefined; // Inspections are paused all year.
+
+  // Never inspected: due, and overdue, today.
+  const isOverdue = !last || isBefore(due, today);
+  if (!isOverdue || !isInspectionPausedOn(seasons, today)) {
+    return { due, isOverdue };
+  }
+  // Nothing is overdue in a season without inspections: the hive is due
+  // again the day it ends.
+  const resumes = nextInspectableDay(seasons, today);
+  return resumes ? { due: resumes, isOverdue: false } : undefined;
+}
+
+/** One hive's overdue event (if any) and its scheduled ones up to the limit. */
+function projectHive(
+  hive: InspectionScheduleHive,
+  today: Date,
+  futureLimit: Date,
+): ProjectedInspectionEvent[] {
+  // Resolve (and validate) the seasons once per hive, not once per date.
+  const { seasons, baseInspectionFrequencyDays: baseDays } =
+    getEffectiveSchedule(hive.settings, hive.apiarySettings);
+  const frequencyAt = (date: Date) =>
+    getInspectionFrequencyForSeasons(seasons, baseDays, date);
+
+  const start = firstDue(hive, seasons, baseDays, today);
+  if (!start) return [];
+
+  const events: ProjectedInspectionEvent[] = [];
+  let due: Date | undefined = start.due;
+
+  if (start.isOverdue) {
+    const todayFrequency = frequencyAt(today);
+    events.push({
+      uid: `overdue-${hive.hiveId}-${format(today, 'yyyyMMdd')}@hivepal`,
+      summary: `OVERDUE: ${hive.name} Inspection`,
+      dtstart: today,
+      description: `Inspection for ${hive.name} is overdue. Based on ${todayFrequency}-day frequency.`,
+      isOverdue: true,
+      isAllDay: true,
+    });
+    due = nextInspectableDay(seasons, addDays(today, todayFrequency));
+  }
+
+  // `due` is never before today here, and only moves forward.
+  while (due && !isBefore(futureLimit, due)) {
+    const frequency = frequencyAt(due);
+    events.push({
+      uid: `scheduled-${hive.hiveId}-${format(due, 'yyyyMMdd')}@hivepal`,
+      summary: `${hive.name} Inspection`,
+      dtstart: due,
+      description: `Scheduled inspection for ${hive.name} (every ${frequency} days)`,
+      isAllDay: true,
+    });
+    // A due date inside a season without inspections waits for its end.
+    due = nextInspectableDay(seasons, addDays(due, frequency));
+  }
+  return events;
+}
+
 /**
  * Project inspection events for a set of hives.
  *
@@ -43,79 +120,12 @@ export function buildScheduledInspectionEvents(
   todayInput: Date = new Date(),
   futureWeeks: number = INSPECTION_FUTURE_WEEKS,
 ): ProjectedInspectionEvent[] {
-  const events: ProjectedInspectionEvent[] = [];
   const today = startOfDay(todayInput);
   const futureLimit = addDays(today, futureWeeks * 7);
 
-  for (const hive of hives) {
-    if (hive.status !== 'ACTIVE') continue;
-    if (hive.settings?.inspection?.calendarEnabled === false) continue;
-
-    // Resolve (and validate) the seasons once per hive, not once per date.
-    const { seasons, baseInspectionFrequencyDays: baseDays } =
-      getEffectiveSchedule(hive.settings, hive.apiarySettings);
-    const frequencyAt = (date: Date) =>
-      getInspectionFrequencyForSeasons(seasons, baseDays, date);
-
-    let nextDue: Date | undefined;
-    let isOverdue: boolean;
-
-    if (!hive.lastInspectionDate) {
-      nextDue = today;
-      isOverdue = true;
-    } else {
-      nextDue = findNextInspectionDue(
-        seasons,
-        baseDays,
-        hive.lastInspectionDate,
-      );
-      if (!nextDue) continue; // Inspections are paused all year.
-      isOverdue = isBefore(nextDue, today);
-    }
-
-    // Nothing is overdue in a season without inspections: the hive is due
-    // again the day it ends.
-    if (isOverdue && isInspectionPausedOn(seasons, today)) {
-      nextDue = nextInspectableDay(seasons, today);
-      if (!nextDue) continue;
-      isOverdue = false;
-    }
-
-    if (isOverdue) {
-      const todayFrequency = frequencyAt(today);
-      events.push({
-        uid: `overdue-${hive.hiveId}-${format(today, 'yyyyMMdd')}@hivepal`,
-        summary: `OVERDUE: ${hive.name} Inspection`,
-        dtstart: today,
-        description: `Inspection for ${hive.name} is overdue. Based on ${todayFrequency}-day frequency.`,
-        isOverdue: true,
-        isAllDay: true,
-      });
-      nextDue = nextInspectableDay(seasons, addDays(today, todayFrequency));
-    }
-
-    let currentDate: Date | undefined = nextDue;
-    while (currentDate && !isBefore(futureLimit, currentDate)) {
-      if (!isBefore(currentDate, today)) {
-        const frequency = frequencyAt(currentDate);
-        events.push({
-          uid: `scheduled-${hive.hiveId}-${format(currentDate, 'yyyyMMdd')}@hivepal`,
-          summary: `${hive.name} Inspection`,
-          dtstart: currentDate,
-          description: `Scheduled inspection for ${hive.name} (every ${frequency} days)`,
-          isAllDay: true,
-        });
-        // A due date inside a season without inspections waits for its end.
-        currentDate = nextInspectableDay(
-          seasons,
-          addDays(currentDate, frequency),
-        );
-      } else {
-        currentDate = addDays(currentDate, 1);
-      }
-    }
-  }
-
+  const events = hives
+    .filter(isScheduled)
+    .flatMap((hive) => projectHive(hive, today, futureLimit));
   events.sort((a, b) => a.dtstart.getTime() - b.dtstart.getTime());
   return events;
 }
