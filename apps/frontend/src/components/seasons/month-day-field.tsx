@@ -40,7 +40,6 @@ interface MonthDayFieldProps<T extends FieldValues> {
   control: Control<T>;
   name: FieldPath<T>;
   label: string;
-  disabled?: boolean;
   /** The whole season, shaded in the calendar so you see what you change. */
   range?: MonthDayRange;
   /** Other seasons; their days are marked, as picking one shortens them. */
@@ -59,12 +58,11 @@ export function MonthDayField<T extends FieldValues>({
   control,
   name,
   label,
-  disabled,
   range,
   taken = [],
   isBlocked,
   onPick,
-}: MonthDayFieldProps<T>) {
+}: Readonly<MonthDayFieldProps<T>>) {
   const { t, i18n } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const now = new Date();
@@ -87,7 +85,6 @@ export function MonthDayField<T extends FieldValues>({
                   <Button
                     type="button"
                     variant="outline"
-                    disabled={disabled}
                     className={cn(
                       'w-full justify-start text-left font-normal',
                       !selected && 'text-muted-foreground',

@@ -74,7 +74,7 @@ interface ApiarySeasonsProps {
 }
 
 /** Owner-only editor for the apiary's shared season template. */
-export function ApiarySeasons({ apiary }: ApiarySeasonsProps) {
+export function ApiarySeasons({ apiary }: Readonly<ApiarySeasonsProps>) {
   const { t } = useTranslation(['apiary', 'common']);
   const [confirmApply, setConfirmApply] = useState(false);
   const { mutate: updateApiary, isPending: isSaving } = useUpdateApiary();

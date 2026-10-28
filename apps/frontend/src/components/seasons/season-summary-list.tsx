@@ -1,10 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { isDateInSeason, type Season } from 'shared-schemas';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { StatusPill } from '@/components/common/status-pill';
 import { formatSeasonRange, getSeasonDisplayName } from '@/utils/season-format';
 import { seasonRole } from '@/utils/season-strip';
-import { ROLE_TONES } from './season-tone';
+import { SeasonSwatch } from './season-swatch';
 
 interface SeasonSummaryRowProps {
   season: Season;
@@ -19,27 +18,25 @@ interface SeasonSummaryRowProps {
 export function SeasonSummaryRow({
   season,
   baseFrequencyDays,
-}: SeasonSummaryRowProps) {
+}: Readonly<SeasonSummaryRowProps>) {
   const { t, i18n } = useTranslation('common');
   const active = isDateInSeason(season, new Date());
   const interval = season.inspectionFrequencyDays ?? baseFrequencyDays;
 
   return (
     <span className="flex min-w-0 items-start gap-3">
-      <span
-        aria-hidden
-        className={cn(
-          'mt-1 size-3 shrink-0 rounded-[3px]',
-          ROLE_TONES[seasonRole(season)].swatch,
-        )}
-      />
+      <SeasonSwatch role={seasonRole(season)} className="mt-1" />
       <span className="block min-w-0">
         <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="font-medium">{getSeasonDisplayName(season, t)}</span>
           <span className="text-sm text-muted-foreground tabular-nums">
             {formatSeasonRange(season, i18n.language)}
           </span>
-          {active && <Badge variant="secondary">{t('season.activeNow')}</Badge>}
+          {active && (
+            <StatusPill tone="success" size="sm">
+              {t('season.activeNow')}
+            </StatusPill>
+          )}
         </span>
         <span className="mt-0.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground tabular-nums">
           {season.inspectionsPaused && <span>{t('season.noInspections')}</span>}
@@ -72,7 +69,7 @@ interface SeasonSummaryListProps {
 export function SeasonSummaryList({
   seasons,
   baseFrequencyDays,
-}: SeasonSummaryListProps) {
+}: Readonly<SeasonSummaryListProps>) {
   const { t } = useTranslation('common');
 
   return (

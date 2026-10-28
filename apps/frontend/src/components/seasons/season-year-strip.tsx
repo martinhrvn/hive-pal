@@ -2,13 +2,13 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MoreHorizontal, Plus } from 'lucide-react';
 import { isDateInSeason, type Season } from 'shared-schemas';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { StatusPill } from '@/components/common/status-pill';
 import { cn } from '@/lib/utils';
 import {
   formatMonthDay,
@@ -27,7 +27,11 @@ import {
   type StripRole,
   type YearStripSegment,
 } from '@/utils/season-strip';
-import { useSeasonEditor } from './season-editor-context';
+import {
+  useSeasonEditor,
+  type SeasonEditorContextValue,
+} from './season-editor-context';
+import { SeasonSwatch } from './season-swatch';
 import { ROLE_TONES } from './season-tone';
 
 /** Segments shorter than this stay unlabelled on the strip. */
@@ -74,9 +78,10 @@ export function SeasonYearStrip({
   baseFrequencyDays,
   today = new Date(),
   className,
-}: SeasonYearStripProps) {
+}: Readonly<SeasonYearStripProps>) {
   const { t, i18n } = useTranslation('common');
-  const editingId = useSeasonEditor()?.editingId;
+  const editor = useSeasonEditor();
+  const editingId = editor?.editingId;
   const segments = useMemo(() => buildYearStripSegments(seasons), [seasons]);
   const ticks = useMemo(
     () => buildInspectionTicks(segments, baseFrequencyDays),
@@ -107,19 +112,45 @@ export function SeasonYearStrip({
         />
       </div>
       <div className="relative h-9 overflow-hidden rounded-md border bg-background sm:h-12">
-        {segments.map(segment => (
-          <StripSegment
-            key={`${segment.kind}-${segment.start}`}
-            segment={segment}
-            focus={focusOf(
-              segment.kind === 'season' ? segment.season.id : undefined,
-            )}
-            baseFrequencyDays={baseFrequencyDays}
-            today={today}
-            hoveredGap={hoveredGap}
-            onHoverGap={setHoveredGap}
-          />
-        ))}
+        {segments.map(segment => {
+          const key = `${segment.kind}-${segment.start}`;
+          const focus = focusOf(
+            segment.kind === 'season' ? segment.season.id : undefined,
+          );
+          if (!editor) {
+            return (
+              <ReadOnlySegment
+                key={key}
+                segment={segment}
+                focus={focus}
+                baseFrequencyDays={baseFrequencyDays}
+                today={today}
+              />
+            );
+          }
+          if (segment.kind === 'season') {
+            return (
+              <SeasonSegment
+                key={key}
+                segment={segment}
+                focus={focus}
+                baseFrequencyDays={baseFrequencyDays}
+                today={today}
+                editor={editor}
+              />
+            );
+          }
+          return (
+            <GapSegment
+              key={key}
+              segment={segment}
+              focus={focus}
+              editor={editor}
+              hovered={hoveredGap === segment.gapStart}
+              onHover={setHoveredGap}
+            />
+          );
+        })}
         <StripRhythm ticks={ticks} focusOf={focusOf} />
         <div
           aria-hidden
@@ -145,10 +176,7 @@ export function SeasonYearStrip({
       >
         {KEY_ROLES.filter(role => roles.has(role)).map(role => (
           <li key={role} className="flex items-center gap-1.5">
-            <span
-              aria-hidden
-              className={cn('size-3 rounded-[3px]', ROLE_TONES[role].swatch)}
-            />
+            <SeasonSwatch role={role} />
             {t(`season.strip.key.${role}`)}
           </li>
         ))}
@@ -179,10 +207,10 @@ export function SeasonYearStrip({
 function StripRhythm({
   ticks,
   focusOf,
-}: {
+}: Readonly<{
   ticks: InspectionTick[];
   focusOf: (seasonId?: string) => Focus;
-}) {
+}>) {
   return (
     <svg
       aria-hidden
@@ -221,139 +249,178 @@ function StripRhythm({
   );
 }
 
-const segmentClasses = (role: StripRole, focus: Focus, last: boolean) =>
+type SeasonStripSegment = Extract<YearStripSegment, { kind: 'season' }>;
+type GapStripSegment = Extract<YearStripSegment, { kind: 'yearRound' }>;
+
+const segmentStyle = (segment: YearStripSegment) => ({
+  left: percent(segment.start),
+  width: percent(segment.end - segment.start + 1),
+});
+
+const segmentClasses = (segment: YearStripSegment, focus: Focus) =>
   cn(
     'flex items-start px-1.5 pt-1.5 text-left text-xs font-medium text-foreground/80 transition-[filter,opacity]',
-    ROLE_TONES[role].segment,
-    !last && 'border-r border-background',
+    ROLE_TONES[segmentRole(segment)].segment,
+    segment.end < STRIP_DAYS - 1 && 'border-r border-background',
     'focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
     focus === 'editing' && 'ring-2 ring-inset ring-foreground/70',
     focus === 'dimmed' && 'opacity-50',
   );
 
-function StripSegment({
+const SEASON_HOVER = 'hover:brightness-95 dark:hover:brightness-125';
+
+/** Short segments would only show an ellipsis; the popover still names them. */
+function SegmentLabel({
+  segment,
+  label,
+}: Readonly<{ segment: YearStripSegment; label: string }>) {
+  if (segment.end - segment.start + 1 < MIN_LABEL_DAYS) return null;
+  return <span className="hidden min-w-0 truncate sm:inline">{label}</span>;
+}
+
+interface SegmentProps<S extends YearStripSegment> {
+  segment: S;
+  focus: Focus;
+  baseFrequencyDays?: number;
+  today: Date;
+}
+
+/**
+ * Editable season: click opens the editor; the ⋯ menu (summary +
+ * edit/delete) sits on its right edge.
+ */
+function SeasonSegment({
   segment,
   focus,
   baseFrequencyDays,
   today,
-  hoveredGap,
-  onHoverGap,
-}: {
-  segment: YearStripSegment;
+  editor,
+}: Readonly<
+  SegmentProps<SeasonStripSegment> & { editor: SeasonEditorContextValue }
+>) {
+  const { t } = useTranslation('common');
+  const { season } = segment;
+  const label = getSeasonDisplayName(season, t);
+
+  return (
+    <div className="group absolute inset-y-0" style={segmentStyle(segment)}>
+      <button
+        type="button"
+        aria-label={label}
+        data-test="strip-season"
+        onClick={() => editor.setEditing(season.id, true)}
+        className={cn(
+          'absolute inset-0',
+          SEASON_HOVER,
+          segmentClasses(segment, focus),
+        )}
+      >
+        <SegmentLabel segment={segment} label={label} />
+      </button>
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            aria-label={t('season.strip.more')}
+            data-test="strip-season-more"
+            className="absolute right-0.5 top-1 z-30 rounded-sm p-0.5 opacity-0 transition-opacity hover:bg-background/60 focus-visible:opacity-100 group-hover:opacity-100"
+          >
+            <MoreHorizontal className="size-3.5" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-64 space-y-3 text-sm">
+          <SeasonSummary
+            season={season}
+            baseFrequencyDays={baseFrequencyDays}
+            today={today}
+          />
+          <div className="flex justify-end gap-2 border-t pt-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={() => editor.setEditing(season.id, true)}
+            >
+              {t('season.edit')}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="text-destructive hover:text-destructive"
+              onClick={() => editor.removeSeason(season.id)}
+            >
+              {t('season.remove')}
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
+
+/**
+ * Editable year-round gap: click to add a season covering the whole gap, so
+ * Jan – Mar and Oct – Dec around the new year become one season.
+ */
+function GapSegment({
+  segment,
+  focus,
+  editor,
+  hovered,
+  onHover,
+}: Readonly<{
+  segment: GapStripSegment;
   focus: Focus;
-  baseFrequencyDays?: number;
-  today: Date;
-  /** `gapStart` of the year-round gap under the pointer. */
-  hoveredGap?: number;
-  onHoverGap: (gapStart: number | undefined) => void;
-}) {
-  const editor = useSeasonEditor();
+  editor: SeasonEditorContextValue;
+  /** Both halves of a gap across the new year light up together. */
+  hovered: boolean;
+  onHover: (gapStart: number | undefined) => void;
+}>) {
+  const { t } = useTranslation('common');
+
+  return (
+    <button
+      type="button"
+      aria-label={t('season.strip.addSeason')}
+      data-test="strip-year-round"
+      onClick={() =>
+        editor.addSeason(
+          stripIndexToMonthDay(segment.gapStart),
+          stripIndexToMonthDay(segment.gapEnd),
+        )
+      }
+      onPointerEnter={() => onHover(segment.gapStart)}
+      onPointerLeave={() => onHover(undefined)}
+      className={cn(
+        'group/round absolute inset-y-0',
+        segmentClasses(segment, focus),
+        'font-normal text-muted-foreground hover:bg-muted',
+        hovered && 'bg-muted',
+      )}
+      style={segmentStyle(segment)}
+    >
+      <span className="hidden min-w-0 truncate opacity-0 transition-opacity group-hover/round:opacity-100 sm:inline">
+        <Plus className="mr-0.5 inline size-3" />
+        {t('season.strip.addSeason')}
+      </span>
+    </button>
+  );
+}
+
+/** Read-only: click opens a summary popover. */
+function ReadOnlySegment({
+  segment,
+  focus,
+  baseFrequencyDays,
+  today,
+}: Readonly<SegmentProps<YearStripSegment>>) {
   const { t } = useTranslation('common');
   const isSeason = segment.kind === 'season';
-  const role = segmentRole(segment);
-  const last = segment.end >= STRIP_DAYS - 1;
   const label = isSeason
     ? getSeasonDisplayName(segment.season, t)
     : t('season.strip.yearRound');
-  // Short segments would only show an ellipsis; the popover still names them.
-  const showLabel = segment.end - segment.start + 1 >= MIN_LABEL_DAYS;
-  const segmentStyle = {
-    left: percent(segment.start),
-    width: percent(segment.end - segment.start + 1),
-  };
-  const labelNode = showLabel && (
-    <span className="hidden min-w-0 truncate sm:inline">{label}</span>
-  );
 
-  // Editable season segment: click opens the editor; the ⋯ menu (summary +
-  // edit/delete) sits on its right edge.
-  if (editor && isSeason) {
-    return (
-      <div className="group absolute inset-y-0" style={segmentStyle}>
-        <button
-          type="button"
-          aria-label={label}
-          data-test="strip-season"
-          onClick={() => editor.setEditing(segment.season.id, true)}
-          className={cn(
-            'absolute inset-0 hover:brightness-95 dark:hover:brightness-125',
-            segmentClasses(role, focus, last),
-          )}
-        >
-          {labelNode}
-        </button>
-        <Popover>
-          <PopoverTrigger asChild>
-            <button
-              type="button"
-              aria-label={t('season.strip.more')}
-              data-test="strip-season-more"
-              className="absolute right-0.5 top-1 z-30 rounded-sm p-0.5 opacity-0 transition-opacity hover:bg-background/60 focus-visible:opacity-100 group-hover:opacity-100"
-            >
-              <MoreHorizontal className="size-3.5" />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent className="w-64 space-y-3 text-sm">
-            <SeasonSummary
-              season={segment.season}
-              baseFrequencyDays={baseFrequencyDays}
-              today={today}
-            />
-            <div className="flex justify-end gap-2 border-t pt-2">
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={() => editor.setEditing(segment.season.id, true)}
-              >
-                {t('season.edit')}
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                className="text-destructive"
-                onClick={() => editor.removeSeason(segment.season.id)}
-              >
-                {t('season.remove')}
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
-    );
-  }
-
-  // Editable year-round gap: click to add a season covering the whole gap,
-  // so Jan – Mar and Oct – Dec around the new year become one season.
-  if (editor && !isSeason) {
-    const start = stripIndexToMonthDay(segment.gapStart);
-    const end = stripIndexToMonthDay(segment.gapEnd);
-    return (
-      <button
-        type="button"
-        aria-label={t('season.strip.addSeason')}
-        data-test="strip-year-round"
-        onClick={() => editor.addSeason(start, end)}
-        onPointerEnter={() => onHoverGap(segment.gapStart)}
-        onPointerLeave={() => onHoverGap(undefined)}
-        className={cn(
-          'group/round absolute inset-y-0',
-          segmentClasses(role, focus, last),
-          'font-normal text-muted-foreground hover:bg-muted',
-          hoveredGap === segment.gapStart && 'bg-muted',
-        )}
-        style={segmentStyle}
-      >
-        <span className="hidden min-w-0 truncate opacity-0 transition-opacity group-hover/round:opacity-100 sm:inline">
-          <Plus className="mr-0.5 inline size-3" />
-          {t('season.strip.addSeason')}
-        </span>
-      </button>
-    );
-  }
-
-  // Read-only: click opens a summary popover.
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -362,17 +429,18 @@ function StripSegment({
           aria-label={label}
           data-test={isSeason ? 'strip-season' : 'strip-year-round'}
           className={cn(
-            'absolute inset-y-0 hover:brightness-95 dark:hover:brightness-125',
-            segmentClasses(role, focus, last),
+            'absolute inset-y-0',
+            SEASON_HOVER,
+            segmentClasses(segment, focus),
             !isSeason && 'font-normal text-muted-foreground',
           )}
-          style={segmentStyle}
+          style={segmentStyle(segment)}
         >
-          {labelNode}
+          <SegmentLabel segment={segment} label={label} />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-64 space-y-2 text-sm">
-        {segment.kind === 'season' ? (
+        {isSeason ? (
           <SeasonSummary
             season={segment.season}
             baseFrequencyDays={baseFrequencyDays}
@@ -390,11 +458,11 @@ function SeasonSummary({
   season,
   baseFrequencyDays,
   today,
-}: {
+}: Readonly<{
   season: Season;
   baseFrequencyDays?: number;
   today: Date;
-}) {
+}>) {
   const { t, i18n } = useTranslation('common');
   const interval = season.inspectionFrequencyDays ?? baseFrequencyDays;
   const feedingTarget = season.feeding.enabled
@@ -404,16 +472,12 @@ function SeasonSummary({
   return (
     <div className="space-y-2" data-test="strip-popover">
       <div className="flex items-center gap-2">
-        <span
-          aria-hidden
-          className={cn(
-            'size-3 shrink-0 rounded-[3px]',
-            ROLE_TONES[seasonRole(season)].swatch,
-          )}
-        />
+        <SeasonSwatch role={seasonRole(season)} />
         <span className="font-medium">{getSeasonDisplayName(season, t)}</span>
         {isDateInSeason(season, today) && (
-          <Badge variant="secondary">{t('season.activeNow')}</Badge>
+          <StatusPill tone="success" size="sm">
+            {t('season.activeNow')}
+          </StatusPill>
         )}
       </div>
       <p className="text-muted-foreground tabular-nums">
@@ -445,9 +509,9 @@ function SeasonSummary({
 
 function YearRoundSummary({
   baseFrequencyDays,
-}: {
+}: Readonly<{
   baseFrequencyDays?: number;
-}) {
+}>) {
   const { t } = useTranslation('common');
   return (
     <div className="space-y-2" data-test="strip-popover">

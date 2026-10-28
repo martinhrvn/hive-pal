@@ -14,7 +14,9 @@ import {
  * strip and the card list can both add, edit and remove seasons. Must be
  * rendered inside the form (`FormProvider`).
  */
-export function SeasonsEditorProvider({ children }: { children: ReactNode }) {
+export function SeasonsEditorProvider({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   const { control, getValues } = useFormContext<SeasonFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,

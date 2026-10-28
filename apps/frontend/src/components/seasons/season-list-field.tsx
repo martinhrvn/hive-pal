@@ -9,7 +9,6 @@ import {
   type Season,
 } from 'shared-schemas';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   FormControl,
@@ -22,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { NumberField } from '@/components/common/number-field';
+import { StatusPill } from '@/components/common/status-pill';
 import { formatSeasonRange, getSeasonLabel } from '@/utils/season-format';
 import {
   claimSeasonDays,
@@ -35,17 +35,18 @@ import {
 import { MonthDayField } from './month-day-field';
 import { SeasonSummaryRow } from './season-summary-list';
 
+/** Feeding target a season starts with when feeding is switched on. */
+const DEFAULT_FEEDING_TARGET_KG = 12;
+
 interface SeasonListFieldProps {
   /** Base hive inspection interval, shown as the override placeholder. */
   baseFrequencyDays?: number;
-  disabled?: boolean;
 }
 
 interface SeasonRowProps {
   index: number;
   editing: boolean;
   baseFrequencyDays?: number;
-  disabled?: boolean;
   onEdit: () => void;
   onDone: () => void;
   onRemove: () => void;
@@ -60,11 +61,10 @@ function SeasonRow({
   index,
   editing,
   baseFrequencyDays,
-  disabled,
   onEdit,
   onDone,
   onRemove,
-}: SeasonRowProps) {
+}: Readonly<SeasonRowProps>) {
   const { t } = useTranslation('common');
   const { control } = useFormContext<SeasonFormValues>();
   const season = useWatch({ control, name: `seasons.${index}` }) as
@@ -78,7 +78,6 @@ function SeasonRow({
         index={index}
         season={season}
         baseFrequencyDays={baseFrequencyDays}
-        disabled={disabled}
         onDone={onDone}
         onRemove={onRemove}
       />
@@ -90,10 +89,9 @@ function SeasonRow({
       <button
         type="button"
         aria-expanded={false}
-        disabled={disabled}
         onClick={onEdit}
         data-test="edit-season"
-        className="min-w-0 flex-1 px-3 py-2.5 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring disabled:pointer-events-none"
+        className="min-w-0 flex-1 px-3 py-2.5 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       >
         <SeasonSummaryRow
           season={season}
@@ -105,7 +103,6 @@ function SeasonRow({
         variant="ghost"
         size="icon"
         aria-label={t('season.remove')}
-        disabled={disabled}
         onClick={onRemove}
         data-test="remove-season"
         className="text-muted-foreground"
@@ -125,22 +122,20 @@ function ToggleRow({
   label,
   hint,
   inverted = false,
-  disabled,
   testId,
   onToggle,
   children,
-}: {
+}: Readonly<{
   name: FieldPath<SeasonFormValues>;
   label: string;
   hint: string;
   /** The field stores the opposite of the switch (`inspectionsPaused`). */
   inverted?: boolean;
-  disabled?: boolean;
   testId: string;
   /** Runs after the field changes, with the switch's new state. */
   onToggle?: (on: boolean) => void;
   children?: ReactNode;
-}) {
+}>) {
   const { control } = useFormContext<SeasonFormValues>();
 
   return (
@@ -153,7 +148,6 @@ function ToggleRow({
             <FormControl>
               <Switch
                 checked={inverted ? !field.value : Boolean(field.value)}
-                disabled={disabled}
                 data-test={testId}
                 className="mt-0.5"
                 onCheckedChange={on => {
@@ -186,12 +180,10 @@ const EDGES = ['start', 'end'] as const;
 function SeasonDates({
   index,
   season,
-  disabled,
-}: {
+}: Readonly<{
   index: number;
   season: Season;
-  disabled?: boolean;
-}) {
+}>) {
   const { t, i18n } = useTranslation('common');
   const { control, setValue } = useFormContext<SeasonFormValues>();
   const seasons = (useWatch({ control, name: 'seasons' }) ?? []) as Season[];
@@ -237,7 +229,6 @@ function SeasonDates({
         writeRanges(changes);
         setUndo(shortened.length > 0 ? { shortened, previous } : null);
       }}
-      disabled={disabled}
     />
   );
 
@@ -258,12 +249,11 @@ function SeasonDates({
         {EDGES.map(dateField)}
       </div>
       {undo && (
-        <div
-          role="status"
+        <output
           className="flex items-center gap-3 rounded-md bg-muted px-3 py-2 text-sm"
           data-test="season-shortened"
         >
-          <p className="flex-1">
+          <span className="flex-1">
             {undo.shortened
               .map(shortened =>
                 t('season.shortened', {
@@ -272,7 +262,7 @@ function SeasonDates({
                 }),
               )
               .join(' ')}
-          </p>
+          </span>
           <Button
             type="button"
             variant="ghost"
@@ -285,7 +275,7 @@ function SeasonDates({
           >
             {t('season.undo')}
           </Button>
-        </div>
+        </output>
       )}
     </div>
   );
@@ -295,17 +285,15 @@ function SeasonEditor({
   index,
   season,
   baseFrequencyDays,
-  disabled,
   onDone,
   onRemove,
-}: {
+}: Readonly<{
   index: number;
   season: Season;
   baseFrequencyDays?: number;
-  disabled?: boolean;
   onDone: () => void;
   onRemove: () => void;
-}) {
+}>) {
   const { t } = useTranslation('common');
   const { control, setValue, getValues } = useFormContext<SeasonFormValues>();
   const active = isDateInSeason(season, new Date());
@@ -326,11 +314,7 @@ function SeasonEditor({
             <FormItem className="flex-1">
               <FormLabel>{t('season.name')}</FormLabel>
               <FormControl>
-                <Input
-                  placeholder={t('season.namePlaceholder')}
-                  disabled={disabled}
-                  {...field}
-                />
+                <Input placeholder={t('season.namePlaceholder')} {...field} />
               </FormControl>
               {!season.name?.trim() && isBuiltInSeasonId(season.id) && (
                 <p className="text-xs text-muted-foreground">
@@ -342,13 +326,13 @@ function SeasonEditor({
           )}
         />
         {active && (
-          <Badge variant="secondary" className="mt-7">
+          <StatusPill tone="success" size="sm" className="mt-7">
             {t('season.activeNow')}
-          </Badge>
+          </StatusPill>
         )}
       </div>
 
-      <SeasonDates index={index} season={season} disabled={disabled} />
+      <SeasonDates index={index} season={season} />
 
       <div className="space-y-4">
         <ToggleRow
@@ -356,7 +340,6 @@ function SeasonEditor({
           label={t('season.inspections')}
           hint={t('season.inspectionsHint')}
           inverted
-          disabled={disabled}
           testId="season-inspections"
           onToggle={on => {
             // A paused season has no interval to override.
@@ -378,7 +361,6 @@ function SeasonEditor({
               }
               min={1}
               max={365}
-              disabled={disabled}
               nullable
             />
           )}
@@ -388,14 +370,17 @@ function SeasonEditor({
           name={`seasons.${index}.feeding.enabled`}
           label={t('season.feeding')}
           hint={t('season.feedingHint')}
-          disabled={disabled}
           testId="season-feeding"
           onToggle={on => {
             if (on && getValues(`seasons.${index}.feeding.targetKg`) == null) {
-              setValue(`seasons.${index}.feeding.targetKg`, 12, {
-                shouldDirty: true,
-                shouldValidate: true,
-              });
+              setValue(
+                `seasons.${index}.feeding.targetKg`,
+                DEFAULT_FEEDING_TARGET_KG,
+                {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                },
+              );
             }
           }}
         >
@@ -404,10 +389,9 @@ function SeasonEditor({
               control={control}
               name={`seasons.${index}.feeding.targetKg`}
               label={t('season.feedingTarget')}
-              placeholder="12"
+              placeholder={String(DEFAULT_FEEDING_TARGET_KG)}
               min={0.1}
               step="0.1"
-              disabled={disabled}
               nullable
             />
           )}
@@ -419,7 +403,6 @@ function SeasonEditor({
           type="button"
           variant="ghost"
           size="sm"
-          disabled={disabled}
           onClick={onRemove}
           data-test="remove-season"
           className="text-destructive hover:text-destructive"
@@ -431,7 +414,6 @@ function SeasonEditor({
           type="button"
           variant="outline"
           size="sm"
-          disabled={disabled}
           onClick={onDone}
           data-test="done-season"
         >
@@ -452,8 +434,7 @@ function SeasonEditor({
  */
 export function SeasonListField({
   baseFrequencyDays,
-  disabled,
-}: SeasonListFieldProps) {
+}: Readonly<SeasonListFieldProps>) {
   const { t, i18n } = useTranslation('common');
   const { control } = useFormContext<SeasonFormValues>();
   const editor = useSeasonEditor();
@@ -498,7 +479,6 @@ export function SeasonListField({
                 index={index}
                 editing={editingId === seasonId}
                 baseFrequencyDays={baseFrequencyDays}
-                disabled={disabled}
                 onEdit={() => setEditing(seasonId, true)}
                 onDone={() => setEditing(seasonId, false)}
                 onRemove={() => removeSeason(seasonId)}
@@ -510,7 +490,7 @@ export function SeasonListField({
 
       {overlap && (
         <Alert variant="destructive" data-test="season-overlap">
-          <AlertCircle className="h-4 w-4" />
+          <AlertCircle className="size-4" />
           <AlertTitle>{t('season.overlapTitle')}</AlertTitle>
           <AlertDescription>
             <p>
@@ -539,11 +519,10 @@ export function SeasonListField({
       <Button
         type="button"
         variant="outline"
-        disabled={disabled}
         onClick={() => addSeason()}
         data-test="add-season"
       >
-        <Plus className="mr-2 h-4 w-4" />
+        <Plus className="size-4" />
         {t('season.add')}
       </Button>
     </div>
