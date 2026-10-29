@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useIsAdmin } from '@/hooks/use-is-admin';
 import {
   useAdminFrameSizes,
   useApproveFrameSize,
   useRejectFrameSize,
   useDeleteFrameSize,
+  useUpdateFrameSize,
 } from '@/api/hooks/useFrameSizes';
 import {
   Table,
@@ -25,32 +26,223 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 import { useDateFormat } from '@/hooks/use-date-format';
-import { Check, X, Trash2, RefreshCw } from 'lucide-react';
-import { FrameSize, FrameSizeStatus } from 'shared-schemas';
+import { Check, X, Trash2, RefreshCw, Pencil } from 'lucide-react';
+import { FrameSize, FrameSizeStatus, UpdateFrameSizeDto } from 'shared-schemas';
+import { FrameSizeEditDialog } from '@/components/frame-size-edit-dialog';
+import { FrameSizeStatusBadge } from '@/components/common/frame-size-status-badge';
 
-const getStatusBadgeVariant = (
-  status: string,
-): 'destructive' | 'secondary' | 'default' | 'outline' => {
-  switch (status) {
-    case 'PENDING':
-      return 'secondary';
-    case 'APPROVED':
-      return 'default';
-    case 'REJECTED':
-      return 'destructive';
-    default:
-      return 'outline';
+const PENDING_COLUMNS = 6;
+const ALL_COLUMNS = 5;
+
+interface PendingFrameSizeRowsProps {
+  sizes: FrameSize[];
+  isLoading: boolean;
+  formatDate: (date: Date | string) => string;
+  onEdit: (frameSize: FrameSize) => void;
+  onApprove: (id: string) => void;
+  onReject: (id: string) => void;
+  approvingId?: string;
+  rejectingId?: string;
+}
+
+const PendingFrameSizeRows = ({
+  sizes,
+  isLoading,
+  formatDate,
+  onEdit,
+  onApprove,
+  onReject,
+  approvingId,
+  rejectingId,
+}: PendingFrameSizeRowsProps) => {
+  const { t } = useTranslation(['admin', 'common']);
+
+  if (isLoading) {
+    return (
+      <TableRow>
+        <TableCell colSpan={PENDING_COLUMNS} className="py-8 text-center">
+          {t('common:status.loading')}
+        </TableCell>
+      </TableRow>
+    );
   }
+
+  if (sizes.length === 0) {
+    return (
+      <TableRow>
+        <TableCell
+          colSpan={PENDING_COLUMNS}
+          className="py-8 text-center text-muted-foreground"
+        >
+          {t('frameSizes.noPending')}
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  return (
+    <>
+      {sizes.map(size => {
+        const isBusy = approvingId === size.id || rejectingId === size.id;
+        return (
+          <TableRow key={size.id}>
+            <TableCell className="font-medium">{size.name}</TableCell>
+            <TableCell>{size.width}</TableCell>
+            <TableCell>{size.height}</TableCell>
+            <TableCell>{size.depth}</TableCell>
+            <TableCell>{formatDate(size.createdAt)}</TableCell>
+            <TableCell>
+              <div className="flex gap-2">
+                {!size.isBuiltIn && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    data-test="edit-frame-size"
+                    onClick={() => onEdit(size)}
+                  >
+                    <Pencil className="mr-1 size-4" />
+                    {t('common:actions.edit')}
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onApprove(size.id)}
+                  disabled={isBusy}
+                >
+                  <Check className="mr-1 size-4" />
+                  {t('frameSizes.approve')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onReject(size.id)}
+                  disabled={isBusy}
+                >
+                  <X className="mr-1 size-4" />
+                  {t('frameSizes.reject')}
+                </Button>
+              </div>
+            </TableCell>
+          </TableRow>
+        );
+      })}
+    </>
+  );
+};
+
+interface AllFrameSizeRowsProps {
+  sizes: FrameSize[];
+  isLoading: boolean;
+  onEdit: (frameSize: FrameSize) => void;
+  onDelete: (id: string) => void;
+  deletingId?: string;
+}
+
+const AllFrameSizeRows = ({
+  sizes,
+  isLoading,
+  onEdit,
+  onDelete,
+  deletingId,
+}: AllFrameSizeRowsProps) => {
+  const { t } = useTranslation(['admin', 'common']);
+
+  if (isLoading) {
+    return (
+      <TableRow>
+        <TableCell colSpan={ALL_COLUMNS} className="py-8 text-center">
+          {t('common:status.loading')}
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  if (sizes.length === 0) {
+    return (
+      <TableRow>
+        <TableCell
+          colSpan={ALL_COLUMNS}
+          className="py-8 text-center text-muted-foreground"
+        >
+          {t('frameSizes.empty')}
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  return (
+    <>
+      {sizes.map(size => (
+        <TableRow key={size.id}>
+          <TableCell className="font-medium">{size.name}</TableCell>
+          <TableCell>
+            {t('frameSizes.dimensions', {
+              width: size.width,
+              height: size.height,
+              depth: size.depth,
+            })}
+          </TableCell>
+          <TableCell>
+            {size.isBuiltIn ? (
+              <Badge variant="outline">{t('frameSizes.builtIn')}</Badge>
+            ) : (
+              <Badge variant="secondary">{t('frameSizes.community')}</Badge>
+            )}
+          </TableCell>
+          <TableCell>
+            <FrameSizeStatusBadge status={size.status} />
+          </TableCell>
+          <TableCell>
+            {!size.isBuiltIn && (
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label={t('common:actions.edit')}
+                  data-test="edit-frame-size"
+                  onClick={() => onEdit(size)}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive"
+                  aria-label={t('common:actions.delete')}
+                  onClick={() => onDelete(size.id)}
+                  disabled={deletingId === size.id}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+            )}
+          </TableCell>
+        </TableRow>
+      ))}
+    </>
+  );
 };
 
 const FrameSizeReviewPage: React.FC = () => {
   const { t } = useTranslation(['admin', 'common']);
   const { formatDate } = useDateFormat();
   const isAdmin = useIsAdmin();
-  const { data: frameSizes = [], isLoading, refetch } = useAdminFrameSizes();
+  const {
+    data: frameSizes = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useAdminFrameSizes();
   const approveMutation = useApproveFrameSize();
   const rejectMutation = useRejectFrameSize();
   const deleteMutation = useDeleteFrameSize();
+  const updateMutation = useUpdateFrameSize();
+  const [editing, setEditing] = useState<FrameSize | null>(null);
+
+  const handleSave = async (id: string, data: UpdateFrameSizeDto) => {
+    await updateMutation.mutateAsync({ id, data });
+  };
 
   if (!isAdmin) {
     return (
@@ -68,6 +260,15 @@ const FrameSizeReviewPage: React.FC = () => {
   const otherSizes = frameSizes.filter(
     (fs: FrameSize) => fs.status !== FrameSizeStatus.PENDING,
   );
+  const approvingId = approveMutation.isPending
+    ? approveMutation.variables
+    : undefined;
+  const rejectingId = rejectMutation.isPending
+    ? rejectMutation.variables
+    : undefined;
+  const deletingId = deleteMutation.isPending
+    ? deleteMutation.variables
+    : undefined;
 
   return (
     <div className="space-y-6">
@@ -80,10 +281,10 @@ const FrameSizeReviewPage: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={() => refetch()}
-              disabled={isLoading}
+              disabled={isFetching}
             >
               <RefreshCw
-                className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
+                className={`mr-2 size-4 ${isFetching ? 'animate-spin' : ''}`}
               />
               {t('common:actions.refresh')}
             </Button>
@@ -106,54 +307,16 @@ const FrameSizeReviewPage: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8">
-                      {t('common:status.loading')}
-                    </TableCell>
-                  </TableRow>
-                ) : pendingSizes.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="text-center py-8 text-muted-foreground"
-                    >
-                      {t('frameSizes.noPending')}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  pendingSizes.map((fs: FrameSize) => (
-                    <TableRow key={fs.id}>
-                      <TableCell className="font-medium">{fs.name}</TableCell>
-                      <TableCell>{fs.width}</TableCell>
-                      <TableCell>{fs.height}</TableCell>
-                      <TableCell>{fs.depth}</TableCell>
-                      <TableCell>{formatDate(fs.createdAt)}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => approveMutation.mutate(fs.id)}
-                            disabled={approveMutation.isPending}
-                          >
-                            <Check className="h-4 w-4 mr-1" />
-                            {t('frameSizes.approve')}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => rejectMutation.mutate(fs.id)}
-                            disabled={rejectMutation.isPending}
-                          >
-                            <X className="h-4 w-4 mr-1" />
-                            {t('frameSizes.reject')}
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
+                <PendingFrameSizeRows
+                  sizes={pendingSizes}
+                  isLoading={isLoading}
+                  formatDate={formatDate}
+                  onEdit={frameSize => setEditing(frameSize)}
+                  onApprove={id => approveMutation.mutate(id)}
+                  onReject={id => rejectMutation.mutate(id)}
+                  approvingId={approvingId}
+                  rejectingId={rejectingId}
+                />
               </TableBody>
             </Table>
           </div>
@@ -179,63 +342,27 @@ const FrameSizeReviewPage: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {otherSizes.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className="text-center py-8 text-muted-foreground"
-                    >
-                      {t('frameSizes.empty')}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  otherSizes.map((fs: FrameSize) => (
-                    <TableRow key={fs.id}>
-                      <TableCell className="font-medium">{fs.name}</TableCell>
-                      <TableCell>
-                        {t('frameSizes.dimensions', {
-                          width: fs.width,
-                          height: fs.height,
-                          depth: fs.depth,
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        {fs.isBuiltIn ? (
-                          <Badge variant="outline">
-                            {t('frameSizes.builtIn')}
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary">
-                            {t('frameSizes.community')}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={getStatusBadgeVariant(fs.status)}>
-                          {fs.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {!fs.isBuiltIn && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-destructive"
-                            onClick={() => deleteMutation.mutate(fs.id)}
-                            disabled={deleteMutation.isPending}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
+                <AllFrameSizeRows
+                  sizes={otherSizes}
+                  isLoading={isLoading}
+                  onEdit={frameSize => setEditing(frameSize)}
+                  onDelete={id => deleteMutation.mutate(id)}
+                  deletingId={deletingId}
+                />
               </TableBody>
             </Table>
           </div>
         </CardContent>
       </Card>
+
+      {editing ? (
+        <FrameSizeEditDialog
+          key={editing.id}
+          frameSize={editing}
+          onClose={() => setEditing(null)}
+          onSave={handleSave}
+        />
+      ) : null}
     </div>
   );
 };

@@ -43,6 +43,7 @@ import { SsoAccountCard } from '@/components/auth/sso-account-card';
 import { useLinkedAccounts } from '@/api/hooks/useAuth';
 import { getAuthConfig } from '@/lib/auth-config';
 import { FeedTypesCard } from '@/components/feed-types-card';
+import { FrameSizesCard } from '@/components/frame-sizes-card';
 import { DeleteAccountDialog } from '@/components/common/delete-account-dialog';
 
 // Date format patterns are shown as-is; they are not translatable text.
@@ -462,6 +463,7 @@ export const UserSettingsPage = () => {
 
         {/* Passkeys */}
         <FeedTypesCard />
+        <FrameSizesCard />
 
         {localLoginEnabled && <PasskeysCard />}
 

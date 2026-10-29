@@ -16,7 +16,12 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { FrameSizesService } from './frame-sizes.service';
-import { createFrameSizeSchema, CreateFrameSizeDto } from 'shared-schemas';
+import {
+  createFrameSizeSchema,
+  CreateFrameSizeDto,
+  updateFrameSizeSchema,
+  UpdateFrameSizeDto,
+} from 'shared-schemas';
 import {
   JwtAuthGuard,
   RolesGuard,
@@ -58,6 +63,32 @@ export class FrameSizesController {
       ...createDto,
       createdByUserId: req.user.id,
     });
+  }
+
+  @Put('frame-sizes/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Edit a custom frame size (its creator, or an admin for any non-built-in size)',
+  })
+  @ApiResponse({ status: 200, description: 'Frame size updated' })
+  @ApiResponse({ status: 400, description: 'Built-in or empty payload' })
+  @ApiResponse({ status: 403, description: 'Not the creator and not an admin' })
+  @ApiResponse({ status: 404, description: 'Frame size not found' })
+  @ApiResponse({ status: 409, description: 'Name already in use' })
+  @ZodValidation(updateFrameSizeSchema)
+  async update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateFrameSizeDto,
+    @Req() req: RequestWithUser,
+  ) {
+    return this.frameSizesService.update(
+      req.user.id,
+      req.user.role === 'ADMIN',
+      id,
+      updateDto,
+    );
   }
 
   // --- Admin endpoints ---

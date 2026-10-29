@@ -2755,7 +2755,28 @@
   },
   "frameSizeToasts": {
     "submitted": "Frame size submitted for review",
-    "submitFailed": "Failed to submit frame size"
+    "submitFailed": "Failed to submit frame size",
+    "updated": "Frame size updated",
+    "updateFailed": "Failed to update frame size"
+  },
+  "frameSizes": {
+    "title": "My frame sizes",
+    "description": "Custom frame sizes you created. Editing one updates every box that uses it.",
+    "empty": "No custom frame sizes yet: add one while editing a hive's boxes.",
+    "emptyCta": "Go to hives",
+    "dimensions": "{{width}} × {{height}} × {{depth}} mm",
+    "statusShared": "Shared",
+    "statusPending": "Pending review",
+    "statusRejected": "Rejected"
+  },
+  "frameSizeEdit": {
+    "title": "Edit frame size",
+    "description": "Correct the name or dimensions. Every box using this frame size picks up the change.",
+    "sharedNotice": "This size is approved and shared with the community, so the change applies to other beekeepers' boxes too.",
+    "name": "Name",
+    "width": "Width (mm)",
+    "height": "Height (mm)",
+    "depth": "Depth (mm)"
   },
   "audioRecorder": {
     "notSupported": "Audio recording is not supported in this browser.",
