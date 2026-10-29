@@ -72,12 +72,13 @@ const Harness = ({ initialSizes }: { initialSizes: FrameSize[] }) => {
         <FrameSizesCardView
           sizes={sizes}
           currentUserId={CURRENT_USER}
-          onSave={async (id, data) => {
+          onSave={(id, data) => {
             setSizes(previous =>
               previous.map(size =>
                 size.id === id ? { ...size, ...data } : size,
               ),
             );
+            return Promise.resolve();
           }}
         />
       </div>

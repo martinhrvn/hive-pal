@@ -48,9 +48,12 @@ const Harness = ({
           key={frameSize.id}
           frameSize={frameSize}
           onClose={() => setOpen(false)}
-          onSave={async (id, data) => {
-            if (rejectOnSave) throw new Error('save rejected');
+          onSave={(id, data) => {
+            if (rejectOnSave) {
+              return Promise.reject(new Error('save rejected'));
+            }
             setSaved(JSON.stringify({ id, ...data }));
+            return Promise.resolve();
           }}
         />
       )}

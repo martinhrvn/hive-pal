@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { FrameSize, UpdateFrameSizeDto } from 'shared-schemas';
@@ -44,6 +44,87 @@ const FrameSizeRowSkeleton = () => (
   </div>
 );
 
+const FrameSizesSkeleton = () => {
+  const { t } = useTranslation('common');
+
+  return (
+    <output
+      className="block space-y-2"
+      aria-label={t('status.loading', { defaultValue: 'Loading...' })}
+    >
+      <FrameSizeRowSkeleton />
+      <FrameSizeRowSkeleton />
+    </output>
+  );
+};
+
+const FrameSizesEmptyState = () => {
+  const { t } = useTranslation('common');
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        {t('frameSizes.empty', {
+          defaultValue:
+            "No custom frame sizes yet: add one while editing a hive's boxes.",
+        })}
+      </p>
+      <Button asChild variant="outline" size="sm">
+        <Link to="/hives">
+          {t('frameSizes.emptyCta', { defaultValue: 'Go to hives' })}
+        </Link>
+      </Button>
+    </div>
+  );
+};
+
+const FrameSizeList = ({
+  sizes,
+  onEdit,
+}: {
+  sizes: FrameSize[];
+  onEdit: (size: FrameSize) => void;
+}) => {
+  const { t } = useTranslation('common');
+
+  return (
+    <ul className="space-y-2">
+      {sizes.map(size => (
+        <li
+          key={size.id}
+          data-test="frame-size-row"
+          className="flex items-center justify-between gap-3 rounded-md border px-3 py-2"
+        >
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="truncate font-medium">{size.name}</span>
+              <FrameSizeStatusBadge status={size.status} />
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {t('frameSizes.dimensions', {
+                defaultValue: '{{width}} × {{height}} × {{depth}} mm',
+                width: size.width,
+                height: size.height,
+                depth: size.depth,
+              })}
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 shrink-0"
+            aria-label={t('actions.edit', { defaultValue: 'Edit' })}
+            data-test="edit-frame-size"
+            onClick={() => onEdit(size)}
+          >
+            <Pencil className="size-4" />
+          </Button>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 export const FrameSizesCardView = ({
   sizes,
   currentUserId,
@@ -56,6 +137,15 @@ export const FrameSizesCardView = ({
   const mySizes = sizes.filter(
     size => !size.isBuiltIn && size.createdByUserId === currentUserId,
   );
+
+  let body: ReactNode;
+  if (isLoading) {
+    body = <FrameSizesSkeleton />;
+  } else if (mySizes.length === 0) {
+    body = <FrameSizesEmptyState />;
+  } else {
+    body = <FrameSizeList sizes={mySizes} onEdit={size => setEditing(size)} />;
+  }
 
   return (
     <Card>
@@ -72,65 +162,7 @@ export const FrameSizesCardView = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {isLoading ? (
-          <div
-            className="space-y-2"
-            role="status"
-            aria-label={t('status.loading', { defaultValue: 'Loading...' })}
-          >
-            <FrameSizeRowSkeleton />
-            <FrameSizeRowSkeleton />
-          </div>
-        ) : mySizes.length === 0 ? (
-          <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              {t('frameSizes.empty', {
-                defaultValue:
-                  "No custom frame sizes yet: add one while editing a hive's boxes.",
-              })}
-            </p>
-            <Button asChild variant="outline" size="sm">
-              <Link to="/hives">
-                {t('frameSizes.emptyCta', { defaultValue: 'Go to hives' })}
-              </Link>
-            </Button>
-          </div>
-        ) : (
-          <ul className="space-y-2">
-            {mySizes.map(size => (
-              <li
-                key={size.id}
-                data-test="frame-size-row"
-                className="flex items-center justify-between gap-3 rounded-md border px-3 py-2"
-              >
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="truncate font-medium">{size.name}</span>
-                    <FrameSizeStatusBadge status={size.status} />
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {t('frameSizes.dimensions', {
-                      defaultValue: '{{width}} × {{height}} × {{depth}} mm',
-                      width: size.width,
-                      height: size.height,
-                      depth: size.depth,
-                    })}
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 shrink-0"
-                  aria-label={t('actions.edit', { defaultValue: 'Edit' })}
-                  data-test="edit-frame-size"
-                  onClick={() => setEditing(size)}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
+        {body}
 
         {editing ? (
           <FrameSizeEditDialog
