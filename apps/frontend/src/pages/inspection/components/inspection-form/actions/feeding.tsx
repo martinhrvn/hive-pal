@@ -188,6 +188,12 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
   // The conversion hint only adds information for volume entries.
   const showConversion = amountG != null && isVolumeFeedUnit(enteredUnit);
 
+  // Kilogram and litre amounts are commonly fractional (half a litre is a
+  // normal feeding), so they need decimal entry; grams and millilitres stay
+  // whole numbers.
+  const amountStep = enteredUnit === 'kg' || enteredUnit === 'l' ? 0.5 : 100;
+  const amountDecimals = enteredUnit === 'kg' || enteredUnit === 'l' ? 2 : 0;
+
   const handleSelect = (id: string) => {
     setSelectedId(id);
     if (id !== FREETEXT) setCustomFeedName('');
@@ -305,8 +311,9 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
           <div className="flex gap-2">
             <NumericInputField
               id={'quantity'}
-              step={enteredUnit === 'kg' || enteredUnit === 'l' ? 0.5 : 100}
+              step={amountStep}
               min={0}
+              decimalPlaces={amountDecimals}
               value={enteredAmount}
               onChange={e => setEnteredAmount(e)}
             />
@@ -426,7 +433,6 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
     });
   }
 };
-
 
 export const FeedingView: React.FC<FeedingActionProps> = ({
   action,
