@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PlusIcon, MinusIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
@@ -35,6 +36,7 @@ const NumericField = ({
   decimalPlaces = 0,
   id = name,
 }: NumericFieldProps) => {
+  const { t } = useTranslation('common');
   const [showSlider, setShowSlider] = useState<boolean>(false);
   const [numericValue, setNumericValue] = useState<number | null>(
     value ?? defaultValue,
@@ -63,6 +65,16 @@ const NumericField = ({
     };
   }, []);
 
+  const commitValue = (next: number) => {
+    const rounded = parseFloat(next.toFixed(decimalPlaces));
+    const clamped = Math.min(
+      max ?? Infinity,
+      Math.max(min ?? -Infinity, rounded),
+    );
+    onChange(clamped);
+    setNumericValue(clamped);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
       onChange(null);
@@ -82,57 +94,30 @@ const NumericField = ({
   };
 
   const handleSliderChange = (value: number[]) => {
-    const roundedValue = parseFloat(value[0].toFixed(decimalPlaces));
-    onChange(roundedValue);
-    setNumericValue(roundedValue);
+    commitValue(value[0]);
   };
 
   const incrementValue = () => {
-    if (
-      max !== undefined &&
-      numericValue !== null &&
-      numericValue + step > max
-    ) {
-      onChange(max);
-      setNumericValue(max);
-      return;
-    }
-    const newValue = parseFloat(
-      ((numericValue ?? 0) + step).toFixed(decimalPlaces),
-    );
-    onChange(newValue);
-    setNumericValue(newValue);
+    commitValue((numericValue ?? 0) + step);
   };
 
   const decrementValue = () => {
-    if (
-      min !== undefined &&
-      numericValue !== null &&
-      numericValue - step < min
-    ) {
-      onChange(min);
-      setNumericValue(min);
-      return;
-    }
-    const newValue = parseFloat(
-      ((numericValue ?? 0) - step).toFixed(decimalPlaces),
-    );
-    onChange(newValue);
-    setNumericValue(newValue);
+    commitValue((numericValue ?? 0) - step);
   };
 
   const showSliderSection =
     showSlider && min !== undefined && max !== undefined;
 
   return (
-    <div className="w-full flex items-center" ref={componentRef}>
+    <div className="relative flex w-full items-center" ref={componentRef}>
       <button
         type="button"
         data-test={TEST_SELECTORS.NUMERIC_FIELD_DECREMENT_BUTTON}
-        className="h-1/2 px-2 text-gray-400 hover:text-gray-600 focus:outline-none"
+        aria-label={t('numericField.decrement')}
+        className="flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         onClick={decrementValue}
       >
-        <MinusIcon className="h-6 w-6" />
+        <MinusIcon className="size-5" />
       </button>
       <div className="relative w-full rounded-md shadow-sm">
         {renderIcon && (
@@ -167,23 +152,24 @@ const NumericField = ({
         />
         {unit && (
           <div className="absolute inset-y-0 right-10 flex items-center">
-            <span className="text-gray-500 pr-2">{unit}</span>
+            <span className="text-muted-foreground pr-2">{unit}</span>
           </div>
         )}
       </div>
       <button
         type="button"
         data-test={TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON}
-        className="h-1/2 px-2 text-gray-400 hover:text-gray-600 focus:outline-none"
+        aria-label={t('numericField.increment')}
+        className="flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         onClick={incrementValue}
       >
-        <PlusIcon className="h-6 w-6" />
+        <PlusIcon className="size-5" />
       </button>
 
       {showSliderSection && (
         <div
           data-test="numeric-slider"
-          className="absolute inset-x-0 -top-16 px-2 pb-2 pt-5 bg-white border rounded-t-md shadow-sm"
+          className="absolute inset-x-0 -top-16 z-10 rounded-t-md border bg-popover px-2 pb-2 pt-5 text-popover-foreground shadow-sm"
         >
           <Slider
             value={[numericValue ?? defaultValue]}
@@ -193,7 +179,7 @@ const NumericField = ({
             onValueChange={handleSliderChange}
             className="mt-2"
           />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <div className="mt-1 flex justify-between text-xs text-muted-foreground">
             <span>
               {min}
               {unit}
