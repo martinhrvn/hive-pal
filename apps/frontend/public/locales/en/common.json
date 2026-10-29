@@ -2762,7 +2762,8 @@
   "frameSizes": {
     "title": "My frame sizes",
     "description": "Custom frame sizes you created. Editing one updates every box that uses it.",
-    "empty": "No custom frame sizes yet — add one while editing a hive's boxes.",
+    "empty": "No custom frame sizes yet: add one while editing a hive's boxes.",
+    "emptyCta": "Go to hives",
     "dimensions": "{{width}} × {{height}} × {{depth}} mm",
     "statusShared": "Shared",
     "statusPending": "Pending review",

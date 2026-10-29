@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FrameSize, FrameSizeStatus, UpdateFrameSizeDto } from 'shared-schemas';
+import { Link } from 'react-router';
+import { FrameSize, UpdateFrameSizeDto } from 'shared-schemas';
 import {
   Card,
   CardContent,
@@ -8,10 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, Pencil, Ruler } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Pencil, Ruler } from 'lucide-react';
 import { useFrameSizes, useUpdateFrameSize, useUserProfile } from '@/api/hooks';
+import { FrameSizeStatusBadge } from '@/components/common/frame-size-status-badge';
 import { FrameSizeEditDialog } from './frame-size-edit-dialog';
 
 /**
@@ -30,29 +32,17 @@ export interface FrameSizesCardViewProps {
   onSave: (id: string, data: UpdateFrameSizeDto) => Promise<void>;
 }
 
-const FrameSizeStatusBadge = ({ status }: { status: FrameSize['status'] }) => {
-  const { t } = useTranslation('common');
-
-  if (status === FrameSizeStatus.APPROVED) {
-    return (
-      <Badge variant="outline">
-        {t('frameSizes.statusShared', { defaultValue: 'Shared' })}
-      </Badge>
-    );
-  }
-  if (status === FrameSizeStatus.REJECTED) {
-    return (
-      <Badge variant="destructive">
-        {t('frameSizes.statusRejected', { defaultValue: 'Rejected' })}
-      </Badge>
-    );
-  }
-  return (
-    <Badge variant="secondary">
-      {t('frameSizes.statusPending', { defaultValue: 'Pending review' })}
-    </Badge>
-  );
-};
+const FrameSizeRowSkeleton = () => (
+  <div className="rounded-md border px-3 py-2">
+    <div className="flex items-center justify-between gap-3">
+      <div className="space-y-1.5">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-3 w-40" />
+      </div>
+      <Skeleton className="size-8" />
+    </div>
+  </div>
+);
 
 export const FrameSizesCardView = ({
   sizes,
@@ -71,7 +61,7 @@ export const FrameSizesCardView = ({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Ruler className="h-5 w-5" />
+          <Ruler className="size-5" />
           {t('frameSizes.title', { defaultValue: 'My frame sizes' })}
         </CardTitle>
         <CardDescription>
@@ -83,17 +73,28 @@ export const FrameSizesCardView = ({
       </CardHeader>
       <CardContent className="space-y-4">
         {isLoading ? (
-          <Loader2
-            className="h-5 w-5 animate-spin text-muted-foreground"
+          <div
+            className="space-y-2"
+            role="status"
             aria-label={t('status.loading', { defaultValue: 'Loading...' })}
-          />
+          >
+            <FrameSizeRowSkeleton />
+            <FrameSizeRowSkeleton />
+          </div>
         ) : mySizes.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {t('frameSizes.empty', {
-              defaultValue:
-                "No custom frame sizes yet — add one while editing a hive's boxes.",
-            })}
-          </p>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              {t('frameSizes.empty', {
+                defaultValue:
+                  "No custom frame sizes yet: add one while editing a hive's boxes.",
+              })}
+            </p>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/hives">
+                {t('frameSizes.emptyCta', { defaultValue: 'Go to hives' })}
+              </Link>
+            </Button>
+          </div>
         ) : (
           <ul className="space-y-2">
             {mySizes.map(size => (
@@ -104,7 +105,7 @@ export const FrameSizesCardView = ({
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium truncate">{size.name}</span>
+                    <span className="truncate font-medium">{size.name}</span>
                     <FrameSizeStatusBadge status={size.status} />
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -119,12 +120,12 @@ export const FrameSizesCardView = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 shrink-0"
+                  className="size-8 shrink-0"
                   aria-label={t('actions.edit', { defaultValue: 'Edit' })}
                   data-test="edit-frame-size"
                   onClick={() => setEditing(size)}
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Pencil className="size-4" />
                 </Button>
               </li>
             ))}
@@ -146,22 +147,18 @@ export const FrameSizesCardView = ({
 
 export const FrameSizesCard = () => {
   const { data: sizes = [], isLoading } = useFrameSizes();
-  const { data: currentUser } = useUserProfile();
+  const { data: currentUser, isLoading: isUserLoading } = useUserProfile();
   const updateFrameSize = useUpdateFrameSize();
-  const { mutateAsync } = updateFrameSize;
 
-  const handleSave = useCallback(
-    async (id: string, data: UpdateFrameSizeDto) => {
-      await mutateAsync({ id, data });
-    },
-    [mutateAsync],
-  );
+  const handleSave = async (id: string, data: UpdateFrameSizeDto) => {
+    await updateFrameSize.mutateAsync({ id, data });
+  };
 
   return (
     <FrameSizesCardView
       sizes={sizes}
       currentUserId={currentUser?.id}
-      isLoading={isLoading}
+      isLoading={isLoading || isUserLoading}
       onSave={handleSave}
     />
   );

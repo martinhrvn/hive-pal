@@ -110,7 +110,7 @@ export const FrameSizeEditDialog = ({
 
           {isShared && (
             <p
-              className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm"
+              className="rounded-md border border-warning/40 bg-warning-muted px-3 py-2 text-sm text-warning-foreground"
               data-test="frame-size-edit-shared-notice"
             >
               {t('frameSizeEdit.sharedNotice')}
@@ -124,6 +124,7 @@ export const FrameSizeEditDialog = ({
             <Input
               id="frame-size-edit-name"
               data-test="frame-size-edit-name"
+              aria-invalid={draft.name.length > 0 && name.length < 2}
               value={draft.name}
               onChange={event =>
                 setDraft(previous => ({
@@ -143,6 +144,7 @@ export const FrameSizeEditDialog = ({
                 id="frame-size-edit-width"
                 data-test="frame-size-edit-width"
                 inputMode="decimal"
+                aria-invalid={draft.width.trim() !== '' && width === null}
                 value={draft.width}
                 onChange={event =>
                   setDraft(previous => ({
@@ -160,6 +162,7 @@ export const FrameSizeEditDialog = ({
                 id="frame-size-edit-height"
                 data-test="frame-size-edit-height"
                 inputMode="decimal"
+                aria-invalid={draft.height.trim() !== '' && height === null}
                 value={draft.height}
                 onChange={event =>
                   setDraft(previous => ({
@@ -177,6 +180,7 @@ export const FrameSizeEditDialog = ({
                 id="frame-size-edit-depth"
                 data-test="frame-size-edit-depth"
                 inputMode="decimal"
+                aria-invalid={draft.depth.trim() !== '' && depth === null}
                 value={draft.depth}
                 onChange={event =>
                   setDraft(previous => ({
@@ -202,7 +206,7 @@ export const FrameSizeEditDialog = ({
               data-test="frame-size-edit-save"
               disabled={!canSave}
             >
-              {isSaving && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
+              {isSaving && <Loader2 className="mr-1 size-4 animate-spin" />}
               {t('actions.save')}
             </Button>
           </DialogFooter>

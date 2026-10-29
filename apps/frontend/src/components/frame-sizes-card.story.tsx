@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { MemoryRouter } from 'react-router';
 import { FrameSize } from 'shared-schemas';
 import { FrameSizesCardView } from './frame-sizes-card';
 
@@ -66,19 +67,21 @@ const Harness = ({ initialSizes }: { initialSizes: FrameSize[] }) => {
   const [sizes, setSizes] = useState(initialSizes);
 
   return (
-    <div className="mx-auto max-w-2xl p-4">
-      <FrameSizesCardView
-        sizes={sizes}
-        currentUserId={CURRENT_USER}
-        onSave={async (id, data) => {
-          setSizes(previous =>
-            previous.map(size =>
-              size.id === id ? { ...size, ...data } : size,
-            ),
-          );
-        }}
-      />
-    </div>
+    <MemoryRouter>
+      <div className="mx-auto max-w-2xl p-4">
+        <FrameSizesCardView
+          sizes={sizes}
+          currentUserId={CURRENT_USER}
+          onSave={async (id, data) => {
+            setSizes(previous =>
+              previous.map(size =>
+                size.id === id ? { ...size, ...data } : size,
+              ),
+            );
+          }}
+        />
+      </div>
+    </MemoryRouter>
   );
 };
 

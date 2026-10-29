@@ -1390,7 +1390,8 @@
     "frameSizes": {
         "title": "Moje veľkosti rámikov",
         "description": "Vlastné veľkosti rámikov, ktoré ste vytvorili. Úprava zmení všetky nadstavky, ktoré ich používajú.",
-        "empty": "Zatiaľ žiadne vlastné veľkosti rámikov — pridajte ich pri úprave nadstavkov úľa.",
+        "empty": "Zatiaľ žiadne vlastné veľkosti rámikov: pridajte ich pri úprave nadstavkov úľa.",
+        "emptyCta": "Prejsť na úle",
         "dimensions": "{{width}} × {{height}} × {{depth}} mm",
         "statusShared": "Zdieľaná",
         "statusPending": "Čaká na posúdenie",
