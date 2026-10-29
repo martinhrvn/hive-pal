@@ -2780,5 +2780,9 @@
   },
   "temperatureField": {
     "placeholder": "Enter temperature"
+  },
+  "numericField": {
+    "increment": "Increase value",
+    "decrement": "Decrease value"
   }
 }

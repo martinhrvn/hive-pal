@@ -155,6 +155,55 @@ test.describe('NumericField', () => {
     await expect(component).toContainText('100°C');
   });
 
+  test('clamps decrement from an empty value to min', async ({ mount }) => {
+    const component = await mount<typeof Stateful>(
+      'components/common/numeric-input-field/Stateful',
+      { initialValue: null, min: 0, max: 10, defaultValue: 0, unit: 'items' },
+    );
+
+    const decrement = component.getByTestId(
+      TEST_SELECTORS.NUMERIC_FIELD_DECREMENT_BUTTON,
+    );
+    await expect(decrement).toHaveAttribute('aria-label', /.+/);
+    await expect(
+      component.getByTestId(TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON),
+    ).toHaveAttribute('aria-label', /.+/);
+    await decrement.click();
+
+    await expect(component.locator('input[data-slot="input"]')).toHaveValue(
+      '0',
+    );
+    await expect(component.getByTestId('field-value')).toHaveValue('0');
+  });
+
+  test('accepts fractional values when decimalPlaces is set', async ({
+    mount,
+  }) => {
+    const component = await mount<typeof Stateful>(
+      'components/common/numeric-input-field/Stateful',
+      {
+        initialValue: 0,
+        min: 0,
+        max: 10,
+        defaultValue: 0,
+        step: 0.5,
+        decimalPlaces: 2,
+        unit: 'L',
+      },
+    );
+
+    const input = component.locator('input[data-slot="input"]');
+    await input.fill('0.5');
+
+    await expect(input).toHaveValue('0.5');
+    await expect(component.getByTestId('field-value')).toHaveValue('0.5');
+
+    await component
+      .getByTestId(TEST_SELECTORS.NUMERIC_FIELD_INCREMENT_BUTTON)
+      .click();
+    await expect(input).toHaveValue('1');
+  });
+
   test('allows direct input value changes', async ({ mount }) => {
     const component = await mount<typeof Stateful>(
       'components/common/numeric-input-field/Stateful',
