@@ -1445,5 +1445,9 @@
     },
     "temperatureField": {
         "placeholder": "Zadajte teplotu"
+    },
+    "numericField": {
+        "increment": "Zvýšiť hodnotu",
+        "decrement": "Znížiť hodnotu"
     }
 }

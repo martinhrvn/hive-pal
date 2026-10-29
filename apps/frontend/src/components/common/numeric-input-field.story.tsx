@@ -33,7 +33,7 @@ export const Default = () => (
 
 type StatefulProps = Pick<
   NumericFieldProps,
-  'min' | 'max' | 'defaultValue' | 'unit'
+  'min' | 'max' | 'defaultValue' | 'unit' | 'step' | 'decimalPlaces'
 > & {
   initialValue?: number | null;
 };
@@ -46,6 +46,8 @@ export const Stateful = ({
   max = 10,
   defaultValue = 5,
   unit = 'items',
+  step = 1,
+  decimalPlaces = 0,
 }: StatefulProps) => {
   const [value, setValue] = useState<number | null>(initialValue);
   return (
@@ -57,6 +59,8 @@ export const Stateful = ({
         max={max}
         defaultValue={defaultValue}
         unit={unit}
+        step={step}
+        decimalPlaces={decimalPlaces}
       />
       <form hidden>
         <input data-test="field-value" readOnly value={String(value)} />

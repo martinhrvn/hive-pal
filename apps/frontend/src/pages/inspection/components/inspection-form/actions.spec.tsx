@@ -62,6 +62,33 @@ test.describe('Feeding', () => {
     await expect(actionsSection.getAction('Feeding')).not.toBeVisible();
   });
 
+  test('Accepts fractional amounts below one litre', async ({
+    page,
+    mount,
+  }) => {
+    await mount(
+      'pages/inspection/components/inspection-form/actions/ActionsWithForm',
+    );
+    const actionsSection = new ActionsSectionPageObject(page);
+    const feedingSection = actionsSection.feedingSection;
+    await actionsSection.selectAction('Feeding');
+
+    await feedingSection.selectFeedType('Syrup 2:1');
+    const quantity = feedingSection.getQuantityField();
+    await quantity.pressSequentially('0.5');
+
+    // The field must show what was typed and keep it, rather than rounding to 1.
+    await expect(quantity).toHaveValue('0.5');
+    // 0.5 L × 1.33 g/ml × 66.7 % sugar ≈ 444 g
+    await expect(page.getByText('≈ 444 g of sugar')).toBeVisible();
+
+    await feedingSection.getSaveButton().click();
+    await feedingSection.verifyFeedingView({
+      feedType: 'Syrup 2:1',
+      amountLabel: '0.5 L',
+    });
+  });
+
   test('Commercial invert syrup can be entered by weight', async ({
     page,
     mount,
