@@ -2,7 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { CreateFrameSizeDto, FrameSize } from 'shared-schemas';
+import {
+  CreateFrameSizeDto,
+  FrameSize,
+  UpdateFrameSizeDto,
+} from 'shared-schemas';
 import { AxiosError } from 'axios';
 
 const FRAME_SIZES_KEYS = {
@@ -44,6 +48,40 @@ export const useSubmitFrameSize = () => {
     onError: (error: AxiosError<{ message: string }>) => {
       toast.error(
         error.response?.data?.message || t('frameSizeToasts.submitFailed'),
+      );
+    },
+  });
+};
+
+// Edit a custom frame size (its creator, or an admin for any non-built-in one)
+export const useUpdateFrameSize = () => {
+  const { t } = useTranslation('common');
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateFrameSizeDto;
+    }): Promise<FrameSize> => {
+      const response = await apiClient.put<FrameSize>(
+        `/api/frame-sizes/${id}`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: async () => {
+      toast.success(t('frameSizeToasts.updated'));
+      // Invalidating the shared prefix refreshes the settings list, the admin
+      // list and the pending queue in one go.
+      await queryClient.invalidateQueries({
+        queryKey: FRAME_SIZES_KEYS.all,
+      });
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(
+        error.response?.data?.message || t('frameSizeToasts.updateFailed'),
       );
     },
   });

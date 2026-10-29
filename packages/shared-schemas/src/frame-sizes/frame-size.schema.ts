@@ -39,6 +39,13 @@ export const createFrameSizeSchema = z.object({
 
 export type CreateFrameSizeDto = z.infer<typeof createFrameSizeSchema>;
 
+// Edit a frame size (its creator, or an admin). Same constraints as create;
+// at least one field has to change — enforced by the API, not here, so the
+// schema stays a plain object for @ZodValidation.
+export const updateFrameSizeSchema = createFrameSizeSchema.partial();
+
+export type UpdateFrameSizeDto = z.infer<typeof updateFrameSizeSchema>;
+
 // List response
 export const frameSizeListSchema = z.array(frameSizeSchema);
 export type FrameSizeList = z.infer<typeof frameSizeListSchema>;

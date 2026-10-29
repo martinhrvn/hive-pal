@@ -1383,7 +1383,27 @@
     },
     "frameSizeToasts": {
         "submitted": "Rozmer rámika bol odoslaný na posúdenie",
-        "submitFailed": "Rozmer rámika sa nepodarilo odoslať"
+        "submitFailed": "Rozmer rámika sa nepodarilo odoslať",
+        "updated": "Veľkosť rámika bola upravená",
+        "updateFailed": "Veľkosť rámika sa nepodarilo upraviť"
+    },
+    "frameSizes": {
+        "title": "Moje veľkosti rámikov",
+        "description": "Vlastné veľkosti rámikov, ktoré ste vytvorili. Úprava zmení všetky nadstavky, ktoré ich používajú.",
+        "empty": "Zatiaľ žiadne vlastné veľkosti rámikov — pridajte ich pri úprave nadstavkov úľa.",
+        "dimensions": "{{width}} × {{height}} × {{depth}} mm",
+        "statusShared": "Zdieľaná",
+        "statusPending": "Čaká na posúdenie",
+        "statusRejected": "Zamietnutá"
+    },
+    "frameSizeEdit": {
+        "title": "Upraviť veľkosť rámika",
+        "description": "Opravte názov alebo rozmery. Zmena sa prejaví vo všetkých nadstavkoch, ktoré túto veľkosť rámika používajú.",
+        "sharedNotice": "Táto veľkosť rámika je schválená a zdieľaná s komunitou, takže zmena sa prejaví aj v nadstavkoch iných včelárov.",
+        "name": "Názov",
+        "width": "Šírka (mm)",
+        "height": "Výška (mm)",
+        "depth": "Hĺbka (mm)"
     },
     "treatmentProducts": {
         "toasts": {

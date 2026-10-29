@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useIsAdmin } from '@/hooks/use-is-admin';
 import {
   useAdminFrameSizes,
   useApproveFrameSize,
   useRejectFrameSize,
   useDeleteFrameSize,
+  useUpdateFrameSize,
 } from '@/api/hooks/useFrameSizes';
 import {
   Table,
@@ -25,8 +26,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 import { useDateFormat } from '@/hooks/use-date-format';
-import { Check, X, Trash2, RefreshCw } from 'lucide-react';
-import { FrameSize, FrameSizeStatus } from 'shared-schemas';
+import { Check, X, Trash2, RefreshCw, Pencil } from 'lucide-react';
+import { FrameSize, FrameSizeStatus, UpdateFrameSizeDto } from 'shared-schemas';
+import { FrameSizeEditDialog } from '@/components/frame-size-edit-dialog';
 
 const getStatusBadgeVariant = (
   status: string,
@@ -51,6 +53,12 @@ const FrameSizeReviewPage: React.FC = () => {
   const approveMutation = useApproveFrameSize();
   const rejectMutation = useRejectFrameSize();
   const deleteMutation = useDeleteFrameSize();
+  const updateMutation = useUpdateFrameSize();
+  const [editing, setEditing] = useState<FrameSize | null>(null);
+
+  const handleSave = async (id: string, data: UpdateFrameSizeDto) => {
+    await updateMutation.mutateAsync({ id, data });
+  };
 
   if (!isAdmin) {
     return (
@@ -68,6 +76,76 @@ const FrameSizeReviewPage: React.FC = () => {
   const otherSizes = frameSizes.filter(
     (fs: FrameSize) => fs.status !== FrameSizeStatus.PENDING,
   );
+
+  // Kept out of the JSX below so the loading/empty/list cases stay flat
+  // (nested ternaries are flagged by Sonar).
+  const renderPendingRows = () => {
+    if (isLoading) {
+      return (
+        <TableRow>
+          <TableCell colSpan={6} className="text-center py-8">
+            {t('common:status.loading')}
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    if (pendingSizes.length === 0) {
+      return (
+        <TableRow>
+          <TableCell
+            colSpan={6}
+            className="text-center py-8 text-muted-foreground"
+          >
+            {t('frameSizes.noPending')}
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    return pendingSizes.map((fs: FrameSize) => (
+      <TableRow key={fs.id}>
+        <TableCell className="font-medium">{fs.name}</TableCell>
+        <TableCell>{fs.width}</TableCell>
+        <TableCell>{fs.height}</TableCell>
+        <TableCell>{fs.depth}</TableCell>
+        <TableCell>{formatDate(fs.createdAt)}</TableCell>
+        <TableCell>
+          <div className="flex gap-2">
+            {!fs.isBuiltIn && (
+              <Button
+                variant="outline"
+                size="sm"
+                data-test="edit-frame-size"
+                onClick={() => setEditing(fs)}
+              >
+                <Pencil className="h-4 w-4 mr-1" />
+                {t('common:actions.edit')}
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => approveMutation.mutate(fs.id)}
+              disabled={approveMutation.isPending}
+            >
+              <Check className="h-4 w-4 mr-1" />
+              {t('frameSizes.approve')}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => rejectMutation.mutate(fs.id)}
+              disabled={rejectMutation.isPending}
+            >
+              <X className="h-4 w-4 mr-1" />
+              {t('frameSizes.reject')}
+            </Button>
+          </div>
+        </TableCell>
+      </TableRow>
+    ));
+  };
 
   return (
     <div className="space-y-6">
@@ -105,56 +183,7 @@ const FrameSizeReviewPage: React.FC = () => {
                   <TableHead>{t('common:actions.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8">
-                      {t('common:status.loading')}
-                    </TableCell>
-                  </TableRow>
-                ) : pendingSizes.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="text-center py-8 text-muted-foreground"
-                    >
-                      {t('frameSizes.noPending')}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  pendingSizes.map((fs: FrameSize) => (
-                    <TableRow key={fs.id}>
-                      <TableCell className="font-medium">{fs.name}</TableCell>
-                      <TableCell>{fs.width}</TableCell>
-                      <TableCell>{fs.height}</TableCell>
-                      <TableCell>{fs.depth}</TableCell>
-                      <TableCell>{formatDate(fs.createdAt)}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => approveMutation.mutate(fs.id)}
-                            disabled={approveMutation.isPending}
-                          >
-                            <Check className="h-4 w-4 mr-1" />
-                            {t('frameSizes.approve')}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => rejectMutation.mutate(fs.id)}
-                            disabled={rejectMutation.isPending}
-                          >
-                            <X className="h-4 w-4 mr-1" />
-                            {t('frameSizes.reject')}
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
+              <TableBody>{renderPendingRows()}</TableBody>
             </Table>
           </div>
         </CardContent>
@@ -217,15 +246,27 @@ const FrameSizeReviewPage: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         {!fs.isBuiltIn && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-destructive"
-                            onClick={() => deleteMutation.mutate(fs.id)}
-                            disabled={deleteMutation.isPending}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              aria-label={t('common:actions.edit')}
+                              data-test="edit-frame-size"
+                              onClick={() => setEditing(fs)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive"
+                              aria-label={t('common:actions.delete')}
+                              onClick={() => deleteMutation.mutate(fs.id)}
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         )}
                       </TableCell>
                     </TableRow>
@@ -236,6 +277,15 @@ const FrameSizeReviewPage: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {editing ? (
+        <FrameSizeEditDialog
+          key={editing.id}
+          frameSize={editing}
+          onClose={() => setEditing(null)}
+          onSave={handleSave}
+        />
+      ) : null}
     </div>
   );
 };
