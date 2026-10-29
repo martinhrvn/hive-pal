@@ -270,6 +270,16 @@
   .bg-noise {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.9  0 0 0 0 0.75  0 0 0 0.7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   }
+  /* Seasons without inspections (the hive is closed): a fine diagonal hatch
+     over the muted fill, so it reads as "nothing happens here". */
+  .bg-hatch {
+    background-color: var(--muted);
+    background-image: repeating-linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--muted-foreground) 35%, transparent) 0 1px,
+      transparent 1px 6px
+    );
+  }
   .font-display {
     font-family: 'Fraunces', 'ui-serif', Georgia, 'Times New Roman', serif;
     font-optical-sizing: auto;

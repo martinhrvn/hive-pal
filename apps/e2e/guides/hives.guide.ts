@@ -89,26 +89,13 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
     );
 
     await g.do(
-      'Advanced Settings: feeding and inspections',
+      'Advanced Settings: inspection frequency',
       () => form.openAdvancedSettings(),
       {
         target: form.advancedSettingsToggle,
         reveal: true,
         voiceover:
-          'Under Advanced Settings, you can tune two things for this hive.',
-      },
-    );
-    await g.point(form.autumnStartSelect, 'Your autumn feeding window', {
-      voiceover:
-        'First, your autumn feeding window: the months when you feed the bees up for winter. By default, that’s August to October.',
-    });
-    await g.do(
-      'And how much you aim to feed, in sugar',
-      () => form.autumnTargetInput.fill('15'),
-      {
-        target: form.autumnTargetInput,
-        voiceover:
-          'Next to it is how much you aim to feed, in kilos of sugar. This colony is a big one, so let’s make it fifteen. Hive Pal will track your feedings against this target.',
+          'Under Advanced Settings, you can set how often this hive wants to be inspected.',
       },
     );
     await g.point(
@@ -116,7 +103,7 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       'How often you want to inspect this hive',
       {
         voiceover:
-          'Second, how often you want to inspect this hive, in days. Hive Pal reminds you when a visit is overdue, so set what suits your season.',
+          'How often you want to inspect this hive, in days. Hive Pal reminds you when a visit is overdue. Seasons can override this later, on the apiary.',
       },
     );
 
@@ -267,9 +254,9 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
       voiceover:
         'The header now shows the brood nest from the last inspection, frame by frame.',
     });
-    await g.point(hive.feedingSummary, 'Autumn feeding, against your target', {
+    await g.point(hive.feedingSummary, 'Feeding against the season target', {
       voiceover:
-        'And here’s the autumn feeding: how much you’ve fed this year, and how far along you are towards this autumn’s target.',
+        'And here’s the feeding: how much you’ve fed this season, and how far along you are towards its target.',
     });
 
     await g.do('Open Analytics', () => hive.tab('Analytics').click(), {
@@ -339,10 +326,14 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
         target: hive.tab('Settings'),
         reveal: true,
         voiceover:
-          'The feeding window, the target and the inspection frequency we set on the form can be changed any time, on the Settings tab.',
+          'The seasons and the inspection frequency can be changed any time on the Settings tab.',
       },
     );
-    await expect(hive.autumnFeedingSettings).toBeVisible();
+    await expect(hive.seasonsSettings).toBeVisible();
+    await g.point(hive.seasonsSettings, 'Seasons: this hive’s calendar', {
+      voiceover:
+        'Seasons set the inspection interval and the feeding target through the year. This hive inherits the apiary’s seasons; you can customise them for this hive any time.',
+    });
 
     // -- The box editor -------------------------------------------------------
     await g.chapter('The box editor', 'Boxes, frames, sizes and maintenance', {

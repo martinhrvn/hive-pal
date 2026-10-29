@@ -7,10 +7,56 @@ import {
   InspectionStatus,
   ActionResponse,
   ActionType,
+  getEffectiveSchedule,
+  getInspectionFrequencyForSeasons,
+  isBuiltInSeasonId,
+  isDateInSeason,
+  type Season,
+  type BaseIntervalSource,
+  type SeasonSource,
 } from 'shared-schemas';
 import { HiveService } from '../hives/hive.service';
 import { InspectionsService } from '../inspections/inspections.service';
 import { CustomLoggerService } from '../logger/logger.service';
+
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+const SEASON_SOURCE_LABELS: Record<SeasonSource, string> = {
+  hive: 'hive-specific',
+  legacy: 'legacy autumn feeding',
+  apiary: 'apiary template',
+  default: 'Hive Pal default',
+};
+
+const BASE_SOURCE_LABELS: Record<BaseIntervalSource, string> = {
+  hive: 'hive-specific',
+  apiary: 'apiary year-round default',
+  default: 'Hive Pal default',
+};
+
+function seasonLabel(season: Season): string {
+  if (season.name) return season.name;
+  return isBuiltInSeasonId(season.id) ? 'Autumn feeding' : 'Unnamed season';
+}
+
+function formatSeasonRange(season: Season): string {
+  const start = `${MONTH_NAMES[season.start.month - 1] ?? season.start.month} ${season.start.day}`;
+  const end = `${MONTH_NAMES[season.end.month - 1] ?? season.end.month} ${season.end.day}`;
+  return `${start} - ${end}`;
+}
 
 /**
  * Advisory disclaimer injected into every assistant system prompt.
@@ -265,17 +311,46 @@ export class ContextBuilderService {
     }
 
     // Hive settings
-    if (hive.settings) {
+    if (hive.settings || hive.apiarySettings) {
       lines.push('## Hive Settings');
-      if (hive.settings.inspection) {
-        lines.push(
-          `- Inspection frequency: every ${hive.settings.inspection.frequencyDays} days`,
-        );
+      const {
+        seasons,
+        source,
+        baseInspectionFrequencyDays: baseFrequency,
+        baseSource,
+      } = getEffectiveSchedule(hive.settings, hive.apiarySettings);
+      lines.push(
+        `- Year-round inspection frequency (outside seasons): every ${baseFrequency} days (${BASE_SOURCE_LABELS[baseSource]})`,
+      );
+      lines.push(`- Seasons (${SEASON_SOURCE_LABELS[source]}):`);
+      if (seasons.length === 0) {
+        lines.push('  - none configured');
       }
-      if (hive.settings.autumnFeeding) {
-        const af = hive.settings.autumnFeeding;
+      for (const season of seasons) {
+        const details = [formatSeasonRange(season)];
+        if (season.inspectionsPaused) {
+          details.push('no inspections');
+        } else if (season.inspectionFrequencyDays != null) {
+          details.push(`inspect every ${season.inspectionFrequencyDays} days`);
+        }
+        if (season.feeding.enabled && season.feeding.targetKg != null) {
+          details.push(`feed ${season.feeding.targetKg} kg sugar`);
+        }
+        lines.push(`  - ${seasonLabel(season)}: ${details.join(', ')}`);
+      }
+
+      const now = new Date();
+      const active = seasons.find((season) => isDateInSeason(season, now));
+      if (active?.inspectionsPaused) {
+        lines.push(`- Active season: ${seasonLabel(active)} (no inspections)`);
+      } else if (active) {
+        const effective = getInspectionFrequencyForSeasons(
+          seasons,
+          baseFrequency,
+          now,
+        );
         lines.push(
-          `- Autumn feeding: ${af.amountKg}kg, months ${af.startMonth}-${af.endMonth}`,
+          `- Active season: ${seasonLabel(active)} (inspect every ${effective} days)`,
         );
       }
       lines.push('');

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { seasonListSchema, yearRoundScheduleSchema } from '../seasons';
 
 export const inspectionTypeEnum = z.enum(['subjective', 'data_driven']);
 export type InspectionType = z.infer<typeof inspectionTypeEnum>;
@@ -6,6 +7,17 @@ export type InspectionType = z.infer<typeof inspectionTypeEnum>;
 export const apiarySettingsSchema = z
   .object({
     inspectionType: inspectionTypeEnum.default('data_driven'),
+    /**
+     * Season templates shared by the apiary's hives. Hives inherit these
+     * until they store their own `seasons` list. An explicit empty list means
+     * "no seasons" (base inspection interval, no feeding target).
+     */
+    seasons: seasonListSchema.optional(),
+    /**
+     * Year-round defaults inherited together with `seasons`: they apply on
+     * days no season covers, for hives that do not own their schedule.
+     */
+    yearRound: yearRoundScheduleSchema.optional(),
   })
   .optional();
 export type ApiarySettings = z.infer<typeof apiarySettingsSchema>;
@@ -20,8 +32,17 @@ export const createApiarySchema = z.object({
   settings: apiarySettingsSchema,
 });
 
-// Schema for updating apiaries
-export const updateApiarySchema = createApiarySchema.partial();
+// Schema for updating apiaries. Settings are a patch merged into the stored
+// value, so no defaults: an omitted key must stay as it is.
+export const updateApiarySchema = createApiarySchema.partial().extend({
+  settings: z
+    .object({
+      inspectionType: inspectionTypeEnum.optional(),
+      seasons: seasonListSchema.optional(),
+      yearRound: yearRoundScheduleSchema.optional(),
+    })
+    .optional(),
+});
 
 export const apiaryRoleEnum = z.enum(['OWNER', 'EDITOR', 'VIEWER']);
 export type ApiaryRole = z.infer<typeof apiaryRoleEnum>;
@@ -57,3 +78,11 @@ export type UpdateApiary = z.infer<typeof updateApiarySchema>;
 export type ApiaryResponse = z.infer<typeof apiaryResponseSchema>;
 export type ApiaryListResponse = z.infer<typeof apiaryListResponseSchema>;
 export type ApiaryMapPoint = z.infer<typeof apiaryMapPointSchema>;
+
+/** Response of `POST /apiaries/:id/seasons/apply`. */
+export const applyApiarySeasonsResponseSchema = z.object({
+  updated: z.number().int().nonnegative(),
+});
+export type ApplyApiarySeasonsResponse = z.infer<
+  typeof applyApiarySeasonsResponseSchema
+>;

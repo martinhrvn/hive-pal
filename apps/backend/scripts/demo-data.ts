@@ -169,6 +169,28 @@ export async function seedDemoData(
     home: defaultApiary?.id ?? randomUUID(),
     outyard: randomUUID(),
   };
+  const demoSeasons = [
+    {
+      id: randomUUID(),
+      name: 'Spring build-up',
+      start: { month: 3, day: 1 },
+      end: { month: 5, day: 31 },
+      inspectionFrequencyDays: 5,
+      feeding: { enabled: false, targetKg: null },
+    },
+    {
+      id: randomUUID(),
+      name: 'Autumn feeding',
+      start: { month: 8, day: 1 },
+      end: { month: 10, day: 31 },
+      inspectionFrequencyDays: null,
+      feeding: { enabled: true, targetKg: 12 },
+    },
+  ];
+  const demoApiarySettings = {
+    inspectionType: 'data_driven',
+    seasons: demoSeasons,
+  };
   const apiaries: Prisma.ApiaryCreateManyInput[] = [
     ...(defaultApiary
       ? []
@@ -177,7 +199,7 @@ export async function seedDemoData(
             id: apiaryIds.home,
             name: 'Home Apiary',
             userId,
-            settings: { inspectionType: 'data_driven' },
+            settings: demoApiarySettings,
           },
         ]),
     {
@@ -185,7 +207,7 @@ export async function seedDemoData(
       name: 'Orchard Outyard',
       location: 'Old orchard behind the village',
       userId,
-      settings: { inspectionType: 'data_driven' },
+      settings: demoApiarySettings,
     },
   ];
 

@@ -150,6 +150,7 @@ export function writeYoutube(
   const texts = new Set(cues.map(c => c.text));
   const missing = Object.keys(meta.chapters ?? {}).filter(t => !texts.has(t));
   const list = short ? undefined : chapters(cues, meta);
+  const hasOutro = cues.some(cue => cue.kind === 'outro');
   const hashtags = [...(meta.hashtags ?? []), ...(short ? ['Shorts'] : [])]
     .map(h => `#${h.replace(/^#/, '')}`)
     .join(' ');
@@ -199,7 +200,7 @@ export function writeYoutube(
     `- Video: \`video.mp4\``,
     `- Thumbnail: ${thumbnail ? '`thumbnail.png`' : 'none yet (`pnpm guides:thumbnail`)'}`,
     '- Subtitles: `subtitles.vtt` (Subtitles → Upload file → With timing)',
-    ...(short
+    ...(short || !hasOutro
       ? []
       : [
           '- End screen: subscribe + one or two videos over the right half of the outro card',

@@ -5,7 +5,16 @@ import {
   CheckerContext,
   AlertIssue,
 } from '../interfaces';
-import { AlertSeverity } from 'shared-schemas';
+import { differenceInCalendarDays } from 'date-fns';
+import {
+  AlertSeverity,
+  findNextInspectionDue,
+  getEffectiveSchedule,
+  getInspectionFrequencyForSeasons,
+  isInspectionPausedOn,
+  type ApiarySeasonSettings,
+  type HiveSeasonSettings,
+} from 'shared-schemas';
 
 @Injectable()
 export class InspectionOverdueChecker extends HiveChecker {
@@ -25,10 +34,15 @@ export class InspectionOverdueChecker extends HiveChecker {
       return issues;
     }
 
-    // Get inspection frequency from hive settings (default 7 days)
-    const settings = hive.settings as
-      { inspection?: { frequencyDays?: number } } | null | undefined;
-    const inspectionFrequency = settings?.inspection?.frequencyDays ?? 7;
+    const { seasons, baseInspectionFrequencyDays } = getEffectiveSchedule(
+      hive.settings as HiveSeasonSettings | null | undefined,
+      hive.apiarySettings as ApiarySeasonSettings | null | undefined,
+    );
+
+    // Nothing is overdue in a season without inspections (e.g. winter).
+    if (isInspectionPausedOn(seasons, context.currentTime)) {
+      return issues;
+    }
 
     // If no last inspection date, consider it overdue immediately
     if (!hive.lastInspectionDate) {
@@ -38,12 +52,33 @@ export class InspectionOverdueChecker extends HiveChecker {
         severity: 'MEDIUM',
         metadata: {
           daysSinceLastInspection: null as number | null,
-          expectedFrequencyDays: inspectionFrequency,
+          expectedFrequencyDays: getInspectionFrequencyForSeasons(
+            seasons,
+            baseInspectionFrequencyDays,
+            context.currentTime,
+          ),
           hiveName: hive.name,
         },
       });
       return issues;
     }
+
+    // The due date the calendar projection uses: the interval in force the
+    // day after the last inspection (a season starting or ending since then
+    // does not move it), pushed past any season without inspections.
+    const dueDate = findNextInspectionDue(
+      seasons,
+      baseInspectionFrequencyDays,
+      hive.lastInspectionDate,
+    );
+    if (!dueDate) {
+      return issues;
+    }
+    // The interval, unless a season without inspections moved the due date.
+    const dueAfterDays = differenceInCalendarDays(
+      dueDate,
+      hive.lastInspectionDate,
+    );
 
     // Calculate days since last inspection
     const daysSinceLastInspection = Math.floor(
@@ -52,8 +87,8 @@ export class InspectionOverdueChecker extends HiveChecker {
     );
 
     // Only create alert if overdue
-    if (daysSinceLastInspection > inspectionFrequency) {
-      const daysOverdue = daysSinceLastInspection - inspectionFrequency;
+    if (daysSinceLastInspection > dueAfterDays) {
+      const daysOverdue = daysSinceLastInspection - dueAfterDays;
 
       // Determine severity based on how overdue the inspection is
       let severity: AlertSeverity;
@@ -78,7 +113,7 @@ export class InspectionOverdueChecker extends HiveChecker {
         metadata: {
           daysSinceLastInspection,
           daysOverdue,
-          expectedFrequencyDays: inspectionFrequency,
+          expectedFrequencyDays: dueAfterDays,
           hiveName: hive.name,
           lastInspectionDate: hive.lastInspectionDate.toISOString(),
         },

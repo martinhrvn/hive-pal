@@ -7,17 +7,15 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Card } from '@/components/ui/card';
-import { HiveResponse } from 'shared-schemas';
+import { HiveResponse, getActiveFeedingSeason } from 'shared-schemas';
 import { AlertsPopover } from '@/components/alerts/alerts-popover';
 import { Metric } from '@/components/common/metric';
 import { StatusPill } from '@/components/common/status-pill';
 import { useActions } from '@/api/hooks/useActions';
-import {
-  calculateFeedingTotals,
-  isWithinFeedingWindow,
-} from '@/utils/feeding-calculations';
+import { getFeedingSeasonProgress } from '@/utils/feeding-calculations';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useApiary } from '@/hooks/use-apiary';
 import { daysAgo, formatRelativeDays } from '@/utils/relative-time';
 import { buildBoxGradient } from '@/utils/box-gradient';
 import { FeaturePhoto } from '@/components/common/feature-photo';
@@ -86,24 +84,40 @@ const HiveCard: React.FC<{
   const { t } = useTranslation(['hive', 'common']);
   const inspectionLabel = useInspectionLabel();
   const { formatWeight, getWeightUnit } = useUnitFormat();
-  // The list response already carries settings, so no per-hive detail fetch.
+  const { apiaries } = useApiary();
+  // The list response already carries the hive settings; the apiary season
+  // template comes from the cached apiaries list (no per-hive fetch).
   const settings = hive.settings ?? undefined;
-  const inFeedingWindow = isWithinFeedingWindow(settings);
+  const apiarySettings = useMemo(
+    () => apiaries?.find(apiary => apiary.id === hive.apiaryId)?.settings,
+    [apiaries, hive.apiaryId],
+  );
+  const activeFeedingSeason = useMemo(
+    () => getActiveFeedingSeason(settings, apiarySettings),
+    [settings, apiarySettings],
+  );
   const { data: actions } = useActions(
     { hiveId: hive.id },
-    { staleTime: 5 * 60 * 1000, enabled: inFeedingWindow },
+    {
+      staleTime: 5 * 60 * 1000,
+      enabled: Boolean(activeFeedingSeason),
+    },
   );
 
   const feedingInfo = useMemo(() => {
-    if (!actions || !inFeedingWindow) return null;
-    const totals = calculateFeedingTotals(actions, settings);
-    const optimalAmount = settings?.autumnFeeding?.amountKg ?? 12;
+    if (!actions || !activeFeedingSeason) return null;
+    const progress = getFeedingSeasonProgress(
+      actions,
+      settings,
+      apiarySettings,
+    );
+    if (!progress || !progress.isActive || progress.targetKg <= 0) return null;
     return {
-      fed: totals.autumnSugarKg,
-      optimal: optimalAmount,
-      percentage: Math.round((totals.autumnSugarKg / optimalAmount) * 100),
+      fed: progress.sugarKg,
+      optimal: progress.targetKg,
+      percentage: Math.round(progress.percentage),
     };
-  }, [actions, inFeedingWindow, settings]);
+  }, [actions, activeFeedingSeason, settings, apiarySettings]);
 
   // Side image only when the card container has room (@md = 28rem = 448px).
   const allowSide = imageMode === 'side';

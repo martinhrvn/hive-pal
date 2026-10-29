@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Section } from '@/components/common/section';
 import { ApiaryActionSidebar, HivesLayout } from './components';
 import { SharingTab } from './components/sharing-tab';
+import { ApiarySeasons } from './components/apiary-seasons';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { CalendarSubscriptionCard } from './components/calendar-subscription-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -41,7 +42,7 @@ export const ApiaryDetailPage = () => {
     'overview',
     'hives',
     'location',
-    ...(isOwner ? ['sharing'] : []),
+    ...(isOwner ? ['seasons', 'sharing'] : []),
   ];
   const currentTab = validTabs.includes(tabParam ?? '')
     ? tabParam!
@@ -94,9 +95,14 @@ export const ApiaryDetailPage = () => {
               {t('apiary:detail.tabs.location')}
             </TabsTrigger>
             {isOwner && (
-              <TabsTrigger value="sharing">
-                {t('apiary:detail.tabs.sharing')}
-              </TabsTrigger>
+              <>
+                <TabsTrigger value="seasons">
+                  {t('apiary:detail.tabs.seasons')}
+                </TabsTrigger>
+                <TabsTrigger value="sharing">
+                  {t('apiary:detail.tabs.sharing')}
+                </TabsTrigger>
+              </>
             )}
           </TabsList>
 
@@ -171,6 +177,12 @@ export const ApiaryDetailPage = () => {
               inspectionType={apiary.settings?.inspectionType ?? 'data_driven'}
             />
           </TabsContent>
+
+          {isOwner && (
+            <TabsContent value="seasons">
+              <ApiarySeasons apiary={apiary} />
+            </TabsContent>
+          )}
 
           {isOwner && (
             <TabsContent value="sharing">

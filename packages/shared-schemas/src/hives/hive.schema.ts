@@ -3,12 +3,19 @@ import { hiveStatusSchema } from './status';
 import { boxSchema } from './box.schema';
 import { activeQueenSchema } from '../queens';
 import { alertResponseSchema } from '../alerts';
-import { inspectionTypeEnum } from '../apiaries';
+import { apiarySettingsSchema, inspectionTypeEnum } from '../apiaries';
+import { seasonListSchema } from '../seasons';
 import { queenDispositionSchema } from '../actions/details.schema';
 
 // Schema for hive settings
 export const hiveSettingsSchema = z
   .object({
+    /**
+     * Seasons owned by this hive. When present they replace the apiary's
+     * season template; an explicit `[]` means the hive has no seasons.
+     */
+    seasons: seasonListSchema.optional(),
+    /** @deprecated Pre-seasons autumn feeding window; resolved as a season. */
     autumnFeeding: z
       .object({
         startMonth: z.number().int().min(1).max(12).default(8),
@@ -93,6 +100,9 @@ export const hiveDetailResponseSchema = createHiveSchema.extend({
   alerts: z.array(alertResponseSchema).default([]),
   featurePhotoUrl: z.string().nullish(),
   inspectionType: inspectionTypeEnum.optional(),
+  // Apiary-level defaults (including season templates) so the detail page can
+  // resolve what this hive inherits without an extra request.
+  apiarySettings: apiarySettingsSchema,
   updatedAt: z.string().datetime(),
   // Split provenance (optional origin marker, not biological lineage).
   parentHiveId: z.string().uuid().nullish(),

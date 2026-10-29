@@ -32,12 +32,42 @@
       "overview": "Prehľad",
       "hives": "Úle",
       "location": "Poloha",
+      "seasons": "Sezóny",
       "sharing": "Zdieľanie"
     },
     "apiaryInformation": "Informácie o včelnici",
     "locationMap": "Mapa polohy",
     "apiaryLocation": "Poloha včelnice",
     "noCoordinates": "Pre túto včelnicu nie sú k dispozícii súradnice polohy"
+  },
+  "seasons": {
+    "title": "Sezóny",
+    "description": "Nastavte celoročné predvolené hodnoty a sezóny, ktoré ich prepíšu. Úle tento harmonogram preberajú, kým si nenastavia vlastný.",
+    "emptyNotice": "Bez sezón používajú úle v tejto včelnici celoročný interval prehliadok po celý rok a nemajú cieľ kŕmenia.",
+    "save": "Uložiť sezóny",
+    "saving": "Ukladá sa...",
+    "saveSuccess": "Sezóny včelnice boli uložené",
+    "saveError": "Sezóny včelnice sa nepodarilo uložiť",
+    "validationError": "Sezóny sa nepodarilo uložiť — skontrolujte prekrývajúce sa dátumy a ciele kŕmenia.",
+    "applyToAll": "Použiť pre všetky úle",
+    "saveFirst": "Najprv uložte sezóny, potom ich použite pre úle.",
+    "applySuccess_one": "Sezóna bola použitá pre {{count}} úľ",
+  "applySuccess_few": "Sezóny boli použité pre {{count}} úle",
+  "applySuccess_many": "Sezóny boli použité pre {{count}} úľov",
+  "applySuccess_other": "Sezóny boli použité pre {{count}} úľov",
+    "applyError": "Sezóny sa nepodarilo použiť pre úle",
+    "applyConfirmTitle": "Použiť sezóny pre všetky úle?",
+    "applyConfirmDescription": "Týmto sa nahradia vlastné sezóny a celoročný interval prehliadok všetkých úľov vo včelnici vrátane starých nastavení jesenného kŕmenia.",
+    "applyConfirm": "Použiť pre všetky úle",
+    "applying": "Používa sa...",
+    "scheduleTitle": "Harmonogram",
+    "yearRound": {
+      "title": "Celoročne",
+      "description": "Platí v každý deň, ktorý nepokrýva žiadna sezóna.",
+      "inspectionInterval": "Interval prehliadok (dni)",
+      "inspectionIntervalPlaceholder": "Vlastný pre každý úľ",
+      "inspectionIntervalHint": "Nechajte prázdne, ak má každý úľ ponechať vlastný interval."
+    }
   },
   "fields": {
     "name": "Názov",

@@ -1,4 +1,5 @@
 // Export all schema modules
+export * from './seasons';
 export * from './actions';
 export * from './treatments';
 export * from './audio';
@@ -33,4 +34,5 @@ export * from './hivehub';
 
 // Export utility functions
 export * from './utils/inspection-type';
+export * from './utils/apiary-settings';
 export * from './utils/datetime';

@@ -1,28 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { addDays, addHours, format, startOfDay, isBefore } from 'date-fns';
+import { addDays, addHours, format, startOfDay } from 'date-fns';
+import type { ApiarySeasonSettings, HiveSeasonSettings } from 'shared-schemas';
+import {
+  buildScheduledInspectionEvents,
+  type ProjectedInspectionEvent,
+} from './inspection-schedule';
 
 interface HiveWithSettings {
   id: string;
   name: string;
   status: string;
-  settings: {
-    inspection?: {
-      frequencyDays?: number;
-      calendarEnabled?: boolean;
-    };
-  } | null;
+  settings: HiveSeasonSettings | null;
   lastInspectionDate: Date | null;
 }
 
-interface ICalEvent {
-  uid: string;
-  summary: string;
-  dtstart: Date;
-  description: string;
-  isOverdue?: boolean;
-  isAllDay?: boolean;
-}
+type ICalEvent = ProjectedInspectionEvent;
 
 @Injectable()
 export class ICalService {
@@ -84,8 +77,20 @@ export class ICalService {
       lastInspectionDate: hive.inspections[0]?.date ?? null,
     }));
 
-    // Generate auto-projected inspection events
-    const events = this.generateScheduledInspections(hivesWithLastInspection);
+    // Generate auto-projected inspection events. The apiary's season template
+    // is the default calendar for hives that have not customised their seasons.
+    const events = buildScheduledInspectionEvents(
+      hivesWithLastInspection.map((hive) => ({
+        hiveId: hive.id,
+        name: hive.name,
+        status: hive.status,
+        settings: hive.settings,
+        apiarySettings: apiary.settings as ApiarySeasonSettings | null,
+        lastInspectionDate: hive.lastInspectionDate,
+      })),
+      new Date(),
+      this.FUTURE_WEEKS,
+    );
 
     // Fetch manually scheduled inspections
     const scheduledInspections = await this.prisma.inspection.findMany({
@@ -117,70 +122,6 @@ export class ICalService {
 
     // Generate iCal content
     return this.formatICalendar(apiary.name, events);
-  }
-
-  private generateScheduledInspections(hives: HiveWithSettings[]): ICalEvent[] {
-    const events: ICalEvent[] = [];
-    const today = startOfDay(new Date());
-    const futureLimit = addDays(today, this.FUTURE_WEEKS * 7);
-
-    for (const hive of hives) {
-      if (hive.status !== 'ACTIVE') continue;
-      if (hive.settings?.inspection?.calendarEnabled === false) continue;
-
-      const frequencyDays = hive.settings?.inspection?.frequencyDays ?? 7;
-
-      let nextDue: Date;
-      let isOverdue: boolean;
-
-      if (!hive.lastInspectionDate) {
-        // No inspections yet - due today
-        nextDue = today;
-        isOverdue = true;
-      } else {
-        nextDue = addDays(startOfDay(hive.lastInspectionDate), frequencyDays);
-        isOverdue = isBefore(nextDue, today);
-      }
-
-      if (isOverdue) {
-        // Add OVERDUE event for today
-        events.push({
-          uid: `overdue-${hive.id}-${format(today, 'yyyyMMdd')}@hivepal`,
-          summary: `OVERDUE: ${hive.name} Inspection`,
-          dtstart: today,
-          description: `Inspection for ${hive.name} is overdue. Based on ${frequencyDays}-day frequency.`,
-          isOverdue: true,
-          isAllDay: true,
-        });
-
-        // Future inspections project from today
-        nextDue = addDays(today, frequencyDays);
-      }
-
-      // Generate future inspections
-      let currentDate = nextDue;
-      while (
-        isBefore(currentDate, futureLimit) ||
-        currentDate.getTime() === futureLimit.getTime()
-      ) {
-        // Skip if this date is in the past (shouldn't happen but be safe)
-        if (!isBefore(currentDate, today)) {
-          events.push({
-            uid: `scheduled-${hive.id}-${format(currentDate, 'yyyyMMdd')}@hivepal`,
-            summary: `${hive.name} Inspection`,
-            dtstart: currentDate,
-            description: `Scheduled inspection for ${hive.name} (every ${frequencyDays} days)`,
-            isAllDay: true,
-          });
-        }
-        currentDate = addDays(currentDate, frequencyDays);
-      }
-    }
-
-    // Sort events by date
-    events.sort((a, b) => a.dtstart.getTime() - b.dtstart.getTime());
-
-    return events;
   }
 
   private formatICalendar(apiaryName: string, events: ICalEvent[]): string {
