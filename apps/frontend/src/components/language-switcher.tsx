@@ -82,13 +82,18 @@ export function LanguageSwitcher({
             variant="ghost"
             size="sm"
             onClick={() => handleLanguageChange(language.code)}
+            aria-label={language.name}
+            aria-pressed={currentLanguage === language.code}
+            title={language.name}
             className={
               currentLanguage === language.code
                 ? 'bg-amber-500/80 text-white hover:bg-amber-500 border border-amber-400'
                 : 'text-white/80 hover:text-white border border-white/30 hover:bg-white/10'
             }
           >
-            {language.code.toUpperCase()}
+            <span aria-hidden="true" className="text-base leading-none">
+              {language.flag}
+            </span>
           </Button>
         ))}
       </div>
