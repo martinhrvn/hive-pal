@@ -31,17 +31,19 @@ The quickest way to get a database is the bundled Docker compose helper:
 
 ```bash
 cd apps/backend
-pnpm db:up          # starts PostgreSQL in Docker
+pnpm db:up          # starts PostgreSQL (port 6543) and MinIO (9000, console 9001) in Docker
 ```
 
 Or point `DATABASE_URL` at any existing PostgreSQL 14+ instance.
+
+PostgreSQL is published on `6543` so it doesn't clash with a PostgreSQL already running on your machine. MinIO is S3-compatible storage for audio and photos; create a bucket in its console (`minioadmin` / `minioadmin`) and use the `S3_*` values from `apps/backend/.env.example`, or set `STORAGE_TYPE=local` instead.
 
 ## 3. Configure Environment
 
 Create `apps/backend/.env` (and `apps/frontend/.env` for the dev server). At minimum the backend needs:
 
 ```bash
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/beekeeper?schema=public"
+DATABASE_URL="postgresql://postgres:postgres@localhost:6543/beekeeper?schema=public"
 BETTER_AUTH_SECRET=replace_me_with_a_random_string   # openssl rand -base64 32
 BETTER_AUTH_URL=http://localhost:3000
 FRONTEND_URL=http://localhost:5173
@@ -74,6 +76,26 @@ This starts both services:
 - **Frontend** — `http://localhost:5173`
 - **Backend API** — `http://localhost:3000/api`
 - **API docs (Swagger)** — `http://localhost:3000/api-docs`
+
+### Optional: AI worker for voice inspections
+
+To try transcription and analysis locally, run the AI worker in pull mode against your dev backend. Add to `apps/backend/.env`:
+
+```bash
+AI_ENABLED=true
+AI_PROCESSING_MODE=pull
+```
+
+Restart the backend, create a token under **Admin → Worker Tokens** (`http://localhost:5173/admin/worker-tokens`), then start the worker and an Ollama server with Docker:
+
+```bash
+cd apps/ai-app
+cp .env.worker.example .env
+# set HIVEPAL_URL=http://localhost:3000 and WORKER_TOKEN=hpw_...
+docker compose -f docker-compose.worker.yml -f docker-compose.worker.host.yml up -d --build
+```
+
+The `docker-compose.worker.host.yml` overlay puts the worker on the host network, so it can reach the dev backend and MinIO on `localhost`. Host networking only works on Linux; on macOS or Windows, run `python worker.py` on the host instead (`pip install -r requirements.txt`, plus `ffmpeg` and a local Ollama). See [Docker Setup → Enabling Voice Inspections](./docker-setup#enabling-voice-inspections-ai-worker) for push mode and model choices.
 
 ## Building for Production
 

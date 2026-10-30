@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: Configuration
-description: Complete environment-variable reference for Hive-Pal — database, Better Auth, email, file storage, HiveScale, and error tracking.
+description: Complete environment-variable reference for Hive-Pal — database, Better Auth, email, file storage, AI, HiveScale, and error tracking.
 keywords: [hive-pal configuration, environment variables, better auth, smtp, s3 storage, self-hosting]
 ---
 
@@ -119,7 +119,9 @@ Hive-Pal stores uploaded audio recordings and photos in either the local filesys
 |----------|-------------|---------|
 | `STORAGE_TYPE` | `local` or `s3` | `s3` |
 | `STORAGE_LOCAL_PATH` | Directory for local storage. In Docker this is backed by the `uploads` volume | `/data/uploads` |
-| `AUDIO_MAX_FILE_SIZE` | Max upload size in bytes | `52428800` (50 MB) |
+| `AUDIO_MAX_FILE_SIZE` | Max request size for audio uploads, in bytes | `52428800` (50 MB) |
+| `INSPECTION_AUDIO_MAX_FILE_SIZE` | Max size of a single inspection recording, in bytes. A recording must fit under both limits, so with the defaults the effective limit is 10 MB | `10485760` (10 MB) |
+| `BACKEND_PUBLIC_URL` | Public URL of the app, used to build absolute download links for locally stored files. Needed when something outside the container downloads files, such as a [pull-mode AI worker](#ai-voice-inspections--assistant) | — |
 
 ### Local storage
 
@@ -156,6 +158,25 @@ Hive-Pal can proxy live data from a separate HiveScale backend.
 | `JWT_SECRET` | Signs the per-user tokens Hive-Pal forwards to HiveScale |
 
 The `HIVESCALE_SERVICE_API_KEY` value must match `HIVEPAL_SERVICE_API_KEY` on the HiveScale backend, and `JWT_SECRET` must match HiveScale's `HIVEPAL_JWT_SECRET` so it can verify the forwarded user tokens. HiveScale remains the source of truth for measurements, device roles, off-grid telemetry, and calibration; Hive-Pal only proxies authenticated user requests. See the [HiveScale guide](../user-guide/hivescale).
+
+## AI (Voice Inspections & Assistant)
+
+Voice inspections (transcribing recordings and drafting inspection fields from them) and the [Apiary Assistant](../user-guide/assistant) need a separate AI service: the `ghcr.io/martinhrvn/hivepal-ai` image, built from `apps/ai-app`. The setup steps are in [Docker Setup → Enabling Voice Inspections](./docker-setup#enabling-voice-inspections-ai-worker). This section lists the variables on the **app** container.
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `AI_ENABLED` | Set to `true` to turn on AI analysis and the Assistant. Otherwise both return "AI is disabled" | — |
+| `AI_PROCESSING_MODE` | How audio jobs reach the AI service: `push` (the app calls the AI service over HTTP), `pull` (a worker polls the app for jobs) or `auto` (pull, but the app pushes any job no worker has claimed after `AI_PULL_FALLBACK_MINUTES`) | `push` |
+| `AI_SERVICE_BASE_URL` | URL of the AI service, used by push mode and the Assistant | `http://hivepal-ai:8008` |
+| `AI_API_KEY` | Shared secret sent as a Bearer token to the AI service. Must match `AI_API_KEY` on the AI service. In push mode, jobs stay pending until it is set | — |
+| `AI_REQUEST_TIMEOUT_MS` | Timeout for calls to the AI service, in milliseconds | `300000` (5 min) |
+| `AI_PULL_FALLBACK_MINUTES` | In `auto` mode, how long a job waits for a worker before the app pushes it | `10` |
+| `WORKER_JOB_LEASE_MS` | How long a pull worker holds a claimed job before it is requeued. Raise it if long recordings take longer than this to transcribe | `300000` (5 min) |
+| `OLLAMA_MODEL` | Model the Assistant asks the AI service to use. If unset, the AI service uses its own default | — |
+
+:::info Pull mode and local storage
+A pull worker downloads recordings from the app. With `STORAGE_TYPE=local`, set `BACKEND_PUBLIC_URL` to a URL the worker can reach, and set `JWT_SECRET`, which signs the download links. Otherwise the worker receives a relative link it cannot download. With S3 the worker gets a pre-signed S3 URL instead.
+:::
 
 ## Error Tracking (Optional)
 

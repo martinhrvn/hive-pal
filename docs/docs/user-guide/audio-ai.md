@@ -34,8 +34,9 @@ You stay in control: review the transcription (edit it if needed), then **merge*
 
 ## Requirements
 
-- **File storage** must be enabled (local or S3) to store recordings — see [Configuration → File Storage](../self-hosting/configuration#file-storage).
-- The transcription/analysis worker must be running for processing to complete.
+- **File storage** must be enabled (local or S3) to store recordings — see [Configuration → File Storage](../self-hosting/configuration#file-storage). A recording can be up to 10 MB by default.
+- **AI must be turned on** with `AI_ENABLED=true` on the app.
+- **The AI worker must be running** for transcription and analysis to complete. See [Docker Setup → Enabling Voice Inspections](../self-hosting/docker-setup#enabling-voice-inspections-ai-worker).
 
 ## FAQ
 

@@ -12,7 +12,7 @@ services:
       WORKER_TOKEN: ${WORKER_TOKEN:?set WORKER_TOKEN in .env, the hpw_... value from /admin/worker-tokens}
       POLL_INTERVAL_SECONDS: ${POLL_INTERVAL_SECONDS:-5}
       OLLAMA_URL: ${OLLAMA_URL:-http://hivepal-ollama:11434/api/chat}
-      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:3b}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3.5:4b}
       WHISPER_MODEL: ${WHISPER_MODEL:-small}
       WHISPER_COMPUTE_TYPE: ${WHISPER_COMPUTE_TYPE:-int8}
     restart: unless-stopped
