@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useAuth as useAuthContext } from '@/context/auth-context';
 import { useChangePassword, useUserProfile } from '@/api/hooks/useAuth';

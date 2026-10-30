@@ -1,4 +1,4 @@
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import { Toaster } from 'sonner';
 import { HiveForm } from './hive-form';
 

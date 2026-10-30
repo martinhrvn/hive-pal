@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { useApiary } from '@/hooks/use-apiary';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useTranslation } from 'react-i18next';

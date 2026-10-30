@@ -1,5 +1,5 @@
 import { FormProvider, useForm } from 'react-hook-form';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import { ActionsSection } from './actions.tsx';
 
 export const ActionsWithForm = () => {

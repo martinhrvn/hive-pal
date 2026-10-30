@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { ArrowUpRight, Rocket } from 'lucide-react';
 import { GithubIcon } from '@/components/icons/github-icon';
 import { cn } from '@/lib/utils';

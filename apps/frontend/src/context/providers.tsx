@@ -1,5 +1,5 @@
 import { Fragment, PropsWithChildren, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { AuthProvider } from '@/context/auth-context';
 import { ThemeProvider } from './theme-provider';
 import { QueryClient } from '@tanstack/react-query';

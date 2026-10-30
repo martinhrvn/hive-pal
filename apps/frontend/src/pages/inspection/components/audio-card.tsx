@@ -16,7 +16,7 @@ import {
   useUpdateInspectionAudioTranscription,
 } from '@/api/hooks/useInspectionAudioAi';
 import { useWorkerStatus } from '@/api/hooks/useWorkerTokens';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 interface AudioCardProps {

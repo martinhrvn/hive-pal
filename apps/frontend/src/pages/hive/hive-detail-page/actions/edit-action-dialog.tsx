@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { AlertTriangle } from 'lucide-react';
 import { parseISO } from 'date-fns';
 import { ActionDateTimeField } from './action-date-time-field';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { ActionsSection } from '@/pages/inspection/components/inspection-form/actions';
 import { useUpdateAction } from '@/api/hooks/useActions';
 import { ActionResponse, ActionType, UpdateAction } from 'shared-schemas';

@@ -21,7 +21,7 @@ function serverAuthClientStub(): Plugin {
 }
 
 const VENDOR_CHUNKS: Record<string, string[]> = {
-  'vendor-react': ['react', 'react-dom', 'react-router', 'react-router-dom'],
+  'vendor-react': ['react', 'react-dom', 'react-router'],
   'vendor-ui': [
     '@radix-ui/react-dialog',
     '@radix-ui/react-dropdown-menu',

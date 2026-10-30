@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router';
 import { AdminProtectedRoute } from '@/routes/admin-protected-route';
 
 export default function Admin() {

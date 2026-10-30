@@ -8,7 +8,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Metric, type MetricTone } from '@/components/common/metric';
 import { StatusPill } from '@/components/common/status-pill';

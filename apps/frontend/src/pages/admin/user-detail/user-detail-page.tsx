@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useIsAdmin } from '@/hooks/use-is-admin.ts';
 import { useUserDetailedStats } from '@/api/hooks/useAdminUsers';

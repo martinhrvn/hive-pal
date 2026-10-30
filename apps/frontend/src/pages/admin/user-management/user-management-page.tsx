@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { authClient } from '@/lib/auth-client';
 import { useIsAdmin } from '@/hooks/use-is-admin.ts';

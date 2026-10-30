@@ -1,11 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useAuth } from '@/context/auth-context';
-import {
-  useNavigate,
-  Link,
-  useLocation,
-  useSearchParams,
-} from 'react-router-dom';
+import { useNavigate, Link, useLocation, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

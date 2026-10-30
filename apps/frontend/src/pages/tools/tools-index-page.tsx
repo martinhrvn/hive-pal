@@ -1,5 +1,5 @@
 import { Beaker, Bug, Microscope, ShieldCheck, Waypoints } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ToolMeta, ToolPageHeader } from '@/components/tool-page';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';

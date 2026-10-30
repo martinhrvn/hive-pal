@@ -1,6 +1,6 @@
 import { Activity, AlertTriangle, ArrowRight } from 'lucide-react';
 import { TrendIndicator } from '@/components/common/trend-indicator';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import {
   Popover,
   PopoverContent,

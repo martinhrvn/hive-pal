@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { NotFoundPage } from '@/pages/not-found-page';
 import {

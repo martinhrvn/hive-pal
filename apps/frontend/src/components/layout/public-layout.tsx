@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Beaker, Bug, Waypoints, Microscope } from 'lucide-react';
 import { GithubIcon } from '@/components/icons/github-icon';

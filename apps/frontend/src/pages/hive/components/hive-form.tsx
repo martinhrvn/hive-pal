@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { Input } from '@/components/ui/input';
 import {
   Popover,

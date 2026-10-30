@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/card.tsx';
 import { BeeIcon } from '@/components/common/bee-icon.tsx';
 import { CalendarDays, MoreHorizontal } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Button, buttonVariants } from '@/components/ui/button.tsx';
 import {

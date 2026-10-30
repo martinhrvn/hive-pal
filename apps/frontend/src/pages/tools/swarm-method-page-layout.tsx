@@ -6,7 +6,7 @@ import {
   Waypoints,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { InspectionStatus, type HiveResponse } from 'shared-schemas';
 import { useCreateInspection, useHives } from '@/api/hooks';

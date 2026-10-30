@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Section } from '@/components/common/section';
 import { ApiaryActionSidebar, HivesLayout } from './components';

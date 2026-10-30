@@ -1,4 +1,4 @@
-import { MemoryRouter, Route, Routes, useParams } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useParams } from 'react-router';
 import type { HiveResponse } from 'shared-schemas';
 import {
   useImageDisplayStore,
