@@ -154,6 +154,7 @@ SENTRY_DSN=                # Optional error tracking
 ### Touching a frontend component
 When a focused change (a bug fix or feature in a few components) modifies a frontend component, also do this pass on the files you touched (not the whole tree) before finishing. Skip it for broad or mechanical changes that touch many files, such as renames, moves, codemods or dependency bumps; mixing a clean-up pass into those makes them hard to review.
 - **i18n**: every user-visible string (labels, buttons, placeholders, toasts, warnings) goes through `t()`. Add keys to the `en` and `sk` locales only; other locales are filled in through Weblate. Reuse existing `common:` keys (e.g. `common:actions.cancel`) where they fit.
+- **Locale formatting**: locale JSON is Prettier-formatted too. The `printWidth: 0` override in `.prettierrc` expands arrays the same way Weblate's serializer does; the Weblate components must keep `json_indent = 2` and key sorting off (`pnpm weblate:format:check`). Run `pnpm format` after editing `en` or `sk` so Weblate pushes don't conflict.
 - **React review**: apply the `composition-patterns` and `react-best-practices` skills (vendored in `.claude/skills/`) to the touched code and fix what they flag.
 - **Sonar**: check the touched files for open MAJOR or higher issues and fix them. The API is public:
   `curl -s "https://sonarcloud.io/api/issues/search?componentKeys=martinhrvn_hive-pal:<path/from/repo/root>&resolved=false&severities=MAJOR,CRITICAL,BLOCKER"`.

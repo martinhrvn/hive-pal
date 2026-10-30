@@ -1,101 +1,101 @@
 {
-    "title": "Bienenstände",
-    "singular": "Bienenstand",
-    "plural": "Bienenstände",
-    "list": {
-        "title": "Bienenstandliste",
-        "caption": "Eine Liste aller Bienenstände",
-        "searchPlaceholder": "Bienenstände suchen...",
-        "noApiaries": "Keine Bienenstände gefunden",
-        "noApiariesMatching": "Keine Bienenstände gefunden für \"{{searchTerm}}\"",
-        "clearFilters": "Filter zurücksetzen"
+  "title": "Bienenstände",
+  "singular": "Bienenstand",
+  "plural": "Bienenstände",
+  "list": {
+    "title": "Bienenstandliste",
+    "caption": "Eine Liste aller Bienenstände",
+    "searchPlaceholder": "Bienenstände suchen...",
+    "noApiaries": "Keine Bienenstände gefunden",
+    "noApiariesMatching": "Keine Bienenstände gefunden für \"{{searchTerm}}\"",
+    "clearFilters": "Filter zurücksetzen"
+  },
+  "create": {
+    "title": "Bienenstand erstellen",
+    "button": "Neuen Bienenstand erstellen",
+    "success": "Bienenstand erfolgreich erstellt"
+  },
+  "edit": {
+    "title": "Bienenstand bearbeiten",
+    "success": "Bienenstand erfolgreich aktualisiert"
+  },
+  "delete": {
+    "confirm": "Möchten Sie diesen Bienenstand wirklich löschen?",
+    "success": "Bienenstand erfolgreich gelöscht"
+  },
+  "detail": {
+    "notFound": "Bienenstand nicht gefunden",
+    "noLocationSpecified": "Kein Standort angegeben",
+    "tabs": {
+      "overview": "Übersicht",
+      "hives": "Bienenstöcke",
+      "location": "Standort"
     },
-    "create": {
-        "title": "Bienenstand erstellen",
-        "button": "Neuen Bienenstand erstellen",
-        "success": "Bienenstand erfolgreich erstellt"
-    },
-    "edit": {
-        "title": "Bienenstand bearbeiten",
-        "success": "Bienenstand erfolgreich aktualisiert"
-    },
-    "delete": {
-        "confirm": "Möchten Sie diesen Bienenstand wirklich löschen?",
-        "success": "Bienenstand erfolgreich gelöscht"
-    },
-    "detail": {
-        "notFound": "Bienenstand nicht gefunden",
-        "noLocationSpecified": "Kein Standort angegeben",
-        "tabs": {
-            "overview": "Übersicht",
-            "hives": "Bienenstöcke",
-            "location": "Standort"
-        },
-        "apiaryInformation": "Informationen zum Bienenstand",
-        "locationMap": "Standortkarte",
-        "apiaryLocation": "Standort des Bienenstands",
-        "noCoordinates": "Für diesen Bienenstand sind keine Koordinaten verfügbar"
-    },
-    "fields": {
-        "name": "Name",
-        "location": "Standort",
-        "locationDescription": "Standortbeschreibung",
-        "coordinates": "Koordinaten",
-        "hivesCount": "Anzahl der Bienenstöcke",
-        "latitude": "Breitengrad",
-        "longitude": "Längengrad",
-        "notSpecified": "Nicht angegeben",
-        "noLocation": "Kein Standort",
-        "noCoordinates": "Keine Koordinaten"
-    },
-    "actions": {
-        "details": "Details",
-        "refreshData": "Daten aktualisieren",
-        "exportCSV": "Als CSV exportieren",
-        "print": "Bienenstandliste drucken",
-        "share": "Bienenstandliste teilen",
-        "dataOptions": "Datenoptionen"
-    },
-    "messages": {
-        "exportComingSoon": "Exportfunktion bald verfügbar",
-        "shareComingSoon": "Freigabefunktion bald verfügbar"
-    },
-    "switcher": {
-        "teams": "Teams",
-        "addApiary": "Bienenstand hinzufügen",
-        "noApiarySelected": "Kein Bienenstand ausgewählt",
-        "selectOrCreate": "Bienenstand auswählen oder erstellen",
-        "allApiaries": "Alle Bienenstände",
-        "allApiariesSubtitle": "Alle Bienenstände werden angezeigt"
-    },
-    "map": {
-        "selectLocation": "Standort des Bienenstands auswählen",
-        "selectedLocation": "Ausgewählter Standort",
-        "apiaryLocation": "Standort des Bienenstands"
-    },
-    "calendarSubscription": {
-        "title": "Kalenderabonnement",
-        "description": "Abonnieren Sie den Durchsichtenplan dieses Bienenstands in Ihrer Kalender-App",
-        "addToCalendar": "Zum Kalender hinzufügen",
-        "regenerateUrl": "URL neu generieren",
-        "regenerated": "Abonnement-URL wurde neu generiert",
-        "regenerateFailed": "Abonnement-URL konnte nicht neu generiert werden",
-        "copied": "Abonnement-URL in die Zwischenablage kopiert",
-        "copyFailed": "Kopieren in die Zwischenablage fehlgeschlagen",
-        "readOnlyNote": "Diese URL bietet schreibgeschützten Zugriff auf Ihren Durchsichtenplan. Beim Neugenerieren wird die vorherige URL ungültig.",
-        "copyUrl": "URL kopieren",
-        "includeScheduledInspections": "Automatisch erzeugte Durchsichten einschließen",
-        "updateFailed": "Kalendereinstellungen konnten nicht aktualisiert werden"
-    },
-    "form": {
-        "namePlaceholder": "Name des Bienenstands",
-        "locationPlaceholder": "Standortbeschreibung",
-        "inspectionType": {
-            "label": "Durchsichtstyp",
-            "placeholder": "Durchsichtstyp auswählen",
-            "dataDriven": "Datengestützt",
-            "subjective": "Subjektiv",
-            "description": "Bei der datengestützten Methode werden die Anzahl der Einzelbilder und eine automatische Bewertung herangezogen. Bei der subjektiven Methode werden qualitative Bewertungen auf einer Skala von 0 bis 10 verwendet."
-        }
+    "apiaryInformation": "Informationen zum Bienenstand",
+    "locationMap": "Standortkarte",
+    "apiaryLocation": "Standort des Bienenstands",
+    "noCoordinates": "Für diesen Bienenstand sind keine Koordinaten verfügbar"
+  },
+  "fields": {
+    "name": "Name",
+    "location": "Standort",
+    "locationDescription": "Standortbeschreibung",
+    "coordinates": "Koordinaten",
+    "hivesCount": "Anzahl der Bienenstöcke",
+    "latitude": "Breitengrad",
+    "longitude": "Längengrad",
+    "notSpecified": "Nicht angegeben",
+    "noLocation": "Kein Standort",
+    "noCoordinates": "Keine Koordinaten"
+  },
+  "actions": {
+    "details": "Details",
+    "refreshData": "Daten aktualisieren",
+    "exportCSV": "Als CSV exportieren",
+    "print": "Bienenstandliste drucken",
+    "share": "Bienenstandliste teilen",
+    "dataOptions": "Datenoptionen"
+  },
+  "messages": {
+    "exportComingSoon": "Exportfunktion bald verfügbar",
+    "shareComingSoon": "Freigabefunktion bald verfügbar"
+  },
+  "switcher": {
+    "teams": "Teams",
+    "addApiary": "Bienenstand hinzufügen",
+    "noApiarySelected": "Kein Bienenstand ausgewählt",
+    "selectOrCreate": "Bienenstand auswählen oder erstellen",
+    "allApiaries": "Alle Bienenstände",
+    "allApiariesSubtitle": "Alle Bienenstände werden angezeigt"
+  },
+  "map": {
+    "selectLocation": "Standort des Bienenstands auswählen",
+    "selectedLocation": "Ausgewählter Standort",
+    "apiaryLocation": "Standort des Bienenstands"
+  },
+  "calendarSubscription": {
+    "title": "Kalenderabonnement",
+    "description": "Abonnieren Sie den Durchsichtenplan dieses Bienenstands in Ihrer Kalender-App",
+    "addToCalendar": "Zum Kalender hinzufügen",
+    "regenerateUrl": "URL neu generieren",
+    "regenerated": "Abonnement-URL wurde neu generiert",
+    "regenerateFailed": "Abonnement-URL konnte nicht neu generiert werden",
+    "copied": "Abonnement-URL in die Zwischenablage kopiert",
+    "copyFailed": "Kopieren in die Zwischenablage fehlgeschlagen",
+    "readOnlyNote": "Diese URL bietet schreibgeschützten Zugriff auf Ihren Durchsichtenplan. Beim Neugenerieren wird die vorherige URL ungültig.",
+    "copyUrl": "URL kopieren",
+    "includeScheduledInspections": "Automatisch erzeugte Durchsichten einschließen",
+    "updateFailed": "Kalendereinstellungen konnten nicht aktualisiert werden"
+  },
+  "form": {
+    "namePlaceholder": "Name des Bienenstands",
+    "locationPlaceholder": "Standortbeschreibung",
+    "inspectionType": {
+      "label": "Durchsichtstyp",
+      "placeholder": "Durchsichtstyp auswählen",
+      "dataDriven": "Datengestützt",
+      "subjective": "Subjektiv",
+      "description": "Bei der datengestützten Methode werden die Anzahl der Einzelbilder und eine automatische Bewertung herangezogen. Bei der subjektiven Methode werden qualitative Bewertungen auf einer Skala von 0 bis 10 verwendet."
     }
+  }
 }

@@ -1,3 +1,5 @@
-# Locale files are managed by Weblate and have their own formatting conventions.
-# Reformatting them causes merge conflicts when Weblate pushes translation updates.
-apps/frontend/public/locales/**/*.json
+# Locale JSON is formatted by Prettier too (see the locale override in
+# .prettierrc). Keep the Weblate components' `json_indent` at 2 and key sorting
+# off, otherwise Weblate and Prettier rewrite each other's changes.
+#
+# This file is intentionally left without ignore patterns.

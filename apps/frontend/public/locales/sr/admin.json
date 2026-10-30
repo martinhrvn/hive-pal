@@ -1,68 +1,68 @@
 {
-    "title": "Управљање корисницима",
-    "description": "Управљање корисницима и ресетовање лозинки",
-    "table": {
-        "email": "Е‑пошта",
-        "name": "Име",
-        "role": "Улога",
-        "passwordChangeRequired": "Промена лозинке обавезна",
-        "createdAt": "Креиран",
-        "actions": "Акције",
-        "apiaries": "Пчелињаци",
-        "hives": "Кошнице",
-        "inspections": "Прегледи",
-        "lastActivity": "Последња активност"
+  "title": "Управљање корисницима",
+  "description": "Управљање корисницима и ресетовање лозинки",
+  "table": {
+    "email": "Е‑пошта",
+    "name": "Име",
+    "role": "Улога",
+    "passwordChangeRequired": "Промена лозинке обавезна",
+    "createdAt": "Креиран",
+    "actions": "Акције",
+    "apiaries": "Пчелињаци",
+    "hives": "Кошнице",
+    "inspections": "Прегледи",
+    "lastActivity": "Последња активност"
+  },
+  "actions": {
+    "resetPassword": "Ресетуј лозинку"
+  },
+  "resetPasswordDialog": {
+    "title": "Ресетовање лозинке корисника",
+    "description": "Поставите привремену лозинку за {email}. Корисник ће морати да промени лозинку при следећој пријави.",
+    "tempPasswordLabel": "Привремена лозинка",
+    "tempPasswordPlaceholder": "Унесите привремену лозинку",
+    "minCharacters": "Минимум 6 карактера",
+    "submit": "Ресетуј лозинку"
+  },
+  "messages": {
+    "loading": "Учитавање...",
+    "loadingUsers": "Учитавање корисника...",
+    "noUsers": "Нема пронађених корисника",
+    "resetSuccess": "Ресетовање лозинке је успело! Корисник ће морати да промени лозинку при следећој пријави.",
+    "failedToFetch": "Грешка при учитавању података",
+    "failedToReset": "Ресетовање лозинке није успело",
+    "unexpectedError": "Дошло је до неочекиване грешке"
+  },
+  "status": {
+    "yes": "Да",
+    "no": "Не",
+    "dash": "-"
+  },
+  "userDetail": {
+    "backToList": "Назад на листу корисника",
+    "summary": {
+      "totalApiaries": "Укупно пчелињака",
+      "totalHives": "Укупно кошница",
+      "totalInspections": "Укупно прегледа",
+      "lastActivity": "Последња активност",
+      "lastInspection": "Последњи преглед"
     },
-    "actions": {
-        "resetPassword": "Ресетуј лозинку"
+    "recentActivity": {
+      "title": "Недавне активности",
+      "period": "Последњих 30 дана",
+      "inspections": "Прегледи",
+      "actions": "Активности",
+      "byType": "Активности по типу"
     },
-    "resetPasswordDialog": {
-        "title": "Ресетовање лозинке корисника",
-        "description": "Поставите привремену лозинку за {email}. Корисник ће морати да промени лозинку при следећој пријави.",
-        "tempPasswordLabel": "Привремена лозинка",
-        "tempPasswordPlaceholder": "Унесите привремену лозинку",
-        "minCharacters": "Минимум 6 карактера",
-        "submit": "Ресетуј лозинку"
-    },
-    "messages": {
-        "loading": "Учитавање...",
-        "loadingUsers": "Учитавање корисника...",
-        "noUsers": "Нема пронађених корисника",
-        "resetSuccess": "Ресетовање лозинке је успело! Корисник ће морати да промени лозинку при следећој пријави.",
-        "failedToFetch": "Грешка при учитавању података",
-        "failedToReset": "Ресетовање лозинке није успело",
-        "unexpectedError": "Дошло је до неочекиване грешке"
-    },
-    "status": {
-        "yes": "Да",
-        "no": "Не",
-        "dash": "-"
-    },
-    "userDetail": {
-        "backToList": "Назад на листу корисника",
-        "summary": {
-            "totalApiaries": "Укупно пчелињака",
-            "totalHives": "Укупно кошница",
-            "totalInspections": "Укупно прегледа",
-            "lastActivity": "Последња активност",
-            "lastInspection": "Последњи преглед"
-        },
-        "recentActivity": {
-            "title": "Недавне активности",
-            "period": "Последњих 30 дана",
-            "inspections": "Прегледи",
-            "actions": "Активности",
-            "byType": "Активности по типу"
-        },
-        "apiaryBreakdown": {
-            "title": "Преглед пчелињака",
-            "name": "Назив пчелињака",
-            "location": "Локација",
-            "coordinates": "Координате",
-            "hives": "Кошнице",
-            "inspections": "Прегледи",
-            "lastInspection": "Последњи преглед",
-            "noApiaries": "Није пронађен ниједан пчелињак за овог корисника"
-        }
+    "apiaryBreakdown": {
+      "title": "Преглед пчелињака",
+      "name": "Назив пчелињака",
+      "location": "Локација",
+      "coordinates": "Координате",
+      "hives": "Кошнице",
+      "inspections": "Прегледи",
+      "lastInspection": "Последњи преглед",
+      "noApiaries": "Није пронађен ниједан пчелињак за овог корисника"
     }
+  }
 }

@@ -8,7 +8,7 @@
     "build": "react-router build",
     "lint": "eslint .",
     "lint:i18n:prune": "eslint . --prune-suppressions",
-    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\" \"public/locales/**/*.json\"",
     "preview": "vite preview --outDir dist/client",
     "typecheck": "react-router typegen && tsc -b",
     "test": "vitest",

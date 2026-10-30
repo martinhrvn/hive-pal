@@ -1,72 +1,72 @@
 {
-    "title": "Матице",
-    "singular": "Матица",
-    "plural": "Матице",
-    "create": {
-        "title": "Нова Матица",
-        "button": "Додај Матицу",
-        "success": "Успешно додавање матице"
-    },
-    "edit": {
-        "title": "Измени Матицу",
-        "button": "Сними измене",
-        "success": "Матица је успешно ажурирана"
-    },
-    "fields": {
-        "hive": "Кошница",
-        "year": "Година",
-        "color": "Боја",
-        "marking": "Маркирање",
-        "source": "Извор",
-        "status": "Статус",
-        "installationDate": "Датум инсталације",
-        "replacedDate": "Датум замене (опционо)",
-        "installedOn": "Постављено на {{date}}",
-        "via": "преко {{source}}"
-    },
-    "colors": {
-        "blue": "Плаво",
-        "green": "Зелено",
-        "red": "Црвено",
-        "yellow": "Жуто",
-        "purple": "Љубичасто",
-        "indigo": "Индиго плаво",
-        "pink": "Розе",
-        "gray": "Сиво",
-        "black": "Црно",
-        "white": "Бело"
-    },
-    "status": {
-        "active": "Активно",
-        "replaced": "Замењено",
-        "dead": "Угинула",
-        "unknown": "Непознато"
-    },
-    "actions": {
-        "replaceQueen": "Замени Матицу",
-        "markAsDead": "Означи Угинула",
-        "markAsLostMissing": "Означи као Изгубљена/Недостаје",
-        "addQueen": "Додај Матицу",
-        "editQueen": "Измени Матицу",
-        "viewDetails": "Прикажи детаље",
-        "manageQueen": "Управљај Матицом",
-        "transferQueen": "Премести матицу"
-    },
-    "form": {
-        "selectHive": "Изабери кошницу",
-        "enterYear": "Унеси годину",
-        "selectColor": "Изабери боју",
-        "enterMarking": "Унеси ознаку матице",
-        "enterSource": "Унеси извор матице",
-        "selectStatus": "Изабери статус",
-        "pickDate": "Изабери датум"
-    },
-    "information": {
-        "noActiveQueen": "Нема активне матице",
-        "hasActiveQueen": "Ова кошница већ има активну матицу. Замена матице ће означити тренутну матицу као замењену."
-    },
-    "delete": {
-        "confirm": "Да ли сте сигурни да желите да обришете ову матицу?",
-        "success": "Матица је успешно обрисана"
-    }
+  "title": "Матице",
+  "singular": "Матица",
+  "plural": "Матице",
+  "create": {
+    "title": "Нова Матица",
+    "button": "Додај Матицу",
+    "success": "Успешно додавање матице"
+  },
+  "edit": {
+    "title": "Измени Матицу",
+    "button": "Сними измене",
+    "success": "Матица је успешно ажурирана"
+  },
+  "fields": {
+    "hive": "Кошница",
+    "year": "Година",
+    "color": "Боја",
+    "marking": "Маркирање",
+    "source": "Извор",
+    "status": "Статус",
+    "installationDate": "Датум инсталације",
+    "replacedDate": "Датум замене (опционо)",
+    "installedOn": "Постављено на {{date}}",
+    "via": "преко {{source}}"
+  },
+  "colors": {
+    "blue": "Плаво",
+    "green": "Зелено",
+    "red": "Црвено",
+    "yellow": "Жуто",
+    "purple": "Љубичасто",
+    "indigo": "Индиго плаво",
+    "pink": "Розе",
+    "gray": "Сиво",
+    "black": "Црно",
+    "white": "Бело"
+  },
+  "status": {
+    "active": "Активно",
+    "replaced": "Замењено",
+    "dead": "Угинула",
+    "unknown": "Непознато"
+  },
+  "actions": {
+    "replaceQueen": "Замени Матицу",
+    "markAsDead": "Означи Угинула",
+    "markAsLostMissing": "Означи као Изгубљена/Недостаје",
+    "addQueen": "Додај Матицу",
+    "editQueen": "Измени Матицу",
+    "viewDetails": "Прикажи детаље",
+    "manageQueen": "Управљај Матицом",
+    "transferQueen": "Премести матицу"
+  },
+  "form": {
+    "selectHive": "Изабери кошницу",
+    "enterYear": "Унеси годину",
+    "selectColor": "Изабери боју",
+    "enterMarking": "Унеси ознаку матице",
+    "enterSource": "Унеси извор матице",
+    "selectStatus": "Изабери статус",
+    "pickDate": "Изабери датум"
+  },
+  "information": {
+    "noActiveQueen": "Нема активне матице",
+    "hasActiveQueen": "Ова кошница већ има активну матицу. Замена матице ће означити тренутну матицу као замењену."
+  },
+  "delete": {
+    "confirm": "Да ли сте сигурни да желите да обришете ову матицу?",
+    "success": "Матица је успешно обрисана"
+  }
 }

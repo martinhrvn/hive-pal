@@ -5,5 +5,13 @@
   "tabWidth": 2,
   "semi": true,
   "arrowParens": "avoid",
-  "bracketSpacing": true
+  "bracketSpacing": true,
+  "overrides": [
+    {
+      "files": ["apps/frontend/public/locales/**/*.json"],
+      "options": {
+        "printWidth": 0
+      }
+    }
+  ]
 }

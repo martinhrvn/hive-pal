@@ -1,61 +1,61 @@
 {
-    "title": "Willkommen bei Hive-Pal!",
-    "subtitle": "Richten Sie Ihre Imkerei ein",
-    "steps": {
-        "welcome": "Willkommen",
-        "createApiary": "Standort erstellen",
-        "addHive": "Ersten Bienenstock hinzufügen",
-        "complete": "Abschließen"
+  "title": "Willkommen bei Hive-Pal!",
+  "subtitle": "Richten Sie Ihre Imkerei ein",
+  "steps": {
+    "welcome": "Willkommen",
+    "createApiary": "Standort erstellen",
+    "addHive": "Ersten Bienenstock hinzufügen",
+    "complete": "Abschließen"
+  },
+  "welcome": {
+    "title": "Starten Sie Ihre Imkerei-Reise",
+    "description": "Willkommen bei Hive-Pal, Ihrem digitalen Imkerei-Assistenten! Wir führen Sie durch die Einrichtung Ihres ersten Bienenstandorts und Bienenstocks.",
+    "action": "Los geht's"
+  },
+  "apiary": {
+    "title": "Erstellen Sie Ihren ersten Bienenstand",
+    "description": "Ein Bienenstand ist der Ort, an dem Ihre Bienenstöcke stehen. Erstellen Sie Ihren ersten."
+  },
+  "hive": {
+    "title": "Fügen Sie Ihren ersten Bienenstock hinzu",
+    "description": "Jetzt fügen wir Ihren ersten Bienenstock zu Ihrem neuen Bienenstand hinzu: {{apiaryName}}.",
+    "skip": "Vorerst überspringen"
+  },
+  "complete": {
+    "title": "Glückwunsch!",
+    "description": "Sie haben erfolgreich Ihren ersten Bienenstand und Bienenstock eingerichtet. Sie können jetzt Ihre Imkerei-Aktivitäten mit Hive-Pal verfolgen!",
+    "action": "Zum Dashboard"
+  },
+  "nudges": {
+    "addHive": {
+      "title": "Sieht aus, als wären Sie neu hier",
+      "description": "Fügen Sie Ihren ersten Bienenstock hinzu, um Durchsichten und Aktivitäten zu erfassen.",
+      "action": "Bienenstock hinzufügen"
     },
-    "welcome": {
-        "title": "Starten Sie Ihre Imkerei-Reise",
-        "description": "Willkommen bei Hive-Pal, Ihrem digitalen Imkerei-Assistenten! Wir führen Sie durch die Einrichtung Ihres ersten Bienenstandorts und Bienenstocks.",
-        "action": "Los geht's"
-    },
-    "apiary": {
-        "title": "Erstellen Sie Ihren ersten Bienenstand",
-        "description": "Ein Bienenstand ist der Ort, an dem Ihre Bienenstöcke stehen. Erstellen Sie Ihren ersten."
-    },
-    "hive": {
-        "title": "Fügen Sie Ihren ersten Bienenstock hinzu",
-        "description": "Jetzt fügen wir Ihren ersten Bienenstock zu Ihrem neuen Bienenstand hinzu: {{apiaryName}}.",
-        "skip": "Vorerst überspringen"
-    },
-    "complete": {
-        "title": "Glückwunsch!",
-        "description": "Sie haben erfolgreich Ihren ersten Bienenstand und Bienenstock eingerichtet. Sie können jetzt Ihre Imkerei-Aktivitäten mit Hive-Pal verfolgen!",
-        "action": "Zum Dashboard"
-    },
-    "nudges": {
-        "addHive": {
-            "title": "Sieht aus, als wären Sie neu hier",
-            "description": "Fügen Sie Ihren ersten Bienenstock hinzu, um Durchsichten und Aktivitäten zu erfassen.",
-            "action": "Bienenstock hinzufügen"
-        },
-        "addLocation": {
-            "title": "Wetter für Ihren Bienenstand",
-            "description": "Hinterlegen Sie den Standort Ihres Bienenstands, um Wetterdaten und Vorhersagen zu erhalten.",
-            "action": "Standort hinzufügen"
-        }
-    },
-    "empty": {
-        "noApiary": {
-            "title": "Erstellen Sie Ihren ersten Bienenstand",
-            "description": "Ein Bienenstand ist der Ort, an dem Ihre Bienenstöcke stehen. Erstellen Sie einen, um loszulegen.",
-            "action": "Bienenstand erstellen",
-            "guided": "Lieber eine geführte Einrichtung?"
-        },
-        "noHives": {
-            "title": "Noch keine Bienenstöcke",
-            "description": "Fügen Sie diesem Bienenstand Ihren ersten Bienenstock hinzu, um ihn zu erfassen.",
-            "action": "Ersten Bienenstock hinzufügen",
-            "descriptionAll": "Fügen Sie einem Ihrer Bienenstände einen Bienenstock hinzu, um ihn zu erfassen."
-        },
-        "noLocation": {
-            "title": "Standort für Wetterdaten hinzufügen",
-            "description": "Legen Sie den Standort Ihres Bienenstands fest, um Wetterdaten und Vorhersagen zu erhalten.",
-            "action": "Standort hinzufügen",
-            "dismiss": "Ausblenden"
-        }
+    "addLocation": {
+      "title": "Wetter für Ihren Bienenstand",
+      "description": "Hinterlegen Sie den Standort Ihres Bienenstands, um Wetterdaten und Vorhersagen zu erhalten.",
+      "action": "Standort hinzufügen"
     }
+  },
+  "empty": {
+    "noApiary": {
+      "title": "Erstellen Sie Ihren ersten Bienenstand",
+      "description": "Ein Bienenstand ist der Ort, an dem Ihre Bienenstöcke stehen. Erstellen Sie einen, um loszulegen.",
+      "action": "Bienenstand erstellen",
+      "guided": "Lieber eine geführte Einrichtung?"
+    },
+    "noHives": {
+      "title": "Noch keine Bienenstöcke",
+      "description": "Fügen Sie diesem Bienenstand Ihren ersten Bienenstock hinzu, um ihn zu erfassen.",
+      "action": "Ersten Bienenstock hinzufügen",
+      "descriptionAll": "Fügen Sie einem Ihrer Bienenstände einen Bienenstock hinzu, um ihn zu erfassen."
+    },
+    "noLocation": {
+      "title": "Standort für Wetterdaten hinzufügen",
+      "description": "Legen Sie den Standort Ihres Bienenstands fest, um Wetterdaten und Vorhersagen zu erhalten.",
+      "action": "Standort hinzufügen",
+      "dismiss": "Ausblenden"
+    }
+  }
 }
