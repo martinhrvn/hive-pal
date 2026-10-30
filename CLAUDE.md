@@ -43,6 +43,14 @@ pnpm typecheck               # Type checking
 pnpm test:ct                 # Component tests with Playwright
 ```
 
+Playwright browsers are provided by `devenv` (`devenv.nix`), not the host. Run
+browser-based commands (component tests, e2e, screenshots) through it and drop
+the host library path, otherwise Chromium fails with missing shared libraries:
+
+```bash
+devenv shell -- bash -c 'unset LD_LIBRARY_PATH; cd apps/frontend && pnpm test:ct'
+```
+
 ## Architecture
 
 ### Tech Stack
