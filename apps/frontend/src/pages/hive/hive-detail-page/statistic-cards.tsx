@@ -1,9 +1,83 @@
 import { useTranslation } from 'react-i18next';
+import type { ReactNode } from 'react';
 import { BarChart, CrownIcon } from 'lucide-react';
 import { BeeIcon } from '@/components/common/bee-icon.tsx';
 import { IconJarLogoIcon } from '@radix-ui/react-icons';
 import { Card } from '@/components/ui/card';
 import { HiveScore } from 'shared-schemas';
+import { getScoreLevelTextClass } from '@/lib/score-level';
+import { ScoreLevelCue } from '@/components/common/score-level-cue';
+
+type ScoreItemProps = {
+  title: string;
+  value: number | null | undefined;
+  icon: ReactNode;
+};
+
+const ScoreItem = ({ title, value, icon }: ScoreItemProps) => {
+  const { t } = useTranslation('hive');
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        {icon}
+        <div className="text-sm font-medium text-muted-foreground">{title}</div>
+      </div>
+      <div
+        className={`flex items-baseline gap-1.5 text-3xl font-bold ${getScoreLevelTextClass(value)}`}
+      >
+        <ScoreLevelCue value={value} iconClassName="size-4" />
+        <span>{value?.toFixed(1) ?? '—'}</span>
+        <span className="text-sm font-normal text-muted-foreground">
+          {t('scores.outOfTen')}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+type MobileScoreItemProps = {
+  label: string;
+  value: number | null | undefined;
+};
+
+const MobileScoreItem = ({ label, value }: MobileScoreItemProps) => (
+  <div className="flex items-center gap-1">
+    <span className="text-xs text-muted-foreground">{label}:</span>
+    <span
+      className={`inline-flex items-center gap-1 text-sm font-semibold ${getScoreLevelTextClass(value)}`}
+    >
+      <ScoreLevelCue value={value} iconClassName="size-3" />
+      {value?.toFixed(1) ?? '—'}
+    </span>
+  </div>
+);
+
+type CompactScoreItemProps = {
+  title: string;
+  value: number | null | undefined;
+  icon: ReactNode;
+};
+
+const CompactScoreItem = ({ title, value, icon }: CompactScoreItemProps) => {
+  const { t } = useTranslation('hive');
+  return (
+    <div>
+      <div className="flex items-center gap-1">
+        {icon}
+        <span className="text-xs text-muted-foreground">{title}</span>
+      </div>
+      <div
+        className={`flex items-baseline gap-1.5 text-xl font-bold ${getScoreLevelTextClass(value)}`}
+      >
+        <ScoreLevelCue value={value} />
+        <span>{value?.toFixed(1) ?? '—'}</span>
+        <span className="text-sm font-normal text-muted-foreground">
+          {t('scores.outOfTen')}
+        </span>
+      </div>
+    </div>
+  );
+};
 
 export const StatisticCards = ({
   score,
@@ -16,84 +90,6 @@ export const StatisticCards = ({
   const strength = score.populationScore;
   const honeyStores = score.storesScore;
   const queenScore = score.queenScore;
-
-  const getScoreColor = (value: number | null | undefined) => {
-    if (value === null || value === undefined) return 'text-muted-foreground';
-    if (value >= 6) return 'text-green-600';
-    if (value >= 3) return 'text-amber-500';
-    return 'text-red-500';
-  };
-
-  const ScoreItem = ({
-    title,
-    value,
-    icon,
-    emphasized = false,
-  }: {
-    title: string;
-    value: number | null | undefined;
-    icon: React.ReactNode;
-    emphasized?: boolean;
-  }) => (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        {icon}
-        <div
-          className={`${emphasized ? 'text-sm font-medium' : 'text-sm'} text-muted-foreground`}
-        >
-          {title}
-        </div>
-      </div>
-      <div
-        className={`${emphasized ? 'text-3xl' : 'text-2xl'} font-bold ${getScoreColor(value)}`}
-      >
-        {value?.toFixed(1) ?? '—'}
-        <span className="text-sm font-normal text-muted-foreground">
-          {' '}
-          {t('hive:scores.outOfTen')}
-        </span>
-      </div>
-    </div>
-  );
-
-  // Mobile compact view
-  const MobileScoreItem = ({
-    label,
-    value,
-  }: {
-    label: string;
-    value: number | null | undefined;
-  }) => (
-    <div className="flex items-baseline gap-1">
-      <span className="text-xs text-muted-foreground">{label}:</span>
-      <span className={`text-sm font-semibold ${getScoreColor(value)}`}>
-        {value?.toFixed(1) ?? '—'}
-      </span>
-    </div>
-  );
-
-  const CompactScoreItem = ({
-    title,
-    value,
-    icon,
-  }: {
-    title: string;
-    value: number | null | undefined;
-    icon: React.ReactNode;
-  }) => (
-    <div>
-      <div className="flex items-center gap-1">
-        {icon}
-        <span className="text-xs text-muted-foreground">{title}</span>
-      </div>
-      <div className={`text-xl font-bold ${getScoreColor(value)}`}>
-        {value?.toFixed(1) ?? '—'}
-        <span className="text-sm font-normal text-muted-foreground ml-1">
-          {t('hive:scores.outOfTen')}
-        </span>
-      </div>
-    </div>
-  );
 
   const mobileView = (
     <div className="sm:hidden flex items-center justify-between flex-wrap gap-2">
@@ -118,22 +114,24 @@ export const StatisticCards = ({
           <CompactScoreItem
             title={t('hive:scores.overallScore')}
             value={score.overallScore}
-            icon={<BarChart className="h-3.5 w-3.5 text-amber-500" />}
+            icon={<BarChart className="size-3.5 text-muted-foreground/60" />}
           />
           <CompactScoreItem
             title={t('hive:scores.population')}
             value={strength}
-            icon={<BeeIcon className="h-3.5 w-3.5 text-blue-500" />}
+            icon={<BeeIcon className="size-3.5 text-muted-foreground/60" />}
           />
           <CompactScoreItem
             title={t('hive:scores.stores')}
             value={honeyStores}
-            icon={<IconJarLogoIcon className="h-3.5 w-3.5 text-purple-500" />}
+            icon={
+              <IconJarLogoIcon className="size-3.5 text-muted-foreground/60" />
+            }
           />
           <CompactScoreItem
             title={t('hive:scores.queenScore')}
             value={queenScore}
-            icon={<CrownIcon className="h-3.5 w-3.5 text-green-500" />}
+            icon={<CrownIcon className="size-3.5 text-muted-foreground/60" />}
           />
         </div>
       </div>
@@ -150,28 +148,26 @@ export const StatisticCards = ({
           <ScoreItem
             title={t('hive:scores.overallScore')}
             value={score.overallScore}
-            icon={<BarChart className="text-muted-foreground/60" />}
-            emphasized
+            icon={<BarChart className="size-6 text-muted-foreground/60" />}
           />
 
           <ScoreItem
             title={t('hive:scores.population')}
             value={strength}
-            icon={<BeeIcon className="text-muted-foreground/60" />}
-            emphasized
+            icon={<BeeIcon className="size-6 text-muted-foreground/60" />}
           />
           <ScoreItem
             title={t('hive:scores.stores')}
             value={honeyStores}
-            icon={<IconJarLogoIcon className="text-muted-foreground/60" />}
-            emphasized
+            icon={
+              <IconJarLogoIcon className="size-6 text-muted-foreground/60" />
+            }
           />
 
           <ScoreItem
             title={t('hive:scores.queenScore')}
             value={queenScore}
-            icon={<CrownIcon className="text-muted-foreground/60" />}
-            emphasized
+            icon={<CrownIcon className="size-6 text-muted-foreground/60" />}
           />
         </div>
       </div>

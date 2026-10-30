@@ -46,10 +46,16 @@
     "stores": "Zásoby",
     "queen": "Matka",
     "overall": "Celkové",
-    "warnings": "Upozornenia"
+    "warnings": "Upozornenia",
+    "override": "Prepísať",
+    "resetToCalculated": "Vrátiť na vypočítané",
+    "calculatedValue": "Vypočítané: {{value}}"
   },
   "observations": {
     "title": "Pozorovania",
+    "increaseField": "Zvýšiť {{field}}",
+    "decreaseField": "Znížiť {{field}}",
+    "clearField": "Vymazať",
     "queenSeen": "Matka videná",
     "strength": "Sila",
     "cappedBrood": "Zavíčkovaný plod",
@@ -365,6 +371,7 @@
     "scheduledInspections": "Naplánované prehliadky",
     "completedInspections": "Dokončené prehliadky",
     "noInspections": "Zatiaľ neboli zaznamenané žiadne prehliadky.",
+    "unknownHive": "Neznámy úľ",
     "cancelled": "Zrušené",
     "viewDetails": "Zobraziť podrobnosti",
     "edit": "Upraviť",

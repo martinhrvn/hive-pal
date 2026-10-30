@@ -29,19 +29,19 @@ const EVENT_ROWS = [
     key: 'queenSeen',
     labelKey: 'inspection:fields.queenSeen',
     y: 3,
-    color: '#a855f7',
+    color: 'var(--chart-3)',
   },
   {
     key: 'swarmCells',
     labelKey: 'hive:charts.events.swarmCells',
     y: 2,
-    color: '#f43f5e',
+    color: 'var(--chart-6)',
   },
   {
     key: 'supersedureCells',
     labelKey: 'hive:charts.events.supersedureCells',
     y: 1,
-    color: '#f97316',
+    color: 'var(--chart-4)',
   },
 ] as const;
 

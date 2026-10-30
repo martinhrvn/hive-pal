@@ -71,7 +71,7 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
           config={{
             value: {
               label: t('card.score'),
-              color: '#10b981', // Green for health
+              color: 'var(--chart-1)',
             },
           }}
           className="h-[300px] w-full"

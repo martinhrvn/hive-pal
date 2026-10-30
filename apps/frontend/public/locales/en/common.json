@@ -129,6 +129,11 @@
     "inactive": "Inactive",
     "archived": "Archived"
   },
+  "scoreLevel": {
+    "good": "Good",
+    "fair": "Fair",
+    "poor": "Poor"
+  },
   "messages": {
     "confirmDelete": "Are you sure you want to delete this item?",
     "changesSaved": "Changes saved successfully",

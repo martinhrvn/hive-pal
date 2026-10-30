@@ -95,6 +95,11 @@
     "inactive": "Neaktívne",
     "archived": "Archivované"
   },
+  "scoreLevel": {
+    "good": "Dobré",
+    "fair": "Priemerné",
+    "poor": "Slabé"
+  },
   "messages": {
     "confirmDelete": "Naozaj chcete vymazať túto položku?",
     "changesSaved": "Zmeny boli úspešne uložené",

@@ -90,11 +90,25 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  /* Chart series + score levels use the Okabe–Ito colorblind-safe palette.
+     Hues stay in the same order in light and dark; only lightness changes so
+     series remain legible on either surface. Score levels draw from the same
+     palette, and are always paired with an icon/label in the UI. */
+  --chart-1: #0072b2; /* blue */
+  --chart-2: #e69f00; /* orange */
+  --chart-3: #009e73; /* bluish green */
+  --chart-4: #cc79a7; /* reddish purple */
+  --chart-5: #4a9bc4; /* sky blue */
+  --chart-6: #d55e00; /* vermillion */
+  --chart-7: #b8860b; /* gold */
+  --chart-8: #6b7280; /* grey */
+  --score-good: var(--chart-3);
+  --score-fair: var(--chart-2);
+  --score-poor: var(--chart-6);
+  /* Readable text/icon shades for each level (4.5:1 on the light surface). */
+  --score-good-foreground: #00795a;
+  --score-fair-foreground: #9a5b00;
+  --score-poor-foreground: #b3300b;
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -146,11 +160,21 @@
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  /* Okabe–Ito palette, lightened for dark surfaces. Keep the hue order. */
+  --chart-1: #56b4e9; /* sky blue */
+  --chart-2: #f0b429; /* amber */
+  --chart-3: #34d399; /* bluish green */
+  --chart-4: #e29ac6; /* reddish purple */
+  --chart-5: #8ccbea; /* lighter sky */
+  --chart-6: #ff7f4d; /* vermillion */
+  --chart-7: #f0e442; /* yellow */
+  --chart-8: #a1a1aa; /* grey */
+  --score-good: var(--chart-3);
+  --score-fair: var(--chart-2);
+  --score-poor: var(--chart-6);
+  --score-good-foreground: #5eead4;
+  --score-fair-foreground: #fcd34d;
+  --score-poor-foreground: #fca5a5;
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.769 0.188 70.08);
@@ -204,6 +228,15 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-7: var(--chart-7);
+  --color-chart-8: var(--chart-8);
+  --color-score-good: var(--score-good);
+  --color-score-good-foreground: var(--score-good-foreground);
+  --color-score-fair: var(--score-fair);
+  --color-score-fair-foreground: var(--score-fair-foreground);
+  --color-score-poor: var(--score-poor);
+  --color-score-poor-foreground: var(--score-poor-foreground);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

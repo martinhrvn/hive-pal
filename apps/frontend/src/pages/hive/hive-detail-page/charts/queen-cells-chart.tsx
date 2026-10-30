@@ -29,7 +29,7 @@ export const QueenCellsChart: React.FC<QueenCellsChartProps> = ({
       config={{
         queenCells: {
           label: t('inspection:observations.queenCells'),
-          color: '#f43f5e',
+          color: 'var(--chart-6)',
         },
       }}
       dataTransformer={inspection => ({

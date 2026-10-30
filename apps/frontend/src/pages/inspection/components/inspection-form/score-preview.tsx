@@ -10,19 +10,14 @@ import { Input } from '@/components/ui/input';
 import { InspectionFormData } from './schema';
 import { getModeSpecificObservations } from './mode-behavior';
 import { RatingSlider } from '@/components/common/rating-slider';
+import { ScoreLevelCue } from '@/components/common/score-level-cue';
+import { getScoreLevelTextClass } from '@/lib/score-level';
 
 type ScoreKey =
   'overallScore' | 'populationScore' | 'storesScore' | 'queenScore';
 
 type ScorePreviewSectionProps = {
   totalFrames?: number | null;
-};
-
-const getScoreColor = (value: number | null | undefined) => {
-  if (value === null || value === undefined) return 'text-muted-foreground';
-  if (value >= 6) return 'text-green-600';
-  if (value >= 3) return 'text-amber-500';
-  return 'text-red-500';
 };
 
 const ScoreItem: React.FC<{
@@ -33,6 +28,7 @@ const ScoreItem: React.FC<{
   onOverride: (value: number | null) => void;
   onClear: () => void;
 }> = ({ label, icon, calculatedValue, overrideValue, onOverride, onClear }) => {
+  const { t } = useTranslation('inspection');
   const [editing, setEditing] = useState(false);
 
   const isOverridden =
@@ -54,29 +50,37 @@ const ScoreItem: React.FC<{
         </div>
 
         <div className="flex items-center gap-1.5">
-          <span className={`text-lg font-bold ${getScoreColor(displayValue)}`}>
+          <ScoreLevelCue value={displayValue} />
+          <span
+            className={`text-lg font-bold ${getScoreLevelTextClass(displayValue)}`}
+          >
             {displayValue?.toFixed(1) ?? '—'}
           </span>
-          <span className="text-xs text-muted-foreground">/10</span>
+          <span className="text-xs text-muted-foreground">
+            {t('units.outOfTen')}
+          </span>
 
           {isOverridden && (
             <button
               type="button"
-              className="ml-1 text-xs text-muted-foreground hover:text-foreground"
+              className="ml-1 rounded p-0.5 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={e => {
                 e.preventDefault();
                 onClear();
                 setEditing(false);
               }}
-              title={`Calculated: ${calculatedValue?.toFixed(1) ?? '—'}`}
+              aria-label={t('scores.resetToCalculated')}
+              title={t('scores.calculatedValue', {
+                value: calculatedValue?.toFixed(1) ?? '—',
+              })}
             >
-              <RotateCcw className="h-3 w-3" />
+              <RotateCcw className="size-3" />
             </button>
           )}
 
           <button
             type="button"
-            className={`ml-0.5 ${
+            className={`ml-0.5 rounded p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
               editing
                 ? 'text-foreground'
                 : 'text-muted-foreground hover:text-foreground'
@@ -85,8 +89,9 @@ const ScoreItem: React.FC<{
               e.preventDefault();
               setEditing(!editing);
             }}
+            aria-label={t('scores.override')}
           >
-            <Pencil className="h-3 w-3" />
+            <Pencil className="size-3" />
           </button>
         </div>
       </div>
@@ -188,22 +193,22 @@ export const ScorePreviewSection: React.FC<ScorePreviewSectionProps> = ({
     {
       key: 'overallScore',
       label: t('scores.overall'),
-      icon: <BarChart className="h-4 w-4 text-amber-500" />,
+      icon: <BarChart className="size-4 text-muted-foreground/60" />,
     },
     {
       key: 'populationScore',
       label: t('scores.population'),
-      icon: <BeeIcon className="h-4 w-4 text-blue-500" />,
+      icon: <BeeIcon className="size-4 text-muted-foreground/60" />,
     },
     {
       key: 'storesScore',
       label: t('scores.stores'),
-      icon: <IconJarLogoIcon className="h-4 w-4 text-purple-500" />,
+      icon: <IconJarLogoIcon className="size-4 text-muted-foreground/60" />,
     },
     {
       key: 'queenScore',
       label: t('scores.queen'),
-      icon: <CrownIcon className="h-4 w-4 text-green-500" />,
+      icon: <CrownIcon className="size-4 text-muted-foreground/60" />,
     },
   ];
 
@@ -225,7 +230,7 @@ export const ScorePreviewSection: React.FC<ScorePreviewSectionProps> = ({
             }}
             className="text-xs"
           >
-            <RotateCcw className="mr-1 h-3 w-3" />
+            <RotateCcw className="mr-1 size-3" />
             {t('scores.resetToCalculated')}
           </Button>
         )}

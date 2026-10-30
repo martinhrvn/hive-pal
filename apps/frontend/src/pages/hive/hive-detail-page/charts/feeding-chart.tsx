@@ -117,7 +117,7 @@ export const FeedingChart: React.FC<FeedingChartProps> = ({
           config={{
             amount: {
               label: t('charts.feeding.amountKg'),
-              color: '#f59e0b', // Amber - representing honey/syrup color
+              color: 'var(--chart-2)', // amber, honey/syrup
             },
           }}
         >

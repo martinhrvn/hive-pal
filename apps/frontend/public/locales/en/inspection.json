@@ -52,10 +52,14 @@
     "override": "Override",
     "resetToCalculated": "Reset to calculated",
     "autoCalculated": "Auto-calculated",
-    "overridden": "Custom"
+    "overridden": "Custom",
+    "calculatedValue": "Calculated: {{value}}"
   },
   "observations": {
     "title": "Observations",
+    "increaseField": "Increase {{field}}",
+    "decreaseField": "Decrease {{field}}",
+    "clearField": "Clear",
     "queenSeen": "Queen seen",
     "strength": "Strength",
     "cappedBrood": "Capped Brood",
@@ -470,6 +474,7 @@
     "scheduledInspections": "Scheduled Inspections",
     "completedInspections": "Completed Inspections",
     "noInspections": "No inspections recorded yet.",
+    "unknownHive": "Unknown hive",
     "cancelled": "Cancelled",
     "viewDetails": "View details",
     "edit": "Edit",

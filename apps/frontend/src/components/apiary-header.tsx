@@ -25,12 +25,18 @@ import { useScheduledInspectionActions } from '@/api/hooks/useScheduledInspectio
 import { UpcomingInspectionListItem } from '@/components/upcoming-inspection-list-item';
 import { cn } from '@/lib/utils';
 import { FeaturePhoto } from '@/components/common/feature-photo';
+import { ScoreLevelCue } from '@/components/common/score-level-cue';
+import { getScoreLevel, type ScoreLevel } from '@/lib/score-level';
+
+const SCORE_TONES: Record<ScoreLevel, MetricTone> = {
+  good: 'scoreGood',
+  fair: 'scoreFair',
+  poor: 'scorePoor',
+};
 
 const getScoreTone = (value: number | null | undefined): MetricTone => {
-  if (value === null || value === undefined) return 'muted';
-  if (value >= 6) return 'success';
-  if (value >= 3) return 'warning';
-  return 'danger';
+  const level = getScoreLevel(value);
+  return level ? SCORE_TONES[level] : 'muted';
 };
 
 const ActionLink: React.FC<{
@@ -248,7 +254,17 @@ export const ApiaryHeader: React.FC = () => {
                       value={
                         averageScore ? numberFormat.format(averageScore) : '—'
                       }
-                      unit={averageScore ? '/ 10' : undefined}
+                      unit={
+                        averageScore
+                          ? t('inspection:units.outOfTen')
+                          : undefined
+                      }
+                      icon={
+                        <ScoreLevelCue
+                          value={averageScore}
+                          className="self-center"
+                        />
+                      }
                       tone={getScoreTone(averageScore)}
                     />
                     <Metric

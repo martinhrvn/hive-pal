@@ -49,6 +49,25 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
     );
   }
 
+  const chartConfig = {
+    overallScore: {
+      label: t('scores.overallScore'),
+      color: 'var(--chart-1)', // blue
+    },
+    populationScore: {
+      label: t('scores.population'),
+      color: 'var(--chart-3)', // bluish green
+    },
+    storesScore: {
+      label: t('scores.stores'),
+      color: 'var(--chart-2)', // orange
+    },
+    queenScore: {
+      label: t('scores.queen'),
+      color: 'var(--chart-4)', // reddish purple
+    },
+  };
+
   return (
     <>
       <Card>
@@ -59,26 +78,7 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer
-            config={{
-              overallScore: {
-                label: t('scores.overallScore'),
-                color: '#10b981', // Green
-              },
-              populationScore: {
-                label: t('scores.population'),
-                color: '#3b82f6', // Blue
-              },
-              storesScore: {
-                label: t('scores.stores'),
-                color: '#f59e0b', // Amber
-              },
-              queenScore: {
-                label: t('scores.queen'),
-                color: '#a855f7', // Purple
-              },
-            }}
-          >
+          <ChartContainer config={chartConfig}>
             <LineChart data={inspectionData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
@@ -126,22 +126,7 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer
-            config={{
-              populationScore: {
-                label: t('scores.population'),
-                color: '#3b82f6', // Blue
-              },
-              storesScore: {
-                label: t('scores.stores'),
-                color: '#f59e0b', // Amber
-              },
-              queenScore: {
-                label: t('scores.queen'),
-                color: '#a855f7', // Purple
-              },
-            }}
-          >
+          <ChartContainer config={chartConfig}>
             <LineChart data={inspectionData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />

@@ -41,19 +41,19 @@ export const BroodNestChart: React.FC<BroodNestChartProps> = ({
       config={{
         eggs: {
           label: t('inspection:observations.eggsFrames'),
-          color: '#facc15',
+          color: 'var(--chart-7)',
         },
         uncapped: {
           label: t('inspection:observations.uncappedBroodFrames'),
-          color: '#fb923c',
+          color: 'var(--chart-4)',
         },
         capped: {
           label: t('inspection:observations.cappedBroodFrames'),
-          color: '#b45309',
+          color: 'var(--chart-6)',
         },
         drone: {
           label: t('inspection:observations.droneBroodFrames'),
-          color: '#92400e',
+          color: 'var(--chart-8)',
         },
       }}
       dataTransformer={inspection => ({

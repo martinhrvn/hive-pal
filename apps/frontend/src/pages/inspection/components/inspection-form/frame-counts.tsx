@@ -93,7 +93,7 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
                     size="icon"
                     className="h-6 w-6 text-muted-foreground hover:text-destructive"
                     onClick={clear}
-                    aria-label="Clear"
+                    aria-label={t('observations.clearField')}
                   >
                     <X className="h-3 w-3" />
                   </Button>
@@ -120,7 +120,7 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
                   className="h-14 w-14 rounded-xl shrink-0 text-lg"
                   onClick={decrement}
                   disabled={currentValue == null || currentValue <= 0}
-                  aria-label={`Decrease ${label}`}
+                  aria-label={t('observations.decreaseField', { field: label })}
                 >
                   <Minus className="h-6 w-6" />
                 </Button>
@@ -165,7 +165,7 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
                   className="h-14 w-14 rounded-xl shrink-0 text-lg"
                   onClick={increment}
                   disabled={!canIncrement}
-                  aria-label={`Increase ${label}`}
+                  aria-label={t('observations.increaseField', { field: label })}
                 >
                   <Plus className="h-6 w-6" />
                 </Button>
@@ -175,8 +175,8 @@ const FrameCounter = <TName extends FieldPath<InspectionFormData>>({
               {pct != null && (
                 <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-200 ${color}`}
-                    style={{ width: `${pct}%` }}
+                    className="h-full rounded-full transition-all duration-200"
+                    style={{ width: `${pct}%`, backgroundColor: color }}
                   />
                 </div>
               )}
@@ -282,7 +282,7 @@ export const FrameCountSection: React.FC<FrameCountSectionProps> = ({
 
   const frameTypes = FRAME_FIELDS.map(ff => ({
     name: `observations.${ff.obsKey}` as const,
-    color: ff.tailwindColor,
+    color: ff.color,
   })) satisfies readonly {
     name: FieldPath<InspectionFormData>;
     color: string;
