@@ -1320,8 +1320,166 @@
             "items": {
                 "liebefelder": {
                     "title": "Liebefelder Schätzmethode",
-                    "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+                    "body": "Odhadnite silu včelstva a počet včiel počítaním obsadených strán rámikov po osminách — štandardná metóda Švajčiarskeho centra pre výskum včiel."
                 }
+            }
+        },
+        "brand": "Hive Pal",
+        "nav": {
+            "features": "Funkcie",
+            "freeTools": "Bezplatné nástroje",
+            "documentation": "Dokumentácia",
+            "releaseNotes": "Novinky",
+            "github": "GitHub",
+            "signIn": "Prihlásiť sa",
+            "startFree": "Začnite zadarmo",
+            "ariaLabel": "Hlavné"
+        },
+        "footer": {
+            "tagline": "Bezplatná open-source aplikácia pre včelárov. Aby bolo včelárenie jednoduchšie, produktívnejšie a o niečo príjemnejšie.",
+            "product": "Produkt",
+            "features": "Funkcie",
+            "freeTools": "Bezplatné nástroje",
+            "releaseNotes": "Novinky",
+            "project": "Projekt",
+            "documentation": "Dokumentácia",
+            "reportIssue": "Nahlásiť problém",
+            "privacyPolicy": "Zásady ochrany osobných údajov",
+            "source": "Zdrojový kód",
+            "github": "GitHub",
+            "signIn": "Prihlásiť sa",
+            "createAccount": "Vytvoriť účet",
+            "copyright": "© 2025 Hive Pal · Licencia MIT",
+            "builtWith": "Vytvorené s citom pre včelárov na celom svete."
+        },
+        "ai": {
+            "eyebrow": "Hlas a AI",
+            "title": "Prehliadajte hlasom,<br/><accent>nie klávesnicou</accent>.",
+            "lede": "Hive Pal nahráva zvuk počas prehliadok, automaticky ho prepíše a pomocou AI z neho pripraví štruktúrované poznámky — papierovanie tak máte hotové ešte na včelnici.",
+            "items": {
+                "record": {
+                    "title": "Nahrávajte pri úli",
+                    "body": "Spustite nahrávanie na telefóne, nahlas popíšte, čo vidíte na každom rámiku, a pokračujte ďalej. Nahrávky sa odošlú priamo do prehliadky — aj keď uprostred včelnice stratíte signál."
+                },
+                "transcribe": {
+                    "title": "Automatický prepis",
+                    "body": "Rozpoznávanie reči pomocou modelu Whisper premení každú nahrávku na prehľadávateľný text pripojený k prehliadke. Zvláda viacero jazykov hneď po inštalácii."
+                },
+                "draft": {
+                    "title": "Poznámky navrhnuté AI",
+                    "body": "Lokálne jazykové modely z nahrávky vytiahnu, či ste videli matku, aký je plod, aké ošetrenia ste robili a ďalšie postrehy, a predvyplnia prehliadku — vy ju len skontrolujete a uložíte."
+                },
+                "mcp": {
+                    "title": "Prineste si vlastného asistenta",
+                    "body": "Pripojte Claude alebo iného asistenta kompatibilného s MCP k svojmu účtu Hive Pal. Spýtajte sa ho, ktoré úle čakajú na prehliadku, alebo ho nechajte zapísať kŕmenie za vás. Stačí sa prihlásiť a povoliť mu prístup."
+                }
+            },
+            "assuranceLead": "Vaše nahrávky, vaše modely.",
+            "assuranceBody": "AI časť beží na open-source modeloch (faster-whisper + Ollama). Môžete ju hostovať spolu so svojimi dátami — alebo ju spustiť ako pull worker na domácom počítači.",
+            "assuranceNote": "Žiadny cloud tretích strán"
+        },
+        "landing": {
+            "meta": {
+                "title": "Hive Pal – včelárska aplikácia s AI",
+                "description": "Spravujte svoje úle efektívne s aplikáciou Hive Pal. Nahrávajte hlasové poznámky pri úli a nechajte AI prepísať a navrhnúť vaše prehliadky. Open source, s možnosťou vlastného hostingu a zadarmo pre prvých záujemcov.",
+                "ogTitle": "Hive Pal – včelárska aplikácia s AI",
+                "ogDescription": "Bezplatná open-source platforma pre včelárov s AI hlasovými prehliadkami. Nahrávajte zvuk na včelnici a nechajte AI automaticky navrhnúť poznámky z prehliadok."
+            },
+            "hero": {
+                "badge": "Nové · AI hlasové prehliadky",
+                "title": "Váš open-source<br/>včelársky <accent>spoločník</accent>.",
+                "lede": "Nahrávajte hlasové poznámky pri úli. AI ich automaticky prepíše a pripraví z nich prehliadku — ruky vám tak ostanú na rámikoch, nie na klávesnici.",
+                "ctaSignup": "Zaregistrujte sa — je to zadarmo",
+                "ctaSelfHost": "Vlastný hosting",
+                "tagline": "Licencia MIT · vlastný hosting · hlas na prvom mieste"
+            },
+            "features": {
+                "label": "Moderné včelárstvo",
+                "title": "Všetko, čo potrebujete na <accent>starostlivosť</accent> o svoje úle.",
+                "lede": "Profesionálne nástroje vytvorené včelármi pre včelárov — aby včelstvá zostali zdravé, produktívne a dobre zdokumentované počas každej sezóny.",
+                "pillars": "Štyri piliere · v jednej platforme",
+                "seeAll": "Preskúmať všetky funkcie",
+                "items": {
+                    "apiary": {
+                        "title": "Správa včelníc",
+                        "body": "Organizujte a sledujte viacero včelníc s podrobnými údajmi o polohe, počasí a poznámkami ku každému stanovišťu."
+                    },
+                    "inspections": {
+                        "title": "Prehliadky úľov",
+                        "body": "Plánujte a zaznamenávajte podrobné prehliadky s prispôsobiteľnými kontrolnými zoznamami, fotografiami a hodnotením zdravia."
+                    },
+                    "queen": {
+                        "title": "Sledovanie matiek",
+                        "body": "Sledujte výkonnosť matiek, záznamy o chove a harmonogram výmeny, aby ste si udržali silné včelstvá."
+                    },
+                    "harvest": {
+                        "title": "Správa zberov",
+                        "body": "Sledujte produkciu medu, dátumy spracovania a výnosy v jednotlivých sezónach a na jednotlivých stanovištiach."
+                    }
+                }
+            },
+            "run": {
+                "label": "Spôsob prevádzky",
+                "title": "Hostujte sami alebo nechajte <accent>prevádzku na nás</accent>.",
+                "lede": "Dva spôsoby, ako používať Hive Pal — oba zadarmo, oba bežia na rovnakom open-source kóde.",
+                "selfHosted": {
+                    "title": "Vlastný hosting",
+                    "badge": "Zadarmo navždy",
+                    "body": "Plná kontrola nad vašimi dátami a infraštruktúrou. Prevádzkujte ho na vlastnom serveri, notebooku, Raspberry Pi — kdekoľvek vám to vyhovuje.",
+                    "items": [
+                        "Licencia MIT — čítajte, forkujte, nasadzujte",
+                        "Hostujte kdekoľvek, kde beží Docker",
+                        "Vaše dáta zostávajú na vašom hardvéri",
+                        "Komunitná podpora cez GitHub"
+                    ],
+                    "cta": "Prečítať dokumentáciu"
+                },
+                "hosted": {
+                    "title": "Hostované u nás",
+                    "badge": "Zadarmo",
+                    "body": "Nič nemusíte nastavovať. Servery prevádzkujeme my, staráme sa o aktualizácie a o to, aby všetko bežalo. Tá istá open-source aplikácia — len na našom hardvéri.",
+                    "items": [
+                        "Zaregistrujte sa a začnite — bez inštalácie",
+                        "Automatické aktualizácie a zálohy",
+                        "Monitorovaná dostupnosť, bez záruky",
+                        "Komunitná podpora cez GitHub"
+                    ],
+                    "cta": "Zaregistrujte sa — je to zadarmo"
+                }
+            },
+            "tools": {
+                "label": "Bezplatné nástroje",
+                "title": "Nástroje zadarmo, bez registrácie.",
+                "lede": "Praktické kalkulačky a plánovače priamo v prehliadači — pridajte si ich do záložiek a majte ich po ruke aj na včelnici.",
+                "seeAll": "Zobraziť všetky nástroje",
+                "items": {
+                    "syrup": {
+                        "title": "Kalkulačka cukrového sirupu",
+                        "body": "Presné množstvo cukru a vody pre sirup 1:1, 3:2 alebo 2:1 pri akejkoľvek veľkosti nádoby. V metrických aj imperiálnych jednotkách."
+                    },
+                    "brood": {
+                        "title": "Časová os vývoja plodu",
+                        "body": "Prehľad vývojových štádií matky, robotnice a trúda po dňoch, s výpočtom dátumov od ľubovoľného začiatočného dňa."
+                    },
+                    "swarm": {
+                        "title": "Riadenie rojenia",
+                        "body": "Protirojová metóda Demaree krok za krokom, s načasovaním ďalších zásahov a plánovačom prehliadok."
+                    },
+                    "liebefelder": {
+                        "title": "Liebefeldská metóda odhadu sily včelstva",
+                        "body": "Odhadnite silu včelstva — včely, plod, peľ a krmivo — počítaním obsadených osmín plástu, s pokynmi na hodnotenie počas sezóny."
+                    },
+                    "varroa": {
+                        "title": "Plán tlmenia varroázy",
+                        "body": "Celosezónny harmonogram ošetrení pre produkčné včelstvá a odložky s prahmi spadu roztočov a metódou „rozdeľ a ošetri“ vysvetlenou krok za krokom."
+                    }
+                }
+            },
+            "cta": {
+                "title": "Vyskúšajte to <accent>sami</accent>.",
+                "lede": "Vytvorte si účet v hostovanej verzii alebo si stiahnite zdrojový kód a prevádzkujte ho sami. Tak či tak je to zadarmo.",
+                "signup": "Zaregistrujte sa zadarmo",
+                "github": "Zobraziť na GitHube"
             }
         }
     },
@@ -1364,7 +1522,7 @@
         "harvestFrom": "Zber z {{date}}"
     },
     "pageTitles": {
-        "home": "Hive Pal - moderný softvér na správu včelárstva"
+        "home": "Hive Pal - moderná včelárska aplikácia"
     },
     "errorPage": {
         "notFound": {
