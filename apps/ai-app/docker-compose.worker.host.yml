@@ -1,0 +1,9 @@
+# Overlay for running the worker against a HivePal dev server on this machine.
+# Host networking lets the worker reach the backend and MinIO on localhost.
+# Linux only. Use with:
+#   docker compose -f docker-compose.worker.yml -f docker-compose.worker.host.yml up -d --build
+services:
+  hivepal-worker:
+    network_mode: host
+    environment:
+      OLLAMA_URL: http://localhost:11434/api/chat

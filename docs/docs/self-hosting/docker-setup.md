@@ -87,7 +87,7 @@ These are layered on top of a deployment with `-f` and are entirely optional:
 |------|------|
 | `apps/backend/docker-compose.yml` | Local **PostgreSQL + MinIO** for development (`pnpm db:up`) — MinIO console on `9001` |
 | `apps/hivescale/docker-compose.hivescale.yaml` | An optional **HiveScale** backend sidecar — see [HiveScale](../user-guide/hivescale) |
-| `apps/ai-app/docker-compose.worker.yml` | The **AI worker** (audio transcription + analysis) with a bundled Ollama model server (`11434`) — see [Audio & AI Transcription](../user-guide/audio-ai) |
+| `apps/ai-app/docker-compose.worker.yml` | The **AI worker** (audio transcription + analysis) with a bundled Ollama model server (`11434`). Run it on its own, not as a `-f` overlay — see [Enabling Voice Inspections](#enabling-voice-inspections-ai-worker) |
 | `apps/ai-app/docker-compose.ai.ollama.yml` | An alternative AI service + Ollama setup (`8008`, `11434`) |
 
 For example, to run production with the HiveScale sidecar:
@@ -122,6 +122,99 @@ Two things need persistent volumes:
 | `/data/uploads` | Local file storage (audio, photos) when `STORAGE_TYPE=local` |
 
 If you use S3-compatible storage (`STORAGE_TYPE=s3`), only the database needs a volume. See [Configuration → File Storage](./configuration#file-storage).
+
+## Enabling Voice Inspections (AI Worker)
+
+Recording audio only needs [file storage](./configuration#file-storage). Transcribing recordings and drafting inspection fields from them needs a separate AI service, the `ghcr.io/martinhrvn/hivepal-ai` image built from `apps/ai-app`. It transcribes audio with [faster-whisper](https://github.com/SYSTRAN/faster-whisper) and drafts the inspection with an LLM: a local [Ollama](https://ollama.com/) model by default, or OpenAI or Anthropic.
+
+There are two ways to connect it, set with `AI_PROCESSING_MODE` on the app:
+
+| Mode | How it works | Use it when |
+|------|--------------|-------------|
+| **Pull** | A worker polls Hive-Pal for jobs and posts results back. Only outbound HTTPS from the worker is needed | The AI machine is somewhere else, e.g. a home desktop with a GPU, or is not always on |
+| **Push** (default) | Hive-Pal sends each recording to the AI service over HTTP | The AI service runs next to Hive-Pal, e.g. in the same compose file |
+
+The [Apiary Assistant](../user-guide/assistant) always calls the AI service over HTTP, so it needs the push setup even if recordings are processed in pull mode.
+
+### Pull mode
+
+1. Add to the `app` service and restart it:
+
+   ```yaml
+   AI_ENABLED: 'true'
+   AI_PROCESSING_MODE: pull # or 'auto': pull, with push as fallback
+   # With STORAGE_TYPE=local the worker downloads recordings from the app:
+   BACKEND_PUBLIC_URL: https://hive.example.com
+   JWT_SECRET: replace_me_with_a_random_string
+   ```
+
+2. Sign in as the admin, open **Admin → Worker Tokens** (`/admin/worker-tokens`), create a token and copy it. It is shown only once.
+
+3. On the AI machine, from a checkout of the repository:
+
+   ```bash
+   cd apps/ai-app
+   cp .env.worker.example .env
+   # set HIVEPAL_URL (e.g. https://hive.example.com) and WORKER_TOKEN (hpw_...)
+   docker compose -f docker-compose.worker.yml up -d --build
+   ```
+
+   This starts the worker and an Ollama server, and pulls the `OLLAMA_MODEL` once. The first start also downloads the Whisper model, so it can take a few minutes.
+
+4. Within about 30 seconds the token turns **Online** in **Admin → Worker Tokens**. Follow progress with `docker compose -f docker-compose.worker.yml logs -f hivepal-worker`.
+
+### Push mode
+
+Add the AI service and Ollama next to the app in your compose file:
+
+```yaml
+services:
+  app:
+    environment:
+      # ...existing variables
+      AI_ENABLED: 'true'
+      AI_SERVICE_BASE_URL: http://hivepal-ai:8008
+      AI_API_KEY: replace_me_with_a_random_string
+
+  hivepal-ai:
+    image: ghcr.io/martinhrvn/hivepal-ai:latest
+    environment:
+      AI_API_KEY: replace_me_with_a_random_string # same value as on the app
+      OLLAMA_URL: http://ollama:11434/api/chat
+      OLLAMA_MODEL: qwen3.5:4b
+      WHISPER_MODEL: small
+      WHISPER_COMPUTE_TYPE: int8
+    volumes:
+      - ai_data:/data
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ai_data:
+  ollama_data:
+```
+
+Start it, then pull the model once:
+
+```bash
+docker compose up -d
+docker compose exec ollama ollama pull qwen3.5:4b
+docker compose exec hivepal-ai curl -s http://localhost:8008/health
+```
+
+### Choosing models
+
+- The default `qwen3.5:4b` with Whisper `small` / `int8` runs on a CPU. On a slow machine use a smaller model such as `qwen2.5:3b`, and on a GPU a larger one such as `qwen3:8b`. Set the same `OLLAMA_MODEL` on the AI service and in the `ollama pull` command.
+- To use a hosted LLM instead of Ollama, set `AI_PROVIDER=openai` with `OPENAI_API_KEY`, or `AI_PROVIDER=anthropic` with `ANTHROPIC_API_KEY`, on the AI service or worker, and drop the Ollama container. Transcription still runs locally.
+
+All worker variables are listed in [`apps/ai-app/readme.md`](https://github.com/martinhrvn/hive-pal/blob/main/apps/ai-app/readme.md), and the app-side variables in [Configuration → AI](./configuration#ai-voice-inspections--assistant).
 
 ## Production Deployment
 

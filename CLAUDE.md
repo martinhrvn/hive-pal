@@ -115,7 +115,7 @@ VITE_SENTRY_DSN=           # Optional error tracking
 
 **Backend** (`apps/backend/.env`):
 ```
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/beekeeper?schema=public"
+DATABASE_URL="postgresql://postgres:postgres@localhost:6543/beekeeper?schema=public"
 JWT_SECRET=your_jwt_secret
 ALLOWED_ORIGINS=http://localhost:5173
 SENTRY_DSN=                # Optional error tracking

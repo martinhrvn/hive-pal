@@ -125,7 +125,12 @@ outbound HTTP from the AI box is required.
 
 1. In the HivePal backend `.env`, set:
    ```
+   AI_ENABLED=true
    AI_PROCESSING_MODE=pull     # or "auto" (pull with push fallback after AI_PULL_FALLBACK_MINUTES)
+   # With STORAGE_TYPE=local the worker downloads audio from the backend,
+   # so it needs an absolute URL it can reach and signed links:
+   BACKEND_PUBLIC_URL=https://your-hivepal-instance.com
+   JWT_SECRET=change-me-long-random-string
    ```
    Restart the backend.
 
@@ -149,8 +154,9 @@ outbound HTTP from the AI box is required.
    cp .env.worker.example .env
    # edit .env with your HIVEPAL_URL and WORKER_TOKEN
    docker compose -f docker-compose.worker.yml up -d --build
-   # one-time: pull the model into the ollama container
-   docker compose -f docker-compose.worker.yml exec ollama ollama pull qwen2.5:3b
+   # the hivepal-ollama-pull service pulls OLLAMA_MODEL (default qwen3.5:4b)
+   # on start; to pull another model by hand:
+   docker compose -f docker-compose.worker.yml exec hivepal-ollama ollama pull qwen3.5:4b
    # follow worker logs
    docker compose -f docker-compose.worker.yml logs -f hivepal-worker
    ```
