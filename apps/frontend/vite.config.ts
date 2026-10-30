@@ -40,7 +40,7 @@ const escapeRegExp = (value: string) =>
   value.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
 
 // https://vite.dev/config/
-export default defineConfig(({ isSsrBuild }) => ({
+export default defineConfig(({ command }) => ({
   plugins: [serverAuthClientStub(), reactRouter(), tailwindcss()],
   resolve: {
     alias: {
@@ -56,13 +56,19 @@ export default defineConfig(({ isSsrBuild }) => ({
   },
   // Bundle dependencies into the server build (used only at build time to
   // prerender) so CommonJS-only packages get proper ESM interop when React
-  // Router imports the server bundle with native Node ESM.
-  ssr: isSsrBuild ? { noExternal: true } : undefined,
-  build: {
-    rolldownOptions: {
-      output: isSsrBuild
-        ? {}
-        : {
+  // Router imports the server bundle with native Node ESM. This is the `ssr`
+  // environment only; the client bundle is unaffected. Keeping it off in dev
+  // matters: there the SSR module runner inlines deps, and CommonJS ones such
+  // as react-dom/server would hit `require is not defined`.
+  ssr: command === 'build' ? { noExternal: true } : undefined,
+  environments: {
+    // Vite 8 has no `isSsrBuild` in the config callback once React Router uses
+    // the Environment API, so the client's chunking lives in its own
+    // environment instead of being gated on the build target.
+    client: {
+      build: {
+        rolldownOptions: {
+          output: {
             // Vite 8 bundles with Rolldown, which replaced manualChunks with
             // codeSplitting groups. Besides the named vendor chunks this also
             // folds modules shared by several lazy routes (icons, UI primitives,
@@ -92,6 +98,8 @@ export default defineConfig(({ isSsrBuild }) => ({
               ],
             },
           },
+        },
+      },
     },
   },
 }));
