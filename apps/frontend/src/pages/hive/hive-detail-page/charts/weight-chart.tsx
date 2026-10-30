@@ -36,14 +36,14 @@ function getStartDate(period: ChartPeriod): Date | null {
 }
 
 const PALETTE = [
-  '#f59e0b',
-  '#0ea5e9',
-  '#10b981',
-  '#8b5cf6',
-  '#ef4444',
-  '#14b8a6',
-  '#f97316',
-  '#6366f1',
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
+  'var(--chart-6)',
+  'var(--chart-7)',
+  'var(--chart-8)',
 ];
 
 interface WeightChartProps {

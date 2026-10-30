@@ -29,7 +29,7 @@ export const StrengthChart: React.FC<StrengthChartProps> = ({
       config={{
         strength: {
           label: t('inspection:observations.strength'),
-          color: '#6366f1',
+          color: 'var(--chart-1)',
         },
       }}
       dataTransformer={inspection => ({

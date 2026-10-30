@@ -30,12 +30,12 @@ interface BroodPatternChartProps {
 }
 
 const PATTERN_ROWS = [
-  { key: 'excellent', y: 6, color: '#10b981' },
-  { key: 'solid', y: 5, color: '#22c55e' },
-  { key: 'patchy', y: 4, color: '#eab308' },
-  { key: 'spotty', y: 3, color: '#f97316' },
-  { key: 'scattered', y: 2, color: '#ef4444' },
-  { key: 'poor', y: 1, color: '#991b1b' },
+  { key: 'excellent', y: 6, color: 'var(--chart-1)' },
+  { key: 'solid', y: 5, color: 'var(--chart-5)' },
+  { key: 'patchy', y: 4, color: 'var(--chart-7)' },
+  { key: 'spotty', y: 3, color: 'var(--chart-2)' },
+  { key: 'scattered', y: 2, color: 'var(--chart-6)' },
+  { key: 'poor', y: 1, color: 'var(--chart-8)' },
 ] as const;
 
 type PatternKey = (typeof PATTERN_ROWS)[number]['key'];
@@ -105,7 +105,7 @@ export const BroodPatternChart: React.FC<BroodPatternChartProps> = ({
           config={{
             pattern: {
               label: t('inspection:observations.broodPattern'),
-              color: '#6366f1',
+              color: 'var(--chart-1)',
             },
           }}
         >

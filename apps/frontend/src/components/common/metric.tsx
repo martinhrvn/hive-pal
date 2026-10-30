@@ -8,6 +8,9 @@ const toneClass = {
   warning: 'text-warning-foreground',
   danger: 'text-destructive-foreground',
   muted: 'text-muted-foreground',
+  scoreGood: 'text-score-good-foreground',
+  scoreFair: 'text-score-fair-foreground',
+  scorePoor: 'text-score-poor-foreground',
 } as const;
 
 // Sizes respond to the nearest `@container` ancestor (named or not).

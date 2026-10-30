@@ -37,15 +37,15 @@ export const StoresChart: React.FC<StoresChartProps> = ({ hiveId, period }) => {
       config={{
         pollen: {
           label: t('inspection:observations.pollenFrames'),
-          color: '#22c55e',
+          color: 'var(--chart-3)',
         },
         nectar: {
           label: t('inspection:observations.nectarFrames'),
-          color: '#f97316',
+          color: 'var(--chart-5)',
         },
         honey: {
           label: t('inspection:observations.honeyFrames'),
-          color: '#eab308',
+          color: 'var(--chart-2)',
         },
       }}
       dataTransformer={inspection => ({

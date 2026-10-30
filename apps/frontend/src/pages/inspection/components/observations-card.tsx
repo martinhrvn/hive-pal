@@ -4,6 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { FRAME_FIELDS } from '@/constants/frame-fields';
 import { InspectionSection } from './inspection-section';
 import { cn } from '@/lib/utils';
+import { ScoreLevelCue } from '@/components/common/score-level-cue';
+import {
+  getScoreLevel,
+  RATING_LEVEL_THRESHOLDS,
+  scoreLevelStyles,
+} from '@/lib/score-level';
 
 type ObservationsCardProps = {
   observations?: {
@@ -42,23 +48,14 @@ const SubHeading = ({ children }: { children: React.ReactNode }) => (
 
 // ─── Rating row (0–10) — subjective mode ────────────────────────────────────
 
-const ratingColor = (v: number) => {
-  if (v >= 7) return 'bg-emerald-500/80 dark:bg-emerald-400/70';
-  if (v >= 4) return 'bg-amber-500/80 dark:bg-amber-400/70';
-  return 'bg-red-500/80 dark:bg-red-400/70';
-};
-
-const ratingText = (v: number) => {
-  if (v >= 7) return 'text-emerald-700 dark:text-emerald-300';
-  if (v >= 4) return 'text-amber-700 dark:text-amber-300';
-  return 'text-red-700 dark:text-red-300';
-};
-
 type RatingRowProps = { label: string; value: number };
 
 const RatingRow = ({ label, value }: RatingRowProps) => {
   const { t } = useTranslation('inspection');
   const pct = Math.max(0, Math.min(100, (value / 10) * 100));
+  const level = getScoreLevel(value, RATING_LEVEL_THRESHOLDS);
+  const styles = level ? scoreLevelStyles[level] : null;
+
   return (
     <div className="grid grid-cols-[minmax(7rem,12rem)_1fr_auto] items-center gap-3 py-2">
       <span className="text-sm font-medium text-stone-800 dark:text-stone-200 truncate">
@@ -66,10 +63,7 @@ const RatingRow = ({ label, value }: RatingRowProps) => {
       </span>
       <div className="relative h-1.5 rounded-full bg-stone-100 dark:bg-stone-800 overflow-hidden">
         <div
-          className={cn(
-            'h-full rounded-full transition-[width]',
-            ratingColor(value),
-          )}
+          className={cn('h-full rounded-full transition-[width]', styles?.bar)}
           style={{ width: `${pct}%` }}
         />
         {/* mid tick */}
@@ -80,10 +74,11 @@ const RatingRow = ({ label, value }: RatingRowProps) => {
       </div>
       <span
         className={cn(
-          'font-display tabular-nums text-base leading-none min-w-[3.5rem] text-right',
-          ratingText(value),
+          'flex items-center justify-end gap-1.5 font-display tabular-nums text-base leading-none min-w-[4.25rem] text-right',
+          styles?.text,
         )}
       >
+        <ScoreLevelCue value={value} thresholds={RATING_LEVEL_THRESHOLDS} />
         {value}
         <span className="text-stone-400 dark:text-stone-500 font-normal text-sm">
           {' '}
@@ -153,26 +148,26 @@ const FlagChip = ({
   positiveIsGood = true,
   icon,
 }: FlagChipProps) => {
-  // Visual color: "good" = green/stone; "concern" = amber/red
+  // Visual color: "good" = success; "concern" = warning
   const good = positiveIsGood ? value : !value;
   return (
     <div
       className={cn(
         'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm',
         good
-          ? 'border-emerald-200 bg-emerald-50/60 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-300'
-          : 'border-amber-200 bg-amber-50/60 text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-300',
+          ? 'border-success/30 bg-success-muted text-success-foreground'
+          : 'border-warning/30 bg-warning-muted text-warning-foreground',
       )}
     >
       <span
         className={cn(
-          'inline-flex h-4 w-4 items-center justify-center rounded-full',
+          'inline-flex size-4 items-center justify-center rounded-full',
           good
-            ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
-            : 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
+            ? 'bg-success/15 text-success-foreground'
+            : 'bg-warning/15 text-warning-foreground',
         )}
       >
-        {value ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+        {value ? <Check className="size-3" /> : <X className="size-3" />}
       </span>
       {icon}
       <span className="font-medium">{label}</span>
@@ -252,7 +247,7 @@ export const ObservationsCard = ({
           label: t('fields.queenSeen'),
           value: observations.queenSeen,
           positiveIsGood: true,
-          icon: <Crown className="h-3 w-3" />,
+          icon: <Crown className="size-3" />,
         },
     observations.swarmCells == null
       ? null
@@ -285,7 +280,7 @@ export const ObservationsCard = ({
   return (
     <InspectionSection
       title={t('observationsCard.title', { defaultValue: 'Observations' })}
-      icon={<ClipboardList className="h-4 w-4" />}
+      icon={<ClipboardList className="size-4" />}
     >
       <div className="space-y-7">
         {/* Numeric observations */}
@@ -412,7 +407,7 @@ export const ObservationsCard = ({
                 <Badge
                   key={obs}
                   variant="outline"
-                  className="border-red-200 bg-red-50/50 text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300"
+                  className="border-destructive/30 bg-destructive/10 text-destructive-foreground"
                 >
                   {t(`observations.reminder.${obs}`, {
                     defaultValue: obs.replace(/_/g, ' '),

@@ -63,19 +63,19 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
             config={{
               overallScore: {
                 label: t('scores.overallScore'),
-                color: '#10b981', // Green
+                color: 'var(--chart-1)', // blue
               },
               populationScore: {
                 label: t('scores.population'),
-                color: '#3b82f6', // Blue
+                color: 'var(--chart-3)', // bluish green
               },
               storesScore: {
                 label: t('scores.stores'),
-                color: '#f59e0b', // Amber
+                color: 'var(--chart-2)', // orange
               },
               queenScore: {
                 label: t('scores.queen'),
-                color: '#a855f7', // Purple
+                color: 'var(--chart-4)', // reddish purple
               },
             }}
           >
@@ -130,15 +130,15 @@ export const InspectionCharts: React.FC<InspectionChartsProps> = ({
             config={{
               populationScore: {
                 label: t('scores.population'),
-                color: '#3b82f6', // Blue
+                color: 'var(--chart-3)', // bluish green
               },
               storesScore: {
                 label: t('scores.stores'),
-                color: '#f59e0b', // Amber
+                color: 'var(--chart-2)', // orange
               },
               queenScore: {
                 label: t('scores.queen'),
-                color: '#a855f7', // Purple
+                color: 'var(--chart-4)', // reddish purple
               },
             }}
           >

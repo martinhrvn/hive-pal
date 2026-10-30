@@ -1,11 +1,5 @@
-import {
-  addWeeks,
-  isWithinInterval,
-  subWeeks,
-  format,
-  formatDistanceToNow,
-} from 'date-fns';
-import { useState, useCallback } from 'react';
+import { addWeeks, isWithinInterval, subWeeks } from 'date-fns';
+import { useState } from 'react';
 import {
   CalendarIcon,
   ActivityIcon,
@@ -18,7 +12,7 @@ import {
   Eye,
   Edit,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -34,20 +28,54 @@ import { ScheduledInspectionCard } from './scheduled-inspection-card';
 import { useHives } from '@/api/hooks';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useQueryClient } from '@tanstack/react-query';
+import { ScoreLevelCue } from '@/components/common/score-level-cue';
+import { useDateFormat } from '@/hooks/use-date-format';
+import { formatRelativeTime } from '@/utils/relative-time';
+import {
+  getScoreLevelTextClass,
+  SCORE_LEVEL_THRESHOLDS,
+  type ScoreThresholds,
+} from '@/lib/score-level';
 
 type InspectionTimelineProps = {
   inspections: InspectionResponse[];
 };
 
+const STRENGTH_THRESHOLDS: ScoreThresholds = { good: 7, fair: 4 };
+const HONEY_THRESHOLDS: ScoreThresholds = { good: 7, fair: 3 };
+
+const formatWeather = (
+  temperature: number | null | undefined,
+  conditions: string | null | undefined,
+): string =>
+  [temperature == null ? null : `${temperature}°`, conditions || null]
+    .filter(Boolean)
+    .join(', ');
+
+/** Highest-priority brood metric: 0–10 ratings when available. */
+const calculateBroodScore = (inspection: InspectionResponse): number | null => {
+  const cappedBrood = inspection.observations?.cappedBrood ?? null;
+  const uncappedBrood = inspection.observations?.uncappedBrood ?? null;
+
+  if (cappedBrood !== null && uncappedBrood !== null) {
+    return Number(((cappedBrood + uncappedBrood) / 2).toFixed(1));
+  }
+  return cappedBrood ?? uncappedBrood;
+};
+
 export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
   inspections,
 }) => {
-  const navigate = useNavigate();
-  const { t } = useTranslation('inspection');
+  const { t, i18n } = useTranslation('inspection');
+  const {
+    formatDate: formatDateByPreference,
+    formatTime: formatTimeByPreference,
+  } = useDateFormat();
   const { canEditApiary } = useApiaryPermission();
   const [showAll, setShowAll] = useState(false);
   const MAX_DISPLAYED = 5;
   const { data: hives } = useHives();
+  const hiveById = new Map((hives ?? []).map(hive => [hive.id, hive] as const));
   const queryClient = useQueryClient();
 
   // Separate scheduled and completed inspections
@@ -76,8 +104,8 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
     : sortedInspections.slice(0, MAX_DISPLAYED);
 
   const getHiveName = (hiveId: string) => {
-    const hive = hives?.find(h => h.id === hiveId);
-    return hive ? hive.name : 'Unknown Hive';
+    const hive = hiveById.get(hiveId);
+    return hive ? hive.name : t('inspection:timeline.unknownHive');
   };
 
   const handleInspectionUpdate = () => {
@@ -85,56 +113,23 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
     queryClient.invalidateQueries({ queryKey: ['inspections'] });
   };
 
-  const formatDate = useCallback((date: Date | string): string => {
+  const formatDate = (date: Date | string): string => {
     const parsedDate = typeof date === 'string' ? new Date(date) : date;
-    const twoWeehsAgo = subWeeks(new Date(), 2);
+    const twoWeeksAgo = subWeeks(new Date(), 2);
     const twoWeeksFromNow = addWeeks(new Date(), 2);
 
     if (
-      isWithinInterval(parsedDate, { start: twoWeehsAgo, end: twoWeeksFromNow })
+      isWithinInterval(parsedDate, { start: twoWeeksAgo, end: twoWeeksFromNow })
     ) {
-      return formatDistanceToNow(parsedDate, { addSuffix: true });
+      return (
+        formatRelativeTime(parsedDate, i18n.language) ??
+        formatDateByPreference(parsedDate)
+      );
     }
-    return format(parsedDate, 'MMM d, yyyy');
-  }, []);
-
-  const formatTime = useCallback((date: Date | string) => {
-    const parsedDate = typeof date === 'string' ? new Date(date) : date;
-    return format(parsedDate, 'h:mm a');
-  }, []);
-
-  // Helpers for color classes
-  const getStrengthColor = (value: number | null) => {
-    if (value === null) return '';
-    if (value >= 7) return 'text-green-600';
-    if (value >= 4) return 'text-amber-500';
-    return 'text-red-500';
+    return formatDateByPreference(parsedDate);
   };
 
-  const getHoneyColor = (value: number | null) => {
-    if (value === null) return '';
-    if (value >= 7) return 'text-green-600';
-    if (value >= 3) return 'text-amber-500';
-    return 'text-red-500';
-  };
-
-  const getBroodColor = (value: number | null) => {
-    if (value === null) return '';
-    if (value >= 6) return 'text-green-600';
-    if (value >= 3) return 'text-amber-500';
-    return 'text-red-500';
-  };
-
-  // Get the highest priority metrics if available
-  const calculateBroodScore = (inspection: InspectionResponse) => {
-    const cappedBrood = inspection.observations?.cappedBrood ?? null;
-    const uncappedBrood = inspection.observations?.uncappedBrood ?? null;
-
-    if (cappedBrood !== null && uncappedBrood !== null) {
-      return ((cappedBrood + uncappedBrood) / 2).toFixed(1);
-    }
-    return cappedBrood !== null ? cappedBrood : uncappedBrood;
-  };
+  const formatTime = (date: Date | string) => formatTimeByPreference(date);
 
   return (
     <div className="space-y-4">
@@ -147,7 +142,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
           {/* Show scheduled inspections header if any exist */}
           {sortedScheduled.length > 0 && (
             <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <Clock className="h-4 w-4" />
+              <Clock className="size-4" />
               <span>{t('inspection:timeline.scheduledInspections')}</span>
             </div>
           )}
@@ -158,13 +153,16 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
             const showDivider =
               prevInspection?.status === InspectionStatus.SCHEDULED &&
               inspection.status !== InspectionStatus.SCHEDULED;
+            const broodScore = calculateBroodScore(inspection);
+            const strength = inspection.observations?.strength ?? null;
+            const honeyStores = inspection.observations?.honeyStores ?? null;
 
             return (
               <div key={inspection.id}>
                 {/* Show divider between scheduled and completed inspections */}
                 {showDivider && (
                   <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground mt-6 mb-4">
-                    <CalendarIcon className="h-4 w-4" />
+                    <CalendarIcon className="size-4" />
                     <span>{t('inspection:timeline.completedInspections')}</span>
                   </div>
                 )}
@@ -187,10 +185,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                       <div className="p-4">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-2">
-                            <CalendarIcon
-                              size={16}
-                              className="text-muted-foreground"
-                            />
+                            <CalendarIcon className="size-4 text-muted-foreground" />
                             <span className="font-medium">
                               {formatDate(inspection.date)}
                             </span>
@@ -201,7 +196,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                               InspectionStatus.CANCELLED && (
                               <Badge
                                 variant="outline"
-                                className="text-gray-600 border-gray-600"
+                                className="border-muted-foreground/40 text-muted-foreground"
                               >
                                 {t('inspection:timeline.cancelled')}
                               </Badge>
@@ -214,36 +209,31 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                                 size="sm"
                                 className="h-8 w-8 p-0"
                               >
-                                <MoreVertical className="h-4 w-4" />
+                                <MoreVertical className="size-4" />
                                 <span className="sr-only">
                                   {t('common:actions.openMenu')}
                                 </span>
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40">
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  navigate(`/inspections/${inspection.id}`)
-                                }
-                              >
-                                <Eye className="h-4 w-4 mr-2" />
-                                {t('inspection:timeline.viewDetails')}
+                              <DropdownMenuItem asChild>
+                                <Link to={`/inspections/${inspection.id}`}>
+                                  <Eye className="size-4 mr-2" />
+                                  {t('inspection:timeline.viewDetails')}
+                                </Link>
                               </DropdownMenuItem>
                               {canEditApiary(
-                                hives?.find(h => h.id === inspection.hiveId)
-                                  ?.apiaryId,
+                                hiveById.get(inspection.hiveId)?.apiaryId,
                               ) &&
                                 inspection.status !==
                                   InspectionStatus.CANCELLED && (
-                                  <DropdownMenuItem
-                                    onClick={() =>
-                                      navigate(
-                                        `/inspections/${inspection.id}/edit`,
-                                      )
-                                    }
-                                  >
-                                    <Edit className="h-4 w-4 mr-2" />
-                                    {t('inspection:timeline.edit')}
+                                  <DropdownMenuItem asChild>
+                                    <Link
+                                      to={`/inspections/${inspection.id}/edit`}
+                                    >
+                                      <Edit className="size-4 mr-2" />
+                                      {t('inspection:timeline.edit')}
+                                    </Link>
                                   </DropdownMenuItem>
                                 )}
                             </DropdownMenuContent>
@@ -253,47 +243,62 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                         {/* Key metrics */}
                         <div className="grid grid-cols-3 gap-4 mb-3">
                           <div className="flex items-center gap-2">
-                            <ActivityIcon
-                              size={16}
-                              className="text-muted-foreground"
-                            />
+                            <ActivityIcon className="size-4 text-muted-foreground" />
                             <span className="text-sm">
                               {t('inspection:timeline.strength')}
                             </span>
                             <span
-                              className={`font-semibold ${getStrengthColor(inspection.observations?.strength ?? null)}`}
+                              className={`inline-flex items-center gap-1 font-semibold ${getScoreLevelTextClass(
+                                strength,
+                                STRENGTH_THRESHOLDS,
+                              )}`}
                             >
-                              {inspection.observations?.strength ?? '—'}
+                              <ScoreLevelCue
+                                value={strength}
+                                thresholds={STRENGTH_THRESHOLDS}
+                                iconClassName="size-3"
+                              />
+                              {strength ?? '—'}
                             </span>
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <DropletsIcon
-                              size={16}
-                              className="text-muted-foreground"
-                            />
+                            <DropletsIcon className="size-4 text-muted-foreground" />
                             <span className="text-sm">
                               {t('inspection:timeline.honey')}
                             </span>
                             <span
-                              className={`font-semibold ${getHoneyColor(inspection.observations?.honeyStores ?? null)}`}
+                              className={`inline-flex items-center gap-1 font-semibold ${getScoreLevelTextClass(
+                                honeyStores,
+                                HONEY_THRESHOLDS,
+                              )}`}
                             >
-                              {inspection.observations?.honeyStores ?? '—'}
+                              <ScoreLevelCue
+                                value={honeyStores}
+                                thresholds={HONEY_THRESHOLDS}
+                                iconClassName="size-3"
+                              />
+                              {honeyStores ?? '—'}
                             </span>
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <EggIcon
-                              size={16}
-                              className="text-muted-foreground"
-                            />
+                            <EggIcon className="size-4 text-muted-foreground" />
                             <span className="text-sm">
                               {t('inspection:timeline.brood')}
                             </span>
                             <span
-                              className={`font-semibold ${getBroodColor(calculateBroodScore(inspection) as number | null)}`}
+                              className={`inline-flex items-center gap-1 font-semibold ${getScoreLevelTextClass(
+                                broodScore,
+                                SCORE_LEVEL_THRESHOLDS,
+                              )}`}
                             >
-                              {calculateBroodScore(inspection) ?? '—'}
+                              <ScoreLevelCue
+                                value={broodScore}
+                                thresholds={SCORE_LEVEL_THRESHOLDS}
+                                iconClassName="size-3"
+                              />
+                              {broodScore ?? '—'}
                             </span>
                           </div>
                         </div>
@@ -303,14 +308,10 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                           inspection.weatherConditions) && (
                           <div className="text-sm text-muted-foreground mb-2">
                             {t('inspection:timeline.weather')}{' '}
-                            {inspection.temperature
-                              ? `${inspection.temperature}°`
-                              : ''}
-                            {inspection.weatherConditions
-                              ? inspection.temperature
-                                ? `, ${inspection.weatherConditions}`
-                                : inspection.weatherConditions
-                              : ''}
+                            {formatWeather(
+                              inspection.temperature,
+                              inspection.weatherConditions,
+                            )}
                           </div>
                         )}
 
@@ -323,8 +324,8 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
                             <span
                               className={
                                 inspection.observations?.queenSeen
-                                  ? 'text-green-600'
-                                  : 'text-amber-500'
+                                  ? 'text-success-foreground'
+                                  : 'text-warning-foreground'
                               }
                             >
                               {inspection.observations?.queenSeen
