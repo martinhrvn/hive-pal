@@ -53,6 +53,9 @@
   },
   "observations": {
     "title": "Pozorovania",
+    "increaseField": "Zvýšiť {{field}}",
+    "decreaseField": "Znížiť {{field}}",
+    "clearField": "Vymazať",
     "queenSeen": "Matka videná",
     "strength": "Sila",
     "cappedBrood": "Zavíčkovaný plod",

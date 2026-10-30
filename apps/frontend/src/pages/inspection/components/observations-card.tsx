@@ -122,8 +122,8 @@ const FrameBar = ({ label, count, allFramesSum, color }: FrameBarProps) => {
       </span>
       <div className="h-1.5 rounded-full bg-stone-100 dark:bg-stone-800 overflow-hidden">
         <div
-          className={cn('h-full rounded-full transition-[width]', color)}
-          style={{ width: `${pct}%` }}
+          className="h-full rounded-full transition-[width]"
+          style={{ width: `${pct}%`, backgroundColor: color }}
         />
       </div>
       <span className="font-overline tabular-nums text-stone-500 dark:text-stone-400 min-w-[3.5rem] text-right">
@@ -187,7 +187,7 @@ export const ObservationsCard = ({
   const frameEntries = FRAME_FIELDS.map(ff => ({
     key: ff.obsKey as keyof typeof observations,
     label: t(`observations.${ff.obsKey}`),
-    color: ff.tailwindColor,
+    color: ff.color,
   }));
 
   const allFramesSum = frameEntries.reduce(

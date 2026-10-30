@@ -57,6 +57,9 @@
   },
   "observations": {
     "title": "Observations",
+    "increaseField": "Increase {{field}}",
+    "decreaseField": "Decrease {{field}}",
+    "clearField": "Clear",
     "queenSeen": "Queen seen",
     "strength": "Strength",
     "cappedBrood": "Capped Brood",

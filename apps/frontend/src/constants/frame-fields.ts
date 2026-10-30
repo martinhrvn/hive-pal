@@ -18,7 +18,6 @@ export const FRAME_FIELDS = [
     labelKey: 'inspection:observations.eggsFrames',
     shortLabelKey: 'inspection:observations.frameShort.eggsFrames',
     color: 'var(--chart-7)',
-    tailwindColor: 'bg-chart-7',
   },
   {
     key: 'uncappedBrood' as const,
@@ -26,7 +25,6 @@ export const FRAME_FIELDS = [
     labelKey: 'inspection:observations.uncappedBroodFrames',
     shortLabelKey: 'inspection:observations.frameShort.uncappedBroodFrames',
     color: 'var(--chart-4)',
-    tailwindColor: 'bg-chart-4',
   },
   {
     key: 'cappedBrood' as const,
@@ -34,7 +32,6 @@ export const FRAME_FIELDS = [
     labelKey: 'inspection:observations.cappedBroodFrames',
     shortLabelKey: 'inspection:observations.frameShort.cappedBroodFrames',
     color: 'var(--chart-6)',
-    tailwindColor: 'bg-chart-6',
   },
   {
     key: 'droneBrood' as const,
@@ -42,7 +39,6 @@ export const FRAME_FIELDS = [
     labelKey: 'inspection:observations.droneBroodFrames',
     shortLabelKey: 'inspection:observations.frameShort.droneBroodFrames',
     color: 'var(--chart-8)',
-    tailwindColor: 'bg-chart-8',
   },
   {
     key: 'pollen' as const,
@@ -50,7 +46,6 @@ export const FRAME_FIELDS = [
     labelKey: 'inspection:observations.pollenFrames',
     shortLabelKey: 'inspection:observations.frameShort.pollenFrames',
     color: 'var(--chart-3)',
-    tailwindColor: 'bg-chart-3',
   },
   {
     key: 'nectar' as const,
@@ -58,7 +53,6 @@ export const FRAME_FIELDS = [
     labelKey: 'inspection:observations.nectarFrames',
     shortLabelKey: 'inspection:observations.frameShort.nectarFrames',
     color: 'var(--chart-5)',
-    tailwindColor: 'bg-chart-5',
   },
   {
     key: 'honey' as const,
@@ -66,7 +60,6 @@ export const FRAME_FIELDS = [
     labelKey: 'inspection:observations.honeyFrames',
     shortLabelKey: 'inspection:observations.frameShort.honeyFrames',
     color: 'var(--chart-2)',
-    tailwindColor: 'bg-chart-2',
   },
   {
     key: 'empty' as const,
@@ -74,7 +67,6 @@ export const FRAME_FIELDS = [
     labelKey: 'inspection:observations.emptyFrames',
     shortLabelKey: 'inspection:observations.frameShort.emptyFrames',
     color: 'var(--muted-foreground)',
-    tailwindColor: 'bg-muted-foreground/40',
   },
 ] as const;
 
