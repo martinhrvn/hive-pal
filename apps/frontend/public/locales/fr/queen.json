@@ -1,72 +1,72 @@
 {
-    "title": "Reines",
-    "singular": "Reine",
-    "plural": "Reines",
-    "create": {
-        "title": "Nouvelle reine",
-        "button": "Créer la reine",
-        "success": "Reine créée avec succès"
-    },
-    "edit": {
-        "title": "Modifier la reine",
-        "button": "Enregistrer les modifications",
-        "success": "Reine mise à jour avec succès"
-    },
-    "delete": {
-        "confirm": "Êtes-vous sûr de vouloir supprimer cette reine ?",
-        "success": "Reine supprimée avec succès"
-    },
-    "fields": {
-        "hive": "Ruche",
-        "year": "Année",
-        "color": "Couleur",
-        "marking": "Marquage",
-        "source": "Origine",
-        "status": "Statut",
-        "installationDate": "Date d'installation",
-        "replacedDate": "Date de remplacement (optionnel)",
-        "installedOn": "Installée le {{date}}",
-        "via": "via {{source}}"
-    },
-    "colors": {
-        "blue": "Bleu",
-        "green": "Vert",
-        "red": "Rouge",
-        "yellow": "Jaune",
-        "purple": "Violet",
-        "indigo": "Indigo",
-        "pink": "Rose",
-        "gray": "Gris",
-        "black": "Noir",
-        "white": "Blanc"
-    },
-    "status": {
-        "active": "Active",
-        "replaced": "Remplacée",
-        "dead": "Morte",
-        "unknown": "Inconnue"
-    },
-    "actions": {
-        "replaceQueen": "Remplacer la reine",
-        "markAsDead": "Marquer comme morte",
-        "markAsLostMissing": "Marquer comme perdue/absente",
-        "addQueen": "Ajouter une reine",
-        "editQueen": "Modifier la reine",
-        "viewDetails": "Voir les détails",
-        "manageQueen": "Gérer la reine",
-        "transferQueen": "Transférer reine"
-    },
-    "form": {
-        "selectHive": "Sélectionner une ruche",
-        "enterYear": "Saisir l'année",
-        "selectColor": "Sélectionner une couleur",
-        "enterMarking": "Saisir le marquage de la reine",
-        "enterSource": "Saisir l'origine de la reine",
-        "selectStatus": "Sélectionner un statut",
-        "pickDate": "Choisir une date"
-    },
-    "information": {
-        "noActiveQueen": "Aucune reine active trouvée",
-        "hasActiveQueen": "Cette ruche possède déjà une reine active. Remplacer la reine marquera l’actuelle comme remplacée."
-    }
+  "title": "Reines",
+  "singular": "Reine",
+  "plural": "Reines",
+  "create": {
+    "title": "Nouvelle reine",
+    "button": "Créer la reine",
+    "success": "Reine créée avec succès"
+  },
+  "edit": {
+    "title": "Modifier la reine",
+    "button": "Enregistrer les modifications",
+    "success": "Reine mise à jour avec succès"
+  },
+  "delete": {
+    "confirm": "Êtes-vous sûr de vouloir supprimer cette reine ?",
+    "success": "Reine supprimée avec succès"
+  },
+  "fields": {
+    "hive": "Ruche",
+    "year": "Année",
+    "color": "Couleur",
+    "marking": "Marquage",
+    "source": "Origine",
+    "status": "Statut",
+    "installationDate": "Date d'installation",
+    "replacedDate": "Date de remplacement (optionnel)",
+    "installedOn": "Installée le {{date}}",
+    "via": "via {{source}}"
+  },
+  "colors": {
+    "blue": "Bleu",
+    "green": "Vert",
+    "red": "Rouge",
+    "yellow": "Jaune",
+    "purple": "Violet",
+    "indigo": "Indigo",
+    "pink": "Rose",
+    "gray": "Gris",
+    "black": "Noir",
+    "white": "Blanc"
+  },
+  "status": {
+    "active": "Active",
+    "replaced": "Remplacée",
+    "dead": "Morte",
+    "unknown": "Inconnue"
+  },
+  "actions": {
+    "replaceQueen": "Remplacer la reine",
+    "markAsDead": "Marquer comme morte",
+    "markAsLostMissing": "Marquer comme perdue/absente",
+    "addQueen": "Ajouter une reine",
+    "editQueen": "Modifier la reine",
+    "viewDetails": "Voir les détails",
+    "manageQueen": "Gérer la reine",
+    "transferQueen": "Transférer reine"
+  },
+  "form": {
+    "selectHive": "Sélectionner une ruche",
+    "enterYear": "Saisir l'année",
+    "selectColor": "Sélectionner une couleur",
+    "enterMarking": "Saisir le marquage de la reine",
+    "enterSource": "Saisir l'origine de la reine",
+    "selectStatus": "Sélectionner un statut",
+    "pickDate": "Choisir une date"
+  },
+  "information": {
+    "noActiveQueen": "Aucune reine active trouvée",
+    "hasActiveQueen": "Cette ruche possède déjà une reine active. Remplacer la reine marquera l’actuelle comme remplacée."
+  }
 }

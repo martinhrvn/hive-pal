@@ -1,94 +1,94 @@
 {
-    "title": "Bruger administration",
-    "description": "Administrer brugere og nulstil passwords",
-    "table": {
-        "email": "Email",
-        "name": "Navn",
-        "role": "Rolle",
-        "passwordChangeRequired": "Skift af password påkrævet",
-        "createdAt": "Oprettet den",
-        "actions": "Handlinger",
-        "apiaries": "Bigårde",
-        "hives": "Stader",
-        "inspections": "Inspektioner",
-        "lastActivity": "Seneste aktivitet",
-        "type": "Type",
-        "status": "Status",
-        "subject": "Emne",
-        "from": "Fra",
-        "date": "Dato",
-        "widthMm": "Bredde (mm)",
-        "heightMm": "Højde (mm)",
-        "depthMm": "Dybde (mm)",
-        "dimensionsMm": "Dimensioner (mm)",
-        "submitted": "Opdateret",
-        "source": "Kilde",
-        "file": "Fil",
-        "owner": "Ejer",
-        "apiary": "Bigård",
-        "size": "Størrelse",
-        "uploaded": "Uploaded",
-        "prefix": "Prefix",
-        "created": "Oprettet",
-        "lastSeen": "Sidst set"
+  "title": "Bruger administration",
+  "description": "Administrer brugere og nulstil passwords",
+  "table": {
+    "email": "Email",
+    "name": "Navn",
+    "role": "Rolle",
+    "passwordChangeRequired": "Skift af password påkrævet",
+    "createdAt": "Oprettet den",
+    "actions": "Handlinger",
+    "apiaries": "Bigårde",
+    "hives": "Stader",
+    "inspections": "Inspektioner",
+    "lastActivity": "Seneste aktivitet",
+    "type": "Type",
+    "status": "Status",
+    "subject": "Emne",
+    "from": "Fra",
+    "date": "Dato",
+    "widthMm": "Bredde (mm)",
+    "heightMm": "Højde (mm)",
+    "depthMm": "Dybde (mm)",
+    "dimensionsMm": "Dimensioner (mm)",
+    "submitted": "Opdateret",
+    "source": "Kilde",
+    "file": "Fil",
+    "owner": "Ejer",
+    "apiary": "Bigård",
+    "size": "Størrelse",
+    "uploaded": "Uploaded",
+    "prefix": "Prefix",
+    "created": "Oprettet",
+    "lastSeen": "Sidst set"
+  },
+  "actions": {
+    "resetPassword": "Nulstil password"
+  },
+  "resetPasswordDialog": {
+    "title": "Nulstil brugers password",
+    "description": "Angiv et midlertidigt password for {email}. Brugeren vil blive bedt om at skifte password ved næste login.",
+    "tempPasswordLabel": "Midlertidigt password",
+    "tempPasswordPlaceholder": "Indtast midlertidigt passsword",
+    "minCharacters": "Mindst 6 tegn",
+    "submit": "Nulstil password"
+  },
+  "messages": {
+    "loading": "Henter...",
+    "loadingUsers": "Henter brugere...",
+    "noUsers": "Ingen brugere fundet",
+    "resetSuccess": "Passwordet er blevet nulstillet. Brugeren vil blive bedt om at skifte deres password ved næste login.",
+    "failedToFetch": "Hentning af data mislykkedes",
+    "failedToReset": "Skift af password fejlede",
+    "unexpectedError": "Der opstod en ukendt fejl"
+  },
+  "status": {
+    "yes": "Ja",
+    "no": "Nej",
+    "dash": "-"
+  },
+  "userDetail": {
+    "backToList": "Tilbage til Brugere",
+    "summary": {
+      "totalApiaries": "Total antal bigårde",
+      "totalHives": "Total antal stader",
+      "totalInspections": "Total antal inspektioner",
+      "lastActivity": "Seneste aktivitet",
+      "lastInspection": "Seneste inspektion"
     },
-    "actions": {
-        "resetPassword": "Nulstil password"
+    "recentActivity": {
+      "title": "Nylig aktivitet",
+      "period": "Seneste 30 dage",
+      "inspections": "Inspektioner",
+      "actions": "Handlinger",
+      "byType": "Handlinger fordelt på type"
     },
-    "resetPasswordDialog": {
-        "title": "Nulstil brugers password",
-        "description": "Angiv et midlertidigt password for {email}. Brugeren vil blive bedt om at skifte password ved næste login.",
-        "tempPasswordLabel": "Midlertidigt password",
-        "tempPasswordPlaceholder": "Indtast midlertidigt passsword",
-        "minCharacters": "Mindst 6 tegn",
-        "submit": "Nulstil password"
-    },
-    "messages": {
-        "loading": "Henter...",
-        "loadingUsers": "Henter brugere...",
-        "noUsers": "Ingen brugere fundet",
-        "resetSuccess": "Passwordet er blevet nulstillet. Brugeren vil blive bedt om at skifte deres password ved næste login.",
-        "failedToFetch": "Hentning af data mislykkedes",
-        "failedToReset": "Skift af password fejlede",
-        "unexpectedError": "Der opstod en ukendt fejl"
-    },
-    "status": {
-        "yes": "Ja",
-        "no": "Nej",
-        "dash": "-"
-    },
-    "userDetail": {
-        "backToList": "Tilbage til Brugere",
-        "summary": {
-            "totalApiaries": "Total antal bigårde",
-            "totalHives": "Total antal stader",
-            "totalInspections": "Total antal inspektioner",
-            "lastActivity": "Seneste aktivitet",
-            "lastInspection": "Seneste inspektion"
-        },
-        "recentActivity": {
-            "title": "Nylig aktivitet",
-            "period": "Seneste 30 dage",
-            "inspections": "Inspektioner",
-            "actions": "Handlinger",
-            "byType": "Handlinger fordelt på type"
-        },
-        "apiaryBreakdown": {
-            "title": "Bigårds oversigt",
-            "name": "Navn på bigård",
-            "location": "Placering",
-            "coordinates": "Koordinater",
-            "hives": "Stader",
-            "inspections": "Inspektioner",
-            "lastInspection": "Seneste inspektion",
-            "noApiaries": "Der blev ikke fundet nogle bigårde for denne bruger"
-        }
-    },
-    "feedback": {
-        "statuses": {
-            "NEW": "Ny",
-            "REVIEWED": "Gennemset",
-            "RESOLVED": "Løst"
-        }
+    "apiaryBreakdown": {
+      "title": "Bigårds oversigt",
+      "name": "Navn på bigård",
+      "location": "Placering",
+      "coordinates": "Koordinater",
+      "hives": "Stader",
+      "inspections": "Inspektioner",
+      "lastInspection": "Seneste inspektion",
+      "noApiaries": "Der blev ikke fundet nogle bigårde for denne bruger"
     }
+  },
+  "feedback": {
+    "statuses": {
+      "NEW": "Ny",
+      "REVIEWED": "Gennemset",
+      "RESOLVED": "Løst"
+    }
+  }
 }

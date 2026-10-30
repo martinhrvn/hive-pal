@@ -6,7 +6,9 @@
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "format": "pnpm -r format && prettier --write \"*.{js,json,md}\"",
-    "format:check": "pnpm -r exec prettier --check \"src/**/*.{ts,tsx}\" && prettier --check \"*.{js,json,md}\""
+    "format:check": "pnpm -r exec prettier --check \"src/**/*.{ts,tsx}\" && prettier --check \"*.{js,json,md}\" \"apps/frontend/public/locales/**/*.json\"",
+    "weblate:format": "node scripts/weblate-json-format.mjs",
+    "weblate:format:check": "node scripts/weblate-json-format.mjs --check"
   },
   "packageManager": "pnpm@9.15.9",
   "devDependencies": {

@@ -86,6 +86,8 @@ jobs:
         run: npx turbo build --filter=frontend
       - name: Run linter
         run: pnpm --filter frontend lint
+      - name: Check locale formatting
+        run: pnpm --filter frontend exec prettier --check "public/locales/**/*.json"
       - name: Install Playwright browsers
         run: pnpm --filter frontend exec playwright install --with-deps
       - name: Run frontend tests

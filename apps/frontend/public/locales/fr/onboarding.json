@@ -1,29 +1,29 @@
 {
-    "title": "Bienvenue sur Hive-Pal !",
-    "subtitle": "Configurons votre environnement d’apiculture",
-    "steps": {
-        "welcome": "Bienvenue",
-        "createApiary": "Créer un rucher",
-        "addHive": "Ajouter une première ruche",
-        "complete": "Terminer"
-    },
-    "welcome": {
-        "title": "Commencez votre aventure apicole",
-        "description": "Bienvenue sur Hive-Pal, votre assistant numérique pour l’apiculture ! Nous allons vous guider pour configurer votre premier rucher et votre première ruche.",
-        "action": "Commencer"
-    },
-    "apiary": {
-        "title": "Créer votre premier rucher",
-        "description": "Un rucher est un emplacement où sont placées vos ruches. Créons le vôtre."
-    },
-    "hive": {
-        "title": "Ajouter votre première ruche",
-        "description": "Ajoutons maintenant votre première ruche à votre rucher : {{apiaryName}}.",
-        "skip": "Ignorer pour le moment"
-    },
-    "complete": {
-        "title": "Félicitations !",
-        "description": "Vous avez configuré votre premier rucher et votre première ruche. Vous pouvez maintenant commencer à suivre vos activités apicoles avec Hive-Pal !",
-        "action": "Aller au tableau de bord"
-    }
+  "title": "Bienvenue sur Hive-Pal !",
+  "subtitle": "Configurons votre environnement d’apiculture",
+  "steps": {
+    "welcome": "Bienvenue",
+    "createApiary": "Créer un rucher",
+    "addHive": "Ajouter une première ruche",
+    "complete": "Terminer"
+  },
+  "welcome": {
+    "title": "Commencez votre aventure apicole",
+    "description": "Bienvenue sur Hive-Pal, votre assistant numérique pour l’apiculture ! Nous allons vous guider pour configurer votre premier rucher et votre première ruche.",
+    "action": "Commencer"
+  },
+  "apiary": {
+    "title": "Créer votre premier rucher",
+    "description": "Un rucher est un emplacement où sont placées vos ruches. Créons le vôtre."
+  },
+  "hive": {
+    "title": "Ajouter votre première ruche",
+    "description": "Ajoutons maintenant votre première ruche à votre rucher : {{apiaryName}}.",
+    "skip": "Ignorer pour le moment"
+  },
+  "complete": {
+    "title": "Félicitations !",
+    "description": "Vous avez configuré votre premier rucher et votre première ruche. Vous pouvez maintenant commencer à suivre vos activités apicoles avec Hive-Pal !",
+    "action": "Aller au tableau de bord"
+  }
 }

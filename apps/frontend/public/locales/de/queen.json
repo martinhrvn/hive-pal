@@ -1,72 +1,72 @@
 {
-    "title": "Königinnen",
-    "singular": "Königin",
-    "plural": "Königinnen",
-    "create": {
-        "title": "Neue Königin",
-        "button": "Königin erstellen",
-        "success": "Königin erfolgreich erstellt"
-    },
-    "edit": {
-        "title": "Königin bearbeiten",
-        "button": "Änderungen speichern",
-        "success": "Königin erfolgreich aktualisiert"
-    },
-    "delete": {
-        "confirm": "Möchten Sie diese Königin wirklich löschen?",
-        "success": "Königin erfolgreich gelöscht"
-    },
-    "fields": {
-        "hive": "Bienenstock",
-        "year": "Jahr",
-        "color": "Farbe",
-        "marking": "Markierung",
-        "source": "Herkunft",
-        "status": "Status",
-        "installationDate": "Aufstellungsdatum",
-        "replacedDate": "Ersetzungsdatum (optional)",
-        "installedOn": "Eingesetzt am {{date}}",
-        "via": "über {{source}}"
-    },
-    "colors": {
-        "blue": "Blau",
-        "green": "Grün",
-        "red": "Rot",
-        "yellow": "Gelb",
-        "purple": "Lila",
-        "indigo": "Indigo",
-        "pink": "Rosa",
-        "gray": "Grau",
-        "black": "Schwarz",
-        "white": "Weiß"
-    },
-    "status": {
-        "active": "Aktiv",
-        "replaced": "Ersetzt",
-        "dead": "Tot",
-        "unknown": "Unbekannt"
-    },
-    "actions": {
-        "replaceQueen": "Königin ersetzen",
-        "markAsDead": "Als tot markieren",
-        "markAsLostMissing": "Als verloren/verschollen markieren",
-        "addQueen": "Königin hinzufügen",
-        "editQueen": "Königin bearbeiten",
-        "viewDetails": "Details anzeigen",
-        "manageQueen": "Königin verwalten",
-        "transferQueen": "Königin umsetzen"
-    },
-    "form": {
-        "selectHive": "Bienenstock auswählen",
-        "enterYear": "Jahr eingeben",
-        "selectColor": "Farbe auswählen",
-        "enterMarking": "Markierung der Königin eingeben",
-        "enterSource": "Herkunft der Königin eingeben",
-        "selectStatus": "Status auswählen",
-        "pickDate": "Datum auswählen"
-    },
-    "information": {
-        "noActiveQueen": "Keine aktive Königin gefunden",
-        "hasActiveQueen": "Dieser Bienenstock hat bereits eine aktive Königin. Beim Ersetzen wird die aktuelle Königin als ersetzt markiert."
-    }
+  "title": "Königinnen",
+  "singular": "Königin",
+  "plural": "Königinnen",
+  "create": {
+    "title": "Neue Königin",
+    "button": "Königin erstellen",
+    "success": "Königin erfolgreich erstellt"
+  },
+  "edit": {
+    "title": "Königin bearbeiten",
+    "button": "Änderungen speichern",
+    "success": "Königin erfolgreich aktualisiert"
+  },
+  "delete": {
+    "confirm": "Möchten Sie diese Königin wirklich löschen?",
+    "success": "Königin erfolgreich gelöscht"
+  },
+  "fields": {
+    "hive": "Bienenstock",
+    "year": "Jahr",
+    "color": "Farbe",
+    "marking": "Markierung",
+    "source": "Herkunft",
+    "status": "Status",
+    "installationDate": "Aufstellungsdatum",
+    "replacedDate": "Ersetzungsdatum (optional)",
+    "installedOn": "Eingesetzt am {{date}}",
+    "via": "über {{source}}"
+  },
+  "colors": {
+    "blue": "Blau",
+    "green": "Grün",
+    "red": "Rot",
+    "yellow": "Gelb",
+    "purple": "Lila",
+    "indigo": "Indigo",
+    "pink": "Rosa",
+    "gray": "Grau",
+    "black": "Schwarz",
+    "white": "Weiß"
+  },
+  "status": {
+    "active": "Aktiv",
+    "replaced": "Ersetzt",
+    "dead": "Tot",
+    "unknown": "Unbekannt"
+  },
+  "actions": {
+    "replaceQueen": "Königin ersetzen",
+    "markAsDead": "Als tot markieren",
+    "markAsLostMissing": "Als verloren/verschollen markieren",
+    "addQueen": "Königin hinzufügen",
+    "editQueen": "Königin bearbeiten",
+    "viewDetails": "Details anzeigen",
+    "manageQueen": "Königin verwalten",
+    "transferQueen": "Königin umsetzen"
+  },
+  "form": {
+    "selectHive": "Bienenstock auswählen",
+    "enterYear": "Jahr eingeben",
+    "selectColor": "Farbe auswählen",
+    "enterMarking": "Markierung der Königin eingeben",
+    "enterSource": "Herkunft der Königin eingeben",
+    "selectStatus": "Status auswählen",
+    "pickDate": "Datum auswählen"
+  },
+  "information": {
+    "noActiveQueen": "Keine aktive Königin gefunden",
+    "hasActiveQueen": "Dieser Bienenstock hat bereits eine aktive Königin. Beim Ersetzen wird die aktuelle Königin als ersetzt markiert."
+  }
 }

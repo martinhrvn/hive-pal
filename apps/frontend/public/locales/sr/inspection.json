@@ -1,249 +1,249 @@
 {
-    "actions": {
-        "details": "Детаљи",
-        "refreshData": "Освежи податке",
-        "exportCSV": "Извези у CSV",
-        "dataOptions": "Опције података",
-        "cancel": "Откажи",
-        "scheduleInspection": "Закажи преглед",
-        "createInspection": "Креирај преглед",
-        "printList": "Штампај листу",
-        "shareList": "Подели листу",
-        "doInspection": "Изврши преглед",
-        "reschedule": "Промени термин",
-        "completeInspection": "Заврши преглед",
-        "print": "Штампај",
-        "share": "Подели"
-    },
-    "messages": {
-        "exportComingSoon": "Функционалност извоза ускоро стиже",
-        "shareComingSoon": "Функционалност дељења ускоро стиже"
-    },
-    "fields": {
-        "status": "Статус",
-        "hive": "Кошница",
-        "dateTime": "Датум и време",
-        "weather": "Временска",
-        "scoreStatus": "Оцена/Статус",
-        "queenSeen": "Матица виђена",
-        "temperature": "Температура",
-        "weatherConditions": "Временске прилике",
-        "notRecorded": "Није забележено",
-        "yes": "Да",
-        "no": "Не"
-    },
-    "scores": {
-        "overall": "Укупно",
-        "population": "Популација",
-        "stores": "Залихе",
-        "queen": "Матица",
-        "title": "Оцене прегледа",
-        "warnings": "Упозорења",
-        "override": "Препиши",
-        "resetToCalculated": "Ресетуј на израчунато",
-        "autoCalculated": "Аутоматски израчунато",
-        "overridden": "Прилагођено"
-    },
-    "form": {
-        "selectHive": "Изабери кошницу",
-        "pickDate": "Изабери датум",
-        "allDay": "All day",
-        "specificTime": "Set specific time",
-        "newInspection": "Нови преглед",
-        "editInspection": "Измени преглед",
-        "hive": "Кошница",
-        "inspectionDate": "Датум прегледа",
-        "futureScheduled": "Овај преглед је заказан за будућност",
-        "futureScheduledDescription": "Заказујете преглед за неки будући датум.",
-        "cancel": "Откажи",
-        "saveAndNext": "Сачувај и следеће",
-        "saving": "Чување...",
-        "save": "Сачувај",
-        "completeInspection": "Заврши преглед",
-        "saveAndComplete": "Сачувај и заврши",
-        "weather": {
-            "title": "Временске информације",
-            "description": "Додајте временске услове",
-            "temperature": "Температура",
-            "condition": "Услови",
-            "sunny": "Сунчано",
-            "partlyCloudy": "Умерено облачно",
-            "cloudy": "Облачно",
-            "rainy": "Кишовито"
-        },
-        "notes": {
-            "title": "Белешке",
-            "label": "Белешке"
-        }
-    },
-    "status": {
-        "completed": "Завршено",
-        "scheduled": "Заказано",
-        "overdue": "Касни",
-        "cancelled": "Отказано"
-    },
-    "timeline": {
-        "notesAvailable": "Белешке доступне",
-        "cancelled": "Отказано"
-    },
-    "title": "Прегледи",
-    "singular": "Преглед",
-    "plural": "Прегледи",
-    "tabs": {
-        "all": "Сви",
-        "recent": "Недавни",
-        "upcoming": "Предстојећи"
-    },
-    "list": {
-        "title": "Листа прегледа",
-        "allInspections": "Сви прегледи",
-        "recentInspections": "Недавни прегледи",
-        "upcomingInspections": "Предстојећи прегледи",
-        "searchPlaceholder": "Претражи прегледе...",
-        "filterByHive": "Филтрирај по кошници",
-        "allHives": "Све кошнице",
-        "noInspections": "Нема пронађених прегледа",
-        "unknownHive": "Непозната кошница"
-    },
-    "observations": {
-        "title": "Опажања",
-        "queenSeen": "Матица виђена",
-        "strength": "Снага",
-        "cappedBrood": "Легло затворено",
-        "uncappedBrood": "Незатворено легло",
-        "honeyStores": "Залихе меда",
-        "pollenStores": "Залихе полена",
-        "queenCells": "Матичњаци",
-        "swarmCells": "Ројевни матичњаци",
-        "swarmCellsDescription": "",
-        "supersedureCells": "Заменски матичњаци",
-        "supersedureCellsDescription": "",
-        "clearRating": "Поништи оцену",
-        "rateAs": "Оцени као {{value}}",
-        "broodPattern": "Образац легла",
-        "selectBroodPattern": "Изаберите образац легла",
-        "broodPatternOptions": {
-            "solid": "Компактан",
-            "spotty": "Прошаран",
-            "scattered": "Разбацан",
-            "patchy": "Крпичаст",
-            "excellent": "Одличан",
-            "poor": "Лош"
-        },
-        "additionalObservations": "Додатна запажања",
-        "additional": {
-            "calm": "Мирне",
-            "defensive": "Одбрамбене",
-            "aggressive": "Агресивне",
-            "nervous": "Нервозне",
-            "varroa_present": "Вароа присутна",
-            "small_hive_beetle": "Мала кошнична буба",
-            "wax_moths": "Воскин мољац",
-            "ants_present": "Мрави присутни",
-            "healthy": "Здраве",
-            "active": "Активне",
-            "sluggish": "Споре",
-            "thriving": "Цветају"
-        },
-        "reminderObservations": "Подсетници",
-        "reminder": {
-            "honey_bound": "Превише меда",
-            "overcrowded": "Пренасељена",
-            "needs_super": "Потребан наставак",
-            "queen_issues": "Проблеми са матицом",
-            "requires_treatment": "Потребан третман",
-            "low_stores": "Мале залихе",
-            "prepare_for_winter": "Припрема за зиму"
-        }
-    },
-    "sidebar": {
-        "actions": "Акције",
-        "views": "Прегледи",
-        "allInspections": "Сви прегледи",
-        "recentInspections": "Недавни прегледи",
-        "upcomingInspections": "Предстојећи прегледи",
-        "printInspectionList": "Штампај листу прегледа",
-        "shareInspectionList": "Подели листу прегледа"
-    },
-    "scheduled": {
-        "title": "Заказани прегледи",
-        "overdueInspections": "Прегледи који касне",
-        "todaysInspections": "Данашњи прегледи",
-        "upcomingInspections": "Предстојећи прегледи",
-        "otherUpcomingInspections": "Остали предстојећи прегледи",
-        "doInspection": "Извршен преглед",
-        "reschedule": "Промени термин",
-        "cancel": "Откажи",
-        "today": "Данас",
-        "overdue": "Касни"
-    },
-    "dialogs": {
-        "cancelInspection": {
-            "title": "Откажи преглед",
-            "description": "Да ли сте сигурни да желите да откажете преглед за {{hiveName}} заказан за {{date}}? Ова радња се не може опозвати.",
-            "keepInspection": "Задржи преглед",
-            "cancelInspection": "Откажи преглед"
-        },
-        "reschedule": {
-            "title": "Промени термин прегледа",
-            "description": "Изаберите нови датум за преглед кошнице {{hiveName}}. Приказана је временска прогноза за наредних 7 дана.",
-            "newDate": "Нови датум прегледа: {{date}}",
-            "cancel": "Откажи",
-            "reschedule": "Промени термин прегледа",
-            "showFewerDays": "Прикажи мање дана",
-            "showMoreDays": "Прикажи више дана (+7)",
-            "noForecast": "Прогноза није доступна",
-            "noWeatherData": "Нема података о времену"
-        },
-        "completingScheduled": {
-            "title": "Завршавање заказаног прегледа од {{date}}",
-            "description": "Овај преглед ће бити означен као завршен када сачувате измене."
-        }
-    },
+  "actions": {
+    "details": "Детаљи",
+    "refreshData": "Освежи податке",
+    "exportCSV": "Извези у CSV",
+    "dataOptions": "Опције података",
+    "cancel": "Откажи",
+    "scheduleInspection": "Закажи преглед",
+    "createInspection": "Креирај преглед",
+    "printList": "Штампај листу",
+    "shareList": "Подели листу",
+    "doInspection": "Изврши преглед",
+    "reschedule": "Промени термин",
+    "completeInspection": "Заврши преглед",
+    "print": "Штампај",
+    "share": "Подели"
+  },
+  "messages": {
+    "exportComingSoon": "Функционалност извоза ускоро стиже",
+    "shareComingSoon": "Функционалност дељења ускоро стиже"
+  },
+  "fields": {
+    "status": "Статус",
+    "hive": "Кошница",
+    "dateTime": "Датум и време",
+    "weather": "Временска",
+    "scoreStatus": "Оцена/Статус",
+    "queenSeen": "Матица виђена",
+    "temperature": "Температура",
+    "weatherConditions": "Временске прилике",
+    "notRecorded": "Није забележено",
+    "yes": "Да",
+    "no": "Не"
+  },
+  "scores": {
+    "overall": "Укупно",
+    "population": "Популација",
+    "stores": "Залихе",
+    "queen": "Матица",
+    "title": "Оцене прегледа",
+    "warnings": "Упозорења",
+    "override": "Препиши",
+    "resetToCalculated": "Ресетуј на израчунато",
+    "autoCalculated": "Аутоматски израчунато",
+    "overridden": "Прилагођено"
+  },
+  "form": {
+    "selectHive": "Изабери кошницу",
+    "pickDate": "Изабери датум",
+    "allDay": "All day",
+    "specificTime": "Set specific time",
+    "newInspection": "Нови преглед",
+    "editInspection": "Измени преглед",
+    "hive": "Кошница",
+    "inspectionDate": "Датум прегледа",
+    "futureScheduled": "Овај преглед је заказан за будућност",
+    "futureScheduledDescription": "Заказујете преглед за неки будући датум.",
+    "cancel": "Откажи",
+    "saveAndNext": "Сачувај и следеће",
+    "saving": "Чување...",
+    "save": "Сачувај",
+    "completeInspection": "Заврши преглед",
+    "saveAndComplete": "Сачувај и заврши",
     "weather": {
-        "sunny": "Сунчано",
-        "clear": "Ведро",
-        "partlyCloudy": "Умерено облачно",
-        "cloudy": "Облачно",
-        "overcast": "Тмурно",
-        "rain": "Киша"
+      "title": "Временске информације",
+      "description": "Додајте временске услове",
+      "temperature": "Температура",
+      "condition": "Услови",
+      "sunny": "Сунчано",
+      "partlyCloudy": "Умерено облачно",
+      "cloudy": "Облачно",
+      "rainy": "Кишовито"
     },
-    "detail": {
-        "loading": "Учитавање прегледа...",
-        "error": "Грешка",
-        "errorDescription": "Учитавање детаља прегледа није успело.",
-        "goBack": "Иди назад",
-        "notFound": "Преглед није пронађен",
-        "back": "Назад",
-        "share": "Подели",
-        "shareFailed": "Креирање линка за дељење није успело",
-        "viewHive": "Прикажи кошницу"
-    },
-    "statusCard": {
-        "title": "Статус",
-        "currentStatus": "Тренутни статус",
-        "actions": "Акције",
-        "markCompleted": "Означи као завршено",
-        "cancelInspection": "Откажи преглед"
-    },
-    "weatherCard": {
-        "title": "Време",
-        "temperature": "Температура",
-        "conditions": "Услови"
-    },
-    "notesCard": {
-        "title": "Белешке"
-    },
-    "observationsCard": {
-        "title": "Опажања",
-        "strength": "Јачина",
-        "uncappedBrood": "Незатворено легло",
-        "cappedBrood": "Затворено легло",
-        "honeyStores": "Залихе меда",
-        "pollenStores": "Залихе полена",
-        "queenCells": "Матичњаци",
-        "broodPattern": "Распоред легла",
-        "additionalObservations": "Додатна запажања",
-        "reminders": "Подсетници"
+    "notes": {
+      "title": "Белешке",
+      "label": "Белешке"
     }
+  },
+  "status": {
+    "completed": "Завршено",
+    "scheduled": "Заказано",
+    "overdue": "Касни",
+    "cancelled": "Отказано"
+  },
+  "timeline": {
+    "notesAvailable": "Белешке доступне",
+    "cancelled": "Отказано"
+  },
+  "title": "Прегледи",
+  "singular": "Преглед",
+  "plural": "Прегледи",
+  "tabs": {
+    "all": "Сви",
+    "recent": "Недавни",
+    "upcoming": "Предстојећи"
+  },
+  "list": {
+    "title": "Листа прегледа",
+    "allInspections": "Сви прегледи",
+    "recentInspections": "Недавни прегледи",
+    "upcomingInspections": "Предстојећи прегледи",
+    "searchPlaceholder": "Претражи прегледе...",
+    "filterByHive": "Филтрирај по кошници",
+    "allHives": "Све кошнице",
+    "noInspections": "Нема пронађених прегледа",
+    "unknownHive": "Непозната кошница"
+  },
+  "observations": {
+    "title": "Опажања",
+    "queenSeen": "Матица виђена",
+    "strength": "Снага",
+    "cappedBrood": "Легло затворено",
+    "uncappedBrood": "Незатворено легло",
+    "honeyStores": "Залихе меда",
+    "pollenStores": "Залихе полена",
+    "queenCells": "Матичњаци",
+    "swarmCells": "Ројевни матичњаци",
+    "swarmCellsDescription": "",
+    "supersedureCells": "Заменски матичњаци",
+    "supersedureCellsDescription": "",
+    "clearRating": "Поништи оцену",
+    "rateAs": "Оцени као {{value}}",
+    "broodPattern": "Образац легла",
+    "selectBroodPattern": "Изаберите образац легла",
+    "broodPatternOptions": {
+      "solid": "Компактан",
+      "spotty": "Прошаран",
+      "scattered": "Разбацан",
+      "patchy": "Крпичаст",
+      "excellent": "Одличан",
+      "poor": "Лош"
+    },
+    "additionalObservations": "Додатна запажања",
+    "additional": {
+      "calm": "Мирне",
+      "defensive": "Одбрамбене",
+      "aggressive": "Агресивне",
+      "nervous": "Нервозне",
+      "varroa_present": "Вароа присутна",
+      "small_hive_beetle": "Мала кошнична буба",
+      "wax_moths": "Воскин мољац",
+      "ants_present": "Мрави присутни",
+      "healthy": "Здраве",
+      "active": "Активне",
+      "sluggish": "Споре",
+      "thriving": "Цветају"
+    },
+    "reminderObservations": "Подсетници",
+    "reminder": {
+      "honey_bound": "Превише меда",
+      "overcrowded": "Пренасељена",
+      "needs_super": "Потребан наставак",
+      "queen_issues": "Проблеми са матицом",
+      "requires_treatment": "Потребан третман",
+      "low_stores": "Мале залихе",
+      "prepare_for_winter": "Припрема за зиму"
+    }
+  },
+  "sidebar": {
+    "actions": "Акције",
+    "views": "Прегледи",
+    "allInspections": "Сви прегледи",
+    "recentInspections": "Недавни прегледи",
+    "upcomingInspections": "Предстојећи прегледи",
+    "printInspectionList": "Штампај листу прегледа",
+    "shareInspectionList": "Подели листу прегледа"
+  },
+  "scheduled": {
+    "title": "Заказани прегледи",
+    "overdueInspections": "Прегледи који касне",
+    "todaysInspections": "Данашњи прегледи",
+    "upcomingInspections": "Предстојећи прегледи",
+    "otherUpcomingInspections": "Остали предстојећи прегледи",
+    "doInspection": "Извршен преглед",
+    "reschedule": "Промени термин",
+    "cancel": "Откажи",
+    "today": "Данас",
+    "overdue": "Касни"
+  },
+  "dialogs": {
+    "cancelInspection": {
+      "title": "Откажи преглед",
+      "description": "Да ли сте сигурни да желите да откажете преглед за {{hiveName}} заказан за {{date}}? Ова радња се не може опозвати.",
+      "keepInspection": "Задржи преглед",
+      "cancelInspection": "Откажи преглед"
+    },
+    "reschedule": {
+      "title": "Промени термин прегледа",
+      "description": "Изаберите нови датум за преглед кошнице {{hiveName}}. Приказана је временска прогноза за наредних 7 дана.",
+      "newDate": "Нови датум прегледа: {{date}}",
+      "cancel": "Откажи",
+      "reschedule": "Промени термин прегледа",
+      "showFewerDays": "Прикажи мање дана",
+      "showMoreDays": "Прикажи више дана (+7)",
+      "noForecast": "Прогноза није доступна",
+      "noWeatherData": "Нема података о времену"
+    },
+    "completingScheduled": {
+      "title": "Завршавање заказаног прегледа од {{date}}",
+      "description": "Овај преглед ће бити означен као завршен када сачувате измене."
+    }
+  },
+  "weather": {
+    "sunny": "Сунчано",
+    "clear": "Ведро",
+    "partlyCloudy": "Умерено облачно",
+    "cloudy": "Облачно",
+    "overcast": "Тмурно",
+    "rain": "Киша"
+  },
+  "detail": {
+    "loading": "Учитавање прегледа...",
+    "error": "Грешка",
+    "errorDescription": "Учитавање детаља прегледа није успело.",
+    "goBack": "Иди назад",
+    "notFound": "Преглед није пронађен",
+    "back": "Назад",
+    "share": "Подели",
+    "shareFailed": "Креирање линка за дељење није успело",
+    "viewHive": "Прикажи кошницу"
+  },
+  "statusCard": {
+    "title": "Статус",
+    "currentStatus": "Тренутни статус",
+    "actions": "Акције",
+    "markCompleted": "Означи као завршено",
+    "cancelInspection": "Откажи преглед"
+  },
+  "weatherCard": {
+    "title": "Време",
+    "temperature": "Температура",
+    "conditions": "Услови"
+  },
+  "notesCard": {
+    "title": "Белешке"
+  },
+  "observationsCard": {
+    "title": "Опажања",
+    "strength": "Јачина",
+    "uncappedBrood": "Незатворено легло",
+    "cappedBrood": "Затворено легло",
+    "honeyStores": "Залихе меда",
+    "pollenStores": "Залихе полена",
+    "queenCells": "Матичњаци",
+    "broodPattern": "Распоред легла",
+    "additionalObservations": "Додатна запажања",
+    "reminders": "Подсетници"
+  }
 }

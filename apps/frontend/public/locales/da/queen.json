@@ -1,98 +1,98 @@
 {
-    "title": "Dronninger",
-    "singular": "Dronning",
-    "plural": "Dronninger",
-    "create": {
-        "title": "Ny dronning",
-        "button": "Opret dronning",
-        "success": "Dronning er blevet oprettet",
-        "error": "Oprettelse af dronning fejlede"
-    },
-    "edit": {
-        "title": "Rediger dronning",
-        "button": "Gem ændringer",
-        "success": "Ændring af dronning er blevet gemt",
-        "error": "Opdatering af dronning fejlede"
-    },
-    "delete": {
-        "confirm": "Er du sikker på at du vil slette denne dronning?",
-        "success": "Dronning er blevet slettet",
-        "title": "Slet denne dronning?",
-        "description": "Dette sletter dronningen permanent, samt hendes historik. Hendes døtre forbliver, bare uden link til hende.",
-        "error": "Sletning af dronning fejlede"
-    },
-    "fields": {
-        "hive": "Stade",
-        "year": "År",
-        "color": "Farve",
-        "marking": "Markering",
-        "source": "Ophav",
-        "status": "Status",
-        "installationDate": "Dato for etablering",
-        "replacedDate": "Udskiftet den (Frivilligt)",
-        "installedOn": "Tilsat den {{date}}",
-        "via": "fra {{source}}",
-        "name": "Navn",
-        "breeder": "Dronningeavler",
-        "notes": "Noter",
-        "line": "Linie",
-        "mother": "Mor",
-        "matingType": "Parring",
-        "matingStation": "Parringsstation",
-        "matedAt": "Parret på",
-        "installed": "Tilsat",
-        "replaced": "Udskiftet",
-        "cellCappedAt": "Dronningecelle forseglet",
-        "emergedAt": "Krøbet",
-        "expectedEmergence": "Forventet krybetidspunkt",
-        "installedAt": "Tilsat den"
-    },
-    "colors": {
-        "blue": "Blå",
-        "green": "Grøn",
-        "red": "Rød",
-        "yellow": "Gul",
-        "purple": "Lilla",
-        "indigo": "Indigo",
-        "pink": "Pink",
-        "gray": "Grå",
-        "black": "Sort",
-        "white": "Hvid"
-    },
-    "status": {
-        "active": "Aktiv",
-        "replaced": "Udskiftet",
-        "dead": "Død",
-        "unknown": "Ukendt"
-    },
-    "actions": {
-        "replaceQueen": "Udskift dronning",
-        "markAsDead": "Marker som død",
-        "markAsLostMissing": "Marker som mistet/forsvundet",
-        "addQueen": "Tilføj dronning",
-        "editQueen": "Rediger dronning",
-        "viewDetails": "Vis detaljer",
-        "manageQueen": "Administrer dronning",
-        "transferQueen": "Overflyt dronning"
-    },
-    "form": {
-        "selectHive": "Vælg et stade",
-        "enterYear": "Indtast årstal",
-        "selectColor": "Vælg farve",
-        "enterMarking": "Indtaste dronning markering",
-        "enterSource": "Indtast ophav af dronning",
-        "selectStatus": "Vælg status",
-        "pickDate": "Vælg en dato",
-        "enterBreeder": "Hvem har avlet hende",
-        "enterLine": "fx Carnica Troiseck",
-        "selectMother": "Vælg dronningemoderen",
-        "noMother": "Ingen"
-    },
-    "information": {
-        "noActiveQueen": "Ingen aktiv dronning fundet",
-        "hasActiveQueen": "Dette stade har allerede en aktiv dronning. Udskiftning af dronning vil markerede den nuværende som udskiftet."
-    },
-    "table": {
-        "status": "Status"
-    }
+  "title": "Dronninger",
+  "singular": "Dronning",
+  "plural": "Dronninger",
+  "create": {
+    "title": "Ny dronning",
+    "button": "Opret dronning",
+    "success": "Dronning er blevet oprettet",
+    "error": "Oprettelse af dronning fejlede"
+  },
+  "edit": {
+    "title": "Rediger dronning",
+    "button": "Gem ændringer",
+    "success": "Ændring af dronning er blevet gemt",
+    "error": "Opdatering af dronning fejlede"
+  },
+  "delete": {
+    "confirm": "Er du sikker på at du vil slette denne dronning?",
+    "success": "Dronning er blevet slettet",
+    "title": "Slet denne dronning?",
+    "description": "Dette sletter dronningen permanent, samt hendes historik. Hendes døtre forbliver, bare uden link til hende.",
+    "error": "Sletning af dronning fejlede"
+  },
+  "fields": {
+    "hive": "Stade",
+    "year": "År",
+    "color": "Farve",
+    "marking": "Markering",
+    "source": "Ophav",
+    "status": "Status",
+    "installationDate": "Dato for etablering",
+    "replacedDate": "Udskiftet den (Frivilligt)",
+    "installedOn": "Tilsat den {{date}}",
+    "via": "fra {{source}}",
+    "name": "Navn",
+    "breeder": "Dronningeavler",
+    "notes": "Noter",
+    "line": "Linie",
+    "mother": "Mor",
+    "matingType": "Parring",
+    "matingStation": "Parringsstation",
+    "matedAt": "Parret på",
+    "installed": "Tilsat",
+    "replaced": "Udskiftet",
+    "cellCappedAt": "Dronningecelle forseglet",
+    "emergedAt": "Krøbet",
+    "expectedEmergence": "Forventet krybetidspunkt",
+    "installedAt": "Tilsat den"
+  },
+  "colors": {
+    "blue": "Blå",
+    "green": "Grøn",
+    "red": "Rød",
+    "yellow": "Gul",
+    "purple": "Lilla",
+    "indigo": "Indigo",
+    "pink": "Pink",
+    "gray": "Grå",
+    "black": "Sort",
+    "white": "Hvid"
+  },
+  "status": {
+    "active": "Aktiv",
+    "replaced": "Udskiftet",
+    "dead": "Død",
+    "unknown": "Ukendt"
+  },
+  "actions": {
+    "replaceQueen": "Udskift dronning",
+    "markAsDead": "Marker som død",
+    "markAsLostMissing": "Marker som mistet/forsvundet",
+    "addQueen": "Tilføj dronning",
+    "editQueen": "Rediger dronning",
+    "viewDetails": "Vis detaljer",
+    "manageQueen": "Administrer dronning",
+    "transferQueen": "Overflyt dronning"
+  },
+  "form": {
+    "selectHive": "Vælg et stade",
+    "enterYear": "Indtast årstal",
+    "selectColor": "Vælg farve",
+    "enterMarking": "Indtaste dronning markering",
+    "enterSource": "Indtast ophav af dronning",
+    "selectStatus": "Vælg status",
+    "pickDate": "Vælg en dato",
+    "enterBreeder": "Hvem har avlet hende",
+    "enterLine": "fx Carnica Troiseck",
+    "selectMother": "Vælg dronningemoderen",
+    "noMother": "Ingen"
+  },
+  "information": {
+    "noActiveQueen": "Ingen aktiv dronning fundet",
+    "hasActiveQueen": "Dette stade har allerede en aktiv dronning. Udskiftning af dronning vil markerede den nuværende som udskiftet."
+  },
+  "table": {
+    "status": "Status"
+  }
 }
