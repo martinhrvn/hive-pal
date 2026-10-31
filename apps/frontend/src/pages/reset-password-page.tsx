@@ -1,5 +1,5 @@
 import { FormEvent, useState, useEffect } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';

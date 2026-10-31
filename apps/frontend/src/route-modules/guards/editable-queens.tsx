@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router';
 import { EditableRoute } from '@/routes/editable-route';
 
 /** Edit-permission guard; viewers are sent back to the queens list. */

@@ -24,7 +24,7 @@ import {
   X,
 } from 'lucide-react';
 import { ApiaryResponse, HiveResponse } from 'shared-schemas';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useApiaries, useHivesWithBoxes, useTodos } from '@/api/hooks';
 import { useApiary } from '@/hooks/use-apiary';

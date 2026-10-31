@@ -1,4 +1,4 @@
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import { ActionType, type ActionResponse } from 'shared-schemas';
 import { AddActionDialog } from './add-action-dialog';
 import { EditActionDialog } from './edit-action-dialog';

@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { EditQueenForm } from './components/form/queen-form';
 
 export const EditQueenPage = () => {

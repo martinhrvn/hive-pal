@@ -24,7 +24,7 @@ import { useCreateHarvest } from '@/api/hooks/useHarvests';
 import { useHives } from '@/api/hooks/useHives';
 import { CreateHarvest, HarvestHive } from 'shared-schemas';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useApiary } from '@/hooks/use-apiary';
 import { useDateFormat } from '@/hooks/use-date-format';
 

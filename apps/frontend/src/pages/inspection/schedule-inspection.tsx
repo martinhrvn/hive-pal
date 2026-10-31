@@ -50,7 +50,7 @@ import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { InspectionDateTimePicker } from '@/components/inspection-date-time-picker';
 
 const createScheduleSchema = (t: TFunction) =>

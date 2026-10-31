@@ -23,7 +23,7 @@ import type {
   ActionData,
   TreatmentActionData,
 } from '@/pages/inspection/components/inspection-form/schema.ts';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useUnitFormat } from '@/hooks/use-unit-format';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import { useUpdateHiveBoxes, apiaryHeaderConfig } from './useHives';

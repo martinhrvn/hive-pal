@@ -1,5 +1,5 @@
 import { InspectionForm } from '@/pages/inspection/components/inspection-form';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams } from 'react-router';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

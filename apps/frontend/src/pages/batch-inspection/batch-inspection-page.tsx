@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router';
 import type { CreateInspection } from 'shared-schemas';
 import {
   useBatchInspection,

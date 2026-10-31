@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Image, PanelLeft, EyeOff } from 'lucide-react';
 

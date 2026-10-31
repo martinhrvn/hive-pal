@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { useReleaseNotes } from './use-release-notes';
 import { NewReleaseToast } from '@/components/release-notes-notification';

@@ -48,7 +48,7 @@ import {
 } from 'shared-schemas';
 import { getFeedTypeLabel } from '@/utils/feed-type-label';
 import { hiveStatusLabelKey } from '@/utils/status-colors';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import {
   DropdownMenu,
   DropdownMenuContent,

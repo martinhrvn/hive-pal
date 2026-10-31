@@ -4,7 +4,7 @@ import {
   Routes,
   useLocation,
   useParams,
-} from 'react-router-dom';
+} from 'react-router';
 import { Toaster } from 'sonner';
 import { CreateQueenForm, EditQueenForm } from './queen-form';
 

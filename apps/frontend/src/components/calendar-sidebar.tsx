@@ -7,7 +7,7 @@ import { useHives } from '@/api/hooks/useHives';
 import { InspectionResponse } from 'shared-schemas';
 import { format, isBefore, isSameDay, startOfDay } from 'date-fns';
 import { Clock, AlertTriangle, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { getDateLocale } from '@/utils/locale-utils.ts';
 import { cn } from '@/lib/utils';
 import {

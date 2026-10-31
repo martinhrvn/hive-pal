@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { HiveHubInspectionPrompt } from '@/pages/hivescale/hivehub-inspection-prompt';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 import {
   Form,
