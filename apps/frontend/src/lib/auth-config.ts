@@ -15,8 +15,8 @@ export const SOCIAL_PROVIDER_IDS = ['google', 'facebook'] as const;
 export type SocialProviderId = (typeof SOCIAL_PROVIDER_IDS)[number];
 
 const readSocialProviders = (): SocialProviderId[] => {
-  const enabled = (readEnv('VITE_SOCIAL_PROVIDERS') ?? '').split(',');
-  return SOCIAL_PROVIDER_IDS.filter(id => enabled.includes(id));
+  const enabled = new Set((readEnv('VITE_SOCIAL_PROVIDERS') ?? '').split(','));
+  return SOCIAL_PROVIDER_IDS.filter(id => enabled.has(id));
 };
 
 export const getAuthConfig = () => {
