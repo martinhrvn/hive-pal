@@ -45,9 +45,10 @@ export class HealthController {
       // Check if the app is up
       () => this.http.pingCheck('nestjs-app', 'http://localhost:3000/api'),
 
-      // Check if the disk has enough space
-      () =>
-        this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.9 }),
+      // Disk is reported but never fails the health check: the host is shared
+      // with PR preview builds, and a full-ish disk must not pull prod out of
+      // the proxy. Alert on it from host metrics instead.
+      () => this.storageReport(),
 
       // Memory is reported but never fails the health check — high memory is
       // a warning, not "service unavailable". Watch /metrics for trends.
@@ -56,6 +57,25 @@ export class HealthController {
       // Check database connection
       () => this.prismaHealth.isHealthy('database'),
     ]);
+  }
+
+  private async storageReport(): Promise<HealthIndicatorResult> {
+    const result = await this.disk.checkStorage('storage', {
+      path: '/',
+      thresholdPercent: 0.9,
+    });
+    const overThreshold = result.storage?.status === 'down';
+
+    if (overThreshold) {
+      this.logger.warn({
+        message: 'Disk usage over threshold (not failing health)',
+        ...result.storage,
+      });
+    }
+
+    return {
+      storage: { ...result.storage, status: 'up', overThreshold },
+    };
   }
 
   private memoryReport(): HealthIndicatorResult {

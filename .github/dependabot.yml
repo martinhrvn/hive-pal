@@ -9,3 +9,9 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    # Every PR gets a full Coolify preview stack on the prod host, so batch
+    # minor/patch bumps into one weekly PR. Majors still arrive one by one.
+    groups:
+      npm-deps:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
