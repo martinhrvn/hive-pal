@@ -1,4 +1,4 @@
-import { FormEvent, useState, useEffect } from 'react';
+import { type SubmitEvent, useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useNavigate, Link, useLocation, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PublicFooter } from '@/components/layout/public-footer';
-import { getAuthConfig } from '@/lib/auth-config';
-import { SsoButton, SsoDivider } from '@/components/auth/sso-button';
+import { getAuthConfig, hasSsoOptions } from '@/lib/auth-config';
+import { SsoButtons, SsoDivider } from '@/components/auth/sso-button';
 import { useSsoErrorMessage } from '@/components/auth/use-sso-error-message';
 
 const RegisterPage = () => {
@@ -28,9 +28,10 @@ const RegisterPage = () => {
     ?.pathname;
   const [searchParams] = useSearchParams();
   const ssoError = useSsoErrorMessage(searchParams.get('error'));
-  const { oidcAllowSignup, localLoginEnabled } = getAuthConfig();
+  const { localLoginEnabled } = getAuthConfig();
+  const ssoShown = hasSsoOptions('signUp');
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -99,19 +100,19 @@ const RegisterPage = () => {
         )}
 
         <div className="backdrop-blur-md bg-white/10 py-8 px-4 shadow-2xl rounded-xl sm:px-10 border border-white/20">
-          {oidcAllowSignup && (
+          {ssoShown && (
             <div className={localLoginEnabled ? 'mb-6 space-y-6' : ''}>
-              <SsoButton
+              <SsoButtons
                 mode="signUp"
                 redirectTo={redirectTo}
                 errorPath="/register"
-                className="bg-green-600 hover:bg-green-700 text-white"
+                oidcClassName="bg-green-600 hover:bg-green-700 text-white"
               />
               {localLoginEnabled && <SsoDivider label={t('sso.or')} />}
             </div>
           )}
 
-          {!localLoginEnabled && !oidcAllowSignup && (
+          {!localLoginEnabled && !ssoShown && (
             <p className="text-white/80 text-center">
               {t('sso.registrationClosed')}
             </p>

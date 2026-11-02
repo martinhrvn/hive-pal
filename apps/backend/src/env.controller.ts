@@ -1,6 +1,10 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { isLocalLoginDisabled, loadOidcConfig } from './auth/oidc-config';
+import {
+  enabledSocialProviders,
+  loadSocialProviders,
+} from './auth/social-config';
 
 @Controller()
 export class EnvController {
@@ -23,6 +27,8 @@ export interface EnvConfig {
   VITE_OIDC_BUTTON_LABEL: string;
   VITE_OIDC_ALLOW_SIGNUP: string;
   VITE_LOCAL_LOGIN_ENABLED: string;
+  /** Comma-separated ids of the enabled social providers (google, facebook). */
+  VITE_SOCIAL_PROVIDERS: string;
 }
 
 export function buildEnvConfig(
@@ -39,5 +45,8 @@ export function buildEnvConfig(
     VITE_OIDC_BUTTON_LABEL: oidc.enabled ? oidc.buttonLabel : '',
     VITE_OIDC_ALLOW_SIGNUP: String(oidc.enabled && oidc.allowSignup),
     VITE_LOCAL_LOGIN_ENABLED: String(!isLocalLoginDisabled(env, oidc)),
+    VITE_SOCIAL_PROVIDERS: enabledSocialProviders(
+      loadSocialProviders(env),
+    ).join(','),
   };
 }

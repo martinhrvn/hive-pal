@@ -16,6 +16,7 @@ const PUBLIC_PATH_PREFIXES = [
   '/tools',
   '/releases',
   '/privacy-policy',
+  '/data-deletion',
 ];
 
 /**

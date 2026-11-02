@@ -95,6 +95,21 @@ export const PrivacyPolicyPage = () => {
 
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">
+                {t('deletion.title')}
+              </h2>
+              <p className="text-gray-600">
+                {t('deletion.content')}{' '}
+                <Link
+                  to="/data-deletion"
+                  className="text-blue-600 hover:underline"
+                >
+                  {t('deletion.link')}
+                </Link>
+              </p>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
                 {t('contact.title')}
               </h2>
               <p className="text-gray-600">

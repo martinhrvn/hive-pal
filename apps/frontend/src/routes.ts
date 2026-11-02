@@ -66,6 +66,9 @@ const publicPages = (idPrefix: string): RouteConfigEntry[] => [
   route('privacy-policy', 'route-modules/public/privacy-policy.tsx', {
     id: `${idPrefix}/privacy-policy`,
   }),
+  route('data-deletion', 'route-modules/public/data-deletion.tsx', {
+    id: `${idPrefix}/data-deletion`,
+  }),
 ];
 
 export default [

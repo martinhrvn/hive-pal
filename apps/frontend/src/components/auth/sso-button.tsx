@@ -1,17 +1,24 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 import { getAuthConfig } from '@/lib/auth-config';
 import { cn } from '@/lib/utils';
+import { SOCIAL_PROVIDERS } from './social-providers';
 
-interface SsoButtonProps {
+interface SsoRedirectProps {
   /** Path to land on after a successful sign-in. */
   redirectTo?: string;
   /** Page to return to with `?error=…` when SSO fails. */
   errorPath: string;
-  mode?: 'signIn' | 'signUp';
+}
+
+interface SsoButtonProps extends SsoRedirectProps {
+  /** Better Auth provider id: the OIDC provider id, 'google' or 'facebook'. */
+  provider: string;
+  label: string;
+  icon: ReactNode;
   className?: string;
 }
 
@@ -20,15 +27,16 @@ const toFrontendUrl = (path: string) =>
   new URL(path, window.location.origin).href;
 
 export const SsoButton = ({
+  provider,
+  label,
+  icon,
   redirectTo = '/',
   errorPath,
-  mode = 'signIn',
   className,
 }: SsoButtonProps) => {
   const { t } = useTranslation('auth');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const { oidcProviderId, oidcButtonLabel } = getAuthConfig();
 
   const handleClick = async () => {
     setBusy(true);
@@ -38,7 +46,7 @@ export const SsoButton = ({
       // Generic OAuth providers are registered as social providers in
       // better-auth 1.7, so the standard social sign-in is used.
       const result = await authClient.signIn.social({
-        provider: oidcProviderId,
+        provider,
         callbackURL: toFrontendUrl(redirectTo),
         errorCallbackURL: toFrontendUrl(errorPath),
       });
@@ -53,9 +61,6 @@ export const SsoButton = ({
     }
   };
 
-  const label =
-    mode === 'signUp' ? t('sso.signUp') : oidcButtonLabel || t('sso.signIn');
-
   return (
     <div className="space-y-2">
       <Button
@@ -64,8 +69,9 @@ export const SsoButton = ({
         onClick={handleClick}
         disabled={busy}
         data-umami-event="Login SSO"
+        data-umami-event-provider={provider}
       >
-        <LogIn className="h-4 w-4" />
+        {icon}
         {busy ? t('sso.redirecting') : label}
       </Button>
       {error && (
@@ -73,6 +79,58 @@ export const SsoButton = ({
           {error}
         </div>
       )}
+    </div>
+  );
+};
+
+interface SsoButtonsProps extends SsoRedirectProps {
+  mode: 'signIn' | 'signUp';
+  /** Colours of the OIDC button, matching the page's primary action. */
+  oidcClassName?: string;
+}
+
+/** One button per configured SSO provider: OIDC, then Google and Facebook. */
+export const SsoButtons = ({
+  mode,
+  oidcClassName,
+  ...redirect
+}: SsoButtonsProps) => {
+  const { t } = useTranslation('auth');
+  const {
+    oidcEnabled,
+    oidcAllowSignup,
+    oidcProviderId,
+    oidcButtonLabel,
+    socialProviders,
+  } = getAuthConfig();
+  const oidcShown = mode === 'signUp' ? oidcAllowSignup : oidcEnabled;
+  const oidcLabel =
+    mode === 'signUp' ? t('sso.signUp') : oidcButtonLabel || t('sso.signIn');
+
+  return (
+    <div className="space-y-3">
+      {oidcShown && (
+        <SsoButton
+          {...redirect}
+          provider={oidcProviderId}
+          label={oidcLabel}
+          icon={<LogIn className="h-4 w-4" />}
+          className={oidcClassName}
+        />
+      )}
+      {socialProviders.map(id => {
+        const { name, Icon, buttonClassName } = SOCIAL_PROVIDERS[id];
+        return (
+          <SsoButton
+            {...redirect}
+            key={id}
+            provider={id}
+            label={t('sso.continueWith', { provider: name })}
+            icon={<Icon className="h-4 w-4" />}
+            className={buttonClassName}
+          />
+        );
+      })}
     </div>
   );
 };
