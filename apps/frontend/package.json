@@ -18,7 +18,7 @@
     "test:ct:debug": "playwright test -c playwright-ct.config.ts --debug"
   },
   "dependencies": {
-    "@better-auth/passkey": "1.7.13",
+    "@better-auth/passkey": "1.7.14",
     "@grafana/faro-web-sdk": "^2.13.0",
     "@hookform/resolvers": "^5.9.2",
     "@lucide/lab": "^0.7.0",

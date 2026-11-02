@@ -30,7 +30,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1156.0",
     "@better-auth/mcp": "1.7.13",
     "@better-auth/oauth-provider": "1.7.13",
-    "@better-auth/passkey": "1.7.13",
+    "@better-auth/passkey": "1.7.14",
     "@modelcontextprotocol/sdk": "^1.32.2",
     "@nestjs/axios": "^12.0.1",
     "@nestjs/common": "^12.2.0",
