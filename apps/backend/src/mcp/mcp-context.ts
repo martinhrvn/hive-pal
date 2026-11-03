@@ -36,7 +36,6 @@ export const jsonResult = (data: unknown): CallToolResult => ({
  * calls "All apiaries"; MCP never relies on the `x-apiary-id` header.
  */
 export const apiaryIdArg = z
-  .string()
   .uuid()
   .optional()
   .describe(

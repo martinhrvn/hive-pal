@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Platform metrics snapshot response
 export const platformMetricsSnapshotSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   date: z.string(),
   totalUsers: z.number(),
   totalApiaries: z.number(),
@@ -19,7 +19,9 @@ export const platformMetricsSnapshotSchema = z.object({
   createdAt: z.string(),
 });
 
-export type PlatformMetricsSnapshot = z.infer<typeof platformMetricsSnapshotSchema>;
+export type PlatformMetricsSnapshot = z.infer<
+  typeof platformMetricsSnapshotSchema
+>;
 
 // Query params for filtering snapshots
 export const platformMetricsQueryParamsSchema = z.object({
@@ -27,4 +29,6 @@ export const platformMetricsQueryParamsSchema = z.object({
   endDate: z.string().optional(),
 });
 
-export type PlatformMetricsQueryParams = z.infer<typeof platformMetricsQueryParamsSchema>;
+export type PlatformMetricsQueryParams = z.infer<
+  typeof platformMetricsQueryParamsSchema
+>;

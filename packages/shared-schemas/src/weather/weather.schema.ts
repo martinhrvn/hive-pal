@@ -13,38 +13,38 @@ export const WeatherConditionEnum = z.enum([
 export type WeatherCondition = z.infer<typeof WeatherConditionEnum>;
 
 export const WeatherSchema = z.object({
-  id: z.string().uuid(),
-  apiaryId: z.string().uuid(),
-  timestamp: z.string().datetime(),
-  fetchedAt: z.string().datetime(),
+  id: z.uuid(),
+  apiaryId: z.uuid(),
+  timestamp: z.iso.datetime(),
+  fetchedAt: z.iso.datetime(),
   condition: WeatherConditionEnum,
   temperature: z.number(),
   feelsLike: z.number(),
-  humidity: z.number().int().min(0).max(100),
+  humidity: z.int().min(0).max(100),
   windSpeed: z.number().min(0),
 });
 
 export const WeatherHourlyForecastSchema = z.object({
-  id: z.string().uuid(),
-  apiaryId: z.string().uuid(),
-  timestamp: z.string().datetime(),
-  fetchedAt: z.string().datetime(),
+  id: z.uuid(),
+  apiaryId: z.uuid(),
+  timestamp: z.iso.datetime(),
+  fetchedAt: z.iso.datetime(),
   condition: WeatherConditionEnum,
   temperature: z.number(),
   feelsLike: z.number(),
-  humidity: z.number().int().min(0).max(100),
+  humidity: z.int().min(0).max(100),
   windSpeed: z.number().min(0),
 });
 
 export const WeatherForecastSchema = z.object({
-  id: z.string().uuid(),
-  apiaryId: z.string().uuid(),
-  date: z.string().datetime(),
-  fetchedAt: z.string().datetime(),
+  id: z.uuid(),
+  apiaryId: z.uuid(),
+  date: z.iso.datetime(),
+  fetchedAt: z.iso.datetime(),
   condition: WeatherConditionEnum,
   temperatureMin: z.number(),
   temperatureMax: z.number(),
-  humidity: z.number().int().min(0).max(100),
+  humidity: z.int().min(0).max(100),
   windSpeed: z.number().min(0),
 });
 

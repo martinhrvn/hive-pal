@@ -38,7 +38,7 @@ export function registerApiaryTools(
       title: 'Get apiary weather',
       description:
         "Current weather and the 7-day daily forecast at an apiary's location. Empty when the apiary has no coordinates set.",
-      inputSchema: { apiaryId: z.string().uuid() },
+      inputSchema: { apiaryId: z.uuid() },
       annotations: READ_ONLY,
     },
     async ({ apiaryId }) => {

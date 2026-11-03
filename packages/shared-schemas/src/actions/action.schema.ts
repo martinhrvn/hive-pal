@@ -16,23 +16,23 @@ export const createActionSchema = baseActionSchema.extend({
 
 // Create schema for standalone actions (not tied to inspection)
 export const createStandaloneActionSchema = createActionSchema.extend({
-  hiveId: z.string().uuid(),
+  hiveId: z.uuid(),
   date: isoDateTime().optional(),
 });
 
 // Response schema for actions (with IDs)
 export const actionResponseSchema = createActionSchema.extend({
-  id: z.string().uuid(),
-  hiveId: z.string().uuid().nullable(),
-  inspectionId: z.string().uuid().nullable(),
-  harvestId: z.string().uuid().nullable(),
-  date: z.string().datetime(),
+  id: z.uuid(),
+  hiveId: z.uuid().nullable(),
+  inspectionId: z.uuid().nullable(),
+  harvestId: z.uuid().nullable(),
+  date: z.iso.datetime(),
   createdByUserName: z.string().nullish(),
 });
 
 // Filter schema for actions
 export const actionFilterSchema = z.object({
-  hiveId: z.string().uuid().optional(),
+  hiveId: z.uuid().optional(),
   type: actionTypeSchema.optional(),
   startDate: isoDateTime().optional(),
   endDate: isoDateTime().optional(),

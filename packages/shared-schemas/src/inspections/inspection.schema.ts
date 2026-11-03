@@ -19,8 +19,8 @@ export type ScoreOverride = z.infer<typeof scoreOverrideSchema>;
 
 // Base schema for creating inspections
 export const createInspectionSchema = z.object({
-  id: z.string().uuid().optional(),
-  hiveId: z.string().uuid(),
+  id: z.uuid().optional(),
+  hiveId: z.uuid(),
   date: isoDateTime(),
   isAllDay: z.boolean().optional(),
   temperature: z.number().nullish(),
@@ -39,10 +39,10 @@ export const updateInspectionSchema = createInspectionSchema.partial().extend({
 });
 
 export const updateInspectionResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   status: inspectionStatusSchema.optional(),
-  date: z.string().datetime(),
-  hiveId: z.string().uuid(),
+  date: z.iso.datetime(),
+  hiveId: z.uuid(),
   isAllDay: z.boolean().optional(),
 });
 
@@ -56,21 +56,21 @@ export const scoreSchema = z.object({
 });
 
 export const createInsectionResponseSchema = z.object({
-  hiveId: z.string().uuid(),
+  hiveId: z.uuid(),
   status: inspectionStatusSchema,
-  date: z.string().datetime(),
+  date: z.iso.datetime(),
   isAllDay: z.boolean().optional(),
-  id: z.string().uuid(),
+  id: z.uuid(),
 });
 
 // Schema for inspection responses
 export const inspectionResponseSchema = createInspectionSchema.extend({
-  id: z.string().uuid(),
+  id: z.uuid(),
   status: inspectionStatusSchema,
   date: z
     .date()
     .transform(d => d.toISOString())
-    .or(z.string().datetime()),
+    .or(z.iso.datetime()),
   score: scoreSchema.optional(),
   actions: z.array(actionResponseSchema),
   weights: z.array(weightReadingResponseSchema).optional(),
@@ -79,7 +79,7 @@ export const inspectionResponseSchema = createInspectionSchema.extend({
 
 // Schema for filtering inspections
 export const inspectionFilterSchema = z.object({
-  hiveId: z.string().uuid().optional(),
+  hiveId: z.uuid().optional(),
   startDate: isoDateTime().optional(),
   endDate: isoDateTime().optional(),
   status: inspectionStatusSchema.optional(),

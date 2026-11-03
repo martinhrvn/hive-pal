@@ -18,14 +18,14 @@ export const hiveSettingsSchema = z
     /** @deprecated Pre-seasons autumn feeding window; resolved as a season. */
     autumnFeeding: z
       .object({
-        startMonth: z.number().int().min(1).max(12).default(8),
-        endMonth: z.number().int().min(1).max(12).default(10),
+        startMonth: z.int().min(1).max(12).default(8),
+        endMonth: z.int().min(1).max(12).default(10),
         amountKg: z.number().positive().default(12),
       })
       .optional(),
     inspection: z
       .object({
-        frequencyDays: z.number().int().positive().default(7),
+        frequencyDays: z.int().positive().default(7),
         calendarEnabled: z.boolean().default(true),
       })
       .optional(),
@@ -35,40 +35,40 @@ export const hiveSettingsSchema = z
 // Base schema for creating hives
 export const createHiveSchema = z.object({
   name: z.string(),
-  apiaryId: z.string().uuid().optional(),
+  apiaryId: z.uuid().optional(),
   notes: z.string().optional(),
-  installationDate: z.date().optional().or(z.string().datetime().optional()),
+  installationDate: z.date().optional().or(z.iso.datetime().optional()),
   status: hiveStatusSchema.optional(),
-  positionRow: z.number().int().min(0).optional(),
-  positionCol: z.number().int().min(0).optional(),
+  positionRow: z.int().min(0).optional(),
+  positionCol: z.int().min(0).optional(),
   settings: hiveSettingsSchema,
   boxes: z.array(boxSchema).optional(),
-  featurePhotoId: z.string().uuid().nullish(),
+  featurePhotoId: z.uuid().nullish(),
 });
 
 export const createHiveResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   status: hiveStatusSchema,
 });
 
 // Schema for updating hives
 export const updateHiveSchema = createHiveSchema.partial().extend({
-  id: z.string().uuid(),
+  id: z.uuid(),
 });
 
 export const updateHiveResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
-  apiaryId: z.string().uuid().optional(),
+  apiaryId: z.uuid().optional(),
   notes: z.string().optional(),
-  installationDate: z.string().datetime().or(z.date()).optional(),
+  installationDate: z.iso.datetime().or(z.date()).optional(),
   status: hiveStatusSchema.optional(),
-  positionRow: z.number().int().min(0).optional(),
-  positionCol: z.number().int().min(0).optional(),
+  positionRow: z.int().min(0).optional(),
+  positionCol: z.int().min(0).optional(),
   settings: hiveSettingsSchema,
-  featurePhotoId: z.string().uuid().nullish(),
+  featurePhotoId: z.uuid().nullish(),
   featurePhotoUrl: z.string().nullish(),
-  updatedAt: z.string().datetime(),
+  updatedAt: z.iso.datetime(),
 });
 
 export const hiveScoreSchema = z.object({
@@ -83,19 +83,19 @@ export const hiveScoreSchema = z.object({
 // Lightweight reference to a related hive, used for split provenance links
 // (the mother a hive was split from, and the offspring split off from it).
 export const hiveProvenanceRefSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
   status: hiveStatusSchema,
 });
 
 // Schema for detailed hive response
 export const hiveDetailResponseSchema = createHiveSchema.extend({
-  id: z.string().uuid(),
+  id: z.uuid(),
   status: hiveStatusSchema,
   boxes: z.array(boxSchema),
   hiveScore: hiveScoreSchema.nullish(),
   activeQueen: activeQueenSchema.nullish(),
-  lastInspectionDate: z.string().datetime().or(z.date()).optional(),
+  lastInspectionDate: z.iso.datetime().or(z.date()).optional(),
   settings: hiveSettingsSchema,
   alerts: z.array(alertResponseSchema).default([]),
   featurePhotoUrl: z.string().nullish(),
@@ -103,36 +103,36 @@ export const hiveDetailResponseSchema = createHiveSchema.extend({
   // Apiary-level defaults (including season templates) so the detail page can
   // resolve what this hive inherits without an extra request.
   apiarySettings: apiarySettingsSchema,
-  updatedAt: z.string().datetime(),
+  updatedAt: z.iso.datetime(),
   // Split provenance (optional origin marker, not biological lineage).
-  parentHiveId: z.string().uuid().nullish(),
+  parentHiveId: z.uuid().nullish(),
   parentHive: hiveProvenanceRefSchema.nullish(),
   offspring: z.array(hiveProvenanceRefSchema).default([]),
 });
 
 // Schema for basic hive response
 export const hiveResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
   status: hiveStatusSchema,
-  apiaryId: z.string().uuid().optional(),
+  apiaryId: z.uuid().optional(),
   notes: z.string().optional(),
-  installationDate: z.string().datetime().optional(),
-  lastInspectionDate: z.string().datetime().optional(),
+  installationDate: z.iso.datetime().optional(),
+  lastInspectionDate: z.iso.datetime().optional(),
   lastInspectionStrength: z.number().nullish(),
   lastInspectionTotalFrames: z.number().nullish(),
   lastInspectionOverallScore: z.number().nullish(),
   previousInspectionStrength: z.number().nullish(),
   lastInspectionWarnings: z.array(z.string()).default([]),
   activeQueen: activeQueenSchema.nullish(),
-  positionRow: z.number().int().min(0).optional(),
-  positionCol: z.number().int().min(0).optional(),
+  positionRow: z.int().min(0).optional(),
+  positionCol: z.int().min(0).optional(),
   boxes: z.array(boxSchema).optional(),
   settings: hiveSettingsSchema,
   alerts: z.array(alertResponseSchema).default([]),
-  featurePhotoId: z.string().uuid().nullish(),
+  featurePhotoId: z.uuid().nullish(),
   featurePhotoUrl: z.string().nullish(),
-  updatedAt: z.string().datetime(),
+  updatedAt: z.iso.datetime(),
 });
 
 // Schema for hive response with boxes (for apiary layout)
@@ -142,7 +142,7 @@ export const hiveWithBoxesResponseSchema = hiveResponseSchema.extend({
 
 // Schema for filtering hives
 export const hiveFilterSchema = z.object({
-  apiaryId: z.string().uuid().optional(),
+  apiaryId: z.uuid().optional(),
   status: hiveStatusSchema.optional(),
   includeInactive: z.boolean().optional(),
   includeBoxes: z.boolean().optional(),
@@ -166,29 +166,29 @@ export type HiveFilter = z.infer<typeof hiveFilterSchema>;
 // to the new hive (source queenless). A follow-up reminder is created for the
 // queenless side. See docs/research/colony-split.
 export const splitHiveSchema = z.object({
-  date: z.string().datetime(),
+  date: z.iso.datetime(),
   newHiveName: z.string().min(1),
-  apiaryId: z.string().uuid().optional(), // default = source hive's apiary
+  apiaryId: z.uuid().optional(), // default = source hive's apiary
   framesMoved: z
     .array(
       z.object({
-        boxId: z.string().uuid(), // a BROOD box of the source hive
-        count: z.number().int().min(1),
+        boxId: z.uuid(), // a BROOD box of the source hive
+        count: z.int().min(1),
       }),
     )
     .min(1),
   // Only STAYED_WITH_SOURCE / MOVED_TO_NEW are offered in v1.
   queenDisposition: queenDispositionSchema,
-  queenId: z.string().uuid().optional(), // optional; auto-resolved for MOVED_TO_NEW
+  queenId: z.uuid().optional(), // optional; auto-resolved for MOVED_TO_NEW
   // Days until the follow-up reminder for the queenless side (server default if omitted).
-  followUpDays: z.number().int().min(0).nullish(),
+  followUpDays: z.int().min(0).nullish(),
   notes: z.string().optional(),
 });
 
 export const splitHiveResponseSchema = z.object({
-  splitId: z.string().uuid(),
-  sourceHiveId: z.string().uuid(),
-  newHiveId: z.string().uuid(),
+  splitId: z.uuid(),
+  sourceHiveId: z.uuid(),
+  newHiveId: z.uuid(),
 });
 
 export type SplitHive = z.infer<typeof splitHiveSchema>;

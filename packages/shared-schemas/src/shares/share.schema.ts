@@ -8,16 +8,16 @@ export enum ShareResourceType {
 
 // Create share link request
 export const createShareLinkSchema = z.object({
-  resourceType: z.nativeEnum(ShareResourceType),
-  resourceId: z.string().uuid(),
+  resourceType: z.enum(ShareResourceType),
+  resourceId: z.uuid(),
 });
 
 // Share link response
 export const shareLinkResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   token: z.string(),
-  resourceType: z.nativeEnum(ShareResourceType),
-  resourceId: z.string().uuid(),
+  resourceType: z.enum(ShareResourceType),
+  resourceId: z.uuid(),
   url: z.string(),
   expiresAt: z.string().nullable(),
   createdAt: z.string(),
@@ -56,12 +56,14 @@ export const sharedInspectionResponseSchema = z.object({
       booleanValue: z.boolean().nullable().optional(),
     }),
   ),
-  scores: z.object({
-    overallScore: z.number().nullable(),
-    populationScore: z.number().nullable(),
-    storesScore: z.number().nullable(),
-    queenScore: z.number().nullable(),
-  }).nullable(),
+  scores: z
+    .object({
+      overallScore: z.number().nullable(),
+      populationScore: z.number().nullable(),
+      storesScore: z.number().nullable(),
+      queenScore: z.number().nullable(),
+    })
+    .nullable(),
   notes: z.array(z.string()),
 });
 

@@ -70,11 +70,11 @@ export const miteCountMethodSchema = z.enum([
 // --- Active ingredient ---
 
 export const activeIngredientSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   key: z.string(),
   name: z.string(),
   isBuiltIn: z.boolean(),
-  createdByUserId: z.string().uuid().nullable(),
+  createdByUserId: z.uuid().nullable(),
   createdAt: z.string().or(z.date()),
   updatedAt: z.string().or(z.date()),
 });
@@ -95,7 +95,7 @@ export type CreateActiveIngredientDto = z.infer<
 // --- Composition (one active-ingredient entry of a product) ---
 
 export const productIngredientInputSchema = z.object({
-  activeIngredientId: z.string().uuid(),
+  activeIngredientId: z.uuid(),
   concentration: z.number().positive(),
   concentrationUnit: concentrationUnitSchema,
 });
@@ -104,7 +104,7 @@ export type ProductIngredientInput = z.infer<
 >;
 
 export const productIngredientSchema = productIngredientInputSchema.extend({
-  id: z.string().uuid(),
+  id: z.uuid(),
   activeIngredient: activeIngredientSchema.optional(),
 });
 export type ProductIngredient = z.infer<typeof productIngredientSchema>;
@@ -112,14 +112,14 @@ export type ProductIngredient = z.infer<typeof productIngredientSchema>;
 // --- Treatment product ---
 
 export const treatmentProductSchema = z.object({
-  id: z.string().uuid(),
-  userId: z.string().uuid().nullable(), // null = global built-in
+  id: z.uuid(),
+  userId: z.uuid().nullable(), // null = global built-in
   name: z.string(),
   physicalForm: treatmentPhysicalFormSchema,
   applicationMethod: treatmentApplicationMethodSchema.nullable(),
   defaultUnit: z.string().nullable(),
   density: z.number().positive().nullable(),
-  withdrawalPeriodDays: z.number().int().nonnegative().nullable(),
+  withdrawalPeriodDays: z.int().nonnegative().nullable(),
   isBuiltIn: z.boolean(),
   ingredients: z.array(productIngredientSchema),
   createdAt: z.string().or(z.date()),
@@ -136,7 +136,7 @@ export const createTreatmentProductSchema = z.object({
   applicationMethod: treatmentApplicationMethodSchema.optional().nullable(),
   defaultUnit: z.string().max(16).optional().nullable(),
   density: z.number().positive().optional().nullable(),
-  withdrawalPeriodDays: z.number().int().nonnegative().optional().nullable(),
+  withdrawalPeriodDays: z.int().nonnegative().optional().nullable(),
   ingredients: z.array(productIngredientInputSchema).default([]),
 });
 export type CreateTreatmentProductDto = z.infer<
@@ -152,12 +152,12 @@ export type UpdateTreatmentProductDto = z.infer<
 // --- Per-colony applied active-ingredient totals (reporting) ---
 
 export const appliedIngredientTotalSchema = z.object({
-  activeIngredientId: z.string().uuid(),
+  activeIngredientId: z.uuid(),
   key: z.string(),
   name: z.string(),
   totalMg: z.number(), // normalized mass applied over the period
   /** Number of treatment records that could not be normalized (missing density/incompatible units). */
-  incompleteCount: z.number().int().nonnegative().default(0),
+  incompleteCount: z.int().nonnegative().default(0),
 });
 export type AppliedIngredientTotal = z.infer<
   typeof appliedIngredientTotalSchema

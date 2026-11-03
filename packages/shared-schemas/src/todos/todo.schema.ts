@@ -6,7 +6,7 @@ export const createTodoSchema = z.object({
   title: z.string().min(1),
   description: z.string().nullish(),
   dueDate: isoDateTime().nullish(),
-  hiveId: z.string().uuid().nullish(),
+  hiveId: z.uuid().nullish(),
   completed: z.boolean().optional(),
 });
 
@@ -15,15 +15,15 @@ export const updateTodoSchema = createTodoSchema.partial();
 
 // Schema for todo response
 export const todoResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   title: z.string(),
   description: z.string().nullish(),
-  dueDate: z.string().datetime().nullish(),
+  dueDate: z.iso.datetime().nullish(),
   completed: z.boolean(),
-  hiveId: z.string().uuid().nullish(),
+  hiveId: z.uuid().nullish(),
   hiveName: z.string().nullish(),
-  apiaryId: z.string().uuid(),
-  createdAt: z.string().datetime(),
+  apiaryId: z.uuid(),
+  createdAt: z.iso.datetime(),
 });
 
 export type CreateTodo = z.infer<typeof createTodoSchema>;

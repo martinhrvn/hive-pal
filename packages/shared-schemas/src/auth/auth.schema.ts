@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Login schema
 export const loginSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(6),
 });
 
@@ -16,7 +16,7 @@ export const registerSchema = loginSchema.extend({
 // User DTO schema
 export const userSchema = z.object({
   id: z.string(),
-  email: z.string().email(),
+  email: z.email(),
   name: z.string().nullable(),
   role: z.enum(['USER', 'ADMIN']).nullable(),
   passwordChangeRequired: z.boolean(),
@@ -30,7 +30,7 @@ export const authResponseSchema = z.object({
 
 // Forgot password schema
 export const forgotPasswordSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
 });
 
 // Reset password schema

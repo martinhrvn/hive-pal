@@ -167,7 +167,7 @@ const BUILTIN_FEED_TYPE_IDS = BUILTIN_FEED_TYPES.map(f => f.id) as [
  * feed type. Listing the built-in ids lets API clients send one directly.
  */
 export const feedTypeIdSchema = z
-  .union([z.enum(BUILTIN_FEED_TYPE_IDS), z.string().uuid()])
+  .union([z.enum(BUILTIN_FEED_TYPE_IDS), z.uuid()])
   .describe(
     `Built-in feed type id (${BUILTIN_FEED_TYPE_IDS.join(', ')}) or the id of a user-defined feed type.`,
   );
@@ -207,7 +207,7 @@ export const legacyFeedToBuiltinId = (
 // ---------------------------------------------------------------------------
 
 export const userFeedTypeSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   label: z.string().min(1).max(80),
   form: feedFormSchema,
   /** g/ml; null for solid feeds (weight-only entry). */

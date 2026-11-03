@@ -5,4 +5,4 @@ import { z } from 'zod';
  * (2026-10-23T08:00:00+02:00) as well as Z, since clients working in local
  * time send offsets; zod's default `.datetime()` only accepts Z.
  */
-export const isoDateTime = () => z.string().datetime({ offset: true });
+export const isoDateTime = () => z.iso.datetime({ offset: true });

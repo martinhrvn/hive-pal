@@ -6,7 +6,7 @@ import { actionResponseSchema } from '../actions/action.schema';
 export const calendarFilterSchema = z.object({
   startDate: z.string().optional(),
   endDate: z.string().optional(),
-  hiveId: z.string().uuid().optional(),
+  hiveId: z.uuid().optional(),
 });
 
 // Calendar event schema
@@ -21,8 +21,8 @@ export const calendarResponseSchema = z.array(calendarEventSchema);
 
 // Subscription URL response schema
 export const subscriptionUrlResponseSchema = z.object({
-  subscriptionUrl: z.string().url(),
-  expiresAt: z.string().datetime(),
+  subscriptionUrl: z.url(),
+  expiresAt: z.iso.datetime(),
 });
 
 // Export types

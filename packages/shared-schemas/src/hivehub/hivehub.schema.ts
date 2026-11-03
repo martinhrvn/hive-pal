@@ -17,7 +17,7 @@ export const hiveHubHiveIndexSchema = z.coerce
   .min(1)
   .max(HIVEHUB_MAX_HIVES);
 
-const indexKeyedMap = <T extends z.ZodTypeAny>(value: T) =>
+const indexKeyedMap = <T extends z.ZodType>(value: T) =>
   z.record(z.string().regex(/^\d{1,2}$/), value).refine(
     map =>
       Object.keys(map).every(key => {
@@ -53,8 +53,8 @@ export const hiveHubTempcoSourceSchema = z.enum([
 
 export const hiveHubHiveScaleCalibrationSchema = z.object({
   index: hiveHubHiveIndexSchema,
-  scale: z.number().int().min(0).optional(),
-  offset: z.number().int().optional(),
+  scale: z.int().min(0).optional(),
+  offset: z.int().optional(),
   factor: z
     .number()
     .refine(value => value !== 0, 'factor must not be zero')
@@ -64,10 +64,10 @@ export const hiveHubHiveScaleCalibrationSchema = z.object({
 
 export const hiveHubConfigPatchSchema = z
   .object({
-    send_interval_seconds: z.number().int().min(60).max(86400),
-    scale1_offset: z.number().int(),
+    send_interval_seconds: z.int().min(60).max(86400),
+    scale1_offset: z.int(),
     scale1_factor: z.number().refine(v => v !== 0, 'factor must not be zero'),
-    scale2_offset: z.number().int(),
+    scale2_offset: z.int(),
     scale2_factor: z.number().refine(v => v !== 0, 'factor must not be zero'),
     hive_scales: z
       .array(hiveHubHiveScaleCalibrationSchema)
@@ -78,14 +78,14 @@ export const hiveHubConfigPatchSchema = z
     scale1_tempco_kg_per_c: z.number(),
     scale2_tempco_kg_per_c: z.number(),
     beecounter_night_mode_enabled: z.boolean(),
-    beecounter_night_start_minute: z.number().int().min(0).max(1439),
-    beecounter_night_end_minute: z.number().int().min(0).max(1439),
-    beecounter_night_max_traffic: z.number().int().min(0),
+    beecounter_night_start_minute: z.int().min(0).max(1439),
+    beecounter_night_end_minute: z.int().min(0).max(1439),
+    beecounter_night_max_traffic: z.int().min(0),
     timezone: z.string().max(64),
     beecounter_bank1_enabled: z.boolean(),
     beecounter_bank2_enabled: z.boolean(),
     beecounter_bank3_enabled: z.boolean(),
-    inspection_timeout_minutes: z.number().int().min(1).max(1440),
+    inspection_timeout_minutes: z.int().min(1).max(1440),
   })
   .partial()
   .refine(
@@ -95,14 +95,16 @@ export const hiveHubConfigPatchSchema = z
         patch.beecounter_bank2_enabled === false &&
         patch.beecounter_bank3_enabled === false
       ),
-    { message: 'At least one HiveTraffic emitter bank must stay on' },
+    {
+      error: 'At least one HiveTraffic emitter bank must stay on',
+    },
   );
 
 export const hiveHubTempCompensationFitSchema = z.object({
   scale: hiveHubHiveIndexSchema,
-  lookback_days: z.number().int().min(1).max(90).optional(),
-  start_at: z.string().datetime({ offset: true }).optional(),
-  end_at: z.string().datetime({ offset: true }).optional(),
+  lookback_days: z.int().min(1).max(90).optional(),
+  start_at: z.iso.datetime({ offset: true }).optional(),
+  end_at: z.iso.datetime({ offset: true }).optional(),
   temp_source: hiveHubTempcoSourceSchema.optional(),
   calibration_mode_only: z.boolean().optional(),
   apply: z.boolean().optional(),
@@ -110,12 +112,12 @@ export const hiveHubTempCompensationFitSchema = z.object({
 });
 
 export const hiveHubCalibrationModeStartSchema = z.object({
-  interval_seconds: z.number().int().min(1).max(3600).optional(),
-  timeout_seconds: z.number().int().min(1).max(86400).optional(),
+  interval_seconds: z.int().min(1).max(3600).optional(),
+  timeout_seconds: z.int().min(1).max(86400).optional(),
 });
 
 export const hiveHubShareDeviceSchema = z.object({
-  email: z.string().trim().email(),
+  email: z.string().trim().pipe(z.email()),
   role: z.enum(['admin', 'viewer']),
 });
 
@@ -130,12 +132,12 @@ export const hiveHubMeasurementQuerySchema = z.object({
 export const hiveHubInspectionStartSchema = z.object({
   hives: z.array(hiveHubHiveIndexSchema).max(HIVEHUB_MAX_HIVES).optional(),
   note: z.string().max(1000).optional(),
-  started_at: z.string().datetime({ offset: true }).optional(),
+  started_at: z.iso.datetime({ offset: true }).optional(),
 });
 
 export const hiveHubInspectionStopSchema = z.object({
   note: z.string().max(1000).optional(),
-  ended_at: z.string().datetime({ offset: true }).optional(),
+  ended_at: z.iso.datetime({ offset: true }).optional(),
 });
 
 export const hiveHubInspectionUpdateSchema = z.object({
@@ -151,13 +153,13 @@ export const hiveHubRecordingRequestSchema = z.object({
 
 export const hiveHubMeasurementDeleteSchema = z
   .object({
-    start_at: z.string().datetime({ offset: true }),
-    end_at: z.string().datetime({ offset: true }),
+    start_at: z.iso.datetime({ offset: true }),
+    end_at: z.iso.datetime({ offset: true }),
     claim_code: z.string().trim().min(4).max(128),
   })
   .refine(body => new Date(body.end_at) >= new Date(body.start_at), {
-    message: 'end_at must be at or after start_at',
     path: ['end_at'],
+    error: 'end_at must be at or after start_at',
   });
 
 export const hiveHubAlertSeveritySchema = z.enum([

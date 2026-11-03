@@ -19,7 +19,7 @@ export type FeedbackStatus =
 
 // Create feedback schema
 export const createFeedbackSchema = z.object({
-  email: z.string().email('Invalid email address').optional().or(z.literal('')),
+  email: z.email('Invalid email address').optional().or(z.literal('')),
   type: z.enum([FeedbackType.BUG, FeedbackType.SUGGESTION, FeedbackType.OTHER]),
   subject: z.string().min(3, 'Subject must be at least 3 characters'),
   message: z.string().min(10, 'Message must be at least 10 characters'),
@@ -60,7 +60,7 @@ export const feedbackFiltersSchema = z.object({
     .string()
     .transform(val => parseInt(val, 10))
     .refine(val => val >= 0, {
-      message: 'Offset must be non-negative',
+      error: 'Offset must be non-negative',
     })
     .optional(),
 });

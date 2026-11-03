@@ -11,7 +11,7 @@ import {
 const MAX_QUEEN_AGE_YEARS = 10;
 
 const text = (max = 200) => z.string().trim().max(max);
-const rating = z.number().int().min(1).max(5).nullable();
+const rating = z.int().min(1).max(5).nullable();
 
 export const createQueenFormSchema = (
   t: TFunction,
@@ -21,7 +21,7 @@ export const createQueenFormSchema = (
     .object({
       hiveId: z.string(),
       name: text(),
-      year: z.number().int().nullable(),
+      year: z.int().nullable(),
       color: z.string(),
       marking: text(),
       status: queenStatusSchema,

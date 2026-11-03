@@ -67,7 +67,7 @@ describe('safeJsonParse (Backend)', () => {
         exp: z.number(),
         iat: z.number(),
         sub: z.string(),
-        email: z.string().email(),
+        email: z.email(),
       });
       const input = JSON.stringify({
         exp: 1234567890,
@@ -161,7 +161,7 @@ describe('safeJsonParse (Backend)', () => {
 
     it('should return null and log warning for missing required fields', () => {
       const schema = z.object({
-        email: z.string().email(),
+        email: z.email(),
         age: z.number(),
       });
       const input = JSON.stringify({ email: 'user@example.com' });
@@ -191,7 +191,7 @@ describe('safeJsonParse (Backend)', () => {
 
     it('should include Zod validation errors in warning', () => {
       const schema = z.object({
-        email: z.string().email(),
+        email: z.email(),
       });
       const input = JSON.stringify({ email: 'not-an-email' });
       const result = safeJsonParse(

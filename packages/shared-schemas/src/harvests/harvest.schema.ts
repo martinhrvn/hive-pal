@@ -3,8 +3,8 @@ import { HarvestStatus } from './status';
 
 // Harvest Hive schema
 export const harvestHiveSchema = z.object({
-  hiveId: z.string().uuid(),
-  framesTaken: z.number().int().min(1),
+  hiveId: z.uuid(),
+  framesTaken: z.int().min(1),
   honeyAmount: z.number().min(0).optional(),
   honeyAmountUnit: z.string().default('kg').optional(),
   honeyPercentage: z.number().min(0).max(100).optional(),
@@ -12,14 +12,14 @@ export const harvestHiveSchema = z.object({
 
 // Create Harvest schema
 export const createHarvestSchema = z.object({
-  date: z.string().datetime(),
+  date: z.iso.datetime(),
   notes: z.string().optional(),
   harvestHives: z.array(harvestHiveSchema).min(1),
 });
 
 // Update Harvest schema
 export const updateHarvestSchema = z.object({
-  date: z.string().datetime().optional(),
+  date: z.iso.datetime().optional(),
   notes: z.string().optional(),
   totalWeight: z.number().min(0).optional(),
   totalWeightUnit: z.string().default('kg').optional(),
@@ -34,23 +34,23 @@ export const setHarvestWeightSchema = z.object({
 
 // Harvest Response schema
 export const harvestResponseSchema = z.object({
-  id: z.string().uuid(),
-  apiaryId: z.string().uuid(),
+  id: z.uuid(),
+  apiaryId: z.uuid(),
   date: z.string(),
-  status: z.nativeEnum(HarvestStatus),
+  status: z.enum(HarvestStatus),
   totalWeight: z.number().optional(),
   totalWeightUnit: z.string().optional(),
   notes: z.string().optional(),
   harvestHives: z.array(
     z.object({
-      id: z.string().uuid(),
-      hiveId: z.string().uuid(),
+      id: z.uuid(),
+      hiveId: z.uuid(),
       hiveName: z.string(),
       framesTaken: z.number(),
       honeyAmount: z.number().optional(),
       honeyAmountUnit: z.string().optional(),
       honeyPercentage: z.number().optional(),
-    })
+    }),
   ),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -58,10 +58,10 @@ export const harvestResponseSchema = z.object({
 
 // Harvest List Response schema
 export const harvestListResponseSchema = z.object({
-  id: z.string().uuid(),
-  apiaryId: z.string().uuid(),
+  id: z.uuid(),
+  apiaryId: z.uuid(),
   date: z.string(),
-  status: z.nativeEnum(HarvestStatus),
+  status: z.enum(HarvestStatus),
   totalWeight: z.number().optional(),
   totalWeightUnit: z.string().optional(),
   hiveCount: z.number(),
@@ -71,8 +71,8 @@ export const harvestListResponseSchema = z.object({
 
 // Harvest Filter schema
 export const harvestFilterSchema = z.object({
-  apiaryId: z.string().uuid().optional(),
-  status: z.nativeEnum(HarvestStatus).optional(),
+  apiaryId: z.uuid().optional(),
+  status: z.enum(HarvestStatus).optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
 });

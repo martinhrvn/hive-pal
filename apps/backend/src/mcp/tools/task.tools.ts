@@ -39,7 +39,7 @@ export function registerTaskTools(
         'List the beekeeping todo list, open items first, ordered by due date.',
       inputSchema: {
         apiaryId: apiaryIdArg,
-        hiveId: z.string().uuid().optional(),
+        hiveId: z.uuid().optional(),
         completed: z.boolean().optional(),
       },
       annotations: READ_ONLY,
@@ -61,7 +61,7 @@ export function registerTaskTools(
         'List hive alerts raised by Hive Pal, such as a queenless colony, an overdue treatment or low stores.',
       inputSchema: {
         apiaryId: apiaryIdArg,
-        hiveId: z.string().uuid().optional(),
+        hiveId: z.uuid().optional(),
         status: alertStatusSchema.optional(),
         severity: alertSeveritySchema.optional(),
       },
@@ -91,7 +91,6 @@ export function registerTaskTools(
       inputSchema: {
         ...createTodoSchema.shape,
         apiaryId: z
-          .string()
           .uuid()
           .optional()
           .describe('Apiary for a todo not tied to a hive.'),
@@ -111,7 +110,7 @@ export function registerTaskTools(
       title: 'Update todo',
       description:
         'Change a todo item, e.g. mark it done with completed: true or move its due date.',
-      inputSchema: { todoId: z.string().uuid(), ...updateTodoSchema.shape },
+      inputSchema: { todoId: z.uuid(), ...updateTodoSchema.shape },
       annotations: { ...WRITE, idempotentHint: true },
     },
     async ({ todoId, ...changes }) => {
@@ -127,7 +126,7 @@ export function registerTaskTools(
       title: 'Dismiss alert',
       description:
         'Dismiss an alert the user has dealt with or wants to ignore. Confirm with the user first.',
-      inputSchema: { alertId: z.string().uuid() },
+      inputSchema: { alertId: z.uuid() },
       annotations: { ...WRITE, idempotentHint: true },
     },
     async ({ alertId }) => {

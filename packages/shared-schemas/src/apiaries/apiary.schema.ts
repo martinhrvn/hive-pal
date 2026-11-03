@@ -28,7 +28,7 @@ export const createApiarySchema = z.object({
   location: z.string().nullish(),
   latitude: z.number().nullish(),
   longitude: z.number().nullish(),
-  featurePhotoId: z.string().uuid().nullish(),
+  featurePhotoId: z.uuid().nullish(),
   settings: apiarySettingsSchema,
 });
 
@@ -49,7 +49,7 @@ export type ApiaryRole = z.infer<typeof apiaryRoleEnum>;
 
 // Schema for apiary response
 export const apiaryResponseSchema = createApiarySchema.extend({
-  id: z.string().uuid(),
+  id: z.uuid(),
   featurePhotoUrl: z.string().nullish(),
   role: apiaryRoleEnum.optional(),
   isShared: z.boolean().optional(),
@@ -59,11 +59,11 @@ export const apiaryResponseSchema = createApiarySchema.extend({
 
 // Schema for apiary map point (admin view)
 export const apiaryMapPointSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
   latitude: z.number(),
   longitude: z.number(),
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   hiveCount: z.number(),
 });
 
@@ -81,7 +81,7 @@ export type ApiaryMapPoint = z.infer<typeof apiaryMapPointSchema>;
 
 /** Response of `POST /apiaries/:id/seasons/apply`. */
 export const applyApiarySeasonsResponseSchema = z.object({
-  updated: z.number().int().nonnegative(),
+  updated: z.int().nonnegative(),
 });
 export type ApplyApiarySeasonsResponse = z.infer<
   typeof applyApiarySeasonsResponseSchema

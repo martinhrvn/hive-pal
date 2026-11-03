@@ -82,7 +82,7 @@ describe('safeJsonParse (Frontend)', () => {
         exp: z.number(),
         iat: z.number(),
         sub: z.string(),
-        email: z.string().email(),
+        email: z.email(),
       });
       const input = JSON.stringify({
         exp: 1234567890,
@@ -212,7 +212,7 @@ describe('safeJsonParse (Frontend)', () => {
 
     it('should return null and console.warn for missing required fields', () => {
       const schema = z.object({
-        email: z.string().email(),
+        email: z.email(),
         age: z.number(),
       });
       const input = JSON.stringify({ email: 'user@example.com' }); // missing age
@@ -225,7 +225,7 @@ describe('safeJsonParse (Frontend)', () => {
 
     it('should return null and console.warn for invalid email format', () => {
       const schema = z.object({
-        email: z.string().email(),
+        email: z.email(),
       });
       const input = JSON.stringify({ email: 'not-an-email' });
       const result = safeJsonParse(input, schema, 'email validation');
@@ -306,7 +306,7 @@ describe('safeJsonParse (Frontend)', () => {
         exp: z.number(),
         iat: z.number(),
         sub: z.string(),
-        email: z.string().email(),
+        email: z.email(),
       });
       const input = JSON.stringify({
         exp: 1234567890,
@@ -414,7 +414,7 @@ describe('safeJsonParse (Frontend)', () => {
         exp: z.number(),
         iat: z.number(),
         sub: z.string(),
-        email: z.string().email(),
+        email: z.email(),
       });
 
       // Simulate a real JWT payload
