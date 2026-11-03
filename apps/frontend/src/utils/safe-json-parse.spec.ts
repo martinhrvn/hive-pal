@@ -128,7 +128,7 @@ describe('safeJsonParse (Frontend)', () => {
         z.object({
           id: z.number(),
           tags: z.array(z.string()),
-          metadata: z.record(z.unknown()),
+          metadata: z.record(z.string(), z.unknown()),
         }),
       );
       const input = JSON.stringify([
