@@ -38,19 +38,19 @@ echo "Database is ready!"
 
 echo "Running database migrations..."
 cd /app/apps/backend/
-./node_modules/.bin/prisma migrate deploy --schema=./prisma/schema.prisma
+/app/node_modules/.bin/prisma migrate deploy --schema=./prisma/schema.prisma
 cd /app
 
 # Seed/promote the admin user from ADMIN_EMAIL/ADMIN_PASSWORD. Idempotent, and
 # a no-op when those vars are unset. Non-fatal: a seeding hiccup must not block
 # the app from starting.
 echo "Seeding admin user..."
-node /app/apps/backend/dist/scripts/seed-admin.js || echo "Admin seeding failed (continuing startup)"
+node /app/apps/backend/dist/bundle/seed-admin.js || echo "Admin seeding failed (continuing startup)"
 
 # Demo data for the admin user when SEED_DEMO_DATA=true (passed through by
 # docker-compose.preview.yml). Skips users that already have hives.
 echo "Seeding demo data..."
-node /app/apps/backend/dist/scripts/seed-demo.js || echo "Demo data seeding failed (continuing startup)"
+node /app/apps/backend/dist/bundle/seed-demo.js || echo "Demo data seeding failed (continuing startup)"
 
 echo "Starting application..."
 exec "$@"

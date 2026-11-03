@@ -2,7 +2,6 @@ import './instrument';
 import { join } from 'path';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
 import { setup } from './setup';
 import { CustomLoggerService } from './logger/logger.service';
 import { createPrerenderFallback } from './prerender-fallback.middleware';
@@ -27,14 +26,6 @@ async function bootstrap() {
     // OAuth / MCP discovery documents live at the origin root.
     exclude: ['env.js', ...WELL_KNOWN_PATHS],
   });
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true, // Strip properties not in the DTO
-      transform: true, // Transform payloads to DTO instances
-      forbidNonWhitelisted: true, // Throw errors if unknown properties are present
-    }),
-  );
-
   const loggerPromise = app.resolve(CustomLoggerService);
   const loggerInstance = await loggerPromise;
   loggerInstance.setContext('Bootstrap');
