@@ -203,11 +203,7 @@ screen.
 `getting-started` skips the mobile pass: arranging hives on the layout is
 native drag and drop, which needs a mouse.
 
-`seasons` is a feature summary for a release: it deliberately has no intro or
-outro card, so the recording opens and closes on the app. Add the cards once the
-release framing is decided.
-
-It also needs a build with the seasons feature. Until that branch is on preview,
+`seasons` needs a build with the seasons feature. Until that branch is on preview,
 record it against the local stack; `BASE_URL` must be in the shell, since the
 guides config does not read it from `.env.local`:
 

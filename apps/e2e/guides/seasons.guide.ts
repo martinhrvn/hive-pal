@@ -6,9 +6,6 @@ import {
 } from 'page-objects';
 import { expect, test } from './guide.fixture';
 
-// A feature summary for the seasons release: no intro or outro cards on
-// purpose, so the video opens and closes on the app. The cards can be added
-// once the release framing is decided.
 test.describe('Guides', { tag: ['@guide'] }, () => {
   test('Seasons: one schedule for the apiary and its hives', async ({
     page,
@@ -20,8 +17,8 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
     const hive = new HiveDetailPage(page);
     const seasons = new SeasonsEditorPageObject(page);
 
-    // Recording starts at the first cue below, so the Seasons tab is already
-    // open on the video's first frame.
+    // The Seasons tab is opened before the intro card, so it is on screen as
+    // soon as the card makes way.
     await apiary.goto(demo.user.apiaryId);
     // Recording defaults to preview, which has no seasons until this branch is
     // deployed. Say so instead of failing on a click timeout.
@@ -33,6 +30,10 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
     await expect(seasons.yearStrip).toBeVisible();
 
     // -- Show: the apiary's year ---------------------------------------------
+    await g.intro('Seasons', 'One schedule for the apiary and its hives', {
+      voiceover:
+        'Welcome to Hive Pal. In this guide, we’ll set up seasons, from a busy spring to a winter with no inspections.',
+    });
     await g.say('Plan the year once, and every hive follows it', {
       voiceover:
         'Hive Pal seasons let you plan the whole year once, and every hive in the apiary follows the same plan.',
@@ -337,5 +338,9 @@ test.describe('Guides', { tag: ['@guide'] }, () => {
           'One schedule for the apiary, and a copy only where you need it. That is seasons in Hive Pal.',
       },
     );
+    await g.say('That’s it. Happy beekeeping!', {
+      voiceover: 'That’s it. Happy beekeeping!',
+    });
+    await g.outro();
   });
 });
