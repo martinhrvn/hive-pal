@@ -37,8 +37,10 @@ RUN pnpm install --prod --frozen-lockfile --ignore-scripts \
  # The Prisma schema targets PostgreSQL only.
  && find node_modules -path '*/@prisma/client/runtime/query_compiler_*' ! -name '*postgresql*' -delete \
  # Alpine uses musl; drop the glibc builds that pnpm installs alongside.
- && find node_modules/.pnpm -maxdepth 1 -type d -name '*-linux-x64-gnu*' -exec rm -rf {} + \
- && rm -rf node_modules/.pnpm/@img+sharp-libvips-linux-x64@* node_modules/.pnpm/@img+sharp-linux-x64@* \
+ && find node_modules/.pnpm -maxdepth 1 -type d -name '*-linux-*-gnu*' -exec rm -rf {} + \
+ && find node_modules/.pnpm -maxdepth 1 -type d \
+      \( -name '@img+sharp-libvips-linux-*' -o -name '@img+sharp-linux-*' \) ! -name '*musl*' \
+      -exec rm -rf {} + \
  # These are build-time-only dependencies of Sentry and are never loaded.
  && rm -rf node_modules/.pnpm/@sentry+bundler-plugins@* node_modules/.pnpm/sentry@* \
  && rm -rf node_modules/.pnpm/oxc-parser@* node_modules/.pnpm/@oxc-parser+* \
