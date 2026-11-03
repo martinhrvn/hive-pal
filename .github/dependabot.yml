@@ -9,9 +9,9 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
-    # Every PR gets a full Coolify preview stack on the prod host, so batch
-    # minor/patch bumps into one weekly PR. Majors still arrive one by one.
-    groups:
-      npm-deps:
-        patterns: ["*"]
-        update-types: ["minor", "patch"]
+    ignore:
+      # TypeScript 7 ships no compiler API yet: typescript-eslint 8.72 refuses
+      # it and tsup's dts build needs the API. Stay on 6.x until the toolchain
+      # supports 7 (tracked in #299).
+      - dependency-name: "typescript"
+        versions: [">=7.0.0"]
