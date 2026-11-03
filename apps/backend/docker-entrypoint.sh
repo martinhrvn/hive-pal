@@ -38,7 +38,7 @@ echo "Database is ready!"
 
 echo "Running database migrations..."
 cd /app/apps/backend/
-npx prisma migrate deploy --schema=./prisma/schema.prisma
+./node_modules/.bin/prisma migrate deploy --schema=./prisma/schema.prisma
 cd /app
 
 # Seed/promote the admin user from ADMIN_EMAIL/ADMIN_PASSWORD. Idempotent, and

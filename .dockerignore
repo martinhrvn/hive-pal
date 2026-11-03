@@ -1,4 +1,34 @@
+# Dependencies are installed inside the image
 **/node_modules/
-.git
-.DS_Store
-dist
+
+# Build output is produced inside the image
+**/dist/
+**/dist-ssr/
+**/.turbo/
+**/coverage/
+**/test-results/
+**/playwright-report/
+**/trace/
+
+# Version control and local tooling
+.git/
+.gitignore
+.idea/
+.vscode/
+.claude/
+.agents/
+.dsh/
+.devenv/
+.devenv.flake.nix
+.direnv/
+**/.DS_Store
+*.log
+
+# Local environment files (configuration is provided at runtime)
+.env
+.env.*
+!.env.example
+
+# Local-only artifacts
+screenshots/
+repro/
