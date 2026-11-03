@@ -20,7 +20,7 @@
     "zod": "catalog:zod"
   },
   "devDependencies": {
-    "tsup": "^8.5.1",
+    "tsup": "^9.0.0",
     "typescript": "catalog:"
   }
 }
