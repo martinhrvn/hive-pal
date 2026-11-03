@@ -9,6 +9,15 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    # Bundle all minor and patch bumps into one PR; major updates still get
+    # their own PR so they can be reviewed and tested individually.
+    groups:
+      npm-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       # TypeScript 7 ships no compiler API yet: typescript-eslint 8.72 refuses
       # it and tsup's dts build needs the API. Stay on 6.x until the toolchain
