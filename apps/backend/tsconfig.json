@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "moduleResolution": "node",
+    // TypeScript 6 deprecates node10 resolution; keep the current behaviour.
+    "moduleResolution": "node10",
+    "ignoreDeprecations": "6.0",
     "declaration": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -11,9 +13,13 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
+    // TypeScript 6 defaults every strict flag and an empty `types` list.
+    // Keep the flags this project has always run with.
+    "strict": false,
+    "types": ["node", "multer"],
+    "noUncheckedSideEffectImports": false,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
