@@ -43,6 +43,8 @@ jobs:
         run: pnpm --filter backend exec prisma generate
       - name: Run build
         run: npx turbo build --filter=backend
+      - name: Bundle backend
+        run: pnpm --filter backend bundle
       - name: Run linter
         run: pnpm --filter backend lint
       - name: Run backend tests
@@ -54,6 +56,25 @@ jobs:
           name: backend-test-results
           path: apps/backend/test-results/
           retention-days: 7
+
+  runtime-deps:
+    name: Runtime dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - name: Check runtime lockfile
+        working-directory: docker/runtime
+        run: pnpm install --frozen-lockfile --ignore-workspace --ignore-scripts
 
   frontend-tests:
     name: Frontend Tests
