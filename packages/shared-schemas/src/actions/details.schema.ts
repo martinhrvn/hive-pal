@@ -77,7 +77,7 @@ export const treatmentActionDetailsSchema = z.object({
   product: z.string(),
   // Optional link to a catalog product (built-in or the user's custom). When
   // set, its composition + quantity/unit drive per-colony ingredient totals.
-  productId: z.string().uuid().optional().nullable(),
+  productId: z.uuid().optional().nullable(),
   quantity: z.number().positive().optional().nullable(),
   unit: z.string(),
   duration: z.string().optional(),
@@ -88,12 +88,12 @@ export const treatmentActionDetailsSchema = z.object({
     .nullable(),
   miteCountBefore: z.number().nonnegative().optional().nullable(),
   miteCountAfter: z.number().nonnegative().optional().nullable(),
-  miteSampleSize: z.number().int().positive().optional().nullable(),
+  miteSampleSize: z.int().positive().optional().nullable(),
 });
 
 export const frameActionDetailsSchema = z.object({
   type: z.literal(ActionType.FRAME),
-  quantity: z.number().int(),
+  quantity: z.int(),
 });
 
 export const harvestActionDetailsSchema = z.object({
@@ -115,7 +115,7 @@ export const boxConfigurationActionDetailsSchema = z.object({
     .array(
       z.object({
         type: boxTypeSchema,
-        frameCount: z.number().int().min(0),
+        frameCount: z.int().min(0),
       }),
     )
     .optional(),
@@ -160,10 +160,10 @@ export const queenDispositionSchema = z.enum([
 // responses; they are optional on input.
 export const splitActionDetailsSchema = z.object({
   type: z.literal(ActionType.SPLIT),
-  splitId: z.string().uuid().optional(),
+  splitId: z.uuid().optional(),
   role: splitRoleSchema.optional(),
-  counterpartHiveId: z.string().uuid().nullish(),
-  framesMoved: z.number().int().min(0),
+  counterpartHiveId: z.uuid().nullish(),
+  framesMoved: z.int().min(0),
   queenDisposition: queenDispositionSchema,
 });
 

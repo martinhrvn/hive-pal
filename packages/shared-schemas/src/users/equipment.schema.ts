@@ -20,13 +20,13 @@ export const equipmentSettingsSchema = z.object({
   trackFrames: z.boolean(),
   trackQueenExcluders: z.boolean(),
   trackFeeders: z.boolean(),
-  deepBoxesPerHive: z.number().int().min(0),
-  shallowBoxesPerHive: z.number().int().min(0),
-  framesPerHive: z.number().int().min(0),
-  bottomsPerHive: z.number().int().min(0),
-  coversPerHive: z.number().int().min(0),
-  queenExcludersPerHive: z.number().int().min(0),
-  feedersPerHive: z.number().int().min(0),
+  deepBoxesPerHive: z.int().min(0),
+  shallowBoxesPerHive: z.int().min(0),
+  framesPerHive: z.int().min(0),
+  bottomsPerHive: z.int().min(0),
+  coversPerHive: z.int().min(0),
+  queenExcludersPerHive: z.int().min(0),
+  feedersPerHive: z.int().min(0),
   targetMultiplier: z.number().min(1),
   trackSugar: z.boolean(),
   sugarPerHive: z.number().min(0),
@@ -36,20 +36,20 @@ export const equipmentSettingsSchema = z.object({
 
 // Inventory schema
 export const inventorySchema = z.object({
-  extraDeepBoxes: z.number().int().min(0),
-  extraShallowBoxes: z.number().int().min(0),
-  extraBottoms: z.number().int().min(0),
-  extraCovers: z.number().int().min(0),
-  extraFrames: z.number().int().min(0),
-  extraQueenExcluders: z.number().int().min(0),
-  extraFeeders: z.number().int().min(0),
-  requiredDeepBoxesOverride: z.number().int().min(0).nullable().optional(),
-  requiredShallowBoxesOverride: z.number().int().min(0).nullable().optional(),
-  requiredBottomsOverride: z.number().int().min(0).nullable().optional(),
-  requiredCoversOverride: z.number().int().min(0).nullable().optional(),
-  requiredFramesOverride: z.number().int().min(0).nullable().optional(),
-  requiredQueenExcludersOverride: z.number().int().min(0).nullable().optional(),
-  requiredFeedersOverride: z.number().int().min(0).nullable().optional(),
+  extraDeepBoxes: z.int().min(0),
+  extraShallowBoxes: z.int().min(0),
+  extraBottoms: z.int().min(0),
+  extraCovers: z.int().min(0),
+  extraFrames: z.int().min(0),
+  extraQueenExcluders: z.int().min(0),
+  extraFeeders: z.int().min(0),
+  requiredDeepBoxesOverride: z.int().min(0).nullable().optional(),
+  requiredShallowBoxesOverride: z.int().min(0).nullable().optional(),
+  requiredBottomsOverride: z.int().min(0).nullable().optional(),
+  requiredCoversOverride: z.int().min(0).nullable().optional(),
+  requiredFramesOverride: z.int().min(0).nullable().optional(),
+  requiredQueenExcludersOverride: z.int().min(0).nullable().optional(),
+  requiredFeedersOverride: z.int().min(0).nullable().optional(),
   extraSugarKg: z.number().min(0).optional(),
   requiredSugarKgOverride: z.number().min(0).nullable().optional(),
   extraSyrupLiters: z.number().min(0).optional(),
@@ -74,7 +74,7 @@ export const createCustomEquipmentTypeSchema = z.object({
   unit: z.string(),
   category: z.string().default('custom'),
   perHiveRatio: z.number().min(0).nullable().optional(),
-  displayOrder: z.number().int().min(0).optional().default(999),
+  displayOrder: z.int().min(0).optional().default(999),
 });
 
 // Consumable item schema
@@ -235,7 +235,9 @@ export type EquipmentCounts = z.infer<typeof equipmentCountsSchema>;
 export type EquipmentSettings = z.infer<typeof equipmentSettingsSchema>;
 export type Inventory = z.infer<typeof inventorySchema>;
 export type CustomEquipmentType = z.infer<typeof customEquipmentTypeSchema>;
-export type CreateCustomEquipmentType = z.infer<typeof createCustomEquipmentTypeSchema>;
+export type CreateCustomEquipmentType = z.infer<
+  typeof createCustomEquipmentTypeSchema
+>;
 export type ConsumableItem = z.infer<typeof consumableItemSchema>;
 export type CustomEquipmentItem = z.infer<typeof customEquipmentItemSchema>;
 export type UserEquipmentPlan = z.infer<typeof userEquipmentPlanSchema>;

@@ -14,12 +14,12 @@ import type { Box } from 'shared-schemas';
 // inspection payload is built (see useUpsertInspection). No zod default here so
 // the form's input and output types stay identical.
 export const weightFormSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.uuid().optional(),
   value: z.number().nonnegative(),
   unit: z.string().optional(),
-  boxId: z.string().uuid().nullable().optional(),
+  boxId: z.uuid().nullable().optional(),
   side: measurementSideSchema.nullable().optional(),
-  recordedAt: z.string().datetime().optional(),
+  recordedAt: z.iso.datetime().optional(),
 });
 
 export type WeightFormData = z.infer<typeof weightFormSchema>;
@@ -93,7 +93,7 @@ export const maintenanceActionSchema = z.object({
 // Status change action
 export const statusChangeActionSchema = z.object({
   type: z.literal(ActionType.STATUS_CHANGE),
-  toStatus: z.nativeEnum(HiveStatus),
+  toStatus: z.enum(HiveStatus),
   notes: z.string().optional(),
 });
 
@@ -116,7 +116,7 @@ export const boxConfigurationActionSchema = z.object({
     .array(
       z.object({
         type: z.string(),
-        frameCount: z.number().int().min(0),
+        frameCount: z.int().min(0),
       }),
     )
     .optional(),
@@ -152,7 +152,7 @@ export const subjectiveInspectionSchema = inspectionFormSchema.extend({
   weights: z.array(weightFormSchema).optional(),
   observations: observationBaseSchema
     .extend({
-      strength: z.number().int().min(0).max(10).nullish(),
+      strength: z.int().min(0).max(10).nullish(),
     })
     .optional(),
 });

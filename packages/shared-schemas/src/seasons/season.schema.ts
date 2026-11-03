@@ -3,8 +3,8 @@ import { isValidMonthDay, monthDayOrdinal } from './season.date';
 
 /** A month/day pair, e.g. `{ month: 3, day: 15 }`. */
 export const seasonMonthDaySchema = z.object({
-  month: z.number().int().min(1).max(12),
-  day: z.number().int().min(1).max(31),
+  month: z.int().min(1).max(12),
+  day: z.int().min(1).max(31),
 });
 
 export type SeasonMonthDay = z.infer<typeof seasonMonthDaySchema>;
@@ -27,11 +27,11 @@ export type SeasonFeeding = z.infer<typeof seasonFeedingSchema>;
  */
 export const seasonSchema = z
   .object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     name: z.string().max(60).default(''),
     start: seasonMonthDaySchema,
     end: seasonMonthDaySchema,
-    inspectionFrequencyDays: z.number().int().min(1).max(365).nullish(),
+    inspectionFrequencyDays: z.int().min(1).max(365).nullish(),
     /**
      * No inspections are due in this season (e.g. winter): nothing is
      * scheduled and nothing turns overdue until the season ends.
@@ -44,7 +44,7 @@ export const seasonSchema = z
       const value = season[key];
       if (!isValidMonthDay(value.month, value.day)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: 'Not a valid calendar day',
           path: [key],
         });
@@ -52,7 +52,7 @@ export const seasonSchema = z
     }
     if (season.feeding.enabled && season.feeding.targetKg == null) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Set a feeding target or turn feeding off for this season',
         path: ['feeding', 'targetKg'],
       });
@@ -120,7 +120,7 @@ export const seasonListSchema = z
     if (firstOverlap) {
       const [first, second] = firstOverlap;
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: `Season "${seasons[second].name || second + 1}" overlaps "${seasons[first].name || first + 1}"`,
         path: [second],
       });
@@ -136,7 +136,7 @@ export type SeasonList = z.infer<typeof seasonListSchema>;
  */
 export const yearRoundScheduleSchema = z.object({
   /** Empty means hives fall back to their own base interval. */
-  inspectionFrequencyDays: z.number().int().min(1).max(365).nullish(),
+  inspectionFrequencyDays: z.int().min(1).max(365).nullish(),
 });
 
 export type YearRoundSchedule = z.infer<typeof yearRoundScheduleSchema>;

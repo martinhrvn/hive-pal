@@ -1,19 +1,14 @@
 import { z } from 'zod';
 
 // Brood pattern options
-export const broodPatternSchema = z.enum([
-  'solid',
-  'spotty', 
-  'scattered',
-  'patchy',
-  'excellent',
-  'poor'
-]).nullish();
+export const broodPatternSchema = z
+  .enum(['solid', 'spotty', 'scattered', 'patchy', 'excellent', 'poor'])
+  .nullish();
 
 // Additional observations (badges/tags)
 export const additionalObservationSchema = z.enum([
   'calm',
-  'defensive', 
+  'defensive',
   'aggressive',
   'nervous',
   'varroa_present',
@@ -23,7 +18,7 @@ export const additionalObservationSchema = z.enum([
   'healthy',
   'active',
   'sluggish',
-  'thriving'
+  'thriving',
 ]);
 
 // Reminder observations (for future alerts)
@@ -34,31 +29,31 @@ export const reminderObservationSchema = z.enum([
   'queen_issues',
   'requires_treatment',
   'low_stores',
-  'prepare_for_winter'
+  'prepare_for_winter',
 ]);
 
 // Base observation schema without refinements - can be extended
 export const observationBaseSchema = z.object({
-  strength: z.number().int().min(0).nullish(),
-  uncappedBrood: z.number().int().min(0).max(10).nullish(),
-  cappedBrood: z.number().int().min(0).max(10).nullish(),
-  honeyStores: z.number().int().min(0).max(10).nullish(),
-  pollenStores: z.number().int().min(0).max(10).nullish(),
-  queenCells: z.number().int().min(0).nullish(),
+  strength: z.int().min(0).nullish(),
+  uncappedBrood: z.int().min(0).max(10).nullish(),
+  cappedBrood: z.int().min(0).max(10).nullish(),
+  honeyStores: z.int().min(0).max(10).nullish(),
+  pollenStores: z.int().min(0).max(10).nullish(),
+  queenCells: z.int().min(0).nullish(),
   swarmCells: z.boolean().nullish(),
   supersedureCells: z.boolean().nullish(),
   queenSeen: z.boolean().nullish(),
 
   // Frame count observations – actual number of frames of each type
-  totalFrames: z.number().int().min(0).nullish(),
-  eggsFrames: z.number().int().min(0).nullish(),
-  uncappedBroodFrames: z.number().int().min(0).nullish(),
-  cappedBroodFrames: z.number().int().min(0).nullish(),
-  droneBroodFrames: z.number().int().min(0).nullish(),
-  pollenFrames: z.number().int().min(0).nullish(),
-  nectarFrames: z.number().int().min(0).nullish(),
-  honeyFrames: z.number().int().min(0).nullish(),
-  emptyFrames: z.number().int().min(0).nullish(),
+  totalFrames: z.int().min(0).nullish(),
+  eggsFrames: z.int().min(0).nullish(),
+  uncappedBroodFrames: z.int().min(0).nullish(),
+  cappedBroodFrames: z.int().min(0).nullish(),
+  droneBroodFrames: z.int().min(0).nullish(),
+  pollenFrames: z.int().min(0).nullish(),
+  nectarFrames: z.int().min(0).nullish(),
+  honeyFrames: z.int().min(0).nullish(),
+  emptyFrames: z.int().min(0).nullish(),
 
   // New observation types
   broodPattern: broodPatternSchema,
@@ -72,5 +67,7 @@ export const observationSchema = observationBaseSchema;
 
 export type ObservationSchemaType = z.infer<typeof observationSchema>;
 export type BroodPatternType = z.infer<typeof broodPatternSchema>;
-export type AdditionalObservationType = z.infer<typeof additionalObservationSchema>;
+export type AdditionalObservationType = z.infer<
+  typeof additionalObservationSchema
+>;
 export type ReminderObservationType = z.infer<typeof reminderObservationSchema>;

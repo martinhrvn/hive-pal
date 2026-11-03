@@ -46,7 +46,7 @@ const DEFAULT_INSPECTION = { frequencyDays: 7, calendarEnabled: true };
 const hiveSettingsFormSchema = z.object({
   seasons: seasonListSchema,
   inspection: z.object({
-    frequencyDays: z.number().int().positive().max(365),
+    frequencyDays: z.int().positive().max(365),
     calendarEnabled: z.boolean(),
   }),
 });

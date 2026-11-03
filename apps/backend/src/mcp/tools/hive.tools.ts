@@ -58,7 +58,7 @@ export function registerHiveTools(
       title: 'Get hive details',
       description:
         'Full details of one hive: boxes and frames, queen, settings, latest inspection data and score.',
-      inputSchema: { hiveId: z.string().uuid() },
+      inputSchema: { hiveId: z.uuid() },
       annotations: READ_ONLY,
     },
     async ({ hiveId }) => {
@@ -76,7 +76,7 @@ export function registerHiveTools(
         'List queens with their hive, marking, year, origin and status.',
       inputSchema: {
         apiaryId: apiaryIdArg,
-        hiveId: z.string().uuid().optional(),
+        hiveId: z.uuid().optional(),
         status: queenStatusSchema.optional(),
       },
       annotations: READ_ONLY,
@@ -97,7 +97,7 @@ export function registerHiveTools(
       description:
         'Change a queen record: e.g. set status to ACTIVE once a virgin queen is laying (eggs found), REPLACED or DEAD when she is gone, or update marking, color, year or notes. Moving a queen to another hive is done in the web app. Confirm the change with the user first.',
       inputSchema: {
-        queenId: z.string().uuid(),
+        queenId: z.uuid(),
         ...updateQueenSchema.omit({ hiveId: true, motherQueenId: true }).shape,
       },
       annotations: { ...WRITE, idempotentHint: true },

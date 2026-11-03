@@ -18,7 +18,7 @@ import {
 } from 'shared-schemas';
 
 const boxesSchema = z
-  .array(z.object({ type: boxTypeSchema, frameCount: z.number().int().min(0) }))
+  .array(z.object({ type: boxTypeSchema, frameCount: z.int().min(0) }))
   .nullable();
 import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import { apiaryReadScope, apiaryWriteScope } from '../common';

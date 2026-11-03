@@ -7,33 +7,33 @@ export type MembershipStatus = z.infer<typeof membershipStatusEnum>;
 // Create invite link
 export const createApiaryInviteSchema = z.object({
   role: z.enum(['EDITOR', 'VIEWER']),
-  expiresAt: z.string().datetime().optional(),
+  expiresAt: z.iso.datetime().optional(),
 });
 
 export type CreateApiaryInvite = z.infer<typeof createApiaryInviteSchema>;
 
 // Invite response
 export const apiaryInviteResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   token: z.string(),
-  apiaryId: z.string().uuid(),
+  apiaryId: z.uuid(),
   role: apiaryRoleEnum,
-  expiresAt: z.string().datetime().nullable(),
+  expiresAt: z.iso.datetime().nullable(),
   active: z.boolean(),
-  createdAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
 });
 
 export type ApiaryInviteResponse = z.infer<typeof apiaryInviteResponseSchema>;
 
 // Member response
 export const apiaryMemberResponseSchema = z.object({
-  id: z.string().uuid(),
-  userId: z.string().uuid(),
+  id: z.uuid(),
+  userId: z.uuid(),
   userName: z.string().nullable(),
   userEmail: z.string(),
   role: apiaryRoleEnum,
   status: membershipStatusEnum,
-  joinedAt: z.string().datetime(),
+  joinedAt: z.iso.datetime(),
 });
 
 export type ApiaryMemberResponse = z.infer<typeof apiaryMemberResponseSchema>;
@@ -58,7 +58,7 @@ export type InviteInfoResponse = z.infer<typeof inviteInfoResponseSchema>;
 
 // Join response
 export const joinApiaryResponseSchema = z.object({
-  apiaryId: z.string().uuid(),
+  apiaryId: z.uuid(),
   apiaryName: z.string(),
   role: apiaryRoleEnum,
   status: membershipStatusEnum,

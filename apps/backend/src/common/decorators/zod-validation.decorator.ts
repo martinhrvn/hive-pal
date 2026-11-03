@@ -1,4 +1,4 @@
-import { ZodSchema } from 'zod';
+import { ZodType } from 'zod';
 import { applyDecorators, UsePipes } from '@nestjs/common';
 import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
 
@@ -8,6 +8,6 @@ import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
  * @param schema Zod schema to validate against
  * @returns Decorator for controller method
  */
-export function ZodValidation(schema: ZodSchema) {
+export function ZodValidation(schema: ZodType) {
   return applyDecorators(UsePipes(new ZodValidationPipe(schema)));
 }

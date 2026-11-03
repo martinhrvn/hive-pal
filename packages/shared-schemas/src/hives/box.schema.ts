@@ -160,23 +160,23 @@ export function getCompatibleFrameSizes(
   });
 }
 
-export const boxTypeSchema = z.nativeEnum(BoxTypeEnum);
-export const boxVariantSchema = z.nativeEnum(BoxVariantEnum);
+export const boxTypeSchema = z.enum(BoxTypeEnum);
+export const boxVariantSchema = z.enum(BoxVariantEnum);
 
 // Hex color validation regex
 const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
 
 export const boxSchema = z.object({
-  id: z.string().uuid().optional(),
-  position: z.number().int().min(0),
-  frameCount: z.number().int().min(0),
+  id: z.uuid().optional(),
+  position: z.int().min(0),
+  frameCount: z.int().min(0),
   hasExcluder: z.boolean(),
   type: boxTypeSchema,
-  maxFrameCount: z.number().int().min(1).optional(),
+  maxFrameCount: z.int().min(1).optional(),
   variant: boxVariantSchema.optional(),
-  frameSizeId: z.string().uuid().optional().nullable(),
+  frameSizeId: z.uuid().optional().nullable(),
   color: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
-  addedAt: z.string().datetime().or(z.date()).optional(),
+  addedAt: z.iso.datetime().or(z.date()).optional(),
   winterized: z.boolean().default(false),
 });
 

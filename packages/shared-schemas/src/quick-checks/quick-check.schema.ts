@@ -14,9 +14,9 @@ export type QuickCheckTag = z.infer<typeof quickCheckTagSchema>;
 
 // Create quick check
 export const createQuickCheckSchema = z.object({
-  hiveId: z.string().uuid().optional(),
-  apiaryId: z.string().uuid(),
-  date: z.string().datetime().optional(),
+  hiveId: z.uuid().optional(),
+  apiaryId: z.uuid(),
+  date: z.iso.datetime().optional(),
   note: z.string().max(2000).optional(),
   tags: z.array(quickCheckTagSchema).optional(),
 });
@@ -25,12 +25,12 @@ export type CreateQuickCheck = z.infer<typeof createQuickCheckSchema>;
 
 // Quick check photo response
 export const quickCheckPhotoResponseSchema = z.object({
-  id: z.string().uuid(),
-  quickCheckId: z.string().uuid(),
+  id: z.uuid(),
+  quickCheckId: z.uuid(),
   fileName: z.string(),
   mimeType: z.string(),
   fileSize: z.number(),
-  createdAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
 });
 
 export type QuickCheckPhotoResponse = z.infer<
@@ -39,15 +39,15 @@ export type QuickCheckPhotoResponse = z.infer<
 
 // Quick check response
 export const quickCheckResponseSchema = z.object({
-  id: z.string().uuid(),
-  hiveId: z.string().uuid().nullable(),
-  apiaryId: z.string().uuid(),
-  date: z.string().datetime(),
+  id: z.uuid(),
+  hiveId: z.uuid().nullable(),
+  apiaryId: z.uuid(),
+  date: z.iso.datetime(),
   note: z.string().nullable(),
   tags: z.array(z.string()),
   photos: z.array(quickCheckPhotoResponseSchema),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
   createdByUserName: z.string().nullish(),
 });
 
@@ -55,17 +55,17 @@ export type QuickCheckResponse = z.infer<typeof quickCheckResponseSchema>;
 
 // Filter quick checks
 export const quickCheckFilterSchema = z.object({
-  hiveId: z.string().uuid().optional(),
-  apiaryId: z.string().uuid().optional(),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
+  hiveId: z.uuid().optional(),
+  apiaryId: z.uuid().optional(),
+  startDate: z.iso.datetime().optional(),
+  endDate: z.iso.datetime().optional(),
 });
 
 export type QuickCheckFilter = z.infer<typeof quickCheckFilterSchema>;
 
 // Download URL response (reused pattern)
 export const photoDownloadUrlResponseSchema = z.object({
-  downloadUrl: z.string().url(),
+  downloadUrl: z.url(),
   expiresIn: z.number().positive(),
 });
 

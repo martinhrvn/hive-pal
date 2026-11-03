@@ -4,17 +4,12 @@ import {
   ArgumentMetadata,
   BadRequestException,
 } from '@nestjs/common';
-import { ZodSchema, ZodError } from 'zod';
-
-interface ZodIssue {
-  path: (string | number)[];
-  message: string;
-}
+import { ZodError, ZodType } from 'zod';
 
 @Injectable()
 export class ZodValidationPipe implements PipeTransform {
   constructor(
-    private schema: ZodSchema,
+    private schema: ZodType,
     private type = 'body',
   ) {}
 
@@ -23,18 +18,18 @@ export class ZodValidationPipe implements PipeTransform {
       // Type assertion to make TypeScript happy, while still preserving
       // the actual type checking done by the Zod schema.
       if (this.type === _metadata.type) {
-        return this.schema.parse(value) as unknown;
+        return this.schema.parse(value);
       } else {
         return value;
       }
     } catch (error) {
       if (error instanceof ZodError) {
-        const details = error.errors.map(
-          (err: ZodIssue) => `${err.path.join('.')} - ${err.message}`,
+        const details = error.issues.map(
+          (err) => `${err.path.join('.')} - ${err.message}`,
         );
         throw new BadRequestException({
           message: `Validation failed ${details.join(', ')}`,
-          errors: error.errors.map((err: ZodIssue) => ({
+          errors: error.issues.map((err) => ({
             path: err.path.join('.'),
             message: err.message,
           })),

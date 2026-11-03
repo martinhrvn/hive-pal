@@ -11,7 +11,7 @@ export type FrameSizeStatus =
 
 // Full frame size response schema
 export const frameSizeSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
   width: z.number().positive(),
   height: z.number().positive(),
@@ -22,7 +22,7 @@ export const frameSizeSchema = z.object({
     FrameSizeStatus.APPROVED,
     FrameSizeStatus.REJECTED,
   ]),
-  createdByUserId: z.string().uuid().nullable(),
+  createdByUserId: z.uuid().nullable(),
   createdAt: z.string().or(z.date()),
   updatedAt: z.string().or(z.date()),
 });
