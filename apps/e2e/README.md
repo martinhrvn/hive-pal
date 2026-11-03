@@ -46,8 +46,10 @@ pnpm test:preview                # .env.preview
 
 ## CI
 
-`.github/workflows/e2e-smoke.yml` runs the smoke suite on demand only
-(`workflow_dispatch`). Inside `devenv shell`:
+`.github/workflows/e2e-smoke.yml` runs the smoke suite automatically once
+Coolify reports a pull request's preview as ready (it keeps one comment per PR
+updated, and the workflow reacts to it), and on demand via `workflow_dispatch`.
+Inside `devenv shell`:
 
 ```bash
 smoke-run 243 --watch     # https://243.preview.hivepal.app

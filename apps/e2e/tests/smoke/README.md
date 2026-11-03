@@ -28,9 +28,14 @@ pnpm --filter e2e exec playwright show-report          # HTML report of the last
 | `SMOKE_GREP`                    | Regex on titles and tags (`@journey`, `@core`, …)        | all                     |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Only for `@admin` specs (skipped when unset)             | –                       |
 
-In CI the suite runs from `.github/workflows/e2e-smoke.yml` via
-`workflow_dispatch` only; nothing deploys or runs on push. `devenv shell`
-provides three wrappers:
+In CI the suite runs from `.github/workflows/e2e-smoke.yml`. It starts by
+itself when Coolify updates its preview comment on a pull request ("The preview
+deployment ... is ready"): the preview domain is taken from that comment, the
+PR's checkout is tested, and a newer push cancels the run in progress. The run
+reports back as one `<!-- e2e-smoke -->` comment on the PR. GitHub only reads
+`issue_comment` workflows from the default branch, so the automatic trigger
+works once this file is on `main`; a hand-dispatched run works before that.
+`devenv shell` provides three wrappers:
 
 ```bash
 smoke-run 243 --watch        # dispatch against https://243.preview.hivepal.app and follow it

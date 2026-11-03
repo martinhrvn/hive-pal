@@ -1,7 +1,15 @@
 name: E2E Smoke
 
 # Runs the Playwright smoke suite (apps/e2e/tests/smoke) against a deployed
-# Hive Pal instance. Trigger it by hand once a preview is up:
+# Hive Pal instance.
+#
+# Automatic: Coolify keeps one comment per PR updated with the preview state
+# ("The preview deployment ... is ready"). GitHub delivers that as an
+# issue_comment event, which starts this workflow against the preview domain in
+# the comment body. Only the Coolify bot's comment counts; a push that deploys
+# again cancels the previous run and starts a new one.
+#
+# By hand, once a preview is up:
 #
 #   gh workflow run e2e-smoke.yml -f base_url=https://243.preview.hivepal.app
 #
@@ -24,13 +32,12 @@ on:
         default: '2'
   repository_dispatch:
     types: [preview-deployed]
-
-concurrency:
-  group: e2e-smoke-${{ inputs.base_url || github.event.client_payload.base_url || 'main-preview' }}
-  cancel-in-progress: true
+  issue_comment:
+    types: [created, edited]
 
 permissions:
   contents: read
+  issues: write
   pull-requests: write
 
 jobs:
@@ -38,14 +45,56 @@ jobs:
     name: Smoke tests
     runs-on: ubuntu-latest
     timeout-minutes: 40
-    env:
-      BASE_URL: ${{ inputs.base_url || github.event.client_payload.base_url || 'https://preview.hivepal.app' }}
-      SMOKE_GREP: ${{ inputs.grep }}
-      SMOKE_WORKERS: ${{ inputs.workers || '2' }}
+    # A newer deployment of the same PR cancels the run in progress. Kept at job
+    # level so a run skipped by the filter below never cancels a real one.
+    concurrency:
+      group: e2e-smoke-${{ github.event.issue.number || inputs.base_url || github.event.client_payload.base_url || 'main-preview' }}
+      cancel-in-progress: true
+    # Only the Coolify bot's "preview deployment ... is ready" comment on a pull
+    # request starts a run. Every other comment, and comments on issues, are
+    # ignored. Rename the bot in one place with the COOLIFY_COMMENT_AUTHOR repo
+    # variable if the Coolify GitHub App is ever reinstalled.
+    if: >
+      github.event_name != 'issue_comment' ||
+      (
+        github.event.issue.pull_request != null &&
+        github.event.comment.user.login == (vars.COOLIFY_COMMENT_AUTHOR || 'enchanting-eel-x0c8gcg[bot]') &&
+        contains(github.event.comment.body, 'is ready') &&
+        contains(github.event.comment.body, '.preview.hivepal.app')
+      )
 
     steps:
+      - name: Resolve target
+        env:
+          DISPATCH_BASE_URL: ${{ inputs.base_url || github.event.client_payload.base_url }}
+          DISPATCH_GREP: ${{ inputs.grep || github.event.client_payload.grep }}
+          DISPATCH_WORKERS: ${{ inputs.workers || github.event.client_payload.workers }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          base_url="$DISPATCH_BASE_URL"
+          if [ -z "$base_url" ] && [ -n "$COMMENT_BODY" ]; then
+            base_url="$(printf '%s\n' "$COMMENT_BODY" \
+              | grep -oE 'https://[A-Za-z0-9._-]+\.preview\.hivepal\.app' | head -1 || true)"
+          fi
+          if [ -z "$base_url" ]; then
+            echo "::error::No preview URL in the trigger: pass base_url, a client_payload.base_url, or comment from Coolify"
+            exit 1
+          fi
+          # A Coolify comment carries no options, so it gets the default slice.
+          grep_expr="$DISPATCH_GREP"
+          if [ "$GITHUB_EVENT_NAME" = "issue_comment" ]; then
+            grep_expr="${DISPATCH_GREP:-@journey|@core}"
+          fi
+          echo "BASE_URL=$base_url" >> "$GITHUB_ENV"
+          echo "SMOKE_GREP=$grep_expr" >> "$GITHUB_ENV"
+          echo "SMOKE_WORKERS=${DISPATCH_WORKERS:-2}" >> "$GITHUB_ENV"
+          echo "Testing $base_url (trigger: $GITHUB_EVENT_NAME, grep: ${grep_expr:-all})"
+
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # For a Coolify comment, test with the pull request's suite.
+          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/head', github.event.issue.number) || github.ref }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -69,15 +118,22 @@ jobs:
 
       - name: Wait for the deployment to answer
         run: |
-          for i in $(seq 1 10); do
-            if curl -fsS --max-time 10 "$BASE_URL/api/health" >/dev/null; then
-              echo "$BASE_URL is healthy"
+          # Coolify writes its comment once the preview is up, so this is only a
+          # short settle wait, not the readiness signal. Gate on the app root:
+          # /api/health can answer 503 on a preview whose database and UI are
+          # fine (the per-PR stack reports a disk-threshold failure), and it
+          # would block the run.
+          for i in $(seq 1 12); do
+            code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$BASE_URL/" || true)"
+            if [ "$code" = "200" ]; then
+              health="$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$BASE_URL/api/health" || true)"
+              echo "$BASE_URL answers 200 (health: $health, not a gate)"
               exit 0
             fi
-            echo "attempt $i: $BASE_URL/api/health not ready, retrying in 15s"
-            sleep 15
+            echo "attempt $i: $BASE_URL/ answered $code, retrying in 10s"
+            sleep 10
           done
-          echo "::error::$BASE_URL/api/health did not become healthy"
+          echo "::error::$BASE_URL/ did not answer 200"
           exit 1
 
       - name: Run smoke tests
