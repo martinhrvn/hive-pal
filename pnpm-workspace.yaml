@@ -3,7 +3,7 @@ packages:
   - packages/*
   - docs
 catalog:
-  typescript: 5.9.x
+  typescript: 6.0.x
 catalogs:
   zod:
     zod: ^4.6.7
@@ -11,6 +11,6 @@ catalogs:
     prisma: 7.10.1
     '@prisma/client': 7.10.1
   typescript:
-    typescript: 5.9.x
+    typescript: 6.0.x
   playwright:
     '@playwright/test': 1.64.1
