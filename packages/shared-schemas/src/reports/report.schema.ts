@@ -1,12 +1,19 @@
 import { z } from 'zod';
 
 // Period filter for reports
-export const reportPeriodSchema = z.enum(['1month', '3months', '6months', 'ytd', '1year', 'all']);
+export const reportPeriodSchema = z.enum([
+  '1month',
+  '3months',
+  '6months',
+  'ytd',
+  '1year',
+  'all',
+]);
 export type ReportPeriod = z.infer<typeof reportPeriodSchema>;
 
 // Per-hive honey data
 export const hiveHoneySchema = z.object({
-  hiveId: z.string().uuid(),
+  hiveId: z.uuid(),
   hiveName: z.string(),
   amount: z.number(),
   unit: z.string(),
@@ -15,7 +22,7 @@ export const hiveHoneySchema = z.object({
 
 // Per-hive feeding data
 export const hiveFeedingSchema = z.object({
-  hiveId: z.string().uuid(),
+  hiveId: z.uuid(),
   hiveName: z.string(),
   sugarKg: z.number(),
   feedingCount: z.number(),
@@ -23,7 +30,7 @@ export const hiveFeedingSchema = z.object({
 
 // Per-hive health data
 export const hiveHealthSchema = z.object({
-  hiveId: z.string().uuid(),
+  hiveId: z.uuid(),
   hiveName: z.string(),
   overallScore: z.number().nullable(),
   populationScore: z.number().nullable(),
@@ -34,7 +41,7 @@ export const hiveHealthSchema = z.object({
 
 // Main statistics response
 export const apiaryStatisticsSchema = z.object({
-  apiaryId: z.string().uuid(),
+  apiaryId: z.uuid(),
   apiaryName: z.string(),
   period: z.object({
     startDate: z.string(),
@@ -97,13 +104,13 @@ export const hiveScorePointSchema = z.object({
 
 // Per-hive health trend data
 export const hiveHealthTrendSchema = z.object({
-  hiveId: z.string().uuid(),
+  hiveId: z.uuid(),
   hiveName: z.string(),
   dataPoints: z.array(hiveScorePointSchema),
 });
 
 export const trendDataSchema = z.object({
-  apiaryId: z.string().uuid(),
+  apiaryId: z.uuid(),
   period: z.object({
     startDate: z.string(),
     endDate: z.string(),

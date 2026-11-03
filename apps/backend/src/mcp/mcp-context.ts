@@ -6,7 +6,6 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import { MCP_WRITE_SCOPE } from '../auth/mcp-config';
 import { simplifyJsonSchema } from './json-schema';
 
@@ -37,7 +36,6 @@ export const jsonResult = (data: unknown): CallToolResult => ({
  * calls "All apiaries"; MCP never relies on the `x-apiary-id` header.
  */
 export const apiaryIdArg = z
-  .string()
   .uuid()
   .optional()
   .describe(
@@ -75,24 +73,28 @@ const publishedTools = new WeakMap<McpServer, Tool[]>();
  * converter emits $ref for a zod schema used in more than one field (shared
  * date and rating schemas), which some MCP clients and validators mishandle.
  */
-// zodToJsonSchema's generic options type is too deep for the compiler here.
-const toJsonSchema = zodToJsonSchema as unknown as (
-  schema: z.ZodTypeAny,
-  options: Record<string, unknown>,
-) => object;
-
 const toFlatInputSchema = (shape: z.ZodRawShape = {}): Tool['inputSchema'] => {
-  const { $schema: _draft, ...schema } = toJsonSchema(z.object(shape), {
-    $refStrategy: 'none',
-    strictUnions: true,
-    pipeStrategy: 'input',
-    dateStrategy: 'format:date-time',
-  }) as Tool['inputSchema'] & { $schema?: string };
+  const {
+    $schema: _draft,
+    '~standard': _standard,
+    ...schema
+  } = z.toJSONSchema(z.object(shape), {
+    io: 'input',
+    unrepresentable: 'any',
+    reused: 'inline',
+    // Zod dates have no JSON Schema equivalent; MCP clients expect ISO strings.
+    override: (ctx) => {
+      if (ctx.zodSchema instanceof z.ZodDate) {
+        ctx.jsonSchema.type = 'string';
+        ctx.jsonSchema.format = 'date-time';
+      }
+    },
+  }) as Tool['inputSchema'] & { $schema?: string; '~standard'?: unknown };
   return simplifyJsonSchema(schema) as Tool['inputSchema'];
 };
 
 /**
- * `server.registerTool` with argument types inferred from a zod 3 shape. The
+ * `server.registerTool` with argument types inferred from a zod shape. The
  * SDK's own generics accept zod 3 and 4 and are too deep for the compiler
  * with shapes as large as the inspection schema (TS2589). The SDK still
  * validates calls against the zod shape; tools/list serves the flat schema.
@@ -101,9 +103,7 @@ export function registerTool<Shape extends z.ZodRawShape>(
   server: McpServer,
   name: string,
   config: ToolConfig<Shape>,
-  cb: (
-    args: z.objectOutputType<Shape, z.ZodTypeAny>,
-  ) => Promise<CallToolResult>,
+  cb: (args: z.infer<z.ZodObject<Shape>>) => Promise<CallToolResult>,
 ): void {
   (server.registerTool as unknown as LooseRegisterTool).call(
     server,

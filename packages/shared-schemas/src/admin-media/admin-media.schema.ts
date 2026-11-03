@@ -10,20 +10,20 @@ export const adminMediaTypeSchema = z.enum([
 export type AdminMediaType = z.infer<typeof adminMediaTypeSchema>;
 
 export const adminMediaItemSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   type: adminMediaTypeSchema,
   fileName: z.string(),
   mimeType: z.string(),
-  fileSize: z.number().int().nonnegative(),
+  fileSize: z.int().nonnegative(),
   storageKey: z.string(),
-  createdAt: z.string().datetime(),
-  apiaryId: z.string().uuid().nullable(),
+  createdAt: z.iso.datetime(),
+  apiaryId: z.uuid().nullable(),
   apiaryName: z.string().nullable(),
-  ownerUserId: z.string().uuid().nullable(),
+  ownerUserId: z.uuid().nullable(),
   ownerEmail: z.string().nullable(),
-  hiveId: z.string().uuid().nullable(),
-  inspectionId: z.string().uuid().nullable(),
-  quickCheckId: z.string().uuid().nullable(),
+  hiveId: z.uuid().nullable(),
+  inspectionId: z.uuid().nullable(),
+  quickCheckId: z.uuid().nullable(),
   caption: z.string().nullable(),
 });
 
@@ -31,41 +31,45 @@ export type AdminMediaItem = z.infer<typeof adminMediaItemSchema>;
 
 export const adminMediaListQuerySchema = z.object({
   type: adminMediaTypeSchema.optional(),
-  apiaryId: z.string().uuid().optional(),
-  userId: z.string().uuid().optional(),
+  apiaryId: z.uuid().optional(),
+  userId: z.uuid().optional(),
   search: z.string().optional(),
-  page: z.coerce.number().int().min(1).default(1),
-  pageSize: z.coerce.number().int().min(1).max(200).default(50),
+  page: z.coerce.number().int().min(1).prefault(1),
+  pageSize: z.coerce.number().int().min(1).max(200).prefault(50),
 });
 
 export type AdminMediaListQuery = z.infer<typeof adminMediaListQuerySchema>;
 
 export const adminMediaListResponseSchema = z.object({
   items: z.array(adminMediaItemSchema),
-  total: z.number().int().nonnegative(),
-  page: z.number().int().min(1),
-  pageSize: z.number().int().min(1),
+  total: z.int().nonnegative(),
+  page: z.int().min(1),
+  pageSize: z.int().min(1),
 });
 
-export type AdminMediaListResponse = z.infer<typeof adminMediaListResponseSchema>;
+export type AdminMediaListResponse = z.infer<
+  typeof adminMediaListResponseSchema
+>;
 
 export const adminMediaStatsByTypeSchema = z.object({
   type: adminMediaTypeSchema,
-  count: z.number().int().nonnegative(),
-  totalSize: z.number().int().nonnegative(),
+  count: z.int().nonnegative(),
+  totalSize: z.int().nonnegative(),
 });
 
 export const adminMediaStatsResponseSchema = z.object({
-  totalCount: z.number().int().nonnegative(),
-  totalSize: z.number().int().nonnegative(),
+  totalCount: z.int().nonnegative(),
+  totalSize: z.int().nonnegative(),
   byType: z.array(adminMediaStatsByTypeSchema),
 });
 
-export type AdminMediaStatsResponse = z.infer<typeof adminMediaStatsResponseSchema>;
+export type AdminMediaStatsResponse = z.infer<
+  typeof adminMediaStatsResponseSchema
+>;
 
 export const adminMediaDownloadUrlResponseSchema = z.object({
-  downloadUrl: z.string().url(),
-  expiresIn: z.number().int().positive(),
+  downloadUrl: z.url(),
+  expiresIn: z.int().positive(),
 });
 
 export type AdminMediaDownloadUrlResponse = z.infer<

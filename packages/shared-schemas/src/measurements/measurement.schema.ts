@@ -23,10 +23,10 @@ export const measurementInputSchema = z.object({
   metric: metricNameSchema,
   value: z.number().finite(),
   unit: z.string().max(16).optional(),
-  recordedAt: z.string().datetime().optional(),
+  recordedAt: z.iso.datetime().optional(),
   source: z.string().max(128).optional(),
   // Optional position within the hive (see measurementSideSchema / boxId docs).
-  boxId: z.string().uuid().nullish(),
+  boxId: z.uuid().nullish(),
   side: measurementSideSchema.nullish(),
 });
 
@@ -41,7 +41,7 @@ export type CreateMeasurementBatch = z.infer<
 >;
 
 export const createMeasurementBatchResponseSchema = z.object({
-  inserted: z.number().int().nonnegative(),
+  inserted: z.int().nonnegative(),
 });
 
 export type CreateMeasurementBatchResponse = z.infer<
@@ -49,25 +49,25 @@ export type CreateMeasurementBatchResponse = z.infer<
 >;
 
 export const measurementResponseSchema = z.object({
-  id: z.string().uuid(),
-  hiveId: z.string().uuid(),
+  id: z.uuid(),
+  hiveId: z.uuid(),
   metric: z.string(),
   value: z.number(),
   unit: z.string().nullable(),
-  recordedAt: z.string().datetime(),
+  recordedAt: z.iso.datetime(),
   source: z.string().nullable(),
-  createdAt: z.string().datetime(),
-  boxId: z.string().uuid().nullable(),
+  createdAt: z.iso.datetime(),
+  boxId: z.uuid().nullable(),
   side: measurementSideSchema.nullable(),
-  inspectionId: z.string().uuid().nullable(),
+  inspectionId: z.uuid().nullable(),
 });
 
 export type MeasurementResponse = z.infer<typeof measurementResponseSchema>;
 
 export const measurementFilterSchema = z.object({
   metric: metricNameSchema.optional(),
-  from: z.string().datetime().optional(),
-  to: z.string().datetime().optional(),
+  from: z.iso.datetime().optional(),
+  to: z.iso.datetime().optional(),
   limit: z.coerce.number().int().positive().max(5000).optional(),
 });
 
@@ -76,9 +76,9 @@ export type MeasurementFilter = z.infer<typeof measurementFilterSchema>;
 export const latestMeasurementEntrySchema = z.object({
   value: z.number(),
   unit: z.string().nullable(),
-  recordedAt: z.string().datetime(),
+  recordedAt: z.iso.datetime(),
   source: z.string().nullable(),
-  boxId: z.string().uuid().nullable(),
+  boxId: z.uuid().nullable(),
   side: measurementSideSchema.nullable(),
 });
 
@@ -104,10 +104,10 @@ export type LatestMeasurementsResponse = z.infer<
  *   side  = null -> whole/total weight (no specific edge)
  */
 export const weightReadingSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.uuid().optional(),
   value: z.number().finite().nonnegative(),
   unit: z.string().max(16).default('kg'),
-  boxId: z.string().uuid().nullish(),
+  boxId: z.uuid().nullish(),
   side: measurementSideSchema.nullish(),
   recordedAt: isoDateTime().optional(),
 });
@@ -115,12 +115,12 @@ export const weightReadingSchema = z.object({
 export type WeightReading = z.infer<typeof weightReadingSchema>;
 
 export const weightReadingResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   value: z.number(),
   unit: z.string().nullable(),
-  boxId: z.string().uuid().nullable(),
+  boxId: z.uuid().nullable(),
   side: measurementSideSchema.nullable(),
-  recordedAt: z.string().datetime(),
+  recordedAt: z.iso.datetime(),
 });
 
 export type WeightReadingResponse = z.infer<typeof weightReadingResponseSchema>;

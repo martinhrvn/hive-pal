@@ -7,5 +7,4 @@ export enum InspectionStatus {
   CANCELLED = 'CANCELLED',
 }
 
-
-export const inspectionStatusSchema = z.nativeEnum(InspectionStatus);
+export const inspectionStatusSchema = z.enum(InspectionStatus);

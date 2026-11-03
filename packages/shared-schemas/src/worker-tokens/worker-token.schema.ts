@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const workerTokenSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
   prefix: z.string(),
   createdAt: z.string().or(z.date()),
@@ -27,7 +27,7 @@ export const workerTokenListSchema = z.array(workerTokenSchema);
 export type WorkerTokenList = z.infer<typeof workerTokenListSchema>;
 
 export const workerStatusSchema = z.object({
-  workersOnline: z.number().int().nonnegative(),
+  workersOnline: z.int().nonnegative(),
   lastSeen: z.string().or(z.date()).nullable(),
 });
 

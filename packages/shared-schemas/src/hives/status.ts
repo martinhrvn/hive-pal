@@ -9,4 +9,4 @@ export enum HiveStatus {
   ARCHIVED = 'ARCHIVED',
 }
 
-export const hiveStatusSchema = z.nativeEnum(HiveStatus);
+export const hiveStatusSchema = z.enum(HiveStatus);

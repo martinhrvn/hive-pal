@@ -13,5 +13,5 @@ export enum BatchHiveStatus {
   CANCELLED = 'CANCELLED',
 }
 
-export const batchInspectionStatusSchema = z.nativeEnum(BatchInspectionStatus);
-export const batchHiveStatusSchema = z.nativeEnum(BatchHiveStatus);
+export const batchInspectionStatusSchema = z.enum(BatchInspectionStatus);
+export const batchHiveStatusSchema = z.enum(BatchHiveStatus);

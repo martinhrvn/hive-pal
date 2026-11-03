@@ -4,8 +4,8 @@ import { batchInspectionStatusSchema, batchHiveStatusSchema } from './status';
 // Schema for creating a batch inspection
 export const createBatchInspectionSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  apiaryId: z.string().uuid(),
-  hiveIds: z.array(z.string().uuid()).min(1, 'At least one hive is required'),
+  apiaryId: z.uuid(),
+  hiveIds: z.array(z.uuid()).min(1, 'At least one hive is required'),
 });
 
 // Schema for updating batch inspection (name only when in DRAFT)
@@ -17,40 +17,40 @@ export const updateBatchInspectionSchema = z.object({
 export const reorderBatchHivesSchema = z.object({
   hiveOrders: z.array(
     z.object({
-      hiveId: z.string().uuid(),
-      order: z.number().int().min(0),
-    })
+      hiveId: z.uuid(),
+      order: z.int().min(0),
+    }),
   ),
 });
 
 // Schema for batch inspection hive entry
 export const batchInspectionHiveSchema = z.object({
-  id: z.string().uuid(),
-  hiveId: z.string().uuid(),
-  order: z.number().int(),
+  id: z.uuid(),
+  hiveId: z.uuid(),
+  order: z.int(),
   status: batchHiveStatusSchema,
-  inspectionId: z.string().uuid().nullable(),
-  completedAt: z.string().datetime().nullable(),
-  skippedCount: z.number().int(),
+  inspectionId: z.uuid().nullable(),
+  completedAt: z.iso.datetime().nullable(),
+  skippedCount: z.int(),
 });
 
 // Schema for batch inspection with hive details
 export const batchInspectionHiveWithDetailsSchema =
   batchInspectionHiveSchema.extend({
     hive: z.object({
-      id: z.string().uuid(),
+      id: z.uuid(),
       name: z.string(),
       status: z.string(),
-      apiaryId: z.string().uuid().nullable(),
+      apiaryId: z.uuid().nullable(),
     }),
   });
 
 // Progress information for batch inspection
 export const batchInspectionProgressSchema = z.object({
-  total: z.number().int(),
-  completed: z.number().int(),
-  pending: z.number().int(),
-  cancelled: z.number().int(),
+  total: z.int(),
+  completed: z.int(),
+  pending: z.int(),
+  cancelled: z.int(),
   elapsedMinutes: z.number().nullable(),
   averageMinutesPerHive: z.number().nullable(),
   estimatedRemainingMinutes: z.number().nullable(),
@@ -58,14 +58,14 @@ export const batchInspectionProgressSchema = z.object({
 
 // Schema for batch inspection response
 export const batchInspectionResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string(),
-  apiaryId: z.string().uuid(),
+  apiaryId: z.uuid(),
   status: batchInspectionStatusSchema,
-  startedAt: z.string().datetime().nullable(),
-  completedAt: z.string().datetime().nullable(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  startedAt: z.iso.datetime().nullable(),
+  completedAt: z.iso.datetime().nullable(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
   hives: z.array(batchInspectionHiveWithDetailsSchema),
   progress: batchInspectionProgressSchema,
 });
@@ -73,7 +73,7 @@ export const batchInspectionResponseSchema = z.object({
 // Schema for current hive to inspect
 export const currentHiveToInspectSchema = z.object({
   batchInspectionHive: batchInspectionHiveWithDetailsSchema,
-  position: z.number().int(), // 1-based position (e.g., "Hive 3 of 10")
+  position: z.int(), // 1-based position (e.g., "Hive 3 of 10")
   hasNext: z.boolean(),
   hasPrevious: z.boolean(),
 });
@@ -84,12 +84,8 @@ export const createBatchInspectionEntrySchema = z.object({
 });
 
 // Type exports
-export type CreateBatchInspection = z.infer<
-  typeof createBatchInspectionSchema
->;
-export type UpdateBatchInspection = z.infer<
-  typeof updateBatchInspectionSchema
->;
+export type CreateBatchInspection = z.infer<typeof createBatchInspectionSchema>;
+export type UpdateBatchInspection = z.infer<typeof updateBatchInspectionSchema>;
 export type ReorderBatchHives = z.infer<typeof reorderBatchHivesSchema>;
 export type BatchInspectionHive = z.infer<typeof batchInspectionHiveSchema>;
 export type BatchInspectionHiveWithDetails = z.infer<

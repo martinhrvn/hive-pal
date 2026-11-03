@@ -47,21 +47,17 @@ export type AssistantSuggestions = z.infer<typeof assistantSuggestionsSchema>;
 // Create a new thread. apiaryId drives ownership/authz; hiveId scopes the
 // thread to a single hive (omit/null for the apiary-level advisor).
 export const createAssistantThreadSchema = z.object({
-  apiaryId: z.string().uuid(),
-  hiveId: z.string().uuid().optional(),
+  apiaryId: z.uuid(),
+  hiveId: z.uuid().optional(),
 });
-export type CreateAssistantThread = z.infer<
-  typeof createAssistantThreadSchema
->;
+export type CreateAssistantThread = z.infer<typeof createAssistantThreadSchema>;
 
 // Query for listing threads within a scope.
 export const assistantThreadFilterSchema = z.object({
-  apiaryId: z.string().uuid().optional(),
-  hiveId: z.string().uuid().optional(),
+  apiaryId: z.uuid().optional(),
+  hiveId: z.uuid().optional(),
 });
-export type AssistantThreadFilter = z.infer<
-  typeof assistantThreadFilterSchema
->;
+export type AssistantThreadFilter = z.infer<typeof assistantThreadFilterSchema>;
 
 // Send a user message to a thread.
 export const sendAssistantMessageSchema = z.object({
@@ -70,24 +66,24 @@ export const sendAssistantMessageSchema = z.object({
 export type SendAssistantMessage = z.infer<typeof sendAssistantMessageSchema>;
 
 export const assistantMessageResponseSchema = z.object({
-  id: z.string().uuid(),
-  threadId: z.string().uuid(),
+  id: z.uuid(),
+  threadId: z.uuid(),
   role: assistantRoleSchema,
   content: z.string(),
   suggestions: assistantSuggestionsSchema.nullish(),
-  createdAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
 });
 export type AssistantMessageResponse = z.infer<
   typeof assistantMessageResponseSchema
 >;
 
 export const assistantThreadResponseSchema = z.object({
-  id: z.string().uuid(),
-  apiaryId: z.string().uuid(),
-  hiveId: z.string().uuid().nullable(),
+  id: z.uuid(),
+  apiaryId: z.uuid(),
+  hiveId: z.uuid().nullable(),
   title: z.string(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 });
 export type AssistantThreadResponse = z.infer<
   typeof assistantThreadResponseSchema

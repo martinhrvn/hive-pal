@@ -77,7 +77,7 @@ const hiveSchema = z.object({
   installationDate: z.date(),
   settings: hiveSettingsSchema,
   boxes: boxSchema.optional(),
-  featurePhotoId: z.string().uuid().nullish(),
+  featurePhotoId: z.uuid().nullish(),
 });
 
 export type HiveFormData = z.infer<typeof hiveSchema>;

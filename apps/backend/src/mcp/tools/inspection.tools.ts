@@ -35,7 +35,6 @@ export interface InspectionToolDeps {
 const DEFAULT_LIMIT = 20;
 
 const limitArg = z
-  .number()
   .int()
   .min(1)
   .max(200)
@@ -78,7 +77,7 @@ export function registerInspectionTools(
         'List hive inspections with observations (strength, brood, stores, temperament, queen sightings), notes and the actions taken, newest first.',
       inputSchema: {
         apiaryId: apiaryIdArg,
-        hiveId: z.string().uuid().optional(),
+        hiveId: z.uuid().optional(),
         status: inspectionStatusSchema.optional(),
         ...dateRange,
         limit: limitArg,
@@ -101,7 +100,7 @@ export function registerInspectionTools(
     {
       title: 'Get inspection',
       description: 'One inspection with all observations, notes and actions.',
-      inputSchema: { inspectionId: z.string().uuid() },
+      inputSchema: { inspectionId: z.uuid() },
       annotations: READ_ONLY,
     },
     async ({ inspectionId }) => {
@@ -144,7 +143,7 @@ export function registerInspectionTools(
         'List actions taken on hives (feedings, treatments, frame changes, harvests, notes…), newest first.',
       inputSchema: {
         apiaryId: apiaryIdArg,
-        hiveId: z.string().uuid().optional(),
+        hiveId: z.uuid().optional(),
         type: actionTypeSchema.optional(),
         ...dateRange,
         limit: limitArg,
@@ -167,7 +166,7 @@ export function registerInspectionTools(
         'Inspections and standalone actions grouped by day over a date range.',
       inputSchema: {
         apiaryId: apiaryIdArg,
-        hiveId: z.string().uuid().optional(),
+        hiveId: z.uuid().optional(),
         ...dateRange,
       },
       annotations: READ_ONLY,

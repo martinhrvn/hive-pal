@@ -14,7 +14,7 @@ export const alertStatusSchema = z.enum([
 export const alertMetadataSchema = z.record(z.string(), z.string()).optional();
 
 export const createAlertSchema = z.object({
-  hiveId: z.string().uuid().optional(),
+  hiveId: z.uuid().optional(),
   type: z.string(),
   message: z.string(),
   severity: alertSeveritySchema,
@@ -28,20 +28,20 @@ export const updateAlertSchema = z
   .partial();
 
 export const alertResponseSchema = z.object({
-  id: z.string().uuid(),
-  hiveId: z.string().uuid().optional(),
+  id: z.uuid(),
+  hiveId: z.uuid().optional(),
   type: z.string(),
   message: z.string(),
   severity: alertSeveritySchema,
   status: alertStatusSchema,
   metadata: alertMetadataSchema,
-  createdAt: z.string().datetime().or(z.date()),
-  updatedAt: z.string().datetime().or(z.date()),
+  createdAt: z.iso.datetime().or(z.date()),
+  updatedAt: z.iso.datetime().or(z.date()),
 });
 
 export const alertFilterSchema = z
   .object({
-    hiveId: z.string().uuid().optional(),
+    hiveId: z.uuid().optional(),
     type: z.string().optional(),
     severity: alertSeveritySchema.optional(),
     status: alertStatusSchema.optional(),

@@ -43,13 +43,13 @@ export function safeJsonParse<T>(
   if (!result.success) {
     // Log validation errors at WARN level
     const snippet = raw.substring(0, 100);
-    const zodErrors = result.error.errors
+    const zodErrors = result.error.issues
       .map((err) => `${err.path.join('.')}: ${err.message}`)
       .join('; ');
     logger.warn(`Schema validation failed for "${context}": ${zodErrors}`, {
       context: 'safeJsonParse',
       snippet,
-      validationErrors: result.error.errors,
+      validationErrors: result.error.issues,
     });
     return null;
   }

@@ -13,4 +13,4 @@ export enum ActionType {
   OTHER = 'OTHER',
 }
 
-export const actionTypeSchema = z.nativeEnum(ActionType);
+export const actionTypeSchema = z.enum(ActionType);

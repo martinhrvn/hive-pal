@@ -29,7 +29,7 @@ export const aiWeatherConditionSchema = z.enum([
   'rainy',
 ]);
 
-const lenient = <T extends z.ZodTypeAny>(schema: T) =>
+const lenient = <T extends z.ZodType>(schema: T) =>
   schema.nullish().catch(null);
 
 // Enum arrays keep the valid entries and silently drop invalid ones.
@@ -46,24 +46,24 @@ const lenientEnumArray = <T extends z.ZodType<string>>(item: T) =>
     );
 
 export const aiDraftObservationsSchema = z.object({
-  strength: lenient(z.number().int().min(0)),
-  uncappedBrood: lenient(z.number().int().min(0).max(10)),
-  cappedBrood: lenient(z.number().int().min(0).max(10)),
-  honeyStores: lenient(z.number().int().min(0).max(10)),
-  pollenStores: lenient(z.number().int().min(0).max(10)),
-  queenCells: lenient(z.number().int().min(0)),
+  strength: lenient(z.int().min(0)),
+  uncappedBrood: lenient(z.int().min(0).max(10)),
+  cappedBrood: lenient(z.int().min(0).max(10)),
+  honeyStores: lenient(z.int().min(0).max(10)),
+  pollenStores: lenient(z.int().min(0).max(10)),
+  queenCells: lenient(z.int().min(0)),
   swarmCells: lenient(z.boolean()),
   supersedureCells: lenient(z.boolean()),
   queenSeen: lenient(z.boolean()),
-  totalFrames: lenient(z.number().int().min(0)),
-  eggsFrames: lenient(z.number().int().min(0)),
-  uncappedBroodFrames: lenient(z.number().int().min(0)),
-  cappedBroodFrames: lenient(z.number().int().min(0)),
-  droneBroodFrames: lenient(z.number().int().min(0)),
-  pollenFrames: lenient(z.number().int().min(0)),
-  nectarFrames: lenient(z.number().int().min(0)),
-  honeyFrames: lenient(z.number().int().min(0)),
-  emptyFrames: lenient(z.number().int().min(0)),
+  totalFrames: lenient(z.int().min(0)),
+  eggsFrames: lenient(z.int().min(0)),
+  uncappedBroodFrames: lenient(z.int().min(0)),
+  cappedBroodFrames: lenient(z.int().min(0)),
+  droneBroodFrames: lenient(z.int().min(0)),
+  pollenFrames: lenient(z.int().min(0)),
+  nectarFrames: lenient(z.int().min(0)),
+  honeyFrames: lenient(z.int().min(0)),
+  emptyFrames: lenient(z.int().min(0)),
   broodPattern: broodPatternSchema.catch(null),
   additionalObservations: lenientEnumArray(additionalObservationSchema),
   reminderObservations: lenientEnumArray(reminderObservationSchema),
@@ -105,7 +105,7 @@ const aiTreatmentDetailsSchema = z.object({
 
 const aiFrameDetailsSchema = z.object({
   type: z.literal('FRAME'),
-  quantity: lenient(z.number().int()),
+  quantity: lenient(z.int()),
 });
 
 const aiMaintenanceDetailsSchema = z.object({
@@ -137,7 +137,7 @@ export const aiDraftActionSchema = z
     ]),
   })
   .refine(action => action.type === action.details.type, {
-    message: 'Action type must match details.type',
+    error: 'Action type must match details.type',
   });
 
 // Invalid actions are dropped, valid ones kept.
@@ -154,7 +154,7 @@ const aiDraftActionListSchema = z
 
 export const aiInspectionDraftSchema = z.object({
   // ISO-8601 datetime if the beekeeper spoke a date/time, otherwise null.
-  date: lenient(z.string().datetime({ offset: true, local: true })),
+  date: lenient(z.iso.datetime({ offset: true, local: true })),
   temperature: lenient(z.number()),
   weatherConditions: lenient(aiWeatherConditionSchema),
   notes: lenient(z.string()),
