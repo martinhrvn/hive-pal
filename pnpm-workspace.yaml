@@ -3,7 +3,7 @@ packages:
   - packages/*
   - docs
 catalog:
-  typescript: 7.0.x
+  typescript: npm:@typescript/typescript6@^6.0.2
 catalogs:
   zod:
     zod: ^3.25.76
@@ -11,6 +11,10 @@ catalogs:
     prisma: 7.10.1
     '@prisma/client': 7.10.1
   typescript:
-    typescript: 7.0.x
+    # typescript-eslint, tsup and the Nest CLI still need the TypeScript 6
+    # compiler API; the native TypeScript 7 compiler ships as `tsc` via
+    # @typescript/native.
+    typescript: npm:@typescript/typescript6@^6.0.2
+    '@typescript/native': npm:typescript@^7.0.2
   playwright:
     '@playwright/test': 1.64.1

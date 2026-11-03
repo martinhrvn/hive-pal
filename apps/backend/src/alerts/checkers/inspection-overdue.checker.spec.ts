@@ -113,7 +113,7 @@ describe('InspectionOverdueChecker', () => {
     const wintering = (lastInspectionDate: Date | null) =>
       hive({
         settings: { inspection: { frequencyDays: 7 }, seasons: [winter] },
-        lastInspectionDate,
+        lastInspectionDate: lastInspectionDate ?? undefined,
       });
 
     it('does not flag a hive during the season', () => {
