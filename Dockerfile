@@ -33,7 +33,12 @@ RUN pnpm turbo run build --filter=frontend... --filter=backend...
 # frontend, test or build tooling.
 FROM base AS prod-deps
 COPY --from=pruner /app/out/backend/json/ .
-COPY --from=pruner /app/out/backend/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY pnpm-lock.prod.yaml ./pnpm-lock.yaml
+COPY scripts/strip-dev-dependencies.mjs ./strip-dev-dependencies.mjs
+# Match the production lockfile (it is generated with auto-install-peers off)
+# and remove devDependencies from the pruned manifests before installing.
+RUN printf 'auto-install-peers=false\n' > .npmrc \
+ && node ./strip-dev-dependencies.mjs /app
 # Lifecycle scripts are skipped during installation. bcrypt is the one native
 # module the server needs, so rebuild it explicitly from the locked version.
 # Then drop files that are only used for development: source maps, type

@@ -93,6 +93,28 @@ jobs:
       - name: Run frontend tests
         run: pnpm --filter frontend test:ct
 
+  prod-lockfile:
+    name: Production lockfile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Regenerate production lockfile
+        run: pnpm prod-lock
+      - name: Check for drift
+        run: git diff --exit-code -- pnpm-lock.prod.yaml
+
 #  e2e-tests:
 #    name: End-to-End Tests
 #    needs: [backend-tests, frontend-tests]
