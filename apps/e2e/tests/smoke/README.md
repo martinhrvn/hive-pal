@@ -28,9 +28,14 @@ pnpm --filter e2e exec playwright show-report          # HTML report of the last
 | `SMOKE_GREP`                    | Regex on titles and tags (`@journey`, `@core`, …)        | all                     |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Only for `@admin` specs (skipped when unset)             | –                       |
 
-In CI the suite runs from `.github/workflows/e2e-smoke.yml` via
-`workflow_dispatch` only; nothing deploys or runs on push. `devenv shell`
-provides three wrappers:
+In CI the suite runs from `.github/workflows/e2e-smoke.yml`. Every push to a
+pull request starts a run, which polls `https://<PR>.preview.hivepal.app/api/version`
+until Coolify's preview reports the pushed commit (Coolify's `SOURCE_COMMIT`),
+then tests that commit with the PR's own suite. A newer push cancels the run in
+progress. The run reports back as one `<!-- e2e-smoke -->` comment on the PR
+and in the job summary. Fork PRs are skipped, and so are branches cut before
+`/api/version` existed (rebase on `main`).
+`devenv shell` provides three wrappers:
 
 ```bash
 smoke-run 243 --watch        # dispatch against https://243.preview.hivepal.app and follow it
