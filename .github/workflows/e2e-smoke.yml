@@ -5,9 +5,10 @@ name: E2E Smoke
 #
 # Automatic: Coolify keeps one comment per PR updated with the preview state
 # ("The preview deployment ... is ready"). GitHub delivers that as an
-# issue_comment event, which starts this workflow against the preview domain in
-# the comment body. Only the Coolify bot's comment counts; a push that deploys
-# again cancels the previous run and starts a new one.
+# issue_comment event, which starts this workflow against that PR's preview
+# (https://<PR>.preview.hivepal.app). Only the Coolify bot's comment on a PR
+# opened by someone with write access counts; a push that deploys again cancels
+# the previous run and starts a new one.
 #
 # By hand, once a preview is up:
 #
@@ -54,10 +55,16 @@ jobs:
     # request starts a run. Every other comment, and comments on issues, are
     # ignored. Rename the bot in one place with the COOLIFY_COMMENT_AUTHOR repo
     # variable if the Coolify GitHub App is ever reinstalled.
+    #
+    # The run checks out the PR head with secrets and a write token, so the PR
+    # itself must come from someone with write access. The bot check alone is
+    # not enough: Coolify comments on whatever PR it deploys, forks included.
+    # Other PRs (forks, Dependabot) can still be run by hand.
     if: >
       github.event_name != 'issue_comment' ||
       (
         github.event.issue.pull_request != null &&
+        contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.issue.author_association) &&
         github.event.comment.user.login == (vars.COOLIFY_COMMENT_AUTHOR || 'enchanting-eel-x0c8gcg[bot]') &&
         contains(github.event.comment.body, 'is ready') &&
         contains(github.event.comment.body, '.preview.hivepal.app')
@@ -69,12 +76,14 @@ jobs:
           DISPATCH_BASE_URL: ${{ inputs.base_url || github.event.client_payload.base_url }}
           DISPATCH_GREP: ${{ inputs.grep || github.event.client_payload.grep }}
           DISPATCH_WORKERS: ${{ inputs.workers || github.event.client_payload.workers }}
-          COMMENT_BODY: ${{ github.event.comment.body }}
+          # PR previews live at https://<PR>.preview.hivepal.app. Built from the
+          # PR number rather than read from the comment body, so no comment
+          # text reaches GITHUB_ENV.
+          PR_NUMBER: ${{ github.event_name == 'issue_comment' && github.event.issue.number || '' }}
         run: |
           base_url="$DISPATCH_BASE_URL"
-          if [ -z "$base_url" ] && [ -n "$COMMENT_BODY" ]; then
-            base_url="$(printf '%s\n' "$COMMENT_BODY" \
-              | grep -oE 'https://[A-Za-z0-9._-]+\.preview\.hivepal\.app' | head -1 || true)"
+          if [ -z "$base_url" ] && [ -n "$PR_NUMBER" ]; then
+            base_url="https://${PR_NUMBER}.preview.hivepal.app"
           fi
           if [ -z "$base_url" ]; then
             echo "::error::No preview URL in the trigger: pass base_url, a client_payload.base_url, or comment from Coolify"
