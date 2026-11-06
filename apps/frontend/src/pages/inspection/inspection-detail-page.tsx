@@ -10,7 +10,6 @@ import {
   InspectionStatusCard,
   NotesCard,
   ObservationsCard,
-  PendingBoxUpdateBanner,
   WeightsCard,
 } from './components';
 import { AudioCard } from './components/audio-card';
@@ -118,11 +117,6 @@ export const InspectionDetailPage = () => {
     <div className="p-2 sm:p-4">
       <PageGrid>
         <MainContent>
-          {/* Pending box update banner (if any) */}
-          <div className="mb-3">
-            <PendingBoxUpdateBanner inspectionId={inspection.id} />
-          </div>
-
           {/* Top bar: back link + share */}
           <div className="mb-4 flex items-center justify-between">
             <Button

@@ -21,6 +21,11 @@ import { CustomLoggerService } from '../logger/logger.service';
 import { Box as PrismaBox } from '@/prisma/client';
 import { HiveCreatedEvent, HiveUpdatedEvent } from '../events/hive.events';
 import {
+  diffBoxLayouts,
+  hasLayoutChanges,
+  replaceHiveBoxes,
+} from './box-layout';
+import {
   CreateHive,
   UpdateHive,
   HiveResponse,
@@ -34,7 +39,6 @@ import {
   CURRENT_QUEEN_STATUSES,
   BoxVariantEnum,
   HiveSettings,
-  isVariantCompatible,
   parseApiaryInspectionType,
   parseApiarySettings,
 } from 'shared-schemas';
@@ -760,139 +764,27 @@ export class HiveService {
       throw new NotFoundException(`Hive with id ${id} has no apiary`);
     }
 
-    // Calculate changes before the transaction
     const oldBoxes = hive.boxes || [];
     const newBoxes = updateHiveBoxesDto.boxes || [];
-
-    const oldBoxesById = new Map(oldBoxes.map((box) => [box.id, box]));
-    const oldBoxesByPosition = new Map(
-      oldBoxes.map((box) => [box.position, box]),
-    );
-    // Keep a box's original addedAt when it is re-sent without one.
-    const resolveAddedAt = (box: UpdateHiveBoxes['boxes'][number]): Date => {
-      if (box.addedAt instanceof Date) return box.addedAt;
-      if (box.addedAt) return new Date(box.addedAt);
-      const byId = box.id
-        ? (oldBoxesById.get(box.id) as { addedAt?: Date } | undefined)
-        : undefined;
-      const byPosition = oldBoxesByPosition.get(box.position) as
-        { addedAt?: Date } | undefined;
-      return byId?.addedAt ?? byPosition?.addedAt ?? new Date();
-    };
-
-    const oldBoxCount = oldBoxes.length;
-    const newBoxCount = newBoxes.length;
-    const oldFrameCount = oldBoxes.reduce(
-      (sum, box) => sum + (box.frameCount || 0),
-      0,
-    );
-    const newFrameCount = newBoxes.reduce(
-      (sum, box) => sum + (box.frameCount || 0),
-      0,
-    );
-
-    const boxesAdded = Math.max(0, newBoxCount - oldBoxCount);
-    const boxesRemoved = Math.max(0, oldBoxCount - newBoxCount);
-    const framesAdded = Math.max(0, newFrameCount - oldFrameCount);
-    const framesRemoved = Math.max(0, oldFrameCount - newFrameCount);
-
-    // Validate variant compatibility
-    if (newBoxes.length > 0) {
-      const mainBox = newBoxes.find((b) => b.position === 0);
-      const mainBoxVariant = mainBox?.variant;
-      if (mainBoxVariant) {
-        const incompatibleBoxes = newBoxes.filter(
-          (b) =>
-            b.position !== 0 &&
-            b.variant &&
-            !isVariantCompatible(mainBoxVariant, b.variant),
-        );
-
-        if (incompatibleBoxes.length > 0) {
-          throw new BadRequestException(
-            `Boxes at positions ${incompatibleBoxes.map((b) => b.position).join(', ')} ` +
-              `are not compatible with the main box variant (${mainBoxVariant})`,
-          );
-        }
-      }
-    }
+    const diff = diffBoxLayouts(oldBoxes, newBoxes);
 
     this.logger.debug(`Found hive, proceeding with box updates`);
-    // Use a transaction to ensure atomicity
     const updatedHive = await this.prisma.$transaction(async (tx) => {
-      // First, delete all existing boxes for this hive
-      this.logger.debug(`Deleting existing boxes for hive: ${id}`);
-      await tx.box.deleteMany({
-        where: { hiveId: id },
-      });
-      this.logger.debug(`Existing boxes deleted successfully`);
+      await replaceHiveBoxes(tx, id, oldBoxes, newBoxes);
 
-      // Then create all the new boxes
-      this.logger.debug(
-        `Creating ${updateHiveBoxesDto.boxes.length} new boxes for hive: ${id}`,
-      );
-      const boxPromises = updateHiveBoxesDto.boxes.map((box) => {
-        return tx.box.create({
-          data: {
-            // Always let Prisma generate a fresh id. Boxes are deleted and
-            // recreated wholesale here and nothing references Box.id, so
-            // reusing the client-supplied id only risks unique-constraint
-            // collisions (duplicate ids in the payload, or an id that belongs
-            // to another hive and was therefore not deleted above).
-            hiveId: id,
-            position: box.position,
-            frameCount: box.frameCount,
-            hasExcluder: box.hasExcluder,
-            type: box.type, // BoxType enum matches our DTO enum
-            maxFrameCount: box.maxFrameCount,
-            variant: box.variant,
-            frameSizeId: box.frameSizeId ?? null,
-            color: box.color,
-            addedAt: resolveAddedAt(box),
-            winterized: box.winterized ?? false,
-          },
-        });
-      });
-
-      await Promise.all(boxPromises);
-      this.logger.debug(`All new boxes created successfully`);
-
-      // Create action record if there were changes
-      if (
-        boxesAdded > 0 ||
-        boxesRemoved > 0 ||
-        framesAdded > 0 ||
-        framesRemoved > 0
-      ) {
-        this.logger.debug(
-          `Creating box configuration action for tracking changes`,
-        );
-
-        // Create the action record
-        const action = await tx.action.create({
+      // Record the change on the hive's timeline
+      if (hasLayoutChanges(diff)) {
+        const { boxesAdded, boxesRemoved, framesAdded, framesRemoved } = diff;
+        await tx.action.create({
           data: {
             hiveId: id,
             type: 'BOX_CONFIGURATION',
             notes:
               `Box configuration updated: ${signedCount(boxesAdded, '+', 'boxes')}${signedCount(boxesRemoved, '-', 'boxes')} ${signedCount(framesAdded, '+', 'frames')}${signedCount(framesRemoved, '-', 'frames')}`.trim(),
             date: new Date(),
+            boxConfigurationAction: { create: diff },
           },
         });
-
-        // Create the box configuration action details
-        await tx.boxConfigurationAction.create({
-          data: {
-            actionId: action.id,
-            boxesAdded,
-            boxesRemoved,
-            framesAdded,
-            framesRemoved,
-            totalBoxes: newBoxCount,
-            totalFrames: newFrameCount,
-          },
-        });
-
-        this.logger.debug(`Box configuration action created successfully`);
       }
 
       // Return the hive with the updated boxes

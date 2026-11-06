@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import axios from 'axios';
 import { apiClient } from '../client';
 import {
   ActionType,
@@ -14,7 +13,6 @@ import {
   InspectionStatus,
   UpdateInspection,
   UpdateInspectionResponse,
-  HiveDetailResponse,
   TreatmentActionDetails,
 } from 'shared-schemas';
 import { useApiaryStore } from '@/hooks/use-apiary';
@@ -26,9 +24,8 @@ import type {
 import { useNavigate } from 'react-router';
 import { useUnitFormat } from '@/hooks/use-unit-format';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
-import { useUpdateHiveBoxes, apiaryHeaderConfig } from './useHives';
+import { apiaryHeaderConfig } from './useHives';
 import { invalidateTreatmentTotals } from './useTreatmentProducts';
-import { usePendingBoxUpdatesStore } from '@/stores/pendingBoxUpdatesStore';
 
 // Query keys
 const INSPECTIONS_KEYS = {
@@ -231,8 +228,10 @@ export const transformActionsForApi = (
             },
           };
         case 'BOX_CONFIGURATION':
-          // Strip the local-only updatedBoxes field before sending to API,
-          // but include the per-box summary derived from updatedBoxes.
+          // updatedBoxes is only set when the configurator was confirmed in
+          // this session; it goes out as the layout for the backend to apply
+          // (it recomputes the counts). Without it, a box change saved earlier
+          // is kept as is.
           return {
             type: ActionType.BOX_CONFIGURATION,
             details: {
@@ -248,6 +247,11 @@ export const transformActionsForApi = (
                 frameCount: b.frameCount,
               })) ?? action.boxesSummary) as
                 { type: BoxTypeEnum; frameCount: number }[] | undefined,
+              layout: action.updatedBoxes?.map(box => ({
+                ...box,
+                // Boxes added in the configurator only have a temporary id
+                id: box.id?.startsWith('temp-') ? undefined : box.id,
+              })),
             },
           };
         default:
@@ -326,7 +330,8 @@ export const useUpdateInspection = () => {
   });
 };
 
-// Delete an inspection
+// Delete an inspection. With revertHiveChanges, the backend first undoes the
+// inspection's box and frame changes to the hive (see inspections.service).
 export const useDeleteInspection = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation('inspection');
@@ -334,24 +339,26 @@ export const useDeleteInspection = () => {
   return useMutation({
     mutationFn: async ({
       id,
-      revertFrames,
+      revertHiveChanges,
       apiaryId,
     }: {
       id: string;
-      revertFrames?: boolean;
+      revertHiveChanges?: boolean;
       apiaryId?: string;
     }) => {
       await apiClient.delete(`/api/inspections/${id}`, {
-        params: revertFrames ? { revertFrames: 'true' } : undefined,
+        params: revertHiveChanges ? { revertHiveChanges: 'true' } : undefined,
         ...apiaryHeaderConfig(apiaryId),
       });
       return id;
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: INSPECTIONS_KEYS.lists() });
-      // Reverting frame actions changes the hive's brood-box frame counts
-      queryClient.invalidateQueries({ queryKey: ['hives'] });
-      invalidateTreatmentTotals(queryClient);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: INSPECTIONS_KEYS.lists() }),
+        // Undoing hive changes rewrites the hive's boxes
+        queryClient.invalidateQueries({ queryKey: ['hives'] }),
+        invalidateTreatmentTotals(queryClient),
+      ]);
     },
     onError: () => {
       toast.error(t('detailSidebar.deleteFailed'));
@@ -370,22 +377,11 @@ export const useUpsertInspection = (
 ) => {
   const { mutateAsync: createInspectionMutation } = useCreateInspection();
   const { mutateAsync: updateInspectionMutation } = useUpdateInspection();
-  const { mutateAsync: updateHiveBoxes } = useUpdateHiveBoxes();
   const { t } = useTranslation('inspection');
   const { parseWeight } = useUnitFormat();
-  const { addPendingUpdate, updateStatus, removePendingUpdate } =
-    usePendingBoxUpdatesStore();
-  const getUrl = (inspectionId?: string) => `/inspections/${inspectionId}`;
   const navigate = useNavigate();
 
   return async (data: InspectionFormData, status?: InspectionStatus) => {
-    // Extract box configuration action so we can apply hive update on success
-    const boxConfigAction = data.actions?.find(
-      a => a.type === 'BOX_CONFIGURATION',
-    );
-
-    const transformedActions = transformActionsForApi(data.actions);
-
     // Build score override if custom scores were set
     const scoreOverride = data.score
       ? {
@@ -403,158 +399,30 @@ export const useUpsertInspection = (
       unit: 'kg',
     }));
 
+    // A box configuration action carries the new layout; the backend applies
+    // it to the hive in the same transaction as the inspection.
     const formattedData = {
       ...data,
       date: toInspectionDateISOString(data.date, data.isAllDay ?? true),
       status: status || data.status,
-      actions: transformedActions,
+      actions: transformActionsForApi(data.actions),
       score: scoreOverride,
       weights: formattedWeights,
     };
 
-    /**
-     * Performs the box update with optimistic pending state tracking.
-     * Adds a pending update to the store before attempting the API call,
-     * allowing tracking even if the user navigates away.
-     */
-    const performBoxUpdate = async (
-      inspectionRes: CreateInspectionResponse | UpdateInspectionResponse,
-    ) => {
-      // Check if there are box changes to apply
-      if (
-        !boxConfigAction?.updatedBoxes ||
-        boxConfigAction.updatedBoxes.length === 0 ||
-        !data.hiveId
-      ) {
-        return; // No box changes, skip box update
-      }
-
-      try {
-        // Transform the box payload: strip temp IDs and prepare for API
-        const transformedBoxes = boxConfigAction.updatedBoxes.map(box => ({
-          ...box,
-          id: box.id?.startsWith('temp-') ? undefined : box.id,
-        }));
-
-        // Fetch current hive data to get updatedAt timestamp for staleness detection
-        // CRITICAL #3: Fail the entire box update if hive fetch fails - don't use fallback timestamp
-        let hiveLastModifiedAt: string;
-        try {
-          const hiveResponse = await apiClient.get<HiveDetailResponse>(
-            `/api/hives/${data.hiveId}`,
-          );
-          hiveLastModifiedAt = hiveResponse.data.updatedAt;
-        } catch (e) {
-          // If we can't fetch hive data, abort box update and show warning
-          console.error(
-            'Failed to fetch hive data for box update staleness check:',
-            e,
-          );
-          toast.warning(
-            t('messages.boxUpdateWarning', {
-              error: t('messages.boxUpdateStalenessFailed'),
-            }),
-          );
-          return; // Exit early, no pending update added
-        }
-
-        // Add pending update to store with 'in-progress' status BEFORE attempting box update
-        // This ensures the pending state is tracked even if user navigates away
-        addPendingUpdate({
-          inspectionId: inspectionRes.id,
-          hiveId: data.hiveId,
-          boxPayload: transformedBoxes,
-          hiveLastModifiedAt,
-          status: 'in-progress',
+    const res = inspectionId
+      ? await updateInspectionMutation({
+          id: inspectionId,
+          data: { ...formattedData, id: inspectionId },
+          apiaryId: options?.apiaryId,
+        })
+      : await createInspectionMutation({
+          data: formattedData,
+          apiaryId: options?.apiaryId,
         });
 
-        // Attempt the box update
-        try {
-          await updateHiveBoxes({
-            id: data.hiveId,
-            boxes: transformedBoxes,
-            apiaryId: options?.apiaryId,
-          });
-
-          // On success, remove the pending update from store
-          removePendingUpdate(inspectionRes.id);
-        } catch (boxUpdateError) {
-          // On failure, update the pending update status to 'failed' with error message
-          // HIGH #6: Extract actual API error message from AxiosError
-          let errorMessage: string = t('messages.boxUpdateFailed');
-
-          if (
-            axios.isAxiosError(boxUpdateError) &&
-            boxUpdateError.response?.data?.message
-          ) {
-            errorMessage = boxUpdateError.response.data.message;
-          } else if (boxUpdateError instanceof Error) {
-            errorMessage = boxUpdateError.message;
-          }
-
-          updateStatus(inspectionRes.id, 'failed', errorMessage);
-
-          // Show warning toast about the failure (banner will handle retry UI)
-          toast.warning(
-            t('messages.boxUpdateWarning', { error: errorMessage }),
-          );
-        }
-      } catch (unexpectedError) {
-        // MEDIUM #15: Handle unexpected errors and clean up stuck pending state
-        removePendingUpdate(inspectionRes.id);
-        console.error('[performBoxUpdate] Unexpected error:', unexpectedError);
-        toast.error(t('messages.boxUpdateUnexpected'));
-      }
-    };
-
-    /**
-     * Handles post-save logic (showing success toast, performing box update, navigation)
-     * MEDIUM #11: Extract common logic to avoid duplication between create/update branches
-     */
-    const handlePostSave = async (
-      res: CreateInspectionResponse | UpdateInspectionResponse,
-    ) => {
-      // HIGH #5: Show appropriate success message based on whether box changes exist
-      // If there are box changes, show a simpler message since box update toast will follow
-      if (
-        boxConfigAction?.updatedBoxes &&
-        boxConfigAction.updatedBoxes.length > 0
-      ) {
-        toast.success(t('messages.saved'));
-      } else {
-        toast.success(t('messages.savedSuccessfully'));
-      }
-
-      // Perform box update in background (don't await, don't block navigation)
-      // CRITICAL #4: Add error logging for unhandled promise rejections
-      performBoxUpdate(res).catch(error => {
-        console.error(
-          '[performBoxUpdate] Unhandled error in box update flow:',
-          error,
-        );
-      });
-
-      await options?.onBeforeNavigate?.(res.id);
-      navigate(getUrl(res.id));
-    };
-
-    // Create or update the inspection, then perform box update in background
-    if (!inspectionId) {
-      const res = await createInspectionMutation({
-        data: formattedData,
-        apiaryId: options?.apiaryId,
-      });
-      await handlePostSave(res);
-    } else {
-      const res = await updateInspectionMutation({
-        id: inspectionId,
-        data: {
-          ...formattedData,
-          id: inspectionId,
-        },
-        apiaryId: options?.apiaryId,
-      });
-      await handlePostSave(res);
-    }
+    toast.success(t('messages.savedSuccessfully'));
+    await options?.onBeforeNavigate?.(res.id);
+    navigate(`/inspections/${res.id}`);
   };
 };

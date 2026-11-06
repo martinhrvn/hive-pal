@@ -24,6 +24,12 @@ import { InspectionStatusUpdaterService } from './inspection-status-updater.serv
 import { InspectionAudioService } from '../inspection-audio/inspection-audio.service';
 import { PhotosService } from '../photos/photos.service';
 import { safeJsonParse } from '../utils/safe-json-parse';
+import {
+  applyBoxConfiguration,
+  captureBoxConfiguration,
+  recordAppliedLayout,
+  revertBoxConfiguration,
+} from './inspection-box-config';
 import { getStoredOrCalculatedScore } from '../utils/score-utils';
 import { z } from 'zod';
 import { Logger } from 'winston';
@@ -128,16 +134,16 @@ export class InspectionsService {
   private readonly stringArraySchema = z.array(z.string());
 
   constructor(
-    private prisma: PrismaService,
-    private metricService: MetricsService,
-    private prometheus: PrometheusService,
-    private actionsService: ActionsService,
-    private logger: CustomLoggerService,
-    private eventEmitter: EventEmitter2,
-    private inspectionStatusUpdater: InspectionStatusUpdaterService,
+    private readonly prisma: PrismaService,
+    private readonly metricService: MetricsService,
+    private readonly prometheus: PrometheusService,
+    private readonly actionsService: ActionsService,
+    private readonly logger: CustomLoggerService,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly inspectionStatusUpdater: InspectionStatusUpdaterService,
     @Inject(forwardRef(() => InspectionAudioService))
-    private audioService: InspectionAudioService,
-    private photosService: PhotosService,
+    private readonly audioService: InspectionAudioService,
+    private readonly photosService: PhotosService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly winstonLogger: Logger,
   ) {}
 
@@ -328,12 +334,26 @@ export class InspectionsService {
             filter.userId,
           );
 
+          // Box changes first: the layout replaces the boxes wholesale, and
+          // frame actions are recorded on top of it.
+          const trackLayout = await applyBoxConfiguration(
+            tx,
+            inspection.id,
+            inspection.hiveId,
+            actions,
+            null,
+          );
+
           // Keep the hive's brood-box frame counts in sync with frame actions
           await this.applyFrameDeltaToBroodBoxes(
             tx,
             inspection.hiveId,
             this.sumFrameActionDelta(actions),
           );
+
+          if (trackLayout) {
+            await recordAppliedLayout(tx, inspection.id, inspection.hiveId);
+          }
         }
 
         // Emit event for new inspection
@@ -500,6 +520,13 @@ export class InspectionsService {
           // frame actions are replaced, then apply only the difference so the
           // brood-box frame counts are not double-counted on re-save.
           const previousFrameDelta = await this.getInspectionFrameDelta(tx, id);
+          // Likewise keep the box change saved earlier (and its undo data),
+          // which replacing the actions would otherwise drop.
+          const storedBoxConfig = await captureBoxConfiguration(
+            tx,
+            id,
+            inspection.hiveId,
+          );
 
           await this.actionsService.updateActions(
             id,
@@ -508,12 +535,25 @@ export class InspectionsService {
             filter.userId,
           );
 
+          // Removing the box action only drops the record: the boxes stay.
+          const trackLayout = await applyBoxConfiguration(
+            tx,
+            id,
+            inspection.hiveId,
+            actions,
+            storedBoxConfig,
+          );
+
           const nextFrameDelta = this.sumFrameActionDelta(actions);
           await this.applyFrameDeltaToBroodBoxes(
             tx,
             inspection.hiveId,
             nextFrameDelta - previousFrameDelta,
           );
+
+          if (trackLayout) {
+            await recordAppliedLayout(tx, id, inspection.hiveId);
+          }
         }
 
         const status = updateInspectionDto.status;
@@ -573,7 +613,18 @@ export class InspectionsService {
     );
   }
 
-  async remove(id: string, filter: ApiaryScopeFilter, revertFrames = false) {
+  /**
+   * Deletes an inspection. With `revertHiveChanges`, the changes it made to
+   * the hive's boxes are undone first: the box layout from before the
+   * inspection is restored while the hive still matches what the inspection
+   * left (this also covers its frame changes); otherwise only its frame-count
+   * change is reverted.
+   */
+  async remove(
+    id: string,
+    filter: ApiaryScopeFilter,
+    revertHiveChanges = false,
+  ) {
     // The user must be able to write to the inspection's hive's apiary.
     const inspection = await this.prisma.inspection.findFirst({
       where: {
@@ -593,9 +644,11 @@ export class InspectionsService {
     await this.photosService.deleteAllForInspection(id);
 
     return this.prisma.$transaction(async (tx) => {
-      // Optionally revert this inspection's frame-count change before deleting
-      // its actions, so the hive's brood-box frame counts stay consistent.
-      if (revertFrames) {
+      // Undo this inspection's hive changes before its actions are deleted.
+      const boxesRestored =
+        revertHiveChanges &&
+        (await revertBoxConfiguration(tx, id, inspection.hiveId));
+      if (revertHiveChanges && !boxesRestored) {
         const appliedFrameDelta = await this.getInspectionFrameDelta(tx, id);
         if (appliedFrameDelta) {
           await this.applyFrameDeltaToBroodBoxes(

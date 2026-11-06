@@ -38,10 +38,7 @@ import {
   StatusChangeForm,
   StatusChangeView,
 } from '@/pages/inspection/components/inspection-form/actions/status-change.tsx';
-import {
-  BoxConfigurationAction,
-  BoxConfigurationView,
-} from '@/pages/inspection/components/inspection-form/actions/box-configuration.tsx';
+import { BoxConfigurationAction } from '@/pages/inspection/components/inspection-form/actions/box-configuration.tsx';
 import { Button } from '@/components/ui/button';
 import { TEST_SELECTORS } from '@/utils/test-selectors.ts';
 import { useFormContext } from 'react-hook-form';
@@ -319,14 +316,6 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
     [getValues, setValue],
   );
 
-  // Specific save handler for box configuration — same logic but typed
-  const handleBoxConfigSave = useCallback(
-    (action: BoxConfigurationActionData) => {
-      handleSave(action);
-    },
-    [handleSave],
-  );
-
   const existingBoxConfigAction = formActions.find(
     a => a.type === 'BOX_CONFIGURATION',
   );
@@ -440,14 +429,6 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
             onRemove={() => handleRemove('OTHER')}
           />
         );
-      case 'BOX_CONFIGURATION':
-        return (
-          <BoxConfigurationView
-            key="box-configuration"
-            action={action as BoxConfigurationActionData}
-            onRemove={() => handleRemove(ActionTypeEnum.BOX_CONFIGURATION)}
-          />
-        );
       default:
         return null;
     }
@@ -512,7 +493,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
             <BoxConfigurationAction
               initialBoxes={hiveBoxes}
               hiveId={hiveId}
-              onSave={handleBoxConfigSave}
+              onSave={handleSave}
               onRemove={() => handleRemove(ActionTypeEnum.BOX_CONFIGURATION)}
               existingAction={existingBoxConfigAction}
             />

@@ -168,11 +168,6 @@
   "messages": {
     "exportComingSoon": "Export functionality coming soon",
     "shareComingSoon": "Share functionality coming soon",
-    "boxUpdateWarning": "Inspection saved, but box configuration could not be updated: {{error}}",
-    "boxUpdateStalenessFailed": "Failed to fetch hive data for staleness detection. Box update skipped.",
-    "boxUpdateFailed": "Failed to update box configuration. Please try again.",
-    "boxUpdateUnexpected": "An unexpected error occurred during box update.",
-    "saved": "Inspection saved",
     "savedSuccessfully": "Inspection saved successfully"
   },
   "scheduled": {
@@ -457,18 +452,20 @@
     "printDetails": "Print Details",
     "deleteInspection": "Delete Inspection",
     "deleteFailed": "Failed to delete inspection",
-    "frameModificationAdded": "This inspection added {{count}} frame(s) to the hive.",
-    "frameModificationRemoved": "This inspection removed {{count}} frame(s) from the hive.",
-    "frameModificationQuestion": "Do you want to keep the updated frame count or revert it?",
-    "deleteKeepFrames": "Delete & keep frame count",
-    "deleteRevertFrames": "Delete & revert frame count",
     "relatedActions": "Related Actions",
     "viewHive": "View Hive",
     "newInspection": "New Inspection",
     "navigation": "Navigation",
     "allInspections": "All Inspections",
     "recentInspections": "Recent Inspections",
-    "goBack": "Go Back"
+    "goBack": "Go Back",
+    "hiveChangesDescription": "This inspection changed the hive. Keep those changes, or undo them along with the inspection.",
+    "undoListTitle": "Undo will revert:",
+    "frameChange": "Frames: {{change}}",
+    "boxChange": "Box configuration: {{changes}}",
+    "boxChangeNotUndoable": "The box configuration change can't be undone automatically: the hive's boxes no longer match what this inspection left.",
+    "deleteKeepHive": "Delete, keep hive as is",
+    "deleteUndoHiveChanges": "Delete and undo hive changes"
   },
   "timeline": {
     "scheduledInspections": "Scheduled Inspections",
@@ -591,20 +588,6 @@
     "uploadFailed": "Failed to upload recording. The inspection was saved.",
     "tryAgain": "Try again",
     "unsupported": "Audio recording is not supported in this browser."
-  },
-  "pendingBoxUpdate": {
-    "updatingTitle": "Updating box configuration",
-    "updatingDescription": "Your inspection has been saved. The box configuration is being updated in the background.",
-    "failedTitle": "Box configuration update failed",
-    "failedDescription": "Failed to update the box configuration. Please retry or dismiss this message.",
-    "retry": "Retry",
-    "retrySuccess": "Box configuration updated successfully",
-    "retryFailed": "Retry request failed. Please try again.",
-    "retryDisabled": "Retries disabled (5 attempts reached)",
-    "dismiss": "Dismiss",
-    "stalePayload": "The hive configuration has changed. The box update cannot be retried.",
-    "stalePayloadMessage": "The hive configuration has changed since this update failed. Please refresh the page to see the current state.",
-    "maxRetriesReached": "Maximum retry attempts reached. Please contact support if the issue persists."
   },
   "units": {
     "celsius": "{{value}}°C",

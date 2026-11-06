@@ -2,7 +2,14 @@ import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { setupApiary, setupApp, setupHive, setupUser } from './fixtures/setup';
-import { ActionType, CreateInspection } from 'shared-schemas';
+import {
+  ActionType,
+  Box,
+  BoxTypeEnum,
+  BoxVariantEnum,
+  CreateAction,
+  CreateInspection,
+} from 'shared-schemas';
 import { getRandomApiary } from './fixtures/apiary';
 import { getRandomHive } from './fixtures/hive';
 
@@ -721,5 +728,251 @@ it('should create an inspection with multiple actions of different types', async
   expect(respOtherAction).toMatchObject({
     type: 'OTHER',
     notes: 'Replaced hive stand',
+  });
+});
+
+describe('Box configuration recorded during an inspection', () => {
+  const inspectionDate = '2026-05-01T10:00:00.000Z';
+  const broodBox = {
+    position: 0,
+    frameCount: 10,
+    maxFrameCount: 10,
+    hasExcluder: false,
+    type: BoxTypeEnum.BROOD,
+    variant: BoxVariantEnum.LANGSTROTH_DEEP,
+    color: '#3b82f6',
+    winterized: false,
+  };
+  // The hive after the inspection: a honey super with an excluder added.
+  const layoutWithSuper: Box[] = [
+    broodBox,
+    {
+      position: 1,
+      frameCount: 9,
+      maxFrameCount: 10,
+      hasExcluder: true,
+      type: BoxTypeEnum.HONEY,
+      variant: BoxVariantEnum.LANGSTROTH_MEDIUM,
+      winterized: false,
+    },
+  ];
+
+  // Counts are sent as zeros on purpose: the backend derives them itself.
+  const boxConfigurationAction = (layout?: Box[]): CreateAction => ({
+    type: ActionType.BOX_CONFIGURATION,
+    details: {
+      type: ActionType.BOX_CONFIGURATION,
+      boxesAdded: 0,
+      boxesRemoved: 0,
+      framesAdded: 0,
+      framesRemoved: 0,
+      totalBoxes: 0,
+      totalFrames: 0,
+      layout,
+    },
+  });
+
+  const createHiveWithBroodBox = async () => {
+    const hiveId = await setupHive(app, apiaryId);
+    cleanupHiveIds.add(hiveId);
+    await prisma.box.create({ data: { hiveId, ...broodBox } });
+    return hiveId;
+  };
+
+  const createInspection = async (hiveId: string, actions: CreateAction[]) => {
+    const response = await request(app.getHttpServer())
+      .post('/inspections')
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .send({
+        date: inspectionDate,
+        hiveId,
+        actions,
+      } satisfies CreateInspection)
+      .expect(201);
+    return response.body.id as string;
+  };
+
+  const updateActions = (inspectionId: string, actions: CreateAction[]) =>
+    request(app.getHttpServer())
+      .patch(`/inspections/${inspectionId}`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .send({ actions })
+      .expect(200);
+
+  const deleteInspection = (inspectionId: string, revertHiveChanges: boolean) =>
+    request(app.getHttpServer())
+      .delete(`/inspections/${inspectionId}`)
+      .query(revertHiveChanges ? { revertHiveChanges: 'true' } : {})
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .expect(200);
+
+  const hiveBoxes = (hiveId: string) =>
+    prisma.box.findMany({ where: { hiveId }, orderBy: { position: 'asc' } });
+
+  const boxActions = (hiveId: string) =>
+    prisma.action.findMany({
+      where: { hiveId, type: 'BOX_CONFIGURATION' },
+      include: { boxConfigurationAction: true },
+    });
+
+  it('applies the layout with the inspection and records one action', async () => {
+    const hiveId = await createHiveWithBroodBox();
+    const inspectionId = await createInspection(hiveId, [
+      boxConfigurationAction(layoutWithSuper),
+    ]);
+
+    const boxes = await hiveBoxes(hiveId);
+    expect(boxes).toHaveLength(2);
+    expect(boxes[1]).toMatchObject({
+      type: 'HONEY',
+      frameCount: 9,
+      hasExcluder: true,
+    });
+
+    // Exactly one record: linked to the inspection and dated with it.
+    const actions = await boxActions(hiveId);
+    expect(actions).toHaveLength(1);
+    expect(actions[0].inspectionId).toBe(inspectionId);
+    expect(actions[0].date.toISOString()).toBe(inspectionDate);
+    expect(actions[0].boxConfigurationAction).toMatchObject({
+      boxesAdded: 1,
+      boxesRemoved: 0,
+      framesAdded: 9,
+      framesRemoved: 0,
+      totalBoxes: 2,
+      totalFrames: 19,
+    });
+
+    const response = await request(app.getHttpServer())
+      .get(`/inspections/${inspectionId}`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .expect(200);
+    const details = response.body.actions[0].details;
+    expect(details.boxes).toEqual([
+      { type: 'BROOD', frameCount: 10 },
+      { type: 'HONEY', frameCount: 9 },
+    ]);
+    expect(details.appliedLayout).toHaveLength(2);
+  });
+
+  it('undoes the box change when deleted with revertHiveChanges', async () => {
+    const hiveId = await createHiveWithBroodBox();
+    const inspectionId = await createInspection(hiveId, [
+      boxConfigurationAction(layoutWithSuper),
+    ]);
+
+    await deleteInspection(inspectionId, true);
+
+    const boxes = await hiveBoxes(hiveId);
+    expect(boxes).toHaveLength(1);
+    expect(boxes[0]).toMatchObject({ type: 'BROOD', frameCount: 10 });
+  });
+
+  it('keeps the boxes when deleted without reverting', async () => {
+    const hiveId = await createHiveWithBroodBox();
+    const inspectionId = await createInspection(hiveId, [
+      boxConfigurationAction(layoutWithSuper),
+    ]);
+
+    await deleteInspection(inspectionId, false);
+
+    expect(await hiveBoxes(hiveId)).toHaveLength(2);
+  });
+
+  it('does not undo the box change once the hive has changed since', async () => {
+    const hiveId = await createHiveWithBroodBox();
+    const inspectionId = await createInspection(hiveId, [
+      boxConfigurationAction(layoutWithSuper),
+    ]);
+    // Something else changes the boxes after the inspection.
+    await prisma.box.updateMany({
+      where: { hiveId, position: 1 },
+      data: { frameCount: 10 },
+    });
+
+    await deleteInspection(inspectionId, true);
+
+    const boxes = await hiveBoxes(hiveId);
+    expect(boxes).toHaveLength(2);
+    expect(boxes[1].frameCount).toBe(10);
+  });
+
+  it('undoes frame changes recorded on top of the layout', async () => {
+    const hiveId = await createHiveWithBroodBox();
+    const inspectionId = await createInspection(hiveId, [
+      boxConfigurationAction(layoutWithSuper),
+      {
+        type: ActionType.FRAME,
+        details: { type: ActionType.FRAME, quantity: -2 },
+      },
+    ]);
+    expect((await hiveBoxes(hiveId))[0].frameCount).toBe(8);
+
+    await deleteInspection(inspectionId, true);
+
+    const boxes = await hiveBoxes(hiveId);
+    expect(boxes).toHaveLength(1);
+    expect(boxes[0].frameCount).toBe(10);
+  });
+
+  it('keeps the saved box change when the inspection is re-saved', async () => {
+    const hiveId = await createHiveWithBroodBox();
+    const inspectionId = await createInspection(hiveId, [
+      boxConfigurationAction(layoutWithSuper),
+    ]);
+
+    // The edit form sends the saved action back without a layout.
+    await updateActions(inspectionId, [boxConfigurationAction()]);
+
+    expect(await hiveBoxes(hiveId)).toHaveLength(2);
+    const actions = await boxActions(hiveId);
+    expect(actions).toHaveLength(1);
+    expect(actions[0].boxConfigurationAction).toMatchObject({
+      boxesAdded: 1,
+      totalBoxes: 2,
+    });
+
+    // The undo data survived the re-save.
+    await deleteInspection(inspectionId, true);
+    expect(await hiveBoxes(hiveId)).toHaveLength(1);
+  });
+
+  it('keeps the hive as is when the box action is removed on edit', async () => {
+    const hiveId = await createHiveWithBroodBox();
+    const inspectionId = await createInspection(hiveId, [
+      boxConfigurationAction(layoutWithSuper),
+    ]);
+
+    await updateActions(inspectionId, []);
+
+    expect(await hiveBoxes(hiveId)).toHaveLength(2);
+    expect(await boxActions(hiveId)).toHaveLength(0);
+  });
+
+  it('rejects a layout with incompatible box variants', async () => {
+    const hiveId = await createHiveWithBroodBox();
+    await request(app.getHttpServer())
+      .post('/inspections')
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .send({
+        date: inspectionDate,
+        hiveId,
+        actions: [
+          boxConfigurationAction([
+            broodBox,
+            { ...layoutWithSuper[1], variant: BoxVariantEnum.DADANT },
+          ]),
+        ],
+      })
+      .expect(400);
+
+    // Nothing was written: the inspection rolled back with the boxes.
+    expect(await hiveBoxes(hiveId)).toHaveLength(1);
+    expect(await prisma.inspection.count({ where: { hiveId } })).toBe(0);
   });
 });

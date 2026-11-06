@@ -9,11 +9,9 @@ export class InspectionDetailPage {
   constructor(page: Page) {
     this.page = page;
     this.editButton = page
-      .getByRole('button', { name: 'Edit Inspection' })
+      .getByRole('link', { name: 'Edit Inspection' })
       .first();
-    this.viewHiveButton = page
-      .getByRole('button', { name: 'View Hive' })
-      .first();
+    this.viewHiveButton = page.getByRole('link', { name: 'View Hive' }).first();
   }
 
   /** The page title is the hive name. */

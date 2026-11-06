@@ -63,38 +63,12 @@ import { uploadPendingRecordings } from './upload-pending-recordings';
 import { useInspectionAiMerge } from './use-inspection-ai-merge';
 import { applyInspectionModeToFormData } from './mode-behavior';
 import { AiSuggestionPreview } from './ai-suggestion-preview';
-import type { Box } from 'shared-schemas';
 
 const formatAiDateSuggestion = (value: unknown): string => {
   if (value instanceof Date && !Number.isNaN(value.getTime())) {
     return format(value, 'PPP HH:mm');
   }
   return String(value ?? '');
-};
-
-const normalizeBoxSummary = (
-  boxesSummary: Array<{ type: string; frameCount: number }> | undefined,
-  fallbackBoxes: Box[] = [],
-): Box[] | undefined => {
-  if (!boxesSummary?.length) return undefined;
-
-  return boxesSummary.map((summaryBox, index) => {
-    const fallbackBox = fallbackBoxes[index];
-
-    return {
-      ...fallbackBox,
-      hasExcluder: fallbackBox?.hasExcluder ?? false,
-      maxFrameCount:
-        fallbackBox?.maxFrameCount ?? Math.max(summaryBox.frameCount, 1),
-      variant: fallbackBox?.variant,
-      frameSizeId: fallbackBox?.frameSizeId ?? null,
-      color: fallbackBox?.color,
-      winterized: fallbackBox?.winterized ?? false,
-      type: summaryBox.type as Box['type'],
-      frameCount: summaryBox.frameCount,
-      position: index,
-    };
-  });
 };
 
 interface PendingRecording {
@@ -277,21 +251,14 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     enabled: !!selectedHiveId,
   });
 
-  // Calculate total frames from brood boxes only (honey supers are excluded)
-  // If the user has recorded a box configuration action, use its updated boxes instead
+  // Calculate total frames from brood boxes only (honey supers are excluded).
+  // A box layout confirmed in this session wins; a box change saved earlier is
+  // already applied to the hive, so its current boxes reflect it.
   const formActions = form.watch('actions') || [];
   const boxConfigAction = formActions.find(a => a.type === 'BOX_CONFIGURATION');
 
-  const summarizedBoxes = normalizeBoxSummary(
-    boxConfigAction?.boxesSummary,
-    selectedHive?.boxes ?? [],
-  );
-
   const effectiveBoxes =
-    boxConfigAction?.updatedBoxes ??
-    summarizedBoxes ??
-    selectedHive?.boxes ??
-    [];
+    boxConfigAction?.updatedBoxes ?? selectedHive?.boxes ?? [];
 
   const totalFrames =
     effectiveBoxes

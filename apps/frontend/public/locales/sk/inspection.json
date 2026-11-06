@@ -153,11 +153,6 @@
   "messages": {
     "exportComingSoon": "Funkcia exportu bude čoskoro k dispozícii",
     "shareComingSoon": "Funkcia zdieľania bude čoskoro k dispozícii",
-    "boxUpdateWarning": "Prehliadka bola uložená, ale konfiguráciu nadstavkov sa nepodarilo aktualizovať: {{error}}",
-    "boxUpdateStalenessFailed": "Nepodarilo sa načítať údaje úľa na kontrolu aktuálnosti. Aktualizácia nadstavkov bola preskočená.",
-    "boxUpdateFailed": "Konfiguráciu nadstavkov sa nepodarilo aktualizovať. Skúste to znova.",
-    "boxUpdateUnexpected": "Pri aktualizácii nadstavkov sa vyskytla neočakávaná chyba.",
-    "saved": "Prehliadka bola uložená",
     "savedSuccessfully": "Prehliadka bola úspešne uložená"
   },
   "scheduled": {
@@ -365,7 +360,15 @@
     "navigation": "Navigácia",
     "allInspections": "Všetky prehliadky",
     "recentInspections": "Nedávne prehliadky",
-    "goBack": "Vrátiť sa späť"
+    "goBack": "Vrátiť sa späť",
+    "deleteFailed": "Prehliadku sa nepodarilo vymazať",
+    "hiveChangesDescription": "Táto prehliadka zmenila úľ. Zmeny môžete ponechať alebo ich vrátiť spolu s vymazaním prehliadky.",
+    "undoListTitle": "Vrátia sa tieto zmeny:",
+    "frameChange": "Rámiky: {{change}}",
+    "boxChange": "Konfigurácia nadstavkov: {{changes}}",
+    "boxChangeNotUndoable": "Zmenu konfigurácie nadstavkov nemožno vrátiť automaticky: nadstavky úľa sa už nezhodujú so stavom po tejto prehliadke.",
+    "deleteKeepHive": "Vymazať a ponechať úľ, ako je",
+    "deleteUndoHiveChanges": "Vymazať a vrátiť zmeny úľa"
   },
   "timeline": {
     "scheduledInspections": "Naplánované prehliadky",
