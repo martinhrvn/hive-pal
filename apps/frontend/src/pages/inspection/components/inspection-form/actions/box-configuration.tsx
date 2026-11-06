@@ -23,31 +23,6 @@ import { BoxConfigPanel } from '@/pages/hive/hive-detail-page/box-configurator/B
 import { useFrameSizes } from '@/api/hooks';
 import type { BoxConfigurationActionData } from '../schema';
 
-const normalizeBoxSummary = (
-  boxesSummary: Array<{ type: string; frameCount: number }> | undefined,
-  fallbackBoxes: Box[],
-): Box[] | undefined => {
-  if (!boxesSummary?.length) return undefined;
-
-  return boxesSummary.map((summaryBox, index) => {
-    const fallbackBox = fallbackBoxes[index];
-
-    return {
-      ...fallbackBox,
-      hasExcluder: fallbackBox?.hasExcluder ?? false,
-      maxFrameCount:
-        fallbackBox?.maxFrameCount ?? Math.max(summaryBox.frameCount, 1),
-      variant: fallbackBox?.variant,
-      frameSizeId: fallbackBox?.frameSizeId ?? null,
-      color: fallbackBox?.color,
-      winterized: fallbackBox?.winterized ?? false,
-      type: summaryBox.type as Box['type'],
-      frameCount: summaryBox.frameCount,
-      position: index,
-    };
-  });
-};
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface BoxConfigurationFormProps {
@@ -117,7 +92,7 @@ export const BoxConfigurationForm = ({
       BoxVariantEnum.LANGSTROTH_DEEP,
     );
     const newBox: Box = {
-      id: `temp-${Date.now()}`,
+      id: `temp-${crypto.randomUUID()}`,
       position: boxes.length,
       frameCount: 10,
       maxFrameCount: 10,
@@ -133,16 +108,13 @@ export const BoxConfigurationForm = ({
     setSelectedBoxId(newBox.id ?? null);
   }, [boxes, frameSizes]);
 
-  const handleRemoveBox = useCallback(
-    (boxId: string) => {
-      setBoxes(prev => {
-        const filtered = prev.filter(b => b.id !== boxId);
-        return filtered.map((box, index) => ({ ...box, position: index }));
-      });
-      if (selectedBoxId === boxId) setSelectedBoxId(null);
-    },
-    [selectedBoxId],
-  );
+  const handleRemoveBox = useCallback((boxId: string) => {
+    setBoxes(prev => {
+      const filtered = prev.filter(b => b.id !== boxId);
+      return filtered.map((box, index) => ({ ...box, position: index }));
+    });
+    setSelectedBoxId(current => (current === boxId ? null : current));
+  }, []);
 
   const handleBoxUpdate = useCallback(
     (updatedBox: Box) => {
@@ -214,7 +186,7 @@ export const BoxConfigurationForm = ({
               className="w-full max-w-xs"
               type="button"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus />
               {t('hive:boxConfigurator.addBox')}
             </Button>
           </div>
@@ -278,12 +250,10 @@ export const BoxConfigurationAction = ({
     setOpen(false);
   };
 
-  // Determine the starting boxes for the sheet:
-  // If there's already a recorded action with updatedBoxes, start from those
-  const sheetInitialBoxes =
-    existingAction?.updatedBoxes ??
-    normalizeBoxSummary(existingAction?.boxesSummary, initialBoxes) ??
-    initialBoxes;
+  // Reopening the sheet continues from the layout confirmed in this session.
+  // A box change saved earlier is already applied to the hive, so the hive's
+  // current boxes are the starting point otherwise.
+  const sheetInitialBoxes = existingAction?.updatedBoxes ?? initialBoxes;
 
   return (
     <>
@@ -293,7 +263,7 @@ export const BoxConfigurationAction = ({
         type="button"
         onClick={() => setOpen(true)}
       >
-        <Layers size={16} className="mr-1" />
+        <Layers />
         {t('boxConfigurator.title')}
       </Button>
 
@@ -304,7 +274,7 @@ export const BoxConfigurationAction = ({
         >
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
-              <Layers className="h-5 w-5" />
+              <Layers className="size-5" />
               {t('boxConfigurator.title')}
             </SheetTitle>
           </SheetHeader>
@@ -338,7 +308,7 @@ export const BoxConfigurationView = ({
   return (
     <div className="flex items-start justify-between py-3">
       <div className="flex items-center gap-3">
-        <Layers className="h-5 w-5 text-muted-foreground shrink-0" />
+        <Layers className="size-5 text-muted-foreground shrink-0" />
         <div>
           <div className="font-medium text-sm">
             {t('hive:boxConfigurator.title')}

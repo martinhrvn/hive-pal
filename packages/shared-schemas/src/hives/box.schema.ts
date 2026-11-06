@@ -184,7 +184,64 @@ export const updateHiveBoxesSchema = z.object({
   boxes: z.array(boxSchema),
 });
 
+/**
+ * A box as stored in a layout snapshot (e.g. the hive's boxes before and after
+ * an inspection's box change). No id: boxes are recreated on every change.
+ */
+export const boxSnapshotSchema = z.object({
+  position: z.int().min(0),
+  frameCount: z.int().min(0),
+  maxFrameCount: z.int().min(1),
+  hasExcluder: z.boolean(),
+  type: boxTypeSchema,
+  variant: boxVariantSchema.nullable(),
+  frameSizeId: z.string().nullable(),
+  color: z.string().nullable(),
+  addedAt: z.string().nullable(),
+  winterized: z.boolean(),
+});
+
 export type BoxType = z.infer<typeof boxTypeSchema>;
 export type BoxVariant = z.infer<typeof boxVariantSchema>;
 export type Box = z.infer<typeof boxSchema>;
 export type UpdateHiveBoxes = z.infer<typeof updateHiveBoxesSchema>;
+export type BoxSnapshot = z.infer<typeof boxSnapshotSchema>;
+
+/** The fields that make up a box's physical setup, as compared by sameBoxLayout. */
+type LayoutBox = Pick<
+  Box,
+  'position' | 'frameCount' | 'hasExcluder' | 'type'
+> & {
+  maxFrameCount?: number | null;
+  variant?: BoxVariant | null;
+  frameSizeId?: string | null;
+  color?: string | null;
+  winterized?: boolean | null;
+};
+
+const layoutKey = (box: LayoutBox) =>
+  [
+    box.position,
+    box.type,
+    box.frameCount,
+    box.maxFrameCount ?? null,
+    box.hasExcluder,
+    box.variant ?? null,
+    box.frameSizeId ?? null,
+    box.color?.toLowerCase() ?? null,
+    box.winterized ?? false,
+  ].join('|');
+
+/**
+ * Whether two box layouts describe the same physical setup (ignores ids and
+ * dates). Used to tell if a hive's boxes are still exactly as an inspection
+ * left them, i.e. whether that inspection's box change can be safely undone.
+ */
+export function sameBoxLayout(a: LayoutBox[], b: LayoutBox[]): boolean {
+  if (a.length !== b.length) return false;
+  const keys = (boxes: LayoutBox[]) =>
+    [...boxes].sort((x, y) => x.position - y.position).map(layoutKey);
+  const left = keys(a);
+  const right = keys(b);
+  return left.every((key, index) => key === right[index]);
+}

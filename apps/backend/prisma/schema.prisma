@@ -871,6 +871,8 @@ model BoxConfigurationAction {
   totalBoxes    Int    // Total boxes after the change
   totalFrames   Int    // Total frames after the change
   boxes         Json?  // Per-box summary: [{type, frameCount}]
+  previousBoxes Json?  // Full layout before the change (BoxSnapshot[]), for undo
+  appliedBoxes  Json?  // Full layout right after the change; undo is offered while the hive still matches
 }
 
 model MaintenanceAction {

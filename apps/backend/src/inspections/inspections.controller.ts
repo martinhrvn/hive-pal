@@ -111,6 +111,9 @@ export class InspectionsController {
   async remove(
     @Param('id') id: string,
     @Req() req: RequestWithApiaryScope,
+    // Undo the inspection's box and frame changes to the hive.
+    @Query('revertHiveChanges') revertHiveChanges?: string,
+    // Deprecated alias of revertHiveChanges (it used to revert frames only).
     @Query('revertFrames') revertFrames?: string,
   ) {
     this.logger.log(`Removing inspection with ID ${id}`);
@@ -120,7 +123,7 @@ export class InspectionsController {
         apiaryId: req.apiaryId,
         userId: req.user.id,
       },
-      revertFrames === 'true',
+      revertHiveChanges === 'true' || revertFrames === 'true',
     );
   }
 

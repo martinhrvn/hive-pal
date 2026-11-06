@@ -23,6 +23,7 @@ const boxesSchema = z
 import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import { apiaryReadScope, apiaryWriteScope } from '../common';
 import { SPLIT_FOLLOWUP_TITLE } from '../hives/split.service';
+import { parseBoxSnapshots } from '../hives/box-layout';
 import {
   FeedSpecValues,
   FeedingDetails,
@@ -1227,6 +1228,14 @@ export class ActionsService {
               );
               return parsed.success ? (parsed.data ?? undefined) : undefined;
             })(),
+            // Only changes with an undo snapshot expose their result layout.
+            appliedLayout: parseBoxSnapshots(
+              prismaAction.boxConfigurationAction.previousBoxes,
+            )
+              ? parseBoxSnapshots(
+                  prismaAction.boxConfigurationAction.appliedBoxes,
+                )
+              : undefined,
           },
         };
 

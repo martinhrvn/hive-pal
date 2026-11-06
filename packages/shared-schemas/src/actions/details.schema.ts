@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { ActionType } from './types';
-import { boxTypeSchema } from '../hives/box.schema';
+import {
+  boxSchema,
+  boxSnapshotSchema,
+  boxTypeSchema,
+} from '../hives/box.schema';
 import { hiveStatusSchema } from '../hives/status';
 import { feedEntryUnitSchema, feedTypeIdSchema } from './feeding';
 
@@ -119,6 +123,18 @@ export const boxConfigurationActionDetailsSchema = z.object({
       }),
     )
     .optional(),
+  /**
+   * Input only: the hive's complete new box layout. When an inspection is
+   * saved with it, the backend applies it to the hive in the same transaction
+   * and recomputes the counts above from the hive's previous layout.
+   */
+  layout: z.array(boxSchema).optional(),
+  /**
+   * Response only: the hive's box layout right after this change was applied.
+   * Present when the change can be undone; it can be undone while the hive's
+   * boxes still match it (see sameBoxLayout).
+   */
+  appliedLayout: z.array(boxSnapshotSchema).optional(),
 });
 
 export const maintenanceComponentSchema = z.enum([
