@@ -46,9 +46,9 @@ pnpm test:preview                # .env.preview
 
 ## CI
 
-`.github/workflows/e2e-smoke.yml` runs the smoke suite automatically once
-Coolify reports a pull request's preview as ready (it keeps one comment per PR
-updated, and the workflow reacts to it), and on demand via `workflow_dispatch`.
+`.github/workflows/e2e-smoke.yml` runs the smoke suite on every push to a pull
+request, once that PR's preview serves the pushed commit (it polls
+`/api/version`), and on demand via `workflow_dispatch`.
 Inside `devenv shell`:
 
 ```bash
@@ -59,7 +59,7 @@ smoke-report [run-id]     # download the HTML report with traces and open it
 
 or directly: `gh workflow run e2e-smoke.yml -f base_url=https://<PR>.preview.hivepal.app`.
 
-It waits for `/api/health`, runs `@journey|@core` by default, uploads the
+A dispatched run waits for `/` to answer. It runs `@journey|@core` by default, uploads the
 HTML report plus `test-results/` (traces and screenshots of failed tests,
 7 days) and posts one comment on the PR (or on the commit for the main
 preview).

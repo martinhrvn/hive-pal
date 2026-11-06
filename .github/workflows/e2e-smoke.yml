@@ -3,12 +3,10 @@ name: E2E Smoke
 # Runs the Playwright smoke suite (apps/e2e/tests/smoke) against a deployed
 # Hive Pal instance.
 #
-# Automatic: Coolify keeps one comment per PR updated with the preview state
-# ("The preview deployment ... is ready"). GitHub delivers that as an
-# issue_comment event, which starts this workflow against that PR's preview
-# (https://<PR>.preview.hivepal.app). Only the Coolify bot's comment on a PR
-# opened by someone with write access counts; a push that deploys again cancels
-# the previous run and starts a new one.
+# Automatic: every push to a pull request starts a run. Coolify deploys the
+# same push to https://<PR>.preview.hivepal.app; the run waits until that
+# preview's /api/version reports the pushed commit, then tests it. A newer
+# push cancels the run in progress.
 #
 # By hand, once a preview is up:
 #
@@ -17,6 +15,8 @@ name: E2E Smoke
 # The repository_dispatch trigger is kept for the main preview webhook.
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
     inputs:
       base_url:
@@ -33,42 +33,26 @@ on:
         default: '2'
   repository_dispatch:
     types: [preview-deployed]
-  issue_comment:
-    types: [created, edited]
 
 permissions:
   contents: read
   issues: write
   pull-requests: write
 
+concurrency:
+  group: e2e-smoke-${{ github.event.pull_request.number || inputs.base_url || github.event.client_payload.base_url || 'main-preview' }}
+  cancel-in-progress: true
+
 jobs:
   smoke:
     name: Smoke tests
     runs-on: ubuntu-latest
     timeout-minutes: 40
-    # A newer deployment of the same PR cancels the run in progress. Kept at job
-    # level so a run skipped by the filter below never cancels a real one.
-    concurrency:
-      group: e2e-smoke-${{ github.event.issue.number || inputs.base_url || github.event.client_payload.base_url || 'main-preview' }}
-      cancel-in-progress: true
-    # Only the Coolify bot's "preview deployment ... is ready" comment on a pull
-    # request starts a run. Every other comment, and comments on issues, are
-    # ignored. Rename the bot in one place with the COOLIFY_COMMENT_AUTHOR repo
-    # variable if the Coolify GitHub App is ever reinstalled.
-    #
-    # The run checks out the PR head with secrets and a write token, so the PR
-    # itself must come from someone with write access. The bot check alone is
-    # not enough: Coolify comments on whatever PR it deploys, forks included.
-    # Other PRs (forks, Dependabot) can still be run by hand.
+    # Fork PRs are skipped: they may not get a preview at all (that is up to
+    # Coolify's public PR setting), and their read-only token cannot comment.
     if: >
-      github.event_name != 'issue_comment' ||
-      (
-        github.event.issue.pull_request != null &&
-        contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.issue.author_association) &&
-        github.event.comment.user.login == (vars.COOLIFY_COMMENT_AUTHOR || 'enchanting-eel-x0c8gcg[bot]') &&
-        contains(github.event.comment.body, 'is ready') &&
-        contains(github.event.comment.body, '.preview.hivepal.app')
-      )
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
       - name: Resolve target
@@ -76,76 +60,105 @@ jobs:
           DISPATCH_BASE_URL: ${{ inputs.base_url || github.event.client_payload.base_url }}
           DISPATCH_GREP: ${{ inputs.grep || github.event.client_payload.grep }}
           DISPATCH_WORKERS: ${{ inputs.workers || github.event.client_payload.workers }}
-          # PR previews live at https://<PR>.preview.hivepal.app. Built from the
-          # PR number rather than read from the comment body, so no comment
-          # text reaches GITHUB_ENV.
-          PR_NUMBER: ${{ github.event_name == 'issue_comment' && github.event.issue.number || '' }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          base_url="$DISPATCH_BASE_URL"
-          if [ -z "$base_url" ] && [ -n "$PR_NUMBER" ]; then
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
             base_url="https://${PR_NUMBER}.preview.hivepal.app"
+            # A push carries no options, so it gets the default slice.
+            grep_expr="@journey|@core"
+            expected_commit="$HEAD_SHA"
+          else
+            base_url="$DISPATCH_BASE_URL"
+            grep_expr="$DISPATCH_GREP"
+            expected_commit=""
           fi
           if [ -z "$base_url" ]; then
-            echo "::error::No preview URL in the trigger: pass base_url, a client_payload.base_url, or comment from Coolify"
+            echo "::error::No preview URL: pass base_url or a client_payload.base_url"
             exit 1
           fi
-          # A Coolify comment carries no options, so it gets the default slice.
-          grep_expr="$DISPATCH_GREP"
-          if [ "$GITHUB_EVENT_NAME" = "issue_comment" ]; then
-            grep_expr="${DISPATCH_GREP:-@journey|@core}"
-          fi
-          echo "BASE_URL=$base_url" >> "$GITHUB_ENV"
-          echo "SMOKE_GREP=$grep_expr" >> "$GITHUB_ENV"
-          echo "SMOKE_WORKERS=${DISPATCH_WORKERS:-2}" >> "$GITHUB_ENV"
-          echo "Testing $base_url (trigger: $GITHUB_EVENT_NAME, grep: ${grep_expr:-all})"
+          {
+            echo "BASE_URL=$base_url"
+            echo "SMOKE_GREP=$grep_expr"
+            echo "SMOKE_WORKERS=${DISPATCH_WORKERS:-2}"
+            echo "EXPECTED_COMMIT=$expected_commit"
+          } >> "$GITHUB_ENV"
+          echo "Testing $base_url (trigger: $GITHUB_EVENT_NAME, grep: ${grep_expr:-all}, commit: ${expected_commit:-any})"
 
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # For a Coolify comment, test with the pull request's suite.
-          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/head', github.event.issue.number) || github.ref }}
+          # The pushed commit, which is what Coolify deploys, not the merge ref.
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+      - name: Check that the preview can report its commit
+        id: version
+        run: |
+          # Branches cut before /api/version existed deploy without it, so the
+          # wait below could never succeed. Rebasing on main fixes that.
+          if [ -n "$EXPECTED_COMMIT" ] && [ ! -f apps/backend/src/health/version.controller.ts ]; then
+            echo "::notice::This branch predates /api/version; rebase on main to run smoke tests automatically."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install pnpm
+        if: steps.version.outputs.skip != 'true'
         uses: pnpm/action-setup@v4
         with:
           run_install: false
 
       - name: Setup Node.js
+        if: steps.version.outputs.skip != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'pnpm'
 
       - name: Install dependencies
+        if: steps.version.outputs.skip != 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Build page objects
+        if: steps.version.outputs.skip != 'true'
         run: pnpm --filter page-objects build
 
       - name: Install Playwright browsers
+        if: steps.version.outputs.skip != 'true'
         run: pnpm --filter e2e exec playwright install --with-deps chromium
 
-      - name: Wait for the deployment to answer
+      - name: Wait for the deployment
+        if: steps.version.outputs.skip != 'true'
         run: |
-          # Coolify writes its comment once the preview is up, so this is only a
-          # short settle wait, not the readiness signal. Gate on the app root:
-          # /api/health can answer 503 on a preview whose database and UI are
-          # fine (the per-PR stack reports a disk-threshold failure), and it
-          # would block the run.
-          for i in $(seq 1 12); do
-            code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$BASE_URL/" || true)"
-            if [ "$code" = "200" ]; then
-              health="$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$BASE_URL/api/health" || true)"
-              echo "$BASE_URL answers 200 (health: $health, not a gate)"
-              exit 0
+          # With an expected commit (pull requests), wait until the preview
+          # serves it: Coolify builds the same push in parallel and queues
+          # previews, so allow 20 minutes. Otherwise wait for the root to
+          # answer. /api/health is not a gate: it can answer 503 on a preview
+          # whose database and UI are fine (the per-PR stack reports a
+          # disk-threshold failure).
+          for i in $(seq 1 80); do
+            if [ -n "$EXPECTED_COMMIT" ]; then
+              commit="$(curl -sf --max-time 10 "$BASE_URL/api/version" | jq -r '.commit // empty' 2>/dev/null || true)"
+              if [ "$commit" = "$EXPECTED_COMMIT" ]; then
+                echo "$BASE_URL serves $commit"
+                exit 0
+              fi
+              echo "attempt $i: $BASE_URL serves ${commit:-nothing yet}, waiting for $EXPECTED_COMMIT"
+            else
+              code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$BASE_URL/" || true)"
+              if [ "$code" = "200" ]; then
+                echo "$BASE_URL answers 200"
+                exit 0
+              fi
+              echo "attempt $i: $BASE_URL/ answered $code"
+              [ "$i" -ge 12 ] && break
             fi
-            echo "attempt $i: $BASE_URL/ answered $code, retrying in 10s"
-            sleep 10
+            sleep 15
           done
-          echo "::error::$BASE_URL/ did not answer 200"
+          echo "::error::$BASE_URL did not become ready${EXPECTED_COMMIT:+ with commit $EXPECTED_COMMIT}"
           exit 1
 
       - name: Run smoke tests
+        if: steps.version.outputs.skip != 'true'
         env:
           CI: true
           ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
@@ -153,7 +166,7 @@ jobs:
         run: pnpm --filter e2e test:smoke
 
       - name: Upload test results
-        if: always()
+        if: always() && steps.version.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: e2e-smoke-test-results-${{ github.run_id }}
@@ -161,7 +174,7 @@ jobs:
           retention-days: 7
 
       - name: Upload Playwright report
-        if: always()
+        if: always() && steps.version.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: e2e-smoke-playwright-report-${{ github.run_id }}
@@ -169,15 +182,20 @@ jobs:
           retention-days: 7
 
       - name: Report result
-        if: always()
+        if: always() && steps.version.outputs.skip != 'true'
+        # A token without write access (e.g. Dependabot) cannot comment; the
+        # job summary still carries the result.
+        continue-on-error: true
         uses: actions/github-script@v7
         env:
           JOB_STATUS: ${{ job.status }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         with:
           script: |
             const fs = require('fs');
             const baseUrl = process.env.BASE_URL;
             const status = process.env.JOB_STATUS;
+            const commit = process.env.EXPECTED_COMMIT;
             const emoji = status === 'success' ? '✅' : '❌';
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
@@ -189,12 +207,14 @@ jobs:
             } catch {}
 
             const marker = '<!-- e2e-smoke -->';
-            const body = `${marker}\n${emoji} **E2E smoke** on ${baseUrl} **${status}**${counts}\n\nGrep: \`${process.env.SMOKE_GREP || 'all'}\` · [Run and artifacts](${runUrl})`;
+            const at = commit ? ` @ \`${commit.slice(0, 7)}\`` : '';
+            const body = `${marker}\n${emoji} **E2E smoke** on ${baseUrl}${at} **${status}**${counts}\n\nGrep: \`${process.env.SMOKE_GREP || 'all'}\` · [Run and artifacts](${runUrl})`;
+            await core.summary.addRaw(body.replace(marker, '')).write();
 
             // PR previews live at https://<PR>.preview.hivepal.app
-            const pr = baseUrl.match(/^https:\/\/(\d+)\.preview\.hivepal\.app/);
-            if (pr) {
-              const issue_number = Number(pr[1]);
+            const fromUrl = baseUrl.match(/^https:\/\/(\d+)\.preview\.hivepal\.app/);
+            const issue_number = Number(process.env.PR_NUMBER || (fromUrl && fromUrl[1]));
+            if (issue_number) {
               const { data: comments } = await github.rest.issues.listComments({
                 owner: context.repo.owner, repo: context.repo.repo, issue_number, per_page: 100,
               });
