@@ -257,13 +257,16 @@
   },
   "settings": {
     "sso": "Single sign-on (SSO)",
-    "ssoDescription": "Sign in with your organization account",
-    "ssoLinked": "Your account is linked to SSO.",
-    "ssoNotLinked": "Your account is not linked to SSO yet.",
-    "ssoLink": "Link SSO account",
-    "ssoUnlink": "Unlink",
-    "ssoLinkFailed": "Could not link your SSO account",
-    "ssoUnlinkFailed": "Could not unlink your SSO account",
+    "linkedAccounts": {
+      "title": "Linked accounts",
+      "description": "Other accounts you can use to sign in to Hive Pal",
+      "linked": "Linked",
+      "notLinked": "Not linked",
+      "link": "Link",
+      "unlink": "Unlink",
+      "linkFailed": "Could not link your {{provider}} account",
+      "unlinkFailed": "Could not unlink your {{provider}} account"
+    },
     "managePreferences": "Manage your account and application preferences",
     "generalSettings": "General Settings",
     "configureLanguageRegional": "Configure your language and regional preferences",
@@ -2185,6 +2188,7 @@
   },
   "footer": {
     "privacyPolicy": "Privacy Policy",
+    "dataDeletion": "Data Deletion",
     "copyright": "© {{year}} HRVN s.r.o."
   },
   "bulkAdd": {

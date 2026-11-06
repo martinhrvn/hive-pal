@@ -39,7 +39,7 @@ import { UserPreferences } from 'shared-schemas';
 import { normalizeLanguageCode } from '@/utils/language-utils';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { PasskeysCard } from '@/components/passkeys-card';
-import { SsoAccountCard } from '@/components/auth/sso-account-card';
+import { LinkedAccountsCard } from '@/components/auth/linked-accounts-card';
 import { useLinkedAccounts } from '@/api/hooks/useAuth';
 import { getAuthConfig } from '@/lib/auth-config';
 import { FeedTypesCard } from '@/components/feed-types-card';
@@ -61,7 +61,7 @@ export const UserSettingsPage = () => {
   const { user, logout } = useAuth();
   const deleteAccount = useDeleteAccount();
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const { oidcEnabled, localLoginEnabled } = getAuthConfig();
+  const { oidcEnabled, localLoginEnabled, socialProviders } = getAuthConfig();
   const { data: linkedAccounts } = useLinkedAccounts();
   // SSO-only accounts have no password to change.
   const hasPassword =
@@ -458,8 +458,8 @@ export const UserSettingsPage = () => {
           </Card>
         )}
 
-        {/* Single sign-on */}
-        {oidcEnabled && <SsoAccountCard />}
+        {/* Linked accounts (SSO, Google, Facebook) */}
+        {(oidcEnabled || socialProviders.length > 0) && <LinkedAccountsCard />}
 
         {/* Passkeys */}
         <FeedTypesCard />

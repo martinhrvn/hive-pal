@@ -34,6 +34,11 @@
     "title": "Consent to Personal Data Processing",
     "content": "HRVN s.r.o. commits to fully respect the confidential nature of your personal and business data, which is secured against unauthorized access and protected against misuse. Data obtained through the registration form is used exclusively to provide our services and communicate with you. Your personal and contact data is not provided to third parties without your consent."
   },
+  "deletion": {
+    "title": "Deleting Your Data",
+    "content": "You can delete your account and all your data at any time, either in the app or by sending us a request.",
+    "link": "How to delete your data"
+  },
   "contact": {
     "title": "Contact",
     "content": "For any questions regarding the protection of personal data, please contact us at:"
@@ -41,6 +46,28 @@
   "footer": {
     "company": "HRVN s.r.o.",
     "lastUpdated": "Last updated"
+  },
+  "dataDeletion": {
+    "title": "Data Deletion",
+    "intro": "You can delete your Hive Pal account and all data associated with it at any time. This includes the data we received when you signed in with Facebook or Google: your name, email address and account identifier.",
+    "inApp": {
+      "title": "Delete your account in the app",
+      "content": "Sign in, open Settings and choose “{{action}}”. Your account and all data you own (apiaries, hives, inspections, photos and linked sign-in accounts) are deleted immediately and cannot be restored.",
+      "action": "Go to Settings"
+    },
+    "byEmail": {
+      "title": "Request deletion by email",
+      "content": "If you can no longer sign in, send a deletion request to",
+      "details": "Send it from the email address of your Hive Pal account, or tell us which address the account uses. We delete the account and all associated data within 30 days and confirm by email."
+    },
+    "facebook": {
+      "title": "Removing Hive Pal from Facebook",
+      "content": "On Facebook you can also remove Hive Pal under Settings & privacy → Settings → Apps and websites. This stops Facebook from sharing data with Hive Pal, but does not delete your Hive Pal account. Use one of the options above for that."
+    },
+    "meta": {
+      "title": "Data Deletion - Hive Pal",
+      "description": "How to delete your Hive Pal account and the data associated with it, including data from Facebook or Google sign-in."
+    }
   },
   "meta": {
     "title": "Privacy Policy - Hive Pal",

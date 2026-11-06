@@ -58,7 +58,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       user?.consentRequired &&
       !user.passwordChangeRequired &&
       path !== '/account/consent' &&
-      !path.endsWith('/privacy-policy')
+      !path.endsWith('/privacy-policy') &&
+      !path.endsWith('/data-deletion')
     ) {
       window.location.href = '/account/consent';
     }

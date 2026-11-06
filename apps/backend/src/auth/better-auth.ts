@@ -28,7 +28,8 @@ import {
   isLocalLoginDisabled,
   loadOidcConfig,
 } from './oidc-config';
-import { secureOidcAccountLink } from './oidc-linking';
+import { secureSsoAccountLink } from './sso-linking';
+import { enabledSocialProviders, loadSocialProviders } from './social-config';
 import {
   MCP_SCOPES,
   loadMcpConfig,
@@ -124,6 +125,13 @@ if (
   );
 }
 
+const socialProviders = loadSocialProviders();
+// Providers whose sign-in proves the user owns the account's email address.
+const ssoProviderIds: string[] = [
+  ...(oidc.enabled ? [oidc.providerId] : []),
+  ...enabledSocialProviders(socialProviders),
+];
+
 export const auth = betterAuth({
   database: prismaAdapter(prismaForAuth, { provider: 'postgresql' }),
   secret: process.env.BETTER_AUTH_SECRET,
@@ -171,12 +179,25 @@ export const auth = betterAuth({
     },
   },
 
+  socialProviders: {
+    ...(socialProviders.google && {
+      google: { ...socialProviders.google, prompt: 'select_account' },
+    }),
+    ...(socialProviders.facebook && { facebook: socialProviders.facebook }),
+  },
+
   account: {
     accountLinking: {
       enabled: true,
       // The IdP is self-hosted and admin-controlled, so its email claim is
       // trusted for matching even when it doesn't send email_verified=true.
-      trustedProviders: oidc.enabled ? [oidc.providerId] : [],
+      // Facebook only returns confirmed addresses but never says so
+      // (Better Auth reports them as unverified); Google sends
+      // email_verified, so it needs no entry here.
+      trustedProviders: [
+        ...(oidc.enabled ? [oidc.providerId] : []),
+        ...(socialProviders.facebook ? ['facebook'] : []),
+      ],
       // Hive Pal has no email-verification step, so most local accounts are
       // unverified. Linking them is allowed; secureOidcAccountLink() strips
       // the local credentials of such accounts on an implicit link.
@@ -278,10 +299,10 @@ export const auth = betterAuth({
     account: {
       create: {
         after: async (account, ctx) => {
-          if (!oidc.enabled) return;
-          await secureOidcAccountLink({
+          if (ssoProviderIds.length === 0) return;
+          await secureSsoAccountLink({
             prisma: authDeps.prisma,
-            providerId: oidc.providerId,
+            providerIds: ssoProviderIds,
             account,
             isLinkedBySignedInOwner: async () => {
               // Manual linking (settings page) runs the OAuth callback with
@@ -425,10 +446,9 @@ export const auth = betterAuth({
       // Accounts created through SSO never went through the signup form, so
       // they're asked for privacy-policy consent once after the first login.
       const consentRequired =
-        oidc.enabled &&
         !!dbUser &&
         !dbUser.privacyPolicyConsent &&
-        providers.has(oidc.providerId) &&
+        ssoProviderIds.some((id) => providers.has(id)) &&
         !providers.has('credential');
       return {
         user: {

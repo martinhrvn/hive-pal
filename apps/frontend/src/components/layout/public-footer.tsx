@@ -14,6 +14,10 @@ export const PublicFooter = () => {
             {t('footer.privacyPolicy')}
           </Link>
           <span>|</span>
+          <Link to="/data-deletion" className="hover:text-white underline">
+            {t('footer.dataDeletion')}
+          </Link>
+          <span>|</span>
           <span>{t('footer.copyright', { year: currentYear })}</span>
         </div>
         <LanguageSwitcher

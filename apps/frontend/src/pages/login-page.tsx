@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { type SubmitEvent, useEffect, useState } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useNavigate, Link, useLocation, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { PublicFooter } from '@/components/layout/public-footer';
 import { authClient } from '@/lib/auth-client';
-import { getAuthConfig } from '@/lib/auth-config';
-import { SsoButton, SsoDivider } from '@/components/auth/sso-button';
+import { getAuthConfig, hasSsoOptions } from '@/lib/auth-config';
+import { SsoButtons, SsoDivider } from '@/components/auth/sso-button';
 import { useSsoErrorMessage } from '@/components/auth/use-sso-error-message';
 import { getOAuthResumeUrl } from '@/lib/oauth-resume';
 
@@ -27,8 +27,9 @@ const LoginPage = () => {
   const { login, isLoggedIn } = useAuth();
   const [searchParams] = useSearchParams();
   const ssoError = useSsoErrorMessage(searchParams.get('error'));
-  const { oidcEnabled, oidcAllowSignup, localLoginEnabled } = getAuthConfig();
-  const showSignUpLink = localLoginEnabled || oidcAllowSignup;
+  const { localLoginEnabled } = getAuthConfig();
+  const ssoShown = hasSsoOptions('signIn');
+  const showSignUpLink = localLoginEnabled || hasSsoOptions('signUp');
 
   // An OAuth client (e.g. Claude over MCP) sent the user here to sign in:
   // every sign-in method then returns to its authorization request.
@@ -36,7 +37,7 @@ const LoginPage = () => {
   // Otherwise go back to the page that required login, default to '/'
   const from = oauthResumeUrl ?? (location.state?.from?.pathname || '/');
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setBusy('password');
     try {
@@ -125,12 +126,13 @@ const LoginPage = () => {
             </div>
           )}
 
-          {oidcEnabled && (
+          {ssoShown && (
             <div className={localLoginEnabled ? 'mb-6 space-y-6' : ''}>
-              <SsoButton
+              <SsoButtons
+                mode="signIn"
                 redirectTo={from}
                 errorPath="/login"
-                className="bg-amber-500 hover:bg-amber-600 text-white"
+                oidcClassName="bg-amber-500 hover:bg-amber-600 text-white"
               />
               {localLoginEnabled && <SsoDivider label={t('sso.or')} />}
             </div>

@@ -26,6 +26,7 @@ export const PUBLIC_ROUTES = [
   '/tools/varroa-management',
   '/releases',
   '/privacy-policy',
+  '/data-deletion',
 ] as const;
 
 export type PublicRoute = (typeof PUBLIC_ROUTES)[number];
@@ -67,6 +68,7 @@ export const PUBLIC_PAGE_TRANSLATION_MARKERS: Record<
   '/tools/varroa-management': { ns: 'common', key: 'varroaManagement.intro' },
   '/releases': null,
   '/privacy-policy': null,
+  '/data-deletion': null,
 };
 
 /**

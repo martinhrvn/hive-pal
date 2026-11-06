@@ -34,6 +34,11 @@
     "title": "Súhlas so spracovaním osobných údajov",
     "content": "HRVN s.r.o. sa zaväzuje plne rešpektovať dôverný charakter vašich osobných a firemných dát, ktoré sú zabezpečené proti neautorizovanému prístupu a chránené proti zneužitiu. Údaje, ktoré sú získané prostredníctvom registračného formulára používame výlučne na poskytovanie našich služieb a komunikáciu s vami. Vaše osobné a kontaktné údaje nie sú poskytované tretím stranám bez vášho súhlasu."
   },
+  "deletion": {
+    "title": "Vymazanie vašich údajov",
+    "content": "Svoj účet a všetky svoje údaje môžete kedykoľvek vymazať priamo v aplikácii alebo nám môžete poslať žiadosť.",
+    "link": "Ako vymazať svoje údaje"
+  },
   "contact": {
     "title": "Kontakt",
     "content": "Pre akékoľvek otázky týkajúce sa ochrany osobných údajov nás kontaktujte na:"
@@ -41,6 +46,28 @@
   "footer": {
     "company": "HRVN s.r.o.",
     "lastUpdated": "Naposledy aktualizované"
+  },
+  "dataDeletion": {
+    "title": "Vymazanie údajov",
+    "intro": "Svoj účet Hive Pal a všetky súvisiace údaje môžete kedykoľvek vymazať. Patria sem aj údaje, ktoré sme dostali pri prihlásení cez Facebook alebo Google: vaše meno, e-mailová adresa a identifikátor účtu.",
+    "inApp": {
+      "title": "Vymazanie účtu v aplikácii",
+      "content": "Prihláste sa, otvorte Nastavenia a zvoľte „{{action}}“. Váš účet a všetky údaje, ktoré vlastníte (včelnice, úle, prehliadky, fotografie a prepojené účty na prihlásenie), sa okamžite vymažú a nedajú sa obnoviť.",
+      "action": "Prejsť do nastavení"
+    },
+    "byEmail": {
+      "title": "Žiadosť o vymazanie e-mailom",
+      "content": "Ak sa už nemôžete prihlásiť, pošlite žiadosť o vymazanie na",
+      "details": "Pošlite ju z e-mailovej adresy svojho účtu Hive Pal alebo nám uveďte, akú adresu účet používa. Účet a všetky súvisiace údaje vymažeme do 30 dní a potvrdíme vám to e-mailom."
+    },
+    "facebook": {
+      "title": "Odstránenie Hive Pal z Facebooku",
+      "content": "Na Facebooku môžete Hive Pal odstrániť aj v časti Nastavenia a súkromie → Nastavenia → Aplikácie a webové stránky. Facebook tak prestane zdieľať údaje s Hive Pal, váš účet Hive Pal sa však nevymaže. Na to použite jednu z možností vyššie."
+    },
+    "meta": {
+      "title": "Vymazanie údajov - Hive Pal",
+      "description": "Ako vymazať účet Hive Pal a súvisiace údaje vrátane údajov z prihlásenia cez Facebook alebo Google."
+    }
   },
   "meta": {
     "title": "Ochrana osobných údajov - Hive Pal",

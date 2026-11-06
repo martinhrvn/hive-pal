@@ -57,9 +57,9 @@ Hive-Pal can sign users in through any OpenID Connect provider. It has been desi
 
 **How users are matched:** accounts are matched **by email address** (case-insensitive). The provider's email claim is trusted even when it doesn't send `email_verified=true`, so make sure users can't change their own email address in Authentik.
 
-When SSO is linked implicitly to an existing account whose email was never verified (typically an account registered with a password), the password, passkeys and sessions of that account are removed. This prevents someone from pre-registering an account with another person's email and keeping access after that person's first SSO login. The owner keeps all data and can still set a password again via "Forgot password". Accounts with a verified email (older accounts, magic-link users), and accounts linked by their owner from **Settings → Single sign-on**, keep their password.
+When SSO is linked implicitly to an existing account whose email was never verified (typically an account registered with a password), the password, passkeys and sessions of that account are removed. This prevents someone from pre-registering an account with another person's email and keeping access after that person's first SSO login. The owner keeps all data and can still set a password again via "Forgot password". Accounts with a verified email (older accounts, magic-link users), and accounts linked by their owner from **Settings → Linked accounts**, keep their password. Google and Facebook sign-in (see below) follow the same rules.
 
-Users created through SSO are asked once to accept the privacy policy after their first login.
+Users created through SSO, Google or Facebook are asked once to accept the privacy policy after their first login.
 
 #### Authentik setup
 
@@ -84,6 +84,37 @@ Users created through SSO are asked once to accept the privacy policy after thei
 :::tip
 Keep local login enabled until you have confirmed that SSO works. Users with `ADMIN_EMAIL` get the admin role no matter how they sign in.
 :::
+
+### Google and Facebook sign-in
+
+Each provider is enabled as soon as its client ID and secret are set. The login and registration pages then show a **Continue with Google** / **Continue with Facebook** button, and users can link or unlink these accounts under **Settings → Linked accounts**. Both can be used alongside password login and OIDC SSO.
+
+| Variable | Description | Default |
+|---|---|---|
+| `GOOGLE_CLIENT_ID` | OAuth client ID from the Google Cloud console | — |
+| `GOOGLE_CLIENT_SECRET` | OAuth client secret | — |
+| `FACEBOOK_CLIENT_ID` | Facebook app ID | — |
+| `FACEBOOK_CLIENT_SECRET` | Facebook app secret | — |
+
+Redirect URIs to register with the provider:
+
+- Google: `<BETTER_AUTH_URL>/api/auth/callback/google`
+- Facebook: `<BETTER_AUTH_URL>/api/auth/callback/facebook`
+
+Accounts are matched **by email address**, as with OIDC. Google sign-in only links to an existing account when Google reports the address as verified. Facebook sends only confirmed addresses but never says so, so Hive-Pal trusts the email Facebook returns. Users whose Facebook account has no email address can't sign in with it.
+
+#### Google setup
+
+1. In the [Google Cloud console](https://console.cloud.google.com/apis/credentials), configure the **OAuth consent screen** (scopes `openid`, `email`, `profile`).
+2. Create an **OAuth client ID** of type **Web application** and add the redirect URI above under **Authorized redirect URIs**.
+3. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` and restart Hive-Pal.
+
+#### Facebook setup
+
+1. In [Meta for Developers](https://developers.facebook.com/apps/), create an app with the **Authenticate and request data from users with Facebook Login** use case, and add the `email` permission.
+2. Under **Facebook Login → Settings**, add the redirect URI above to **Valid OAuth Redirect URIs**.
+3. Copy the **App ID** and **App secret** from **App settings → Basic** into `FACEBOOK_CLIENT_ID` and `FACEBOOK_CLIENT_SECRET` and restart Hive-Pal. The app must be switched to **Live** mode before people outside your developer team can sign in.
+4. Before going Live, Facebook asks for a **Privacy Policy URL** and a **User data deletion** URL under **App settings → Basic**. Use `<FRONTEND_URL>/privacy-policy` and choose **Data deletion instructions URL** with `<FRONTEND_URL>/data-deletion`. Both pages name the hivepal.app operator and contact address, so self-hosted instances should point Facebook at their own pages instead.
 
 ### AI assistants (MCP)
 

@@ -222,6 +222,17 @@
     "weatherForecast": "Predpoveď počasia"
   },
   "settings": {
+    "sso": "Jednotné prihlásenie (SSO)",
+    "linkedAccounts": {
+      "title": "Prepojené účty",
+      "description": "Ďalšie účty, ktorými sa môžete prihlásiť do Hive Pal",
+      "linked": "Prepojený",
+      "notLinked": "Neprepojený",
+      "link": "Prepojiť",
+      "unlink": "Zrušiť prepojenie",
+      "linkFailed": "Nepodarilo sa prepojiť váš účet {{provider}}",
+      "unlinkFailed": "Nepodarilo sa zrušiť prepojenie účtu {{provider}}"
+    },
     "managePreferences": "Spravujte nastavenia vášho účtu a aplikácie",
     "generalSettings": "Všeobecné nastavenia",
     "configureLanguageRegional": "Nakonfigurujte jazyk a regionálne nastavenia",
@@ -1242,6 +1253,7 @@
   },
   "footer": {
     "privacyPolicy": "Zásady ochrany osobných údajov",
+    "dataDeletion": "Vymazanie údajov",
     "copyright": "© {{year}} HRVN s.r.o."
   },
   "bulkAdd": {
