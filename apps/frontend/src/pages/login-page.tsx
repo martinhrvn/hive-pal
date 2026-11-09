@@ -11,6 +11,7 @@ import { getAuthConfig, hasSsoOptions } from '@/lib/auth-config';
 import { SsoButtons, SsoDivider } from '@/components/auth/sso-button';
 import { useSsoErrorMessage } from '@/components/auth/use-sso-error-message';
 import { getOAuthResumeUrl } from '@/lib/oauth-resume';
+import { trackEvent } from '@/lib/analytics';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -44,6 +45,8 @@ const LoginPage = () => {
       const success = await login(username, password, from);
       if (!success) {
         setError(t('login.invalidCredentials'));
+      } else {
+        trackEvent('Login Success', { method: 'password' });
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -69,6 +72,7 @@ const LoginPage = () => {
         setError(result.error.message ?? t('login.magicLink.failed'));
       } else {
         setMagicLinkSent(true);
+        trackEvent('Magic Link Requested');
       }
     } finally {
       setBusy(null);
@@ -83,6 +87,7 @@ const LoginPage = () => {
       if (result?.error) {
         setError(result.error.message ?? t('login.passkey.failed'));
       } else {
+        trackEvent('Login Success', { method: 'passkey' });
         window.location.href = from;
       }
     } catch (err) {
@@ -194,7 +199,6 @@ const LoginPage = () => {
                   <Button
                     type="submit"
                     className="w-full bg-amber-500 hover:bg-amber-600 text-white shadow-lg"
-                    data-umami-event="Login"
                     disabled={busy !== null}
                   >
                     {busy === 'password' ? '…' : t('login.submit')}

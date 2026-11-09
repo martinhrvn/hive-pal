@@ -21,6 +21,7 @@ import {
   type QueenFormValues,
 } from './queen-form-schema';
 import { TraitsFields } from './traits-fields';
+import { trackEvent } from '@/lib/analytics';
 
 /**
  * `/queens/create`, or `/hives/:hiveId/queens/create` with the hive fixed.
@@ -51,6 +52,7 @@ export const CreateQueenForm = () => {
         ...toQueenPayload(values),
         hiveId: values.hiveId,
       });
+      trackEvent('Queen Created');
       toast.success(t('create.success'));
       navigate(routeHiveId ? `/hives/${routeHiveId}` : `/queens/${queen.id}`);
     } catch {
@@ -64,7 +66,6 @@ export const CreateQueenForm = () => {
       form={form}
       onSubmit={onSubmit}
       submitLabel={t('create.button')}
-      submitEvent="Queen Create"
       cancelTo={routeHiveId ? `/hives/${routeHiveId}` : '/queens'}
     >
       <QueenFields />
@@ -101,6 +102,7 @@ const EditQueenFormBody = ({ queen }: { queen: QueenDetail }) => {
     try {
       // No hiveId: moving a queen goes through a transfer, which records it
       await updateQueen({ id: queen.id, data: toQueenPayload(values) });
+      trackEvent('Queen Updated');
       toast.success(t('edit.success'));
       navigate(`/queens/${queen.id}`);
     } catch {
@@ -114,7 +116,6 @@ const EditQueenFormBody = ({ queen }: { queen: QueenDetail }) => {
       form={form}
       onSubmit={onSubmit}
       submitLabel={t('edit.button')}
-      submitEvent="Queen Edit"
       cancelTo={`/queens/${queen.id}`}
     >
       <QueenFields />

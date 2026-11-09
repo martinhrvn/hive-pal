@@ -58,6 +58,7 @@ import { useDateFormat } from '@/hooks/use-date-format';
 import { FrameCountSection } from './frame-counts';
 import { WeightSection } from './weight-section';
 import { useUnitFormat } from '@/hooks/use-unit-format';
+import { trackEvent } from '@/lib/analytics';
 import { uploadPendingPhotos } from './upload-pending-photos';
 import { uploadPendingRecordings } from './upload-pending-recordings';
 import { useInspectionAiMerge } from './use-inspection-ai-merge';
@@ -411,6 +412,15 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     // resolves — otherwise the save button re-enables before the request
     // completes and double-clicks create duplicate inspections.
     await onSubmit(formattedData, status);
+    const completed = status === InspectionStatus.COMPLETED;
+    trackEvent(
+      completed
+        ? 'Inspection Completed'
+        : inspectionId
+          ? 'Inspection Saved'
+          : 'Inspection Created',
+      { created: !inspectionId, scheduled: fromScheduled },
+    );
   });
 
   const handleSaveAndComplete = form.handleSubmit(async data => {
@@ -428,6 +438,10 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     // Remember this time-of-day choice so the next new inspection defaults to it.
     saveLastInspectionTimePreference(data.date, data.isAllDay ?? true);
     await onSubmit(formattedData, InspectionStatus.COMPLETED);
+    trackEvent('Inspection Completed', {
+      created: !inspectionId,
+      scheduled: fromScheduled,
+    });
   });
 
   const date = form.watch('date');
@@ -697,7 +711,6 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                 onClick={handleSave}
                 type="submit"
                 className="flex-1"
-                data-umami-event="Batch Inspection Save and Next"
                 data-testid="inspection-save"
               >
                 {submitButtonText || t('inspection:form.saveAndNext')}
@@ -712,7 +725,6 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                   className="w-full"
                   variant="default"
                   disabled={isSubmitting}
-                  data-umami-event="Inspection Complete"
                   data-testid="inspection-save"
                 >
                   {isSubmitting
@@ -727,7 +739,6 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     type="submit"
                     className="w-full"
                     disabled={isSubmitting}
-                    data-umami-event="Inspection Save"
                     data-testid="inspection-save"
                   >
                     {isSubmitting
@@ -740,7 +751,6 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                     className="w-full"
                     variant="default"
                     disabled={isSubmitting}
-                    data-umami-event="Inspection Complete"
                     data-testid="inspection-save-complete"
                   >
                     {isSubmitting
@@ -756,7 +766,6 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
               type="submit"
               className="w-full"
               disabled={isSubmitting}
-              data-umami-event="Inspection Create"
               data-testid="inspection-save"
             >
               {isSubmitting

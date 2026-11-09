@@ -49,6 +49,7 @@ import { isSharePromptDismissed } from '@/components/share/share-prompt-utils';
 import { ShareDialog } from '@/components/share/share-dialog';
 import { getStatusColor } from '@/utils/status-colors';
 import { useDateFormat } from '@/hooks/use-date-format';
+import { trackEvent } from '@/lib/analytics';
 
 // Unit symbol shown when a stored weight has no unit; not translatable text.
 const DEFAULT_WEIGHT_UNIT = 'kg';
@@ -114,6 +115,7 @@ export const HarvestDetailPage = () => {
         },
       });
       toast.success(t('harvest:detail.toasts.weightSet'));
+      trackEvent('Harvest Weight Set');
       setIsEditingWeight(false);
       setWeight('');
     } catch {
@@ -138,6 +140,7 @@ export const HarvestDetailPage = () => {
     try {
       await finalizeHarvest.mutateAsync(harvest.id);
       toast.success(t('harvest:detail.toasts.finalized'));
+      trackEvent('Harvest Finalized');
       if (isCloudMode() && !isSharePromptDismissed()) {
         setShowSharePrompt(true);
       }
@@ -261,10 +264,7 @@ export const HarvestDetailPage = () => {
           )}
           {harvest.status === HarvestStatus.IN_PROGRESS &&
             harvest.totalWeight && (
-              <Button
-                onClick={handleFinalize}
-                data-umami-event="Harvest Finalize"
-              >
+              <Button onClick={handleFinalize}>
                 <Check className="mr-2 h-4 w-4" />
                 {t('harvest:detail.finalize')}
               </Button>
@@ -374,11 +374,7 @@ export const HarvestDetailPage = () => {
                     className="w-24"
                   />
                   <span className="flex items-center">{getWeightUnit()}</span>
-                  <Button
-                    size="sm"
-                    onClick={handleSetWeight}
-                    data-umami-event="Harvest Weight Set"
-                  >
+                  <Button size="sm" onClick={handleSetWeight}>
                     {t('common:actions.save')}
                   </Button>
                   <Button

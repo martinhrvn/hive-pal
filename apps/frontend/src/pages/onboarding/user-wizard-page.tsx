@@ -26,6 +26,7 @@ import {
   useHives,
 } from '@/api/hooks';
 import { useApiaryStore } from '@/hooks/use-apiary';
+import { trackEvent } from '@/lib/analytics';
 
 export const UserWizardPage = () => {
   const [step, setStep] = useState<number | null>(null); // null = loading
@@ -88,6 +89,7 @@ export const UserWizardPage = () => {
   const handleApiarySubmit = async (data: ApiaryFormData) => {
     try {
       const result = await apiaryMutation.mutateAsync({ ...data });
+      trackEvent('Apiary Created', { onboarding: true });
       setApiary(result);
       // Set the newly created apiary as active so the x-apiary-id header is available for subsequent API calls
       setActiveApiaryId(result.id);
@@ -107,6 +109,7 @@ export const UserWizardPage = () => {
         installationDate: data.installationDate.toISOString(),
         apiaryId: apiary.id,
       } as CreateHive);
+      trackEvent('Hive Created', { onboarding: true });
       setStep(3);
     } catch (error) {
       console.error('Error creating hive:', error);

@@ -13,7 +13,7 @@
   },
   "dataProtection": {
     "title": "Data Protection Code",
-    "content": "When you visit our website, we record information about the website from which you visit us, information about the parts of our website you visit, and the date, time and duration of the visit. This information is collected through Google Analytics. When visiting our website, we do not record your personal data. Personal data is only recorded when you provide it voluntarily, through the contact form or registration, for a specific purpose."
+    "content": "When you visit our website, we record the website you came from, the pages you visit, and the date, time and duration of the visit. This information is collected with Umami, a privacy-friendly analytics tool that we host ourselves and that does not use cookies or track you across websites. We also use Sentry to diagnose JavaScript errors and Grafana Faro to measure page performance; these tools may record technical information such as your browser type, device, the page where an error occurred and your IP address. We do not use analytics to identify you or build a profile. Personal data is only recorded when you provide it voluntarily, through the contact form or registration, for a specific purpose."
   },
   "dataUsage": {
     "title": "Use and Disclosure of Personal Data",
@@ -28,7 +28,7 @@
   },
   "cookies": {
     "title": "Cookies",
-    "content": "HRVN s.r.o. and the website hivepal.app use cookies to track visitor preferences and optimally improve our website accordingly. Cookies are small files that are stored on your hard drive. These cookies do not contain any personal data and serve only to improve the user experience."
+    "content": "We use strictly necessary cookies for signing in, keeping your session secure and remembering your preferences. Our analytics tool Umami does not use cookies and does not identify you across websites. Sentry (error diagnostics) and Grafana Faro (performance measurement) may use your browser's storage to group errors and measurements; this data is not used for advertising. You can clear or block cookies in your browser, but signing in requires the essential cookies."
   },
   "consent": {
     "title": "Consent to Personal Data Processing",

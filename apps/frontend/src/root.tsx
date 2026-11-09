@@ -16,6 +16,7 @@ import { Providers } from '@/context/providers';
 import { PWAUpdatePrompt } from '@/components/pwa-update-prompt';
 import GenericErrorPage from '@/pages/error-page';
 import { setFaroView } from '@/lib/faro';
+import { umamiBeforeSend } from '@/lib/analytics';
 import { useRestorePreferredLanguage } from '@/lib/i18n-client';
 import { DEFAULT_LANGUAGE, isSupportedLanguage } from '@/utils/language-utils';
 import './index.css';
@@ -37,6 +38,14 @@ const THEME_SCRIPT = `(function () {
     document.documentElement.classList.add('light');
   }
 })();`;
+
+/**
+ * Serialised into an inline script ahead of the deferred Umami tag so the
+ * tracker can find it as `window.__hpUmamiBeforeSend`. The hook masks
+ * password-reset and share-link tokens before a payload leaves the browser;
+ * see `umamiBeforeSend` in `lib/analytics.ts`.
+ */
+const UMAMI_BEFORE_SEND_SCRIPT = `window.__hpUmamiBeforeSend = ${umamiBeforeSend.toString()};`;
 
 /**
  * Site-wide default head tags. Pages that manage their own head (the public,
@@ -133,10 +142,14 @@ export function Layout({ children }: { children: ReactNode }) {
 
         {/* Analytics */}
         <script
+          dangerouslySetInnerHTML={{ __html: UMAMI_BEFORE_SEND_SCRIPT }}
+        />
+        <script
           defer
           src="https://umami.hrvn.eu/script.js"
           data-website-id="a92de4e9-deb5-477f-959a-7b457fe37293"
           data-domains="hivepal.app"
+          data-before-send="__hpUmamiBeforeSend"
         />
       </head>
       <body>
