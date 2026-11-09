@@ -25,6 +25,7 @@ import { StagedQueue } from './bulk/staged-queue';
 import { submitStagedItems } from './bulk/submit-staged-items';
 import type { BulkTab, StagedItem } from './bulk/types';
 import type { ActionData } from '@/pages/inspection/components/inspection-form/schema';
+import { trackEvent } from '@/lib/analytics';
 
 export const BulkActionsPage = () => {
   const { t } = useTranslation('common');
@@ -196,6 +197,15 @@ export const BulkActionsPage = () => {
         );
         setStagedItems(prev => prev.filter(i => failedIds.includes(i.id)));
       }
+
+      trackEvent('Bulk Add Submitted', {
+        total: stagedItems.length,
+        created: succeededIds.length,
+        failed: failedIds.length,
+        actions: counts.action,
+        inspections: counts.inspection,
+        queens: counts.queen,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -432,8 +442,6 @@ export const BulkActionsPage = () => {
                 onClick={handleSubmit}
                 disabled={isSubmitting || stagedItems.length === 0}
                 className="w-full"
-                data-umami-event="Bulk Add Submit"
-                data-umami-event-count={stagedItems.length.toString()}
               >
                 <Send className="mr-2 h-4 w-4" />
                 {isSubmitting

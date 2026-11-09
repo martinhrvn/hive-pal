@@ -16,7 +16,6 @@ export const QueenFormFrame = ({
   form,
   onSubmit,
   submitLabel,
-  submitEvent,
   cancelTo,
   children,
 }: {
@@ -24,8 +23,6 @@ export const QueenFormFrame = ({
   form: UseFormReturn<QueenFormValues>;
   onSubmit: (values: QueenFormValues) => Promise<void>;
   submitLabel: string;
-  /** Umami analytics event name. */
-  submitEvent: string;
   cancelTo: string;
   children: ReactNode;
 }) => {
@@ -46,11 +43,7 @@ export const QueenFormFrame = ({
                 <Button variant="outline" asChild>
                   <Link to={cancelTo}>{t('actions.cancel')}</Link>
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  data-umami-event={submitEvent}
-                >
+                <Button type="submit" disabled={isSubmitting}>
                   {submitLabel}
                 </Button>
               </div>

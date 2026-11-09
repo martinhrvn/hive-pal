@@ -65,6 +65,7 @@ import {
 } from '@/components/feature-photo-picker';
 import { defaultHiveSettings } from './hive-settings-fields';
 import { NumberField } from '@/components/common/number-field';
+import { trackEvent } from '@/lib/analytics';
 
 const hiveSchema = z.object({
   name: z.string(),
@@ -106,7 +107,10 @@ export const HiveForm: React.FC<HiveFormProps> = ({
     enabled: isEditMode,
   });
   const { mutate: createHive } = useCreateHive({
-    onSuccess: () => navigate('/'),
+    onSuccess: () => {
+      trackEvent('Hive Created');
+      navigate('/');
+    },
   });
   const { mutateAsync: updateHive } = useUpdateHive();
   const { mutateAsync: updateHiveBoxes } = useUpdateHiveBoxes();
@@ -198,6 +202,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
             defaultValue: 'Hive updated successfully',
           }),
         );
+        trackEvent('Hive Updated');
         navigate(`/hives/${hiveId}`);
       } catch {
         // A failed request must never look like a dead button.
@@ -491,11 +496,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           </CollapsibleContent>
         </Collapsible>
 
-        <Button
-          disabled={isLoading}
-          type="submit"
-          data-umami-event={isEditMode ? 'Hive Edit' : 'Hive Create'}
-        >
+        <Button disabled={isLoading} type="submit">
           {isEditMode
             ? t('common:actions.save', { defaultValue: 'Save' })
             : t('hive:form.submit')}

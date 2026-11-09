@@ -13,7 +13,7 @@
   },
   "dataProtection": {
     "title": "Kódex ochrany údajov",
-    "content": "Pri návšteve našich webových stránok zaznamenávame informácie o webovej stránke, z ktorej nás navštívite, informácie o častiach našej webstránky, ktoré navštívite a tiež dátum, čas a dĺžku návštevy. Tieto informácie sú zhromaždené v službe Google Analytics. Pri návšteve našej webstránky nezaznamenávame vaše osobné údaje. Osobné údaje sa zaznamenajú len vtedy, keď nám ich poskytnete z vlastnej vôle, prostredníctvom kontaktného formulára alebo registrácie, na konkrétny účel."
+    "content": "Pri návšteve našich webových stránok zaznamenávame informácie o webovej stránke, z ktorej nás navštívite, informácie o častiach našej webstránky, ktoré navštívite, a tiež dátum, čas a dĺžku návštevy. Tieto informácie zhromažďujeme pomocou nástroja Umami, ktorý je prevádzkovaný na našej infraštruktúre, je šetrný k súkromiu, nepoužíva cookies a nesleduje vás naprieč webovými stránkami. Používame tiež Sentry na diagnostiku JavaScriptových chýb a Grafana Faro na meranie výkonu stránok; tieto nástroje môžu zaznamenať technické informácie, ako je typ prehliadača, zariadenie, stránka, na ktorej došlo k chybe, a vaša IP adresa. Analytické nástroje nepoužívame na vašu identifikáciu ani na vytváranie profilu. Osobné údaje zaznamenávame len vtedy, keď nám ich poskytnete z vlastnej vôle, prostredníctvom kontaktného formulára alebo registrácie, na konkrétny účel."
   },
   "dataUsage": {
     "title": "Použitie a postúpenie osobných údajov",
@@ -28,7 +28,7 @@
   },
   "cookies": {
     "title": "Cookies",
-    "content": "HRVN s.r.o. a webstránka hivepal.app používa cookies na to, aby sme mohli sledovať preferencie návštevníkov a podľa toho optimálne vylepšovať naše webové stránky. Cookies sú malé súbory, ktoré sa uložia na váš pevný disk. Tieto cookies neobsahujú žiadne osobné údaje a slúžia len na zlepšenie používateľskej skúsenosti."
+    "content": "Používame nevyhnutné cookies na prihlásenie, zabezpečenie relácie a zapamätanie vašich preferencií. Náš analytický nástroj Umami nepoužíva cookies a neidentifikuje vás naprieč webovými stránkami. Sentry (diagnostika chýb) a Grafana Faro (meranie výkonu) môžu využívať úložisko vášho prehliadača na zoskupenie chýb a meraní; tieto údaje sa nepoužívajú na reklamu. Cookies môžete vo svojom prehliadači vymazať alebo zablokovať, prihlásenie však vyžaduje nevyhnutné cookies."
   },
   "consent": {
     "title": "Súhlas so spracovaním osobných údajov",

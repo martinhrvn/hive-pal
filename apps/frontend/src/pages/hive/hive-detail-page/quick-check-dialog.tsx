@@ -19,6 +19,7 @@ import { apiClient } from '@/api/client';
 import { cn } from '@/lib/utils';
 import { CreateQuickCheck, QuickCheckResponse } from 'shared-schemas';
 import { useTranslation } from 'react-i18next';
+import { trackEvent } from '@/lib/analytics';
 
 interface QuickCheckDialogProps {
   hiveId?: string;
@@ -162,6 +163,7 @@ export function QuickCheckDialog({
       });
 
       toast.success(t('common:quickCheck.saved'));
+      trackEvent('Quick Check Saved');
       resetForm();
       setOpen(false);
     } catch {
@@ -334,7 +336,6 @@ export function QuickCheckDialog({
             disabled={
               isSubmitting || (selectedTags.length === 0 && !note.trim())
             }
-            data-umami-event="Quick Check Save"
           >
             {isSubmitting ? (
               <>

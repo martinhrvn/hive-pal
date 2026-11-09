@@ -33,6 +33,7 @@ import {
   FeaturePhotoPicker,
   FeaturePhotoPickerRef,
 } from '@/components/feature-photo-picker';
+import { trackEvent } from '@/lib/analytics';
 
 // Lazy load the map component (heavy ~200KB)
 const MapPicker = lazy(() => import('@/components/common/map-picker.tsx'));
@@ -124,6 +125,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
           },
         });
 
+        trackEvent('Apiary Updated');
         navigate(`/apiaries/${apiaryId}`);
       } else {
         const apiary = await mutateAsync({
@@ -151,6 +153,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
           featurePhotoRef.current?.clearPendingFile();
         }
 
+        trackEvent('Apiary Created');
         navigate('/');
       }
     } catch (error) {
@@ -273,11 +276,7 @@ export const ApiaryForm: React.FC<ApiaryFormProps> = ({
           >
             {t('common:actions.cancel')}
           </Button>
-          <Button
-            disabled={isLoading}
-            type={'submit'}
-            data-umami-event={isEditMode ? 'Apiary Edit' : 'Apiary Create'}
-          >
+          <Button disabled={isLoading} type={'submit'}>
             {isEditMode
               ? t('apiary:edit.title', { defaultValue: 'Edit Apiary' })
               : t('apiary:create.title')}

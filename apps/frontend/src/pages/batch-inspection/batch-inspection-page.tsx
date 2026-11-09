@@ -32,6 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { trackEvent } from '@/lib/analytics';
 
 export const BatchInspectionPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -132,6 +133,9 @@ export const BatchInspectionPage = () => {
       },
       {
         onSuccess: result => {
+          trackEvent('Batch Inspection Saved', {
+            finished: !result.next,
+          });
           if (!result.next) {
             // Batch complete
             toast.success(t('inspection:batch.inspect.completed'));

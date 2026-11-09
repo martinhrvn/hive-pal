@@ -10,6 +10,7 @@ import { PublicFooter } from '@/components/layout/public-footer';
 import { getAuthConfig, hasSsoOptions } from '@/lib/auth-config';
 import { SsoButtons, SsoDivider } from '@/components/auth/sso-button';
 import { useSsoErrorMessage } from '@/components/auth/use-sso-error-message';
+import { trackEvent } from '@/lib/analytics';
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
@@ -55,6 +56,8 @@ const RegisterPage = () => {
       );
       if (!success) {
         setError(t('register.registrationFailed'));
+      } else {
+        trackEvent('Register Success');
       }
     } catch (err) {
       console.error('Registration error:', err);
@@ -238,7 +241,6 @@ const RegisterPage = () => {
                 <Button
                   type="submit"
                   className="w-full bg-green-600 hover:bg-green-700 text-white shadow-lg"
-                  data-umami-event="Register"
                 >
                   {t('register.submit')}
                 </Button>
