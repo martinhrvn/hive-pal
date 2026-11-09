@@ -1,14 +1,41 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
-import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { AnalyticsOptOut } from '@/components/privacy/analytics-opt-out';
 import { PublicMeta } from '@/components/seo/public-meta';
 
 const CONTACT_EMAIL = 'info@hivepal.app';
 
+function Section({
+  title,
+  children,
+}: Readonly<{ title: string; children: React.ReactNode }>) {
+  return (
+    <section className="mb-8">
+      <h2 className="text-2xl font-semibold mb-4">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
 export const PrivacyPolicyPage = () => {
   const { t, i18n } = useTranslation('privacy');
+
+  // Rendered from a fixed revision date in the translations, not from today's
+  // date, so the policy states when it actually changed.
+  const lastUpdated = new Intl.DateTimeFormat(i18n.language).format(
+    new Date(`${t('footer.lastUpdatedDate')}T12:00:00`),
+  );
+
+  const purposes = [
+    'account',
+    'analytics',
+    'monitoring',
+    'newsletter',
+    'logs',
+  ] as const;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
@@ -39,64 +66,54 @@ export const PrivacyPolicyPage = () => {
               <p className="text-gray-600 mt-4">{t('operator')}</p>
             </div>
 
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('rightToInformation.title')}
-              </h2>
-              <p className="text-gray-600">{t('rightToInformation.content')}</p>
-            </section>
+            <Section title={t('controller.title')}>
+              <p className="text-gray-600">{t('controller.content')}</p>
+            </Section>
 
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('security.title')}
-              </h2>
-              <p className="text-gray-600">{t('security.content')}</p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('dataProtection.title')}
-              </h2>
+            <Section title={t('dataProtection.title')}>
               <p className="text-gray-600">{t('dataProtection.content')}</p>
-            </section>
+              {purposes.map(purpose => (
+                <div key={purpose} className="mt-5">
+                  <h3 className="text-lg font-semibold mb-1">
+                    {t(`dataProtection.${purpose}.title`)}
+                  </h3>
+                  <p className="text-gray-600">
+                    {t(`dataProtection.${purpose}.content`)}
+                  </p>
+                </div>
+              ))}
+            </Section>
 
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('dataUsage.title')}
-              </h2>
-              <p className="text-gray-600">{t('dataUsage.content')}</p>
-              <p className="text-gray-600 mt-4">{t('dataUsage.marketing')}</p>
-              <p className="text-gray-600 mt-4">{t('dataUsage.authorities')}</p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('newsletter.title')}
-              </h2>
-              <p className="text-gray-600">{t('newsletter.content')}</p>
-              <p className="text-gray-600 mt-4">
-                {t('newsletter.unsubscribe')}
-              </p>
-            </section>
-
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('cookies.title')}
-              </h2>
+            <Section title={t('cookies.title')}>
               <p className="text-gray-600">{t('cookies.content')}</p>
-            </section>
+              <ul className="mt-3 list-disc space-y-2 pl-5 text-gray-600">
+                <li>{t('cookies.session')}</li>
+                <li>{t('cookies.ui')}</li>
+                <li>{t('cookies.preferences')}</li>
+              </ul>
+              <p className="text-gray-600 mt-4">
+                {t('cookies.noThirdParties')}
+              </p>
+            </Section>
 
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('consent.title')}
-              </h2>
-              <p className="text-gray-600">{t('consent.content')}</p>
-            </section>
+            <Section title={t('analyticsChoice.title')}>
+              <AnalyticsOptOut />
+            </Section>
 
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('deletion.title')}
-              </h2>
+            <Section title={t('retention.title')}>
+              <p className="text-gray-600">{t('retention.content')}</p>
+            </Section>
+
+            <Section title={t('recipients.title')}>
+              <p className="text-gray-600">{t('recipients.content')}</p>
+            </Section>
+
+            <Section title={t('rights.title')}>
+              <p className="text-gray-600">{t('rights.content')}</p>
+              <p className="text-gray-600 mt-4">{t('rights.complaint')}</p>
+            </Section>
+
+            <Section title={t('deletion.title')}>
               <p className="text-gray-600">
                 {t('deletion.content')}{' '}
                 <Link
@@ -106,12 +123,17 @@ export const PrivacyPolicyPage = () => {
                   {t('deletion.link')}
                 </Link>
               </p>
-            </section>
+            </Section>
 
-            <section className="mb-8">
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('contact.title')}
-              </h2>
+            <Section title={t('security.title')}>
+              <p className="text-gray-600">{t('security.content')}</p>
+            </Section>
+
+            <Section title={t('changes.title')}>
+              <p className="text-gray-600">{t('changes.content')}</p>
+            </Section>
+
+            <Section title={t('contact.title')}>
               <p className="text-gray-600">
                 {t('contact.content')}{' '}
                 <a
@@ -121,13 +143,12 @@ export const PrivacyPolicyPage = () => {
                   {CONTACT_EMAIL}
                 </a>
               </p>
-            </section>
+            </Section>
           </div>
 
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500 text-center">
-              {t('footer.company')} | {t('footer.lastUpdated')}:{' '}
-              {new Intl.DateTimeFormat(i18n.language).format(new Date())}
+              {t('footer.company')} | {t('footer.lastUpdated')}: {lastUpdated}
             </p>
           </div>
         </div>

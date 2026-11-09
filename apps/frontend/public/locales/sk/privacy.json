@@ -1,38 +1,72 @@
 {
   "title": "Ochrana osobných údajov",
   "back": "Späť",
-  "intro": "Nachádzate sa na webovej stránke hivepal.app, ktorej prevádzkovateľom je HRVN s.r.o.",
-  "operator": "Záleží nám na ochrane vašich osobných údajov a na vašej bezpečnosti. Na ochranu vášho súkromia pri spracovaní osobných údajov myslíme pri všetkých našich obchodných procesoch. Osobné údaje, ktoré sú získavané počas návštevy našich webových stránok, spracovávame v súlade so Zákonom č. 122/2013 Z. z. O ochrane osobných údajov. Prevádzkovateľ webu je evidovaný na Úrade pre ochranu osobných údajov.",
-  "rightToInformation": {
-    "title": "Právo na informácie",
-    "content": "Na požiadanie vám podľa možností obratom a písomne oznámime, či a aké osobné údaje máme o vás zaznamenané. Ak by aj napriek našim snahám o správnosť údajov a aktuálnosť boli zaznamenané nesprávne či neaktuálne informácie, neváhajte nás kontaktovať, na požiadanie ich opravíme. Ak máte otázky týkajúce sa spracovania vašich osobných údajov, kontaktujte nás na info@hivepal.app, kde sme vám k dispozícii aj v prípade podnetov alebo sťažností."
+  "intro": "Tieto zásady vysvetľujú, aké osobné údaje spracúva HRVN s.r.o. pri návšteve hivepal.app, pri vytvorení účtu a pri používaní Hive Pal, a aké práva máte.",
+  "operator": "Osobné údaje spracúvame v súlade s nariadením (EÚ) 2016/679 (GDPR) a zákonom č. 18/2018 Z. z. o ochrane osobných údajov v znení neskorších predpisov. Prevádzkovateľom webovej stránky je HRVN s.r.o.",
+  "controller": {
+    "title": "Prevádzkovateľ a kontakt",
+    "content": "Prevádzkovateľom vašich osobných údajov je HRVN s.r.o. V prípade akýchkoľvek otázok k týmto zásadám, na uplatnenie svojich práv alebo na vznesenie námietky voči spracúvaniu nám napíšte na info@hivepal.app."
+  },
+  "dataProtection": {
+    "title": "Aké údaje spracúvame a prečo",
+    "content": "Spracúvame len údaje, ktoré jednotlivý účel vyžaduje, a len počas nevyhnutnú dobu. Pri každom účele uvádzame právny základ v zátvorke.",
+    "account": {
+      "title": "Údaje účtu a aplikácie",
+      "content": "Pri registrácii spracúvame vaše meno, e-mailovú adresu, hash hesla a včelníce, úle, prehliadky, zbery a ďalšie záznamy, ktoré zadáte. Tieto údaje používame na poskytnutie služby, o ktorú ste požiadali, a na zabezpečenie vášho účtu (čl. 6 ods. 1 písm. b) GDPR)."
+    },
+    "analytics": {
+      "title": "Analytika webu",
+      "content": "Používanie verejných stránok a aplikácie meriame nástrojom Umami, ktorý prevádzkujeme na vlastnej infraštruktúre na adrese umami.hrvn.eu. Jeho skript nenastavuje žiadne cookies a nič neukladá do vášho zariadenia. Odosiela adresu stránky, odkazujúcu stránku, jazyk prehliadača, veľkosť obrazovky a krátkodobý identifikátor relácie odvodený zo soľou ošetreného hashu IP adresy a používateľského agenta; samotná IP adresa sa neukladá. Slúži nám to na zistenie, ktoré stránky sa používajú, a na ich zlepšovanie (oprávnený záujem, čl. 6 ods. 1 písm. f) GDPR). Kedykoľvek môžete vzniesť námietku – pozri „Analytika a vaša voľba“."
+    },
+    "monitoring": {
+      "title": "Monitorovanie chýb a výkonu",
+      "content": "Na hlásenia chýb používame Sentry a na meranie rýchlosti stránok Grafana Faro. Zaznamenávajú technické informácie o zlyhanej požiadavke alebo pomalom načítaní: text chyby a stack trace, adresu stránky, typ prehliadača a zariadenia a čas. Ani jeden z nich nenastavuje cookies. Používame ich na vyhľadávanie a opravu chýb a na udržanie rýchlosti aplikácie (oprávnený záujem, čl. 6 ods. 1 písm. f) GDPR)."
+    },
+    "newsletter": {
+      "title": "Novinky o produkte",
+      "content": "Ak ste pri registrácii alebo v nastaveniach účtu zaškrtli odber noviniek, používame vašu e-mailovú adresu na občasné zasielanie informácií o produkte a včelárskych tipov. Základom je váš súhlas (čl. 6 ods. 1 písm. a) GDPR), ktorý môžete kedykoľvek odvolať v nastaveniach účtu alebo prostredníctvom odkazu na odhlásenie v každom e-maile."
+    },
+    "logs": {
+      "title": "Serverové logy a bezpečnosť",
+      "content": "Naše servery uchovávajú krátkodobé technické logy (IP adresa, čas, požadovaná adresa, stav odpovede) na prevádzku služby, diagnostiku porúch a obranu proti zneužitiu (oprávnený záujem, čl. 6 ods. 1 písm. f) GDPR)."
+    }
+  },
+  "cookies": {
+    "title": "Cookies a ukladanie v zariadení",
+    "content": "Nepoužívame reklamné, profilovacie ani cross-site sledovacie cookies. V zariadení sa neukladá nič nevyhnutné, a preto neuvidíte ani cookie lištu. Ukladáme však:",
+    "session": "Reláciu cookie po prihlásení, aby server vedel, že ste prihlásený. Je nevyhnutne potrebná (čl. 6 ods. 1 písm. b) GDPR) a zmaže sa pri odhlásení alebo po uplynutí platnosti.",
+    "ui": "Cookie sidebar_state, ktorá si pamätá, či je bočná navigácia zbalená. Ide o funkčnú preferenciu, ktorá nikdy neopustí aplikáciu.",
+    "preferences": "Tému a jazyk rozhrania v lokálnom úložisku prehliadača, aby sa stránka otvorila tak, ako ste ju opustili. Tieto preferencie zostávajú vo vašom zariadení.",
+    "noThirdParties": "Nenačítavame reklamné siete, sociálne pluginy ani vložené trackery. Webfonty a assety aplikácie poskytuje hivepal.app; jediné externé služby sú analytika a monitorovanie chýb opísané vyššie."
+  },
+  "analyticsChoice": {
+    "title": "Analytika a vaša voľba",
+    "content": "Analytika vychádza z nášho oprávneného záujmu, a preto máte právo vzniesť námietku. Vypnite ju nižšie: tracker okamžite prestane odosielať údaje a voľba sa uloží len v tomto prehliadači. Vypnutie analytiky nemá vplyv na váš účet ani na službu.",
+    "on": "Analytika zapnutá",
+    "off": "Analytika vypnutá",
+    "toggleLabel": "Analytika webu",
+    "note": "Voľba sa ukladá len v tomto prehliadači. Vymazaním údajov stránky sa analytika opäť zapne."
+  },
+  "retention": {
+    "title": "Ako dlho údaje uchovávame",
+    "content": "Údaje účtu a aplikácie uchovávame počas existencie vášho účtu a po jeho vymazaní ich zmažeme alebo anonymizujeme, ak zákon nevyžaduje dlhšie uchovanie. Analytické a monitorovacie záznamy uchovávame len tak dlho, ako je potrebné na ich vyhodnotenie, a potom ich v rámci bežnej prevádzky týchto systémov mažeme. Serverové logy sa pravidelne rotujú a uchovávajú sa len krátko."
+  },
+  "recipients": {
+    "title": "S kým údaje zdieľame",
+    "content": "Osobné údaje nepredávame. Zdieľame ich len so spracovateľmi, ktorí nám pomáhajú prevádzkovať službu – hosting, monitorovanie chýb a doručovanie e-mailov – na základe zmlúv o spracúvaní údajov a len na účely uvedené vyššie. Ak spracovateľ spracúva údaje mimo EHP, prenos sa opiera o rozhodnutie o primeranosti alebo o štandardné zmluvné doložky EÚ. Orgány verejnej moci dostanú údaje len vtedy, keď to vyžaduje zákon."
+  },
+  "rights": {
+    "title": "Vaše práva",
+    "content": "Máte právo na prístup k svojim údajom, na ich opravu, vymazanie alebo obmedzenie spracúvania, na ich prenos v strojovo čitateľnom formáte, právo vzniesť námietku proti spracúvaniu založenému na oprávnenom záujme (vrátane analytiky) a právo kedykoľvek odvolať súhlas bez vplyvu na už vykonané spracúvanie. Napíšte nám na info@hivepal.app a odpovieme do jedného mesiaca.",
+    "complaint": "Ak sa domnievate, že sme vaše údaje spracúvali protiprávne, môžete podať sťažnosť Úradu na ochranu osobných údajov Slovenskej republiky, Hraničná 12, 820 07 Bratislava 27, dataprotection.gov.sk."
   },
   "security": {
     "title": "Bezpečnosť",
-    "content": "HRVN s.r.o. prijíma technické a organizačné bezpečnostné opatrenia s cieľom chrániť evidované osobné údaje proti manipulácii, strate, zničeniu a zásahu nepovolaných osôb a tieto opatrenia priebežne aktualizuje."
+    "content": "Prijímame technické a organizačné opatrenia na ochranu osobných údajov pred stratou, zmenou a neoprávneným prístupom a pravidelne ich prehodnocujeme."
   },
-  "dataProtection": {
-    "title": "Kódex ochrany údajov",
-    "content": "Pri návšteve našich webových stránok zaznamenávame informácie o webovej stránke, z ktorej nás navštívite, informácie o častiach našej webstránky, ktoré navštívite, a tiež dátum, čas a dĺžku návštevy. Tieto informácie zhromažďujeme pomocou nástroja Umami, ktorý je prevádzkovaný na našej infraštruktúre, je šetrný k súkromiu, nepoužíva cookies a nesleduje vás naprieč webovými stránkami. Používame tiež Sentry na diagnostiku JavaScriptových chýb a Grafana Faro na meranie výkonu stránok; tieto nástroje môžu zaznamenať technické informácie, ako je typ prehliadača, zariadenie, stránka, na ktorej došlo k chybe, a vaša IP adresa. Analytické nástroje nepoužívame na vašu identifikáciu ani na vytváranie profilu. Osobné údaje zaznamenávame len vtedy, keď nám ich poskytnete z vlastnej vôle, prostredníctvom kontaktného formulára alebo registrácie, na konkrétny účel."
-  },
-  "dataUsage": {
-    "title": "Použitie a postúpenie osobných údajov",
-    "content": "HRVN s.r.o. používa vaše osobné údaje na účely technickej správy webových stránok, administratívu a na komunikáciu s vami na základe otázok zaslaných prostredníctvom formulára.",
-    "marketing": "Osobné údaje sú používané na konkrétne marketingové účely vždy len v prípade vysloveného súhlasu so spracovaním osobných údajov na konkrétny marketingový účel vo zvolenej periodicite (napríklad zaslanie newslettra raz mesačne, zaslanie informácie o novinkách a aktualizáciách).",
-    "authorities": "Postúpenie osobných údajov orgánom verejnej správy nasleduje len v rámci záväzných právnych predpisov."
-  },
-  "newsletter": {
-    "title": "Newsletter a marketingová komunikácia",
-    "content": "Ak ste sa prihlásili na odber nášho newslettra, používame váš e-mail na zasielanie pravidelných informácií o novinkách, aktualizáciách produktu a včelárskych tipoch. Táto komunikácia je založená výlučne na vašom výslovenom súhlase.",
-    "unsubscribe": "V prípade komunikácie na konkrétny marketingový účel sa z odberu e-mailov môžete kedykoľvek odhlásiť pomocou odhlasovacieho odkazu uvedeného v pätičke každého takéhoto e-mailu, alebo v nastaveniach vášho účtu."
-  },
-  "cookies": {
-    "title": "Cookies",
-    "content": "Používame nevyhnutné cookies na prihlásenie, zabezpečenie relácie a zapamätanie vašich preferencií. Náš analytický nástroj Umami nepoužíva cookies a neidentifikuje vás naprieč webovými stránkami. Sentry (diagnostika chýb) a Grafana Faro (meranie výkonu) môžu využívať úložisko vášho prehliadača na zoskupenie chýb a meraní; tieto údaje sa nepoužívajú na reklamu. Cookies môžete vo svojom prehliadači vymazať alebo zablokovať, prihlásenie však vyžaduje nevyhnutné cookies."
-  },
-  "consent": {
-    "title": "Súhlas so spracovaním osobných údajov",
-    "content": "HRVN s.r.o. sa zaväzuje plne rešpektovať dôverný charakter vašich osobných a firemných dát, ktoré sú zabezpečené proti neautorizovanému prístupu a chránené proti zneužitiu. Údaje, ktoré sú získané prostredníctvom registračného formulára používame výlučne na poskytovanie našich služieb a komunikáciu s vami. Vaše osobné a kontaktné údaje nie sú poskytované tretím stranám bez vášho súhlasu."
+  "changes": {
+    "title": "Zmeny týchto zásad",
+    "content": "Tieto zásady aktualizujeme, keď sa zmení to, čo robíme. Dátum nižšie uvádza poslednú revíziu."
   },
   "deletion": {
     "title": "Vymazanie vašich údajov",
@@ -41,11 +75,12 @@
   },
   "contact": {
     "title": "Kontakt",
-    "content": "Pre akékoľvek otázky týkajúce sa ochrany osobných údajov nás kontaktujte na:"
+    "content": "V prípade akýchkoľvek otázok týkajúcich sa ochrany osobných údajov nás kontaktujte na:"
   },
   "footer": {
     "company": "HRVN s.r.o.",
-    "lastUpdated": "Naposledy aktualizované"
+    "lastUpdated": "Naposledy aktualizované",
+    "lastUpdatedDate": "2026-11-09"
   },
   "dataDeletion": {
     "title": "Vymazanie údajov",

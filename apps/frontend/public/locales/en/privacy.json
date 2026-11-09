@@ -1,38 +1,72 @@
 {
   "title": "Privacy Policy",
   "back": "Back",
-  "intro": "You are on the website hivepal.app, operated by HRVN s.r.o.",
-  "operator": "We care about the protection of your personal data and your security. We consider the protection of your privacy when processing personal data in all our business processes. Personal data obtained during visits to our website is processed in accordance with applicable data protection regulations, including the General Data Protection Regulation (GDPR). The website operator is registered with the Data Protection Authority.",
-  "rightToInformation": {
-    "title": "Right to Information",
-    "content": "Upon request, we will inform you as soon as possible and in writing whether and what personal data we have recorded about you. If, despite our efforts to ensure the accuracy and timeliness of the data, incorrect or outdated information is recorded, please do not hesitate to contact us, and we will correct it upon request. If you have questions regarding the processing of your personal data, contact us at info@hivepal.app, where we are also available for suggestions or complaints."
+  "intro": "This policy explains what personal data HRVN s.r.o. processes when you visit hivepal.app, create an account or use Hive Pal, and what rights you have.",
+  "operator": "We process personal data in accordance with Regulation (EU) 2016/679 (the GDPR) and Slovak Act No. 18/2018 Coll. on the protection of personal data, as amended. The operator of this website is HRVN s.r.o.",
+  "controller": {
+    "title": "Controller and contact",
+    "content": "The controller of your personal data is HRVN s.r.o. For any question about this policy, to exercise your rights or to object to processing, write to info@hivepal.app."
+  },
+  "dataProtection": {
+    "title": "What we process and why",
+    "content": "We process only the data each purpose needs, and only for as long as it is needed. The legal basis for each purpose is given in brackets.",
+    "account": {
+      "title": "Account and application data",
+      "content": "When you register we process your name, email address, a hash of your password and the apiaries, hives, inspections, harvests and other records you enter. We use this data to provide the service you asked for and to secure your account (Art. 6(1)(b) GDPR)."
+    },
+    "analytics": {
+      "title": "Website analytics",
+      "content": "We measure how the public site and the application are used with Umami, which we run on our own infrastructure at umami.hrvn.eu. Its tracker sets no cookie and writes nothing to your device. It sends the page address, the referring page, your browser language, screen size and a short-lived session identifier derived from a salted hash of your IP address and user agent; the raw IP address is not stored. We use this to see which pages are used and to improve them (legitimate interest, Art. 6(1)(f) GDPR). You can object at any time — see \"Analytics and your choice\"."
+    },
+    "monitoring": {
+      "title": "Error and performance monitoring",
+      "content": "We use Sentry for error reports and Grafana Faro to measure page speed. They record technical information about a failing request or a slow page: the error message and stack trace, the page address, browser and device type and the time. Neither sets a cookie. We use them to find and fix defects and to keep the application fast (legitimate interest, Art. 6(1)(f) GDPR)."
+    },
+    "newsletter": {
+      "title": "Product updates",
+      "content": "If you ticked the newsletter box during registration or in your account, we use your email address to send occasional product updates and beekeeping tips. This is based on your consent (Art. 6(1)(a) GDPR), which you can withdraw at any time in your account settings or through the unsubscribe link in every email."
+    },
+    "logs": {
+      "title": "Server logs and security",
+      "content": "Our servers keep short-lived technical logs (IP address, time, requested address, response status) to operate the service, diagnose faults and defend against abuse (legitimate interest, Art. 6(1)(f) GDPR)."
+    }
+  },
+  "cookies": {
+    "title": "Cookies and device storage",
+    "content": "We do not use advertising, profiling or cross-site tracking cookies. Nothing non-essential is stored on your device, which is why you see no cookie consent banner. What we do store:",
+    "session": "A session cookie once you sign in, so the server knows you are logged in. It is strictly necessary (Art. 6(1)(b) GDPR) and is removed when you sign out or it expires.",
+    "ui": "A sidebar_state cookie that remembers whether the navigation sidebar is collapsed. It is a functional preference and never leaves the application.",
+    "preferences": "Your theme and interface language in your browser's local storage, so the site opens the way you left it. These preferences stay on your device.",
+    "noThirdParties": "We do not load advertising networks, social plugins, embedded trackers or third-party web fonts. Web fonts and application assets are served from hivepal.app; the analytics and error-monitoring services described above are the only external services involved."
+  },
+  "analyticsChoice": {
+    "title": "Analytics and your choice",
+    "content": "Analytics is based on our legitimate interest, so you have the right to object. Switch it off below: the tracker stops sending data immediately and the setting is stored in this browser only. Turning analytics off does not affect your account or the service.",
+    "on": "Analytics on",
+    "off": "Analytics off",
+    "toggleLabel": "Website analytics",
+    "note": "The choice is saved in this browser only. Clearing site data turns analytics back on."
+  },
+  "retention": {
+    "title": "How long we keep data",
+    "content": "Account and application data is kept while your account exists and is deleted or anonymised when you delete it, unless the law requires us to keep it longer. Analytics and monitoring records are kept only for as long as needed to evaluate them and are then deleted in the normal course of running those systems. Server logs are rotated regularly and kept only briefly."
+  },
+  "recipients": {
+    "title": "Who we share data with",
+    "content": "We do not sell personal data. We share it only with processors that help us run the service — hosting, error monitoring and email delivery — under data-processing agreements and only for the purposes above. Where a processor handles data outside the EEA, the transfer relies on an adequacy decision or the EU Standard Contractual Clauses. Public authorities receive data only where the law requires it."
+  },
+  "rights": {
+    "title": "Your rights",
+    "content": "You have the right to access your data, to have it corrected, deleted or restricted, to receive it in a portable format, to object to processing based on legitimate interest (including analytics) and to withdraw consent at any time without affecting processing already carried out. Write to info@hivepal.app and we will answer within one month.",
+    "complaint": "If you believe we have handled your data unlawfully, you can complain to the Slovak supervisory authority: Úrad na ochranu osobných údajov Slovenskej republiky, Hraničná 12, 820 07 Bratislava 27, dataprotection.gov.sk."
   },
   "security": {
     "title": "Security",
-    "content": "HRVN s.r.o. implements technical and organizational security measures to protect recorded personal data against manipulation, loss, destruction and unauthorized access, and continuously updates these measures."
+    "content": "We apply technical and organisational measures to protect personal data against loss, alteration and unauthorised access, and review them regularly."
   },
-  "dataProtection": {
-    "title": "Data Protection Code",
-    "content": "When you visit our website, we record the website you came from, the pages you visit, and the date, time and duration of the visit. This information is collected with Umami, a privacy-friendly analytics tool that we host ourselves and that does not use cookies or track you across websites. We also use Sentry to diagnose JavaScript errors and Grafana Faro to measure page performance; these tools may record technical information such as your browser type, device, the page where an error occurred and your IP address. We do not use analytics to identify you or build a profile. Personal data is only recorded when you provide it voluntarily, through the contact form or registration, for a specific purpose."
-  },
-  "dataUsage": {
-    "title": "Use and Disclosure of Personal Data",
-    "content": "HRVN s.r.o. uses your personal data for the purposes of technical administration of the website, administration and communication with you based on questions sent through the form.",
-    "marketing": "Personal data is used for specific marketing purposes only with explicit consent to process personal data for a specific marketing purpose at the chosen frequency (for example, sending a newsletter once a month, sending information about news and updates).",
-    "authorities": "Disclosure of personal data to public authorities occurs only within binding legal regulations."
-  },
-  "newsletter": {
-    "title": "Newsletter and Marketing Communications",
-    "content": "If you have subscribed to our newsletter, we use your email to send regular information about news, product updates and beekeeping tips. This communication is based solely on your explicit consent.",
-    "unsubscribe": "For communications for specific marketing purposes, you can unsubscribe from emails at any time using the unsubscribe link provided in the footer of each such email, or in your account settings."
-  },
-  "cookies": {
-    "title": "Cookies",
-    "content": "We use strictly necessary cookies for signing in, keeping your session secure and remembering your preferences. Our analytics tool Umami does not use cookies and does not identify you across websites. Sentry (error diagnostics) and Grafana Faro (performance measurement) may use your browser's storage to group errors and measurements; this data is not used for advertising. You can clear or block cookies in your browser, but signing in requires the essential cookies."
-  },
-  "consent": {
-    "title": "Consent to Personal Data Processing",
-    "content": "HRVN s.r.o. commits to fully respect the confidential nature of your personal and business data, which is secured against unauthorized access and protected against misuse. Data obtained through the registration form is used exclusively to provide our services and communicate with you. Your personal and contact data is not provided to third parties without your consent."
+  "changes": {
+    "title": "Changes to this policy",
+    "content": "We update this policy when what we do changes. The date below shows the last revision."
   },
   "deletion": {
     "title": "Deleting Your Data",
@@ -41,11 +75,12 @@
   },
   "contact": {
     "title": "Contact",
-    "content": "For any questions regarding the protection of personal data, please contact us at:"
+    "content": "For any question about the protection of personal data, contact us at:"
   },
   "footer": {
     "company": "HRVN s.r.o.",
-    "lastUpdated": "Last updated"
+    "lastUpdated": "Last updated",
+    "lastUpdatedDate": "2026-11-09"
   },
   "dataDeletion": {
     "title": "Data Deletion",
