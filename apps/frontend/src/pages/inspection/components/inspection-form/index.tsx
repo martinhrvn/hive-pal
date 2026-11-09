@@ -413,14 +413,16 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
     // completes and double-clicks create duplicate inspections.
     await onSubmit(formattedData, status);
     const completed = status === InspectionStatus.COMPLETED;
-    trackEvent(
-      completed
-        ? 'Inspection Completed'
-        : inspectionId
-          ? 'Inspection Saved'
-          : 'Inspection Created',
-      { created: !inspectionId, scheduled: fromScheduled },
-    );
+    let eventName = 'Inspection Created';
+    if (completed) {
+      eventName = 'Inspection Completed';
+    } else if (inspectionId) {
+      eventName = 'Inspection Saved';
+    }
+    trackEvent(eventName, {
+      created: !inspectionId,
+      scheduled: fromScheduled,
+    });
   });
 
   const handleSaveAndComplete = form.handleSubmit(async data => {
