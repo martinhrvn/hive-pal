@@ -40,7 +40,9 @@
     "viewProject": "Zobraziť projekt",
     "shareProject": "Zdieľať projekt",
     "deleteProject": "Vymazať projekt",
-    "brand": "Hive Pal"
+    "brand": "Hive Pal",
+    "equipment": "Vybavenie",
+    "files": "Súbory"
   },
   "actions": {
     "save": "Uložiť",
@@ -1645,5 +1647,31 @@
   "numericField": {
     "increment": "Zvýšiť hodnotu",
     "decrement": "Znížiť hodnotu"
+  },
+  "feedTypes": {
+    "title": "Spôsoby kŕmenia",
+    "description": "Vaše vlastné krmivá (napr. komerčný invertný sirup) s hustotou a obsahom cukru. Vo formulári na kŕmenie sa zobrazujú vedľa štandardných typov.",
+    "empty": "Zatiaľ žiadne vlastné druhy krmiva.",
+    "add": "Pridať druh krmiva",
+    "name": "Názov",
+    "namePlaceholder": "napr. Apiinvert",
+    "form": "Forma",
+    "sugarContent": "Obsah cukru (% hmotnosti)",
+    "density": "Hustota (g/ml, len pre kvapaliny)",
+    "densityHint": "Pri tuhých krmivách nechajte prázdne — zadávajú sa iba podľa hmotnosti.",
+    "sugarShort": "{{value}} % cukor",
+    "densityShort": "{{value}} g/ml",
+    "saveFailed": "Druh krmiva sa nepodarilo uložiť. Skontrolujte, či sa tento názov už nenachádza v zozname.",
+    "deleteFailed": "Druh krmiva sa nepodarilo vymazať.",
+    "forms": {
+      "SYRUP": "Syrup",
+      "INVERT_SYRUP": "Invertný syrup",
+      "FONDANT": "Cukrové cesto",
+      "CANDY": "Cukrovo-medové cesto",
+      "DRY_SUGAR": "Kryštálový cukor",
+      "HONEY": "Med",
+      "PROTEIN": "Bielkovinové krmivo",
+      "OTHER": "Iné"
+    }
   }
 }
