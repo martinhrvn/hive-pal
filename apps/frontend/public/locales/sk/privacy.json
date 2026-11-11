@@ -14,6 +14,14 @@
       "title": "Údaje účtu a aplikácie",
       "content": "Pri registrácii spracúvame vaše meno, e-mailovú adresu, hash hesla a včelníce, úle, prehliadky, zbery a ďalšie záznamy, ktoré zadáte. Tieto údaje používame na poskytnutie služby, o ktorú ste požiadali, a na zabezpečenie vášho účtu (čl. 6 ods. 1 písm. b) GDPR)."
     },
+    "uploads": {
+      "title": "Fotografie, dokumenty a hlasové poznámky",
+      "content": "Fotografie, dokumenty a hlasové poznámky, ktoré nahráte, uchovávame v našom úložisku súborov a vidíte ich len vy a ľudia, s ktorými včelnicu zdieľate. Fotografie z fotoaparátu často obsahujú vložené metadáta vrátane GPS polohy, kde vznikli. Pred uložením obrázka vo formáte JPEG, PNG alebo WebP tieto metadáta (EXIF, XMP, IPTC) odstránime; fotografie HEIC zatiaľ ukladáme tak, ako boli nahrané (čl. 6 ods. 1 písm. b) GDPR)."
+    },
+    "signIn": {
+      "title": "Prihlásenie cez Google alebo Facebook",
+      "content": "Ak sa rozhodnete prihlásiť cez Google alebo Facebook, tento poskytovateľ overí vašu totožnosť a pošle nám vaše meno, e-mailovú adresu a identifikátor účtu; vaše heslo ani iné údaje z tohto účtu nedostávame. Poskytovateľ sa dozvie, že ste sa prihlásili do Hive Pal, a spracúva to podľa vlastných zásad ochrany osobných údajov. Údaje používame na vytvorenie a zabezpečenie vášho účtu (čl. 6 ods. 1 písm. b) GDPR)."
+    },
     "analytics": {
       "title": "Analytika webu",
       "content": "Používanie verejných stránok a aplikácie meriame nástrojom Umami, ktorý prevádzkujeme na vlastnej infraštruktúre na adrese umami.hrvn.eu. Jeho skript nenastavuje žiadne cookies a nič neukladá do vášho zariadenia. Odosiela adresu stránky, odkazujúcu stránku, jazyk prehliadača, veľkosť obrazovky a krátkodobý identifikátor relácie odvodený zo soľou ošetreného hashu IP adresy a používateľského agenta; samotná IP adresa sa neukladá. Slúži nám to na zistenie, ktoré stránky sa používajú, a na ich zlepšovanie (oprávnený záujem, čl. 6 ods. 1 písm. f) GDPR). Kedykoľvek môžete vzniesť námietku – pozri „Analytika a vaša voľba“."
@@ -60,6 +68,10 @@
     "content": "Máte právo na prístup k svojim údajom, na ich opravu, vymazanie alebo obmedzenie spracúvania, na ich prenos v strojovo čitateľnom formáte, právo vzniesť námietku proti spracúvaniu založenému na oprávnenom záujme (vrátane analytiky) a právo kedykoľvek odvolať súhlas bez vplyvu na už vykonané spracúvanie. Napíšte nám na info@hivepal.app a odpovieme do jedného mesiaca.",
     "complaint": "Ak sa domnievate, že sme vaše údaje spracúvali protiprávne, môžete podať sťažnosť Úradu na ochranu osobných údajov Slovenskej republiky, Hraničná 12, 820 07 Bratislava 27, dataprotection.gov.sk."
   },
+  "children": {
+    "title": "Deti",
+    "content": "Hive Pal nie je určený deťom. Na vytvorenie účtu musíte mať aspoň 16 rokov. Ak sa domnievate, že nám osobné údaje poskytlo dieťa mladšie ako 16 rokov, napíšte na info@hivepal.app a údaje vymažeme."
+  },
   "security": {
     "title": "Bezpečnosť",
     "content": "Prijímame technické a organizačné opatrenia na ochranu osobných údajov pred stratou, zmenou a neoprávneným prístupom a pravidelne ich prehodnocujeme."
@@ -73,6 +85,10 @@
     "content": "Svoj účet a všetky svoje údaje môžete kedykoľvek vymazať priamo v aplikácii alebo nám môžete poslať žiadosť.",
     "link": "Ako vymazať svoje údaje"
   },
+  "illegalContent": {
+    "title": "Nahlasovanie nezákonného obsahu",
+    "content": "Obsah, ktorý nahráte, je súkromný pre vaše včelnice a nezverejňuje sa. Ak napriek tomu v Hive Pal narazíte na obsah, ktorý považujete za nezákonný – napríklad cez odkaz na zdieľanie – nahláste ho na info@hivepal.app, jednotné kontaktné miesto podľa aktu EÚ o digitálnych službách. Uveďte, kde sa obsah nachádza a prečo ho považujete za nezákonný; hlásenie posúdime, bez zbytočného odkladu podnikneme kroky a oznámime vám výsledok. Rovnakú adresu môžu použiť aj orgány, v angličtine alebo slovenčine."
+  },
   "contact": {
     "title": "Kontakt",
     "content": "V prípade akýchkoľvek otázok týkajúcich sa ochrany osobných údajov nás kontaktujte na:"
@@ -80,7 +96,7 @@
   "footer": {
     "company": "HRVN s.r.o.",
     "lastUpdated": "Naposledy aktualizované",
-    "lastUpdatedDate": "2026-11-09"
+    "lastUpdatedDate": "2026-11-11"
   },
   "dataDeletion": {
     "title": "Vymazanie údajov",

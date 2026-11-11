@@ -89,9 +89,7 @@ test.describe('View all apiaries', () => {
       .getByRole('textbox', { name: 'Confirm Password' })
       .fill(password);
     await page.getByRole('textbox', { name: 'Display Name' }).fill('View All');
-    await page
-      .getByRole('checkbox', { name: 'I agree to the Privacy Policy' })
-      .click();
+    await page.getByRole('checkbox', { name: /Privacy Policy/ }).click();
     await page.getByRole('button', { name: /register/i }).click();
 
     // Wait for registration to complete (session cookie set + navigation away).

@@ -44,6 +44,7 @@ import { useLinkedAccounts } from '@/api/hooks/useAuth';
 import { getAuthConfig } from '@/lib/auth-config';
 import { FeedTypesCard } from '@/components/feed-types-card';
 import { FrameSizesCard } from '@/components/frame-sizes-card';
+import { NewsletterConsentCard } from '@/components/newsletter-consent-card';
 import { DeleteAccountDialog } from '@/components/common/delete-account-dialog';
 
 // Date format patterns are shown as-is; they are not translatable text.
@@ -426,6 +427,8 @@ export const UserSettingsPage = () => {
             </div>
           </CardContent>
         </Card>
+
+        <NewsletterConsentCard />
 
         {/* Account Settings */}
         {localLoginEnabled && hasPassword && (

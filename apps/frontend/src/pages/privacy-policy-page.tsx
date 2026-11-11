@@ -31,6 +31,8 @@ export const PrivacyPolicyPage = () => {
 
   const purposes = [
     'account',
+    'uploads',
+    'signIn',
     'analytics',
     'monitoring',
     'newsletter',
@@ -113,6 +115,10 @@ export const PrivacyPolicyPage = () => {
               <p className="text-gray-600 mt-4">{t('rights.complaint')}</p>
             </Section>
 
+            <Section title={t('children.title')}>
+              <p className="text-gray-600">{t('children.content')}</p>
+            </Section>
+
             <Section title={t('deletion.title')}>
               <p className="text-gray-600">
                 {t('deletion.content')}{' '}
@@ -123,6 +129,10 @@ export const PrivacyPolicyPage = () => {
                   {t('deletion.link')}
                 </Link>
               </p>
+            </Section>
+
+            <Section title={t('illegalContent.title')}>
+              <p className="text-gray-600">{t('illegalContent.content')}</p>
             </Section>
 
             <Section title={t('security.title')}>

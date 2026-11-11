@@ -59,6 +59,26 @@ export const useChangePassword = () =>
     },
   });
 
+/**
+ * Grants or withdraws newsletter consent. The timestamp records the latest
+ * change, so a withdrawal is dated too. better-auth refreshes the session after
+ * /update-user, which updates `session.user.newsletterConsent`.
+ */
+export const useUpdateNewsletterConsent = () =>
+  useMutation({
+    mutationFn: async (newsletterConsent: boolean) => {
+      const result = await authClient.updateUser({
+        newsletterConsent,
+        newsletterConsentTimestamp: new Date(),
+      } as never);
+      if (result.error) throw result.error;
+      return result.data;
+    },
+    onError: error => {
+      logApiError(error, '/api/auth/update-user', 'POST');
+    },
+  });
+
 export const useUserProfile = () => {
   const { data, isPending, error } = useSession();
   return {

@@ -31,7 +31,7 @@ const PrivacyConsentPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!privacyPolicyConsent) {
-      setError(t('register.consent.privacyRequired'));
+      setError(t('register.consent.ageAndPrivacyRequired'));
       return;
     }
     setError(null);
@@ -85,7 +85,7 @@ const PrivacyConsentPage: React.FC = () => {
                 htmlFor="privacy-consent"
                 className="text-sm leading-relaxed cursor-pointer"
               >
-                {t('register.consent.privacyPolicy')}{' '}
+                {t('register.consent.ageAndPrivacyPolicy')}{' '}
                 <Link
                   to="/privacy-policy"
                   target="_blank"

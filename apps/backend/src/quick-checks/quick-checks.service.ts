@@ -13,6 +13,7 @@ import {
   apiaryWriteScope,
 } from '../common';
 import { v4 as uuidv4 } from 'uuid';
+import { stripImageMetadata } from '../storage/strip-image-metadata';
 import {
   CreateQuickCheck,
   QuickCheckResponse,
@@ -204,7 +205,7 @@ export class QuickChecksService {
 
   async uploadPhoto(
     quickCheckId: string,
-    file: Express.Multer.File,
+    upload: Express.Multer.File,
     filter: ApiaryScopeFilter,
   ): Promise<QuickCheckPhotoResponse> {
     if (!this.storageService.isEnabled()) {
@@ -213,13 +214,13 @@ export class QuickChecksService {
       );
     }
 
-    if (!ALLOWED_PHOTO_MIME_TYPES.includes(file.mimetype)) {
+    if (!ALLOWED_PHOTO_MIME_TYPES.includes(upload.mimetype)) {
       throw new BadRequestException(
         `Invalid photo format. Allowed formats: ${ALLOWED_PHOTO_MIME_TYPES.join(', ')}`,
       );
     }
 
-    if (file.size > MAX_PHOTO_SIZE) {
+    if (upload.size > MAX_PHOTO_SIZE) {
       throw new BadRequestException(
         `File size exceeds maximum allowed (${MAX_PHOTO_SIZE / 1024 / 1024}MB)`,
       );
@@ -245,6 +246,7 @@ export class QuickChecksService {
       );
     }
 
+    const file = await stripImageMetadata(upload);
     const photoId = uuidv4();
     const extension = this.getExtensionFromMimeType(file.mimetype);
     const storageKey = `quick-checks/${quickCheckId}/${photoId}.${extension}`;

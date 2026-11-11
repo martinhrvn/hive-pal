@@ -296,6 +296,14 @@
     "upcomingInspectionsNotify": "Get notified about upcoming inspections",
     "harvestReminders": "Harvest Reminders",
     "harvestSchedulesNotify": "Get notified about harvest schedules",
+    "newsletter": {
+      "title": "Product updates",
+      "description": "Occasional emails about new Hive Pal features and beekeeping tips. Changes apply immediately.",
+      "label": "Send me product updates",
+      "subscribed": "You will receive product updates.",
+      "unsubscribed": "You will no longer receive product updates.",
+      "updateFailed": "Could not update your email preference. Please try again."
+    },
     "accountSettings": "Account Settings",
     "manageAccountInfo": "Manage your account information",
     "name": "Name",
