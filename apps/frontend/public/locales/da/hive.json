@@ -17,7 +17,8 @@
     "apiary": "Bigård",
     "notSpecified": "Ikke angivet",
     "noInspectionYet": "Endnu ikke inspiceret",
-    "noNotes": "Ingen noter"
+    "noNotes": "Ingen noter",
+    "activeAlerts": "Aktive advarsler"
   },
   "status": {
     "active": "Aktiv",
