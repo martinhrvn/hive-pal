@@ -19,6 +19,7 @@ import {
   verifyPassword as scryptVerify,
 } from 'better-auth/crypto';
 import * as bcrypt from 'bcrypt';
+import { PASSWORD_MIN_LENGTH } from 'shared-schemas';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Prisma, PrismaClient } from '../generated/prisma/client.js';
 import { authDeps } from './auth-deps';
@@ -144,6 +145,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
+    minPasswordLength: PASSWORD_MIN_LENGTH,
     password: {
       hash: scryptHash,
       verify: async ({ password, hash }) => {

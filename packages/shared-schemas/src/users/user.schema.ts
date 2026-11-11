@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { hiveHubAlertPreferencesSchema } from '../hivehub/hivehub.schema';
+import { PASSWORD_MIN_LENGTH } from '../auth/auth.schema';
 
 // Base user schema (extends the one in auth)
 export const userResponseSchema = z.object({
@@ -15,14 +16,22 @@ export const userResponseSchema = z.object({
 // Change password schema
 export const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z.string().min(6, 'New password must be at least 6 characters'),
+  newPassword: z
+    .string()
+    .min(
+      PASSWORD_MIN_LENGTH,
+      `New password must be at least ${PASSWORD_MIN_LENGTH} characters`,
+    ),
 });
 
 // Admin reset password schema
 export const adminResetPasswordSchema = z.object({
   tempPassword: z
     .string()
-    .min(6, 'Temporary password must be at least 6 characters'),
+    .min(
+      PASSWORD_MIN_LENGTH,
+      `Temporary password must be at least ${PASSWORD_MIN_LENGTH} characters`,
+    ),
 });
 
 // User preferences schema

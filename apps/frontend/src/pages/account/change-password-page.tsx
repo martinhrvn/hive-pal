@@ -15,6 +15,7 @@ import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import { Label } from '../../components/ui/label';
 import { Alert } from '../../components/ui/alert';
+import { PASSWORD_MIN_LENGTH } from 'shared-schemas';
 
 const ChangePasswordPage: React.FC = () => {
   const { t } = useTranslation('auth');
@@ -43,8 +44,12 @@ const ChangePasswordPage: React.FC = () => {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setError(t('changePassword.errors.passwordTooShort'));
+    if (newPassword.length < PASSWORD_MIN_LENGTH) {
+      setError(
+        t('changePassword.errors.passwordTooShort', {
+          count: PASSWORD_MIN_LENGTH,
+        }),
+      );
       return;
     }
 
@@ -106,9 +111,10 @@ const ChangePasswordPage: React.FC = () => {
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
                 required
+                minLength={PASSWORD_MIN_LENGTH}
               />
               <p className="text-sm text-gray-500">
-                {t('changePassword.minLength')}
+                {t('changePassword.minLength', { count: PASSWORD_MIN_LENGTH })}
               </p>
             </div>
 
