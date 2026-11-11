@@ -40,7 +40,7 @@
     "description": "Set a temporary password for {email}. The user will be required to change their password on next login.",
     "tempPasswordLabel": "Temporary Password",
     "tempPasswordPlaceholder": "Enter temporary password",
-    "minCharacters": "Minimum 6 characters",
+    "minCharacters": "Minimum {{count}} characters",
     "submit": "Reset Password"
   },
   "messages": {

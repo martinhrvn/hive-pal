@@ -1,13 +1,22 @@
 import { z } from 'zod';
 
-// Login schema
+// Minimum length for any password a user sets (sign-up, reset, change, admin
+// reset). The backend passes this to better-auth's `minPasswordLength`, so the
+// frontend and backend checks cannot drift apart.
+export const PASSWORD_MIN_LENGTH = 8;
+
+export const newPasswordSchema = z.string().min(PASSWORD_MIN_LENGTH);
+
+// Login schema. No minimum length: sign-in only checks the credentials, and
+// accounts created under an older, shorter minimum must still be able to log in.
 export const loginSchema = z.object({
   email: z.email(),
-  password: z.string().min(6),
+  password: z.string().min(1),
 });
 
 // Register schema
 export const registerSchema = loginSchema.extend({
+  password: newPasswordSchema,
   name: z.string().optional(),
   privacyPolicyConsent: z.boolean(),
   newsletterConsent: z.boolean().optional(),
@@ -36,7 +45,7 @@ export const forgotPasswordSchema = z.object({
 // Reset password schema
 export const resetPasswordSchema = z.object({
   token: z.string().min(1),
-  password: z.string().min(6),
+  password: newPasswordSchema,
 });
 
 // Success response schema

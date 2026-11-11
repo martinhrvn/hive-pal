@@ -11,6 +11,7 @@ import { getAuthConfig, hasSsoOptions } from '@/lib/auth-config';
 import { SsoButtons, SsoDivider } from '@/components/auth/sso-button';
 import { useSsoErrorMessage } from '@/components/auth/use-sso-error-message';
 import { trackEvent } from '@/lib/analytics';
+import { PASSWORD_MIN_LENGTH } from 'shared-schemas';
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
@@ -37,6 +38,11 @@ const RegisterPage = () => {
 
     if (password !== confirmPassword) {
       setError(t('register.passwordMismatch'));
+      return;
+    }
+
+    if (password.length < PASSWORD_MIN_LENGTH) {
+      setError(t('register.passwordTooShort', { count: PASSWORD_MIN_LENGTH }));
       return;
     }
 

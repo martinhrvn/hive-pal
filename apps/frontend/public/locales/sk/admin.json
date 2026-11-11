@@ -40,7 +40,7 @@
     "description": "Nastavte dočasné heslo pre {email}. Používateľ bude musieť zmeniť svoje heslo pri ďalšom prihlásení.",
     "tempPasswordLabel": "Dočasné heslo",
     "tempPasswordPlaceholder": "Zadajte dočasné heslo",
-    "minCharacters": "Minimálne 6 znakov",
+    "minCharacters": "Minimálne {{count}} znakov",
     "submit": "Resetovať heslo"
   },
   "messages": {

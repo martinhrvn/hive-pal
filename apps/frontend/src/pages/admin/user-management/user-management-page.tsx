@@ -31,8 +31,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { Alert } from '@/components/ui/alert.tsx';
-import { AxiosError } from 'axios';
-import { UserWithStatsResponse } from 'shared-schemas';
+import { PASSWORD_MIN_LENGTH, UserWithStatsResponse } from 'shared-schemas';
 
 const UserManagementPage: React.FC = () => {
   const { t } = useTranslation('admin');
@@ -60,13 +59,17 @@ const UserManagementPage: React.FC = () => {
   const handleResetPassword = async () => {
     if (!selectedUser || !tempPassword.trim()) return;
 
+    setResetError(null);
     try {
-      setResetError(null);
-
-      await authClient.admin.setUserPassword({
+      // The better-auth client reports failures in `error`; it does not throw.
+      const { error } = await authClient.admin.setUserPassword({
         userId: selectedUser.id,
         newPassword: tempPassword,
       });
+      if (error) {
+        setResetError(error.message || t('messages.failedToReset'));
+        return;
+      }
 
       setResetSuccess(true);
 
@@ -75,14 +78,8 @@ const UserManagementPage: React.FC = () => {
 
       // Clear temporary password
       setTempPassword('');
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        setResetError(
-          err.response?.data?.message || t('messages.failedToReset'),
-        );
-      } else {
-        setResetError(t('messages.unexpectedError'));
-      }
+    } catch {
+      setResetError(t('messages.unexpectedError'));
     }
   };
 
@@ -219,7 +216,9 @@ const UserManagementPage: React.FC = () => {
                                       )}
                                     />
                                     <p className="text-sm text-gray-500">
-                                      {t('resetPasswordDialog.minCharacters')}
+                                      {t('resetPasswordDialog.minCharacters', {
+                                        count: PASSWORD_MIN_LENGTH,
+                                      })}
                                     </p>
                                   </div>
 
@@ -227,7 +226,7 @@ const UserManagementPage: React.FC = () => {
                                     onClick={handleResetPassword}
                                     disabled={
                                       !tempPassword.trim() ||
-                                      tempPassword.length < 6
+                                      tempPassword.length < PASSWORD_MIN_LENGTH
                                     }
                                     className="w-full"
                                   >

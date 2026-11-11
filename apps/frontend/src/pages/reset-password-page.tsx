@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { authClient } from '@/lib/auth-client';
+import { PASSWORD_MIN_LENGTH } from 'shared-schemas';
 
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
@@ -39,8 +40,10 @@ const ResetPasswordPage = () => {
       return;
     }
 
-    if (password.length < 6) {
-      setError(t('resetPassword.passwordTooShort'));
+    if (password.length < PASSWORD_MIN_LENGTH) {
+      setError(
+        t('resetPassword.passwordTooShort', { count: PASSWORD_MIN_LENGTH }),
+      );
       return;
     }
 
