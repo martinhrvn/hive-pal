@@ -44,7 +44,8 @@
       "overview": "Oversigt",
       "hives": "Stader",
       "location": "Placering",
-      "sharing": "Deling"
+      "sharing": "Deling",
+      "seasons": "Årstider"
     },
     "apiaryInformation": "Bigårds information",
     "locationMap": "Kort over lokation",
@@ -105,5 +106,21 @@
   },
   "join": {
     "goToDashboard": "Gå til kontrolpanel"
+  },
+  "seasons": {
+    "title": "Årstider",
+    "description": "Angiv standard værdier for hele året og årstiderne med deres egne indstilling. Stader arver disse planer, indtil de bliver angivet individuelt.",
+    "emptyNotice": "Uden årstider, bruger staderne i bigården de samme indstillinger hele året, for inspektioner og fodring.",
+    "save": "Gem årstider",
+    "saving": "Gemmer...",
+    "saveSuccess": "Bigårdens årstider er gemt",
+    "saveError": "Kunne ikke gemme årstiderne i bigården",
+    "validationError": "Kan ikke gemme årstider - check for overlappende datoer og mål for fodring.",
+    "applyToAll": "Overfør til alle stader",
+    "saveFirst": "Gem årstiderne først, og overfør dem så til staderne.",
+    "applySuccess_one": "Årstid overført til {{count}} stade",
+    "applySuccess_other": "Årstider overført til {{count}} stader",
+    "applyError": "Der opstod en fejl ved overførsel af årstider til staderne",
+    "applyConfirmTitle": "Overfør årstider til alle stader?"
   }
 }
