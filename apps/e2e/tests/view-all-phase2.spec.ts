@@ -80,9 +80,7 @@ test.describe('View all apiaries — Phase 2 (Todos)', () => {
       .getByRole('textbox', { name: 'Confirm Password' })
       .fill(password);
     await page.getByRole('textbox', { name: 'Display Name' }).fill('Phase Two');
-    await page
-      .getByRole('checkbox', { name: 'I agree to the Privacy Policy' })
-      .click();
+    await page.getByRole('checkbox', { name: /Privacy Policy/ }).click();
     await page.getByRole('button', { name: /register/i }).click();
     await page.waitForURL(u => !u.pathname.startsWith('/register'), {
       timeout: 15000,

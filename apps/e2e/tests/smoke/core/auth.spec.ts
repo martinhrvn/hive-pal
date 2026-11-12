@@ -24,7 +24,9 @@ test.describe('Auth', { tag: ['@core'] }, () => {
     await signup.signUpButton.click();
 
     await expect(
-      page.getByText('Privacy policy consent is required'),
+      page.getByText(
+        'Please confirm that you are at least 16 and accept the Privacy Policy',
+      ),
     ).toBeVisible();
     await expect(page).toHaveURL(/\/register/);
   });

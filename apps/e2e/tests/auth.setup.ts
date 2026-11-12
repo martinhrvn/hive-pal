@@ -29,7 +29,7 @@ setup('authenticate as user', async ({ page, isMobile }) => {
   await page
     .getByRole('textbox', { name: 'Display Name' })
     .fill('Peter Parker');
-  await page.getByRole('checkbox', { name: 'I agree to the Privacy Policy' }).click();
+  await page.getByRole('checkbox', { name: /Privacy Policy/ }).click();
   await page.getByRole('button', { name: /register/i }).click();
 
   await expect(page.getByText('Welcome to Hive-Pal!')).toBeVisible();

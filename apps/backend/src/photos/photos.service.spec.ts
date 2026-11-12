@@ -1,6 +1,11 @@
 import { NotFoundException } from '@nestjs/common';
 import { PhotosService } from './photos.service';
 
+// The fixtures are not real images; metadata stripping has its own spec.
+vi.mock('../storage/strip-image-metadata', () => ({
+  stripImageMetadata: (file: Express.Multer.File) => Promise.resolve(file),
+}));
+
 describe('PhotosService', () => {
   describe('create', () => {
     const file = {

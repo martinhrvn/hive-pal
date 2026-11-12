@@ -258,6 +258,14 @@
     "upcomingInspectionsNotify": "Dostávať upozornenia na nadchádzajúce prehliadky",
     "harvestReminders": "Pripomienky zberov",
     "harvestSchedulesNotify": "Dostávať upozornenia na plánované zbery",
+    "newsletter": {
+      "title": "Novinky o produkte",
+      "description": "Občasné e-maily o nových funkciách Hive Pal a včelárske tipy. Zmena sa prejaví okamžite.",
+      "label": "Posielajte mi novinky o produkte",
+      "subscribed": "Novinky o produkte vám budeme posielať.",
+      "unsubscribed": "Novinky o produkte vám už nebudeme posielať.",
+      "updateFailed": "Nastavenie e-mailov sa nepodarilo uložiť. Skúste to znova."
+    },
     "accountSettings": "Nastavenia účtu",
     "manageAccountInfo": "Spravujte informácie o vašom účte",
     "name": "Názov",

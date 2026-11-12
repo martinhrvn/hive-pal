@@ -47,7 +47,7 @@ const RegisterPage = () => {
     }
 
     if (!privacyPolicyConsent) {
-      setError(t('register.consent.privacyRequired'));
+      setError(t('register.consent.ageAndPrivacyRequired'));
       return;
     }
 
@@ -213,7 +213,7 @@ const RegisterPage = () => {
                     htmlFor="privacy-consent"
                     className="text-white/90 text-sm leading-relaxed cursor-pointer"
                   >
-                    {t('register.consent.privacyPolicy')}{' '}
+                    {t('register.consent.ageAndPrivacyPolicy')}{' '}
                     <Link
                       to="/privacy-policy"
                       target="_blank"

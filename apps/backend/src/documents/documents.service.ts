@@ -8,6 +8,7 @@ import {
   FileFilterInternal,
 } from '../storage/file-upload.service';
 import { CreateDocument, DocumentResponse } from 'shared-schemas';
+import { stripImageMetadata } from '../storage/strip-image-metadata';
 
 const CONFIG: FileUploadConfig = {
   allowedMimeTypes: ['application/pdf', 'image/jpeg', 'image/png'],
@@ -26,10 +27,10 @@ export class DocumentsService {
 
   async create(
     dto: CreateDocument,
-    file: Express.Multer.File,
+    upload: Express.Multer.File,
     filter: ApiaryScopeFilter,
   ): Promise<DocumentResponse> {
-    this.fileUpload.validateFile(file, CONFIG);
+    this.fileUpload.validateFile(upload, CONFIG);
     // The target apiary comes from the body: it must be one the user can edit.
     await this.fileUpload.assertApiaryWritable(dto.apiaryId, filter.userId);
     if (dto.hiveId) {
@@ -39,6 +40,8 @@ export class DocumentsService {
       );
     }
 
+    // Scanned documents are often phone photos: drop their EXIF/GPS too.
+    const file = await stripImageMetadata(upload);
     const { id, storageKey } = await this.fileUpload.uploadFile(
       file,
       CONFIG.storagePrefix,

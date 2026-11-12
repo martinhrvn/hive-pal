@@ -21,7 +21,7 @@ export class SignupPage {
     });
     this.displayNameField = page.getByRole('textbox', { name: 'Display Name' });
     this.privacyCheckbox = page.getByRole('checkbox', {
-      name: 'I agree to the Privacy Policy',
+      name: /Privacy Policy/,
     });
     this.signUpButton = page.getByRole('button', { name: /register/i });
   }

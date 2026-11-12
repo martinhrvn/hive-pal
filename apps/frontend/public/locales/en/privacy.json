@@ -14,6 +14,14 @@
       "title": "Account and application data",
       "content": "When you register we process your name, email address, a hash of your password and the apiaries, hives, inspections, harvests and other records you enter. We use this data to provide the service you asked for and to secure your account (Art. 6(1)(b) GDPR)."
     },
+    "uploads": {
+      "title": "Photos, documents and voice notes",
+      "content": "Photos, documents and voice notes you upload are kept in our file storage and are visible only to you and to people you share the apiary with. Camera photos often carry embedded metadata, including the GPS position where they were taken. Before storing a JPEG, PNG or WebP image we remove that metadata (EXIF, XMP, IPTC); HEIC photos are currently stored as uploaded (Art. 6(1)(b) GDPR)."
+    },
+    "signIn": {
+      "title": "Signing in with Google or Facebook",
+      "content": "If you choose to sign in with Google or Facebook, that provider confirms your identity and sends us your name, email address and account identifier; we do not receive your password or any other data from that account. The provider learns that you signed in to Hive Pal and processes this under its own privacy policy. We use the data to create and secure your account (Art. 6(1)(b) GDPR)."
+    },
     "analytics": {
       "title": "Website analytics",
       "content": "We measure how the public site and the application are used with Umami, which we run on our own infrastructure at umami.hrvn.eu. Its tracker sets no cookie and writes nothing to your device. It sends the page address, the referring page, your browser language, screen size and a short-lived session identifier derived from a salted hash of your IP address and user agent; the raw IP address is not stored. We use this to see which pages are used and to improve them (legitimate interest, Art. 6(1)(f) GDPR). You can object at any time — see \"Analytics and your choice\"."
@@ -60,6 +68,10 @@
     "content": "You have the right to access your data, to have it corrected, deleted or restricted, to receive it in a portable format, to object to processing based on legitimate interest (including analytics) and to withdraw consent at any time without affecting processing already carried out. Write to info@hivepal.app and we will answer within one month.",
     "complaint": "If you believe we have handled your data unlawfully, you can complain to the Slovak supervisory authority: Úrad na ochranu osobných údajov Slovenskej republiky, Hraničná 12, 820 07 Bratislava 27, dataprotection.gov.sk."
   },
+  "children": {
+    "title": "Children",
+    "content": "Hive Pal is not intended for children. You must be at least 16 years old to create an account. If you believe a child under 16 has given us personal data, write to info@hivepal.app and we will delete it."
+  },
   "security": {
     "title": "Security",
     "content": "We apply technical and organisational measures to protect personal data against loss, alteration and unauthorised access, and review them regularly."
@@ -73,6 +85,10 @@
     "content": "You can delete your account and all your data at any time, either in the app or by sending us a request.",
     "link": "How to delete your data"
   },
+  "illegalContent": {
+    "title": "Reporting illegal content",
+    "content": "Content you upload is private to your apiaries and is not published. If you nevertheless come across content in Hive Pal that you believe is illegal — for example through a share link — report it to info@hivepal.app, the single point of contact under the EU Digital Services Act. Tell us where the content is and why you believe it is illegal; we will review the report, act on it without undue delay and let you know the outcome. Authorities can use the same address, in English or Slovak."
+  },
   "contact": {
     "title": "Contact",
     "content": "For any question about the protection of personal data, contact us at:"
@@ -80,7 +96,7 @@
   "footer": {
     "company": "HRVN s.r.o.",
     "lastUpdated": "Last updated",
-    "lastUpdatedDate": "2026-11-09"
+    "lastUpdatedDate": "2026-11-11"
   },
   "dataDeletion": {
     "title": "Data Deletion",

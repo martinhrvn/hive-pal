@@ -13,6 +13,7 @@ import {
   FileFilterInternal,
 } from '../storage/file-upload.service';
 import { CreatePhoto, PhotoResponse } from 'shared-schemas';
+import { stripImageMetadata } from '../storage/strip-image-metadata';
 
 const CONFIG: FileUploadConfig = {
   allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/heic'],
@@ -31,10 +32,10 @@ export class PhotosService {
 
   async create(
     dto: CreatePhoto,
-    file: Express.Multer.File,
+    upload: Express.Multer.File,
     filter: ApiaryScopeFilter,
   ): Promise<PhotoResponse> {
-    this.fileUpload.validateFile(file, CONFIG);
+    this.fileUpload.validateFile(upload, CONFIG);
     // The target apiary comes from the body: it must be one the user can edit.
     await this.fileUpload.assertApiaryWritable(dto.apiaryId, filter.userId);
     if (dto.hiveId) {
@@ -44,6 +45,7 @@ export class PhotosService {
       );
     }
 
+    const file = await stripImageMetadata(upload);
     const { id, storageKey } = await this.fileUpload.uploadFile(
       file,
       CONFIG.storagePrefix,
@@ -126,11 +128,11 @@ export class PhotosService {
 
   async createForInspection(
     inspectionId: string,
-    file: Express.Multer.File,
+    upload: Express.Multer.File,
     filter: ApiaryScopeFilter,
     caption?: string,
   ): Promise<PhotoResponse> {
-    this.fileUpload.validateFile(file, CONFIG);
+    this.fileUpload.validateFile(upload, CONFIG);
 
     const inspection = await this.prisma.inspection.findFirst({
       where: {
@@ -154,6 +156,7 @@ export class PhotosService {
       throw new BadRequestException('Maximum 5 photos per inspection');
     }
 
+    const file = await stripImageMetadata(upload);
     const { id, storageKey } = await this.fileUpload.uploadFile(
       file,
       'inspection-photos',

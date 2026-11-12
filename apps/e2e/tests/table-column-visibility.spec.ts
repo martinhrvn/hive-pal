@@ -81,9 +81,7 @@ test('inspections table columns can be hidden and the choice persists', async ({
     .fill(password);
   await page.getByRole('textbox', { name: 'Confirm Password' }).fill(password);
   await page.getByRole('textbox', { name: 'Display Name' }).fill('Columns');
-  await page
-    .getByRole('checkbox', { name: 'I agree to the Privacy Policy' })
-    .click();
+  await page.getByRole('checkbox', { name: /Privacy Policy/ }).click();
   await page.getByRole('button', { name: /register/i }).click();
   await page.waitForURL(u => !u.pathname.startsWith('/register'), {
     timeout: 15000,
@@ -102,14 +100,22 @@ test('inspections table columns can be hidden and the choice persists', async ({
   await expect(
     page.getByRole('columnheader', { name: 'Actions', exact: true }),
   ).toBeVisible();
-  await expect(page.getByText('Feeding', { exact: false }).first()).toBeVisible();
-  await expect(page.getByText('Frames', { exact: false }).first()).toBeVisible();
+  await expect(
+    page.getByText('Feeding', { exact: false }).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByText('Frames', { exact: false }).first(),
+  ).toBeVisible();
   await expect(page.getByText('×2').first()).toBeVisible();
 
   // --- Each row has leading View + Edit icon actions (the apiary owner can
   // edit, so both are present). These open the detail / edit routes. ---
-  await expect(page.getByRole('button', { name: 'View' }).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Edit' }).first()).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'View' }).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Edit' }).first(),
+  ).toBeVisible();
 
   // --- Hide the Weather column via the Columns menu ---
   const SHOT_DIR =
@@ -123,9 +129,7 @@ test('inspections table columns can be hidden and the choice persists', async ({
     path: `${SHOT_DIR}/columns-01-menu-open.png`,
     fullPage: true,
   });
-  await page
-    .getByRole('menuitemcheckbox', { name: 'Weather' })
-    .click();
+  await page.getByRole('menuitemcheckbox', { name: 'Weather' }).click();
   await page.keyboard.press('Escape');
 
   await expect(weatherHeader).toHaveCount(0);
@@ -147,30 +151,26 @@ test('inspections table columns can be hidden and the choice persists', async ({
   await expect(page.getByRole('columnheader', { name: 'Hive' })).toBeVisible({
     timeout: 15000,
   });
-  await expect(
-    page.getByRole('columnheader', { name: 'Weather' }),
-  ).toHaveCount(0);
+  await expect(page.getByRole('columnheader', { name: 'Weather' })).toHaveCount(
+    0,
+  );
 
   // --- Re-enabling it brings the column back ---
   await page.getByRole('button', { name: 'Columns', exact: true }).click();
-  await page
-    .getByRole('menuitemcheckbox', { name: 'Weather' })
-    .click();
+  await page.getByRole('menuitemcheckbox', { name: 'Weather' }).click();
   await page.keyboard.press('Escape');
   await expect(
     page.getByRole('columnheader', { name: 'Weather' }),
   ).toBeVisible();
 
   // --- The Notes column is off by default and can be enabled ---
-  await expect(
-    page.getByRole('columnheader', { name: 'Notes' }),
-  ).toHaveCount(0);
+  await expect(page.getByRole('columnheader', { name: 'Notes' })).toHaveCount(
+    0,
+  );
   await page.getByRole('button', { name: 'Columns', exact: true }).click();
   await page.getByRole('menuitemcheckbox', { name: 'Notes' }).click();
   await page.keyboard.press('Escape');
-  await expect(
-    page.getByRole('columnheader', { name: 'Notes' }),
-  ).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Notes' })).toBeVisible();
   // The (abbreviated) note text is rendered in the row.
   await expect(
     page.getByText('Colony looked strong', { exact: false }),

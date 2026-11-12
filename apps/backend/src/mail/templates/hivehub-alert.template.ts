@@ -113,6 +113,7 @@ export function hiveHubAlertTemplate(data: HiveHubAlertTemplateData): {
             <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 13px; color: #9ca3af;">
                 <p>You receive this because HiveHub alert emails are enabled in your ${escapeHtml(appName)} settings.
                 An alert is mailed once, and again only if it gets more severe.</p>
+                <p><a href="${escapeHtml(appUrl)}/hivescale" style="color: #6b7280;">Turn off alert emails or change which alerts you get</a></p>
                 <p><small>This is an automated message. Please do not reply to this email.</small></p>
             </div>
         </div>
