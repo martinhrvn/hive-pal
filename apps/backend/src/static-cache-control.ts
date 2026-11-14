@@ -2,6 +2,8 @@
 // frontend). Express's default for everything else is `public, max-age=0`,
 // which makes browsers and the CDN revalidate on every request.
 
+import type { NextFunction, Request, Response } from 'express';
+
 // Files that must never be answered from the HTTP cache, so a deployed update
 // is picked up. Browsers may reuse a cached sw.js for up to 24h, which is how
 // clients get stuck on the previous build: the new worker is never fetched, so
@@ -36,4 +38,25 @@ export function staticCacheControl(filePath: string): string | undefined {
   if (IMMUTABLE_ASSETS.test(filePath)) return IMMUTABLE;
   if (STABLE_MEDIA.test(filePath)) return STABLE_MEDIA_CACHE;
   return undefined;
+}
+
+/**
+ * Mount on /assets ahead of ServeStaticModule. Marks every response no-store
+ * up front; when the file exists, serve-static's setHeaders hook replaces it
+ * with IMMUTABLE before anything is sent. A missing hash falls through to
+ * Express's final handler as a 404 that keeps no-store.
+ *
+ * Without this the 404 has no Cache-Control and Cloudflare caches it. During a
+ * deploy a request for a new chunk can briefly miss (it reaches the old
+ * container, or arrives before the files are in place); the CDN then keeps
+ * answering that chunk with an HTML 404, the browser rejects it as a module
+ * script, and the app renders a blank page until the edge entry expires.
+ */
+export function noStoreUntilServed(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  res.setHeader('Cache-Control', NO_STORE);
+  next();
 }
