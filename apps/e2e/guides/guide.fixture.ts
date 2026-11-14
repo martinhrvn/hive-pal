@@ -724,10 +724,10 @@ export const test = smokeTest.extend<{
   /**
    * Auto fixture, guide mode only: let OpenStreetMap tiles and the Leaflet
    * marker icons (served from unpkg) through the third-party block so maps in
-   * the video are not grey, Google Fonts for the cards, and uploaded photos
-   * from the storage host so they are not broken images. CI stays offline
-   * (the map still takes clicks). Routes added later win, hence the
-   * dependency on blockThirdParty.
+   * the video are not grey, and Google Fonts for the cards. Uploaded photos
+   * load from the app's own origin (/api/storage/files), so they need no
+   * exception. CI stays offline (the map still takes clicks). Routes added
+   * later win, hence the dependency on blockThirdParty.
    */
   guideTiles: [
     async ({ page, blockThirdParty: _block }, use) => {
@@ -742,11 +742,6 @@ export const test = smokeTest.extend<{
         // Brand fonts for the intro and chapter cards.
         await page.route(/\/\/fonts\.(googleapis|gstatic)\.com\//, route =>
           route.continue(),
-        );
-        // Uploaded photos: presigned URLs on the storage host (S3_ENDPOINT).
-        await page.route(
-          url => url.searchParams.has('X-Amz-Signature'),
-          route => route.continue(),
         );
       }
       await use();

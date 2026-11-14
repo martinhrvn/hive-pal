@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
+import { MediaUrlService } from '../storage/media-url.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import {
@@ -45,6 +46,7 @@ export class QuickChecksService {
     private prisma: PrismaService,
     private storageService: StorageService,
     private logger: CustomLoggerService,
+    private mediaUrls: MediaUrlService,
   ) {}
 
   async create(
@@ -303,13 +305,7 @@ export class QuickChecksService {
       throw new NotFoundException(`Photo with ID ${photoId} not found`);
     }
 
-    const expiresIn = 3600;
-    const downloadUrl = await this.storageService.generateDownloadUrl(
-      photo.storageKey,
-      expiresIn,
-    );
-
-    return { downloadUrl, expiresIn };
+    return this.mediaUrls.createDownloadUrl(photo.storageKey);
   }
 
   async deletePhoto(

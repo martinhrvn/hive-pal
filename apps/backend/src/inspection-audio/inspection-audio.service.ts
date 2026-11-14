@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
+import { MediaUrlService } from '../storage/media-url.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import { apiaryReadScope, apiaryWriteScope } from '../common';
@@ -115,6 +116,7 @@ export class InspectionAudioService {
     private storageService: StorageService,
     private logger: CustomLoggerService,
     private configService: ConfigService,
+    private mediaUrls: MediaUrlService,
   ) {
     this.maxFileSize = Number(
       this.configService.get('INSPECTION_AUDIO_MAX_FILE_SIZE') ?? 10485760,
@@ -358,13 +360,7 @@ export class InspectionAudioService {
       throw new NotFoundException(`Audio with ID ${audioId} not found`);
     }
 
-    const expiresIn = 3600;
-    const downloadUrl = await this.storageService.generateDownloadUrl(
-      audio.storageKey,
-      expiresIn,
-    );
-
-    return { downloadUrl, expiresIn };
+    return this.mediaUrls.createDownloadUrl(audio.storageKey);
   }
 
   /**

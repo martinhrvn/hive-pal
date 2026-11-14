@@ -6,12 +6,18 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
   DeleteObjectsCommand,
+  HeadObjectCommand,
+  S3ServiceException,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Readable } from 'node:stream';
 import { CustomLoggerService } from '../logger/logger.service';
-import { StorageService } from './storage.interface';
+import {
+  ByteRange,
+  StorageService,
+  StoredObjectInfo,
+} from './storage.interface';
 
 export class S3StorageService extends StorageService implements OnModuleInit {
   private s3Client: S3Client | null = null;
@@ -164,12 +170,13 @@ export class S3StorageService extends StorageService implements OnModuleInit {
     await upload.done();
   }
 
-  async getObject(key: string): Promise<Readable> {
+  async getObject(key: string, range?: ByteRange): Promise<Readable> {
     this.ensureConfigured();
 
     const command = new GetObjectCommand({
       Bucket: this.bucket,
       Key: key,
+      Range: range ? `bytes=${range.start}-${range.end}` : undefined,
     });
 
     const response = await this.s3Client!.send(command);
@@ -177,6 +184,25 @@ export class S3StorageService extends StorageService implements OnModuleInit {
       throw new Error(`Empty body for object ${key}`);
     }
     return response.Body as Readable;
+  }
+
+  async statObject(key: string): Promise<StoredObjectInfo | null> {
+    this.ensureConfigured();
+
+    try {
+      const head = await this.s3Client!.send(
+        new HeadObjectCommand({ Bucket: this.bucket, Key: key }),
+      );
+      return { size: head.ContentLength ?? 0, contentType: head.ContentType };
+    } catch (error) {
+      if (
+        error instanceof S3ServiceException &&
+        error.$metadata.httpStatusCode === 404
+      ) {
+        return null;
+      }
+      throw error;
+    }
   }
 
   private ensureConfigured(): void {
