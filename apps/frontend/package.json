@@ -15,7 +15,8 @@
     "test:watch": "vitest --watch",
     "gallery": "vite --config vite.gallery.config.ts --open playwright/gallery/index.html",
     "test:ct": "playwright test -c playwright-ct.config.ts",
-    "test:ct:debug": "playwright test -c playwright-ct.config.ts --debug"
+    "test:ct:debug": "playwright test -c playwright-ct.config.ts --debug",
+    "og:image": "node og-image/render.mjs"
   },
   "dependencies": {
     "@better-auth/passkey": "1.7.14",
