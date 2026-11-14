@@ -53,17 +53,7 @@ import { AssistantModule } from './assistant/assistant.module';
 import { McpModule } from './mcp/mcp.module';
 import { MeasurementsModule } from './measurements/measurements.module';
 import { AccountTransferModule } from './account-transfer/account-transfer.module';
-
-// Static files that must always be revalidated rather than served from the
-// browser's HTTP cache, so a deployed update is picked up (see the
-// ServeStaticModule setHeaders hook below).
-const NO_STORE_FILES = /(?:^|[\\/])(?:sw\.js|registerSW\.js|index\.html)$/;
-
-// Hashed build output lives under /assets and is content-addressed: a given
-// filename never changes its contents, so it can be cached forever. Revalidating
-// these on every request is what turns a stale tab's reference to a deleted
-// hash into a 404 — caching them immutably keeps them usable once fetched.
-const IMMUTABLE_ASSETS = /[\\/]assets[\\/]/;
+import { staticCacheControl } from './static-cache-control';
 
 @Module({
   imports: [
@@ -83,22 +73,9 @@ const IMMUTABLE_ASSETS = /[\\/]assets[\\/]/;
       renderPath: /^(?!\/assets\/)/,
       serveStaticOptions: {
         setHeaders: (res, filePath) => {
-          // The service worker script and its registration shim must never be
-          // answered from the HTTP cache: browsers are allowed to reuse a
-          // cached sw.js for up to 24h, which is how clients stay stuck on the
-          // previous build after a deploy — the new worker is never fetched, so
-          // no update is offered. Hashed files under /assets are content-
-          // addressed and cacheable immutably.
-          if (NO_STORE_FILES.test(filePath)) {
-            res.setHeader(
-              'Cache-Control',
-              'no-cache, no-store, must-revalidate',
-            );
-          } else if (IMMUTABLE_ASSETS.test(filePath)) {
-            res.setHeader(
-              'Cache-Control',
-              'public, max-age=31536000, immutable',
-            );
+          const cacheControl = staticCacheControl(filePath);
+          if (cacheControl) {
+            res.setHeader('Cache-Control', cacheControl);
           }
         },
       },
