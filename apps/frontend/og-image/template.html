@@ -1,0 +1,197 @@
+<!doctype html>
+<!--
+  Open Graph / social preview card for hivepal.app (1200×630).
+  Rendered to public/og-image.jpg by render.mjs; see README.md.
+
+  Everything important sits in the centre column so the card still reads when
+  a platform crops it to a near-square thumbnail (WhatsApp, some Facebook
+  layouts). Fonts and images are loaded from ../public, so rendering needs no
+  network access.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hive Pal social preview card</title>
+    <style>
+      /* `block`: render.mjs waits for both fonts before the screenshot, so the
+         card must never be captured with fallback text. */
+      @font-face {
+        font-family: 'Bricolage Grotesque';
+        font-weight: 300 800;
+        font-stretch: 75% 100%;
+        font-display: block;
+        src: url('../public/fonts/bricolage-grotesque-latin.woff2')
+          format('woff2');
+      }
+      @font-face {
+        font-family: 'Manrope';
+        font-weight: 300 800;
+        font-display: block;
+        src: url('../public/fonts/manrope-latin.woff2') format('woff2');
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #0c0a09; /* stone-950 */
+      }
+
+      .card {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        font-family: 'Manrope', sans-serif;
+        color: #fff;
+      }
+
+      /* Same treatment as the landing hero: photo, dark wash, a radial focus
+         behind the text and a little film grain. */
+      .photo {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .wash {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 40% 58% at center,
+            rgba(15, 12, 8, 0.78) 0%,
+            rgba(15, 12, 8, 0) 100%
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(12, 10, 9, 0.46),
+            rgba(12, 10, 9, 0.46) 55%,
+            rgba(12, 10, 9, 0.78)
+          );
+      }
+      .grain {
+        position: absolute;
+        inset: 0;
+        opacity: 0.16;
+        mix-blend-mode: overlay;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160' role='img' aria-label='Film grain texture'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.9  0 0 0 0 0.75  0 0 0 0.7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+
+      .content {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 160px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand img {
+        height: 60px;
+        filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
+      }
+      .brand span {
+        font-family: 'Bricolage Grotesque', sans-serif;
+        font-variation-settings:
+          'opsz' 96,
+          'wdth' 100,
+          'wght' 600;
+        font-size: 36px;
+        letter-spacing: -0.01em;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+      }
+
+      h1 {
+        margin-top: 30px;
+        font-family: 'Bricolage Grotesque', sans-serif;
+        font-weight: 500;
+        font-variation-settings:
+          'opsz' 96,
+          'wdth' 100,
+          'wght' 500;
+        font-size: 62px;
+        line-height: 1.02;
+        letter-spacing: -0.025em;
+        text-shadow: 0 2px 24px rgba(0, 0, 0, 0.7);
+      }
+      h1 .accent {
+        color: #fcd34d; /* amber-300, as on the landing hero */
+        font-variation-settings:
+          'opsz' 96,
+          'wdth' 100,
+          'wght' 600;
+      }
+
+      .tagline {
+        margin-top: 34px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-size: 19px;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.92);
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+      }
+      .tagline .rule {
+        width: 56px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.45);
+      }
+
+      .url {
+        position: absolute;
+        bottom: 34px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: rgba(252, 211, 77, 0.95);
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img class="photo" src="../public/hero-1920.jpg" alt="" />
+      <div class="wash"></div>
+      <div class="grain"></div>
+
+      <div class="content">
+        <div class="brand">
+          <img src="../public/hive-pal-logo.png" alt="" />
+          <span>Hive Pal</span>
+        </div>
+        <h1>
+          Your open-source<br />beekeeping
+          <span class="accent">companion</span>.
+        </h1>
+        <div class="tagline">
+          <span class="rule"></span>
+          <span>Free · self-hostable · voice-first</span>
+          <span class="rule"></span>
+        </div>
+      </div>
+
+      <div class="url">hivepal.app</div>
+    </div>
+  </body>
+</html>
