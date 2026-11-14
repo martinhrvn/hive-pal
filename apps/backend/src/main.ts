@@ -7,6 +7,7 @@ import { CustomLoggerService } from './logger/logger.service';
 import { createPrerenderFallback } from './prerender-fallback.middleware';
 import { startMetricsServer } from './health/prometheus/metrics-server';
 import { WELL_KNOWN_PATHS } from './mcp/well-known.controller';
+import { noStoreUntilServed } from './static-cache-control';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +17,10 @@ async function bootstrap() {
   // onModuleInit, i.e. during listen()) answers everything else with the SPA
   // shell (static/index.html).
   app.use(createPrerenderFallback(join(__dirname, '..', 'static')));
+  // Keep 404s for missing hashed chunks out of the CDN cache (see
+  // noStoreUntilServed). Must run before ServeStaticModule, which is why it is
+  // registered here rather than in AppModule.
+  app.use('/assets', noStoreUntilServed);
   if (process.env.NODE_ENV !== 'production') {
     app.enableCors({
       origin: ['http://localhost:5173'],
