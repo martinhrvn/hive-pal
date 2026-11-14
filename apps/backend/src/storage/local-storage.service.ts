@@ -3,22 +3,26 @@ import { ConfigService } from '@nestjs/config';
 import * as fs from 'node:fs/promises';
 import { createReadStream, createWriteStream } from 'node:fs';
 import * as path from 'node:path';
-import * as crypto from 'node:crypto';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { CustomLoggerService } from '../logger/logger.service';
-import { StorageService } from './storage.interface';
+import { MediaUrlService } from './media-url.service';
+import {
+  ByteRange,
+  StorageService,
+  StoredObjectInfo,
+} from './storage.interface';
 
 export class LocalStorageService
   extends StorageService
   implements OnModuleInit
 {
   private basePath: string;
-  private jwtSecret: string;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly logger: CustomLoggerService,
+    private readonly mediaUrls: MediaUrlService,
   ) {
     super();
   }
@@ -27,7 +31,6 @@ export class LocalStorageService
     this.basePath = path.resolve(
       this.configService.get<string>('STORAGE_LOCAL_PATH') || '/data/uploads',
     );
-    this.jwtSecret = this.configService.get<string>('JWT_SECRET') || '';
 
     await fs.mkdir(this.basePath, { recursive: true });
 
@@ -61,9 +64,21 @@ export class LocalStorageService
     await pipeline(stream, createWriteStream(filePath));
   }
 
-  getObject(key: string): Promise<Readable> {
+  getObject(key: string, range?: ByteRange): Promise<Readable> {
     const filePath = this.getFilePath(key);
-    return Promise.resolve(createReadStream(filePath));
+    return Promise.resolve(createReadStream(filePath, range));
+  }
+
+  async statObject(key: string): Promise<StoredObjectInfo | null> {
+    try {
+      const stats = await fs.stat(this.getFilePath(key));
+      return stats.isFile() ? { size: stats.size } : null;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+        return null;
+      }
+      throw err;
+    }
   }
 
   generateUploadUrl(
@@ -77,21 +92,8 @@ export class LocalStorageService
   }
 
   generateDownloadUrl(key: string, expiresIn: number = 3600): Promise<string> {
-    const expires = Math.floor(Date.now() / 1000) + expiresIn;
-    const token = this.signToken(key, expires);
-    const encodedKey = encodeURIComponent(key);
-
-    const backendPublicUrl =
-      this.configService.get<string>('BACKEND_PUBLIC_URL') || '';
-
-    const relativePath = `/api/storage/files/${encodedKey}?token=${token}&expires=${expires}`;
-
-    if (!backendPublicUrl) {
-      return Promise.resolve(relativePath);
-    }
-
     return Promise.resolve(
-      `${backendPublicUrl.replace(/\/$/, '')}${relativePath}`,
+      this.mediaUrls.createExpiringUrl(key, expiresIn).downloadUrl,
     );
   }
 
@@ -119,24 +121,5 @@ export class LocalStorageService
       throw new Error('Path traversal detected');
     }
     return resolved;
-  }
-
-  signToken(key: string, expires: number): string {
-    const payload = `${key}:${expires}`;
-    return crypto
-      .createHmac('sha256', this.jwtSecret)
-      .update(payload)
-      .digest('hex');
-  }
-
-  verifyToken(key: string, token: string, expires: number): boolean {
-    if (Math.floor(Date.now() / 1000) > expires) {
-      return false;
-    }
-    const expected = this.signToken(key, expires);
-    return crypto.timingSafeEqual(
-      Buffer.from(token, 'hex'),
-      Buffer.from(expected, 'hex'),
-    );
   }
 }

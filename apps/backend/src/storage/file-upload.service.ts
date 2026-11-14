@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from './storage.interface';
+import { MediaDownloadUrl, MediaUrlService } from './media-url.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import {
@@ -48,6 +49,7 @@ export class FileUploadService {
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
     private readonly logger: CustomLoggerService,
+    private readonly mediaUrls: MediaUrlService,
   ) {}
 
   /** Validates that storage is enabled, mime type is allowed, and file size is within limits. */
@@ -120,23 +122,17 @@ export class FileUploadService {
     return { id, storageKey };
   }
 
-  /** Generates a signed download URL for a storage key. */
-  async getDownloadUrl(
-    storageKey: string,
-  ): Promise<{ downloadUrl: string; expiresIn: number }> {
+  /** Signed, cacheable URL that serves the file from our own origin. */
+  getDownloadUrl(storageKey: string): Promise<MediaDownloadUrl> {
     if (!this.storageService.isEnabled()) {
-      throw new BadRequestException(
-        'Download is not available. Storage is not configured.',
+      return Promise.reject(
+        new BadRequestException(
+          'Download is not available. Storage is not configured.',
+        ),
       );
     }
 
-    const expiresIn = 3600;
-    const downloadUrl = await this.storageService.generateDownloadUrl(
-      storageKey,
-      expiresIn,
-    );
-
-    return { downloadUrl, expiresIn };
+    return Promise.resolve(this.mediaUrls.createDownloadUrl(storageKey));
   }
 
   /** Deletes a file from storage, logging a warning on failure. */

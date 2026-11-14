@@ -163,7 +163,11 @@ STORAGE_TYPE=local
 STORAGE_LOCAL_PATH=/data/uploads
 ```
 
-Download URLs are signed, time-limited paths (HMAC-SHA256 with `JWT_SECRET`), so they behave like S3 pre-signed URLs.
+### How files reach the browser
+
+With either storage type, photos, documents and recordings load from the app's own origin at `/api/storage/files/...`. The app streams them from storage. The URLs are signed and time-limited (HMAC-SHA256 with `JWT_SECRET`, falling back to `BETTER_AUTH_SECRET`). Each URL stays the same for a few hours and is sent with a matching `Cache-Control: public, max-age=…`, so browsers and a CDN in front of the app can cache it. A cached copy never outlives its URL's expiry, which is at most 7 hours.
+
+If your CDN skips the cache for `/api/*`, add an exception for `/api/storage/files/*` to get the benefit.
 
 ### S3-compatible storage
 
@@ -177,6 +181,8 @@ S3_BUCKET=hivepal-uploads
 S3_ACCESS_KEY_ID=your_key
 S3_SECRET_ACCESS_KEY=your_secret
 ```
+
+Browsers never talk to the bucket, so it needs no public access or CORS rules. Only the app and, in pull mode, the AI worker download from it directly, using pre-signed URLs.
 
 ## HiveScale Integration
 
