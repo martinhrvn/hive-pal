@@ -81,13 +81,22 @@ export class AccountTransferService {
     });
   }
 
-  async setProgress(jobId: string, progress: string): Promise<void> {
-    await this.prisma.accountTransferJob.update({
-      where: { id: jobId },
+  /**
+   * Records progress on a running job. Returns `false` when the job is no
+   * longer running (the sweeper gave up on it), so the runner can stop.
+   */
+  async setProgress(jobId: string, progress: string): Promise<boolean> {
+    const { count } = await this.prisma.accountTransferJob.updateMany({
+      where: { id: jobId, status: 'RUNNING' },
       data: { progress },
     });
+    return count > 0;
   }
 
+  /**
+   * Marks a running job completed. Returns `false`, changing nothing, when the
+   * job is no longer running (e.g. the sweeper already marked it failed).
+   */
   async markCompleted(
     jobId: string,
     data: {
@@ -95,9 +104,9 @@ export class AccountTransferService {
       resultStorageKey?: string | null;
       resultExpiresAt?: Date | null;
     },
-  ): Promise<void> {
-    await this.prisma.accountTransferJob.update({
-      where: { id: jobId },
+  ): Promise<boolean> {
+    const { count } = await this.prisma.accountTransferJob.updateMany({
+      where: { id: jobId, status: 'RUNNING' },
       data: {
         status: 'COMPLETED',
         finishedAt: new Date(),
@@ -107,11 +116,13 @@ export class AccountTransferService {
         progress: null,
       },
     });
+    return count > 0;
   }
 
+  /** Marks an unfinished job failed; keeps the reason the sweeper recorded. */
   async markFailed(jobId: string, errorMessage: string): Promise<void> {
-    await this.prisma.accountTransferJob.update({
-      where: { id: jobId },
+    await this.prisma.accountTransferJob.updateMany({
+      where: { id: jobId, status: { in: ['PENDING', 'RUNNING'] } },
       data: {
         status: 'FAILED',
         finishedAt: new Date(),

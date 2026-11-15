@@ -16,6 +16,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
 import * as crypto from 'node:crypto';
+import { pipeline } from 'node:stream/promises';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RequestWithUser } from '../auth/interface/request-with-user.interface';
 import { CustomLoggerService } from '../logger/logger.service';
@@ -117,11 +118,29 @@ export class AccountTransferController {
     if (job.resultExpiresAt && job.resultExpiresAt < new Date()) {
       throw new GoneException('Result has expired and was purged');
     }
+    const info = await this.storage.statObject(job.resultStorageKey);
+    if (!info) {
+      throw new NotFoundException('Result not available');
+    }
     const stream = await this.storage.getObject(job.resultStorageKey);
     const filename = `hivepal-export-${userId}-${job.createdAt.toISOString().slice(0, 10)}.zip`;
     res.setHeader('Content-Type', 'application/zip');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    stream.pipe(res);
+    // Lets the browser's download manager show size and progress.
+    res.setHeader('Content-Length', info.size);
+    res.setHeader('Cache-Control', 'private, no-store');
+    try {
+      await pipeline(stream, res);
+    } catch (err) {
+      // Headers are already sent: cut the response so the download fails
+      // visibly instead of hanging until the browser times out.
+      this.logger.warn({
+        message: 'Export download interrupted',
+        jobId: id,
+        error: (err as Error).message,
+      });
+      res.destroy();
+    }
   }
 
   @Delete('jobs/:id')

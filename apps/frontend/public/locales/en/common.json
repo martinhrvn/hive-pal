@@ -385,8 +385,6 @@
         "importStarted": "Import started",
         "importStartedDescription": "Your data is being imported. This may take a few minutes.",
         "importFailed": "Failed to start import",
-        "downloadFailed": "Download failed",
-        "downloadFailedWithStatus": "Download failed: {{status}}",
         "jobDeleted": "Job deleted",
         "deleteFailed": "Failed to delete job"
       }

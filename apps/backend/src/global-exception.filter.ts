@@ -38,15 +38,17 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       requestId,
     };
 
-    // Log the error with full trace
-    this.logger.error(
-      {
-        exceptionName: exception.name,
-        ...errorResponse,
-        exception: JSON.stringify(exception),
-      },
-      exception.stack,
-    );
+    const logPayload = { exceptionName: exception.name, ...errorResponse };
+    if (status >= 500) {
+      this.logger.error(
+        { ...logPayload, exception: JSON.stringify(exception) },
+        exception.stack,
+      );
+    } else {
+      // Client errors (bad input, auth, unknown routes, scanner probes) are
+      // expected traffic: keep them visible, but not as errors with a trace.
+      this.logger.warn(logPayload);
+    }
 
     // Send response to client (hide sensitive details in production)
     response.status(status).json(errorResponse);

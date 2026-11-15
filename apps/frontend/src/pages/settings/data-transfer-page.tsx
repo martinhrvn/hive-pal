@@ -105,32 +105,17 @@ export const DataTransferPage = () => {
     }
   };
 
-  const handleDownload = (job: AccountTransferJob) => {
-    fetch(`/api/account-transfer/jobs/${job.id}/download`, {
-      credentials: 'include',
-    })
-      .then(async res => {
-        if (!res.ok)
-          throw new Error(
-            t('settings.dataTransfer.toasts.downloadFailedWithStatus', {
-              status: res.statusText,
-            }),
-          );
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `hivepal-export-${job.id}.zip`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      })
-      .catch(err => {
-        toast.error(t('settings.dataTransfer.toasts.downloadFailed'), {
-          description: (err as Error).message,
-        });
-      });
+  // Progress while running, the reason a job failed, or that an export's
+  // download has expired.
+  const jobDetail = (job: AccountTransferJob): string => {
+    if (job.status === 'RUNNING') return job.progress ?? '…';
+    if (job.status === 'FAILED') {
+      return job.errorMessage ?? t('settings.dataTransfer.failed');
+    }
+    if (job.type === 'EXPORT' && job.status === 'COMPLETED' && !job.hasResult) {
+      return t('settings.dataTransfer.expired');
+    }
+    return '';
   };
 
   const handleDelete = async (job: AccountTransferJob) => {
@@ -229,15 +214,17 @@ export const DataTransferPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {jobsQuery.isLoading ? (
+            {jobsQuery.isLoading && (
               <div className="flex justify-center py-6">
                 <Loader2 className="h-6 w-6 animate-spin" />
               </div>
-            ) : jobs.length === 0 ? (
+            )}
+            {!jobsQuery.isLoading && jobs.length === 0 && (
               <p className="text-sm text-muted-foreground">
                 {t('settings.dataTransfer.noJobs')}
               </p>
-            ) : (
+            )}
+            {jobs.length > 0 && (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -259,77 +246,68 @@ export const DataTransferPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {jobs.map(job => {
-                    const isExpired =
-                      job.type === 'EXPORT' &&
-                      job.status === 'COMPLETED' &&
-                      !job.hasResult;
-                    return (
-                      <TableRow key={job.id}>
-                        <TableCell>{job.type}</TableCell>
-                        <TableCell>
-                          <Badge variant={statusVariant[job.status]}>
-                            {job.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {formatDateTime(job.createdAt)}
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {job.status === 'RUNNING'
-                            ? (job.progress ?? '…')
-                            : job.status === 'FAILED'
-                              ? (job.errorMessage ??
-                                t('settings.dataTransfer.failed'))
-                              : isExpired
-                                ? t('settings.dataTransfer.expired')
-                                : ''}
-                        </TableCell>
-                        <TableCell className="text-right space-x-2">
-                          {job.status === 'COMPLETED' &&
-                            job.type === 'EXPORT' &&
-                            job.hasResult && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleDownload(job)}
+                  {jobs.map(job => (
+                    <TableRow key={job.id}>
+                      <TableCell>{job.type}</TableCell>
+                      <TableCell>
+                        <Badge variant={statusVariant[job.status]}>
+                          {job.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatDateTime(job.createdAt)}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {jobDetail(job)}
+                      </TableCell>
+                      <TableCell className="text-right space-x-2">
+                        {job.status === 'COMPLETED' &&
+                          job.type === 'EXPORT' &&
+                          job.hasResult && (
+                            // A plain link hands the file to the browser's
+                            // download manager: it starts at once, shows
+                            // progress and streams to disk.
+                            <Button size="sm" variant="outline" asChild>
+                              <a
+                                href={`/api/account-transfer/jobs/${job.id}/download`}
+                                download
                               >
                                 {t('actions.download')}
-                              </Button>
-                            )}
-                          {job.status === 'COMPLETED' &&
-                            job.type === 'IMPORT' &&
-                            job.summary !== null && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setSelectedJob(job)}
-                              >
-                                {t('settings.dataTransfer.viewSummary')}
-                              </Button>
-                            )}
-                          {job.status === 'FAILED' && (
+                              </a>
+                            </Button>
+                          )}
+                        {job.status === 'COMPLETED' &&
+                          job.type === 'IMPORT' &&
+                          job.summary !== null && (
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => setSelectedJob(job)}
                             >
-                              {t('settings.dataTransfer.viewError')}
+                              {t('settings.dataTransfer.viewSummary')}
                             </Button>
                           )}
-                          {job.status !== 'RUNNING' && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleDelete(job)}
-                            >
-                              {t('actions.delete')}
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                        {job.status === 'FAILED' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setSelectedJob(job)}
+                          >
+                            {t('settings.dataTransfer.viewError')}
+                          </Button>
+                        )}
+                        {job.status !== 'RUNNING' && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDelete(job)}
+                          >
+                            {t('actions.delete')}
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             )}

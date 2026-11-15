@@ -320,8 +320,6 @@
         "importStarted": "Import bol spustený",
         "importStartedDescription": "Vaše dáta sa importujú. Môže to trvať niekoľko minút.",
         "importFailed": "Import sa nepodarilo spustiť",
-        "downloadFailed": "Sťahovanie zlyhalo",
-        "downloadFailedWithStatus": "Sťahovanie zlyhalo: {{status}}",
         "jobDeleted": "Úloha bola vymazaná",
         "deleteFailed": "Úlohu sa nepodarilo vymazať"
       }

@@ -4,7 +4,7 @@ import * as fs from 'node:fs/promises';
 import { createReadStream, createWriteStream } from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { ZipArchive } from 'archiver';
+import { ZipArchive, type ZipEntryData } from 'archiver';
 import { CURRENT_EXPORT_VERSION } from 'shared-schemas';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
@@ -12,6 +12,53 @@ import { StorageService } from '../storage/storage.interface';
 import { AccountTransferService } from './account-transfer.service';
 
 const RESULT_TTL_DAYS = 7;
+
+/** Attachments downloaded ahead of the one being written into the archive. */
+const ATTACHMENT_PREFETCH = 4;
+
+/** Minimum gap between progress writes while attachments stream in. */
+const PROGRESS_INTERVAL_MS = 2000;
+
+// Photos, audio, video and PDFs are already compressed: deflating them again
+// burns CPU and saves next to nothing, so everything else is stored as-is.
+const COMPRESSIBLE_TYPES =
+  /^(?:text\/[\w.+-]+|application\/(?:json|xml)|image\/(?:svg\+xml|bmp|tiff)|audio\/(?:wav|x-wav|wave))$/;
+
+interface Attachment {
+  storageKey: string;
+  mimeType: string;
+  /** Path of the entry inside the archive. */
+  name: string;
+}
+
+/** Thrown when the sweeper marked the job failed while it was still running. */
+class JobNoLongerRunningError extends Error {
+  constructor(jobId: string) {
+    super(`Export job ${jobId} is no longer running`);
+    this.name = 'JobNoLongerRunningError';
+  }
+}
+
+/** Appends an entry and resolves once the archiver has written it out. */
+function appendEntry(
+  archive: ZipArchive,
+  body: Buffer,
+  entry: ZipEntryData,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const onEntry = () => {
+      archive.off('error', onError);
+      resolve();
+    };
+    const onError = (err: Error) => {
+      archive.off('entry', onEntry);
+      reject(err);
+    };
+    archive.once('entry', onEntry);
+    archive.once('error', onError);
+    archive.append(body, entry);
+  });
+}
 
 function safeExt(fileName: string, mimeType: string): string {
   const fromName = path.extname(fileName);
@@ -66,6 +113,7 @@ export class AccountTransferExportRunner {
 
       const stats = await this.buildArchive(jobId, userId, user.email, tmpPath);
 
+      await this.reportProgress(jobId, 'Uploading archive');
       const resultKey = `account-transfer/exports/${userId}/${jobId}.zip`;
       const readStream = createReadStream(tmpPath);
       await this.storage.uploadStream(resultKey, readStream, 'application/zip');
@@ -74,11 +122,16 @@ export class AccountTransferExportRunner {
         Date.now() + RESULT_TTL_DAYS * 24 * 60 * 60 * 1000,
       );
 
-      await this.jobs.markCompleted(jobId, {
+      const completed = await this.jobs.markCompleted(jobId, {
         summary: stats,
         resultStorageKey: resultKey,
         resultExpiresAt,
       });
+      if (!completed) {
+        // Nothing points at the upload any more, so don't leave it behind.
+        await this.storage.deleteObject(resultKey);
+        throw new JobNoLongerRunningError(jobId);
+      }
 
       this.logger.log({
         message: 'Export job completed',
@@ -87,6 +140,15 @@ export class AccountTransferExportRunner {
         ...stats,
       });
     } catch (err) {
+      if (err instanceof JobNoLongerRunningError) {
+        // The sweeper already marked the job failed and recorded why.
+        this.logger.warn({
+          message: 'Export job stopped: no longer running',
+          jobId,
+          userId,
+        });
+        return;
+      }
       const message = (err as Error).message ?? 'Unknown error';
       this.logger.error({
         message: 'Export job failed',
@@ -113,15 +175,6 @@ export class AccountTransferExportRunner {
     userEmail: string,
     outputPath: string,
   ): Promise<ExportStats> {
-    const archive = new ZipArchive({ zlib: { level: 6 } });
-    const output = createWriteStream(outputPath);
-    const finished = new Promise<void>((resolve, reject) => {
-      output.on('close', () => resolve());
-      output.on('error', reject);
-      archive.on('error', reject);
-    });
-    archive.pipe(output);
-
     const stats: ExportStats = {
       apiariesExported: 0,
       hivesExported: 0,
@@ -138,19 +191,20 @@ export class AccountTransferExportRunner {
     });
 
     const apiaryExports: unknown[] = [];
+    const attachments: Attachment[] = [];
 
     for (let i = 0; i < apiaries.length; i++) {
       const a = apiaries[i];
-      await this.jobs.setProgress(
+      await this.reportProgress(
         jobId,
         `Exporting apiary ${i + 1} of ${apiaries.length} (${a.name})`,
       );
-      const exported = await this.exportApiary(a.id, archive, stats);
+      const exported = await this.exportApiary(a.id, attachments, stats);
       apiaryExports.push(exported);
       stats.apiariesExported++;
     }
 
-    await this.jobs.setProgress(jobId, 'Exporting user settings');
+    await this.reportProgress(jobId, 'Exporting user settings');
     const userConfig = await this.exportUserConfig(userId);
 
     const envelope = {
@@ -165,18 +219,46 @@ export class AccountTransferExportRunner {
       userConfig,
     };
 
-    archive.append(JSON.stringify(envelope, null, 2), { name: 'data.json' });
-    await this.jobs.setProgress(jobId, 'Finalizing archive');
-    await archive.finalize();
-    await finished;
-
+    await this.writeArchive(jobId, outputPath, envelope, attachments, stats);
     stats.totalBytes = (await fs.stat(outputPath)).size;
     return stats;
   }
 
+  private async writeArchive(
+    jobId: string,
+    outputPath: string,
+    envelope: unknown,
+    attachments: Attachment[],
+    stats: ExportStats,
+  ): Promise<void> {
+    const archive = new ZipArchive({ zlib: { level: 6 } });
+    const output = createWriteStream(outputPath);
+    const finished = new Promise<void>((resolve, reject) => {
+      output.on('close', () => resolve());
+      output.on('error', reject);
+      archive.on('error', reject);
+    });
+    // Awaited after finalize(); before that an archive error reaches us
+    // through appendEntry, so don't let it count as an unhandled rejection.
+    finished.catch(() => undefined);
+    archive.pipe(output);
+
+    try {
+      await this.appendAttachments(jobId, archive, attachments, stats);
+      await this.reportProgress(jobId, 'Finalizing archive');
+      archive.append(JSON.stringify(envelope, null, 2), { name: 'data.json' });
+      await archive.finalize();
+      await finished;
+    } catch (err) {
+      archive.abort();
+      output.destroy();
+      throw err;
+    }
+  }
+
   private async exportApiary(
     apiaryId: string,
-    archive: ZipArchive,
+    attachments: Attachment[],
     stats: ExportStats,
   ): Promise<unknown> {
     const apiary = await this.prisma.apiary.findUniqueOrThrow({
@@ -240,40 +322,31 @@ export class AccountTransferExportRunner {
       include: { user: { select: { email: true } } },
     });
 
-    // Stream attachments into archive
-    for (const photo of photos) {
-      const name = `attachments/photos/${photo.id}${safeExt(photo.fileName, photo.mimeType)}`;
-      const ok = await this.appendFromStorage(archive, photo.storageKey, name);
-      if (ok) stats.attachmentsExported++;
-    }
-    for (const doc of documents) {
-      const name = `attachments/documents/${doc.id}${safeExt(doc.fileName, doc.mimeType)}`;
-      const ok = await this.appendFromStorage(archive, doc.storageKey, name);
-      if (ok) stats.attachmentsExported++;
-    }
+    // Queue attachments; appendAttachments streams them in once every
+    // apiary's data has been read.
+    const attach = (
+      folder: string,
+      file: {
+        id: string;
+        fileName: string;
+        mimeType: string;
+        storageKey: string;
+      },
+    ) =>
+      attachments.push({
+        storageKey: file.storageKey,
+        mimeType: file.mimeType,
+        name: `attachments/${folder}/${file.id}${safeExt(file.fileName, file.mimeType)}`,
+      });
+    for (const photo of photos) attach('photos', photo);
+    for (const doc of documents) attach('documents', doc);
     for (const hive of hives) {
       for (const inspection of hive.inspections) {
-        for (const audio of inspection.audioRecordings) {
-          const name = `attachments/audio/${audio.id}${safeExt(audio.fileName, audio.mimeType)}`;
-          const ok = await this.appendFromStorage(
-            archive,
-            audio.storageKey,
-            name,
-          );
-          if (ok) stats.attachmentsExported++;
-        }
+        for (const audio of inspection.audioRecordings) attach('audio', audio);
       }
     }
     for (const qc of quickChecks) {
-      for (const photo of qc.photos) {
-        const name = `attachments/quick-check-photos/${photo.id}${safeExt(photo.fileName, photo.mimeType)}`;
-        const ok = await this.appendFromStorage(
-          archive,
-          photo.storageKey,
-          name,
-        );
-        if (ok) stats.attachmentsExported++;
-      }
+      for (const photo of qc.photos) attach('quick-check-photos', photo);
     }
 
     stats.hivesExported += hives.length;
@@ -622,28 +695,72 @@ export class AccountTransferExportRunner {
     };
   }
 
-  private async appendFromStorage(
+  /**
+   * Writes attachments into the archive in order while the next few download
+   * in parallel, so storage round-trips overlap with compression and writing.
+   * At most ATTACHMENT_PREFETCH + 1 files are held in memory at a time.
+   */
+  private async appendAttachments(
+    jobId: string,
     archive: ZipArchive,
-    storageKey: string,
-    name: string,
-  ): Promise<boolean> {
+    attachments: Attachment[],
+    stats: ExportStats,
+  ): Promise<void> {
+    const total = attachments.length;
+    const downloads: Promise<Buffer | null>[] = [];
+    let nextDownload = 0;
+    let lastReportAt = 0;
+
+    for (let i = 0; i < total; i++) {
+      while (nextDownload < total && downloads.length < ATTACHMENT_PREFETCH) {
+        downloads.push(this.readAttachment(attachments[nextDownload]));
+        nextDownload++;
+      }
+      // readAttachment never rejects, so the downloads still in flight can't
+      // become unhandled rejections if this loop throws.
+      const body = await downloads.shift();
+      const { name, mimeType } = attachments[i];
+      if (body) {
+        await appendEntry(archive, body, {
+          name,
+          store: !COMPRESSIBLE_TYPES.test(mimeType),
+        });
+        stats.attachmentsExported++;
+      }
+
+      if (Date.now() - lastReportAt >= PROGRESS_INTERVAL_MS) {
+        lastReportAt = Date.now();
+        await this.reportProgress(
+          jobId,
+          `Exporting attachments (${i + 1} of ${total})`,
+        );
+      }
+    }
+  }
+
+  /** Downloads an attachment; a missing or unreadable file is skipped. */
+  private async readAttachment(attachment: Attachment): Promise<Buffer | null> {
     try {
-      const source = await this.storage.getObject(storageKey);
+      const source = await this.storage.getObject(attachment.storageKey);
       const chunks: Buffer[] = [];
-      await new Promise<void>((resolve, reject) => {
-        source.on('data', (chunk: Buffer) => chunks.push(chunk));
-        source.on('end', () => resolve());
-        source.on('error', reject);
-      });
-      archive.append(Buffer.concat(chunks), { name });
-      return true;
+      for await (const chunk of source) {
+        chunks.push(chunk as Buffer);
+      }
+      return Buffer.concat(chunks);
     } catch (err) {
       this.logger.warn({
         message: 'Failed to append attachment to archive',
-        storageKey,
+        storageKey: attachment.storageKey,
         error: (err as Error).message,
       });
-      return false;
+      return null;
+    }
+  }
+
+  /** Records progress, and stops the export if the sweeper gave up on it. */
+  private async reportProgress(jobId: string, progress: string): Promise<void> {
+    if (!(await this.jobs.setProgress(jobId, progress))) {
+      throw new JobNoLongerRunningError(jobId);
     }
   }
 }
