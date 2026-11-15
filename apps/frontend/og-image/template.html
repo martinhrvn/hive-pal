@@ -13,20 +13,20 @@
     <meta charset="utf-8" />
     <title>Hive Pal social preview card</title>
     <style>
-      /* `block`: render.mjs waits for both fonts before the screenshot, so the
-         card must never be captured with fallback text. */
+      /* `swap` is safe: render.mjs waits for document.fonts.ready and fails if
+         either font is missing, so fallback text is never captured. */
       @font-face {
         font-family: 'Bricolage Grotesque';
         font-weight: 300 800;
         font-stretch: 75% 100%;
-        font-display: block;
+        font-display: swap;
         src: url('../public/fonts/bricolage-grotesque-latin.woff2')
           format('woff2');
       }
       @font-face {
         font-family: 'Manrope';
         font-weight: 300 800;
-        font-display: block;
+        font-display: swap;
         src: url('../public/fonts/manrope-latin.woff2') format('woff2');
       }
 
