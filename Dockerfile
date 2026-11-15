@@ -1,8 +1,10 @@
 # syntax=docker/dockerfile:1
 
 # Stage 1: Base
-FROM node:22-alpine AS base
-RUN corepack enable
+FROM node:26-alpine AS base
+# Node 25+ no longer bundles Corepack; install it so pnpm still comes from the
+# root package.json `packageManager` field.
+RUN npm i -g corepack@0.36.0 --ignore-scripts && corepack enable
 # Keep in sync with the `turbo` devDependency in the root package.json.
 RUN npm i -g turbo@2.11.10 --ignore-scripts
 WORKDIR /app
@@ -50,10 +52,10 @@ RUN pnpm install --prod --frozen-lockfile --ignore-scripts \
  && find node_modules -type f -name '*.ts' ! -name '*.d.ts' -delete
 
 # Stage 5: Production
-FROM node:22-alpine AS production
+FROM node:26-alpine AS production
 RUN apk add --no-cache netcat-openbsd \
- # npm, yarn and corepack are not needed to run the server.
- && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /opt/yarn-v1.22.22
+ # npm is not needed to run the server.
+ && rm -rf /usr/local/lib/node_modules/npm
 WORKDIR /app
 
 ENV NODE_ENV=production

@@ -59,7 +59,7 @@ await build({
   outdir: 'dist/bundle',
   bundle: true,
   platform: 'node',
-  target: 'node22',
+  target: 'node26',
   format: 'cjs',
   external,
   // Some ESM-authored dependencies call createRequire(import.meta.url). The

@@ -1,5 +1,5 @@
 {
-  description = "Development environment with Node.js 22 and PNPM 9";
+  description = "Development environment with Node.js 26 and PNPM 9";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
@@ -19,7 +19,7 @@
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            nodejs_22
+            nodejs_26
             pnpm_9
             turbo
             go-task

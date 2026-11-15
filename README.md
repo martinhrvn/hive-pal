@@ -148,7 +148,7 @@ pnpm dev
 
 ### Prerequisites for Development
 
-- Node.js 22+
+- Node.js 26+
 - PNPM package manager
 
 ## Project Structure

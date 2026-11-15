@@ -9,9 +9,12 @@ let
   # The main nixpkgs pin builds piper's torch and onnxruntime with CUDA,
   # which fails; this nixos-unstable pin has a plain, cached piper-tts 1.8.
   pkgs-piper = import inputs.nixpkgs-piper { system = pkgs.stdenv.system; };
+  # Node.js 26 from its own pin, so moving Node does not drag the main nixpkgs
+  # (Prisma engines, pnpm) along with it.
+  pkgs-node = import inputs.nixpkgs-node { system = pkgs.stdenv.system; };
 in {
   packages = with pkgs; [
-    nodejs_22
+    pkgs-node.nodejs_26
     pnpm_9
     playwright-browsers
     openssl
