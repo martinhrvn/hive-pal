@@ -111,7 +111,7 @@ jobs:
         if: steps.version.outputs.skip != 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '26'
           cache: 'pnpm'
 
       - name: Install dependencies

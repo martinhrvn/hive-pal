@@ -36,6 +36,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-node": {
+      "locked": {
+        "lastModified": 1794042290,
+        "narHash": "sha256-ziZn2PvCJE5JEEpqTdxXwJpPB+L3YqoCpTAMCzyaP3U=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f4a03c008967841f2a0b3cb7c436fc6fc31671f6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f4a03c008967841f2a0b3cb7c436fc6fc31671f6",
+        "type": "github"
+      }
+    },
     "nixpkgs-piper": {
       "locked": {
         "lastModified": 1792094642,
@@ -89,6 +105,7 @@
       "inputs": {
         "devenv": "devenv",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-node": "nixpkgs-node",
         "nixpkgs-piper": "nixpkgs-piper",
         "nixpkgs-playwright": "nixpkgs-playwright"
       }

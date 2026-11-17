@@ -2,6 +2,9 @@
 inputs:
   nixpkgs:
     url: github:cachix/devenv-nixpkgs/rolling
+  # Node.js 26; the rolling devenv-nixpkgs lock predates it.
+  nixpkgs-node:
+    url: github:NixOS/nixpkgs/f4a03c008967841f2a0b3cb7c436fc6fc31671f6
   nixpkgs-playwright:
     url: github:NixOS/nixpkgs/0bb2eedc20e4739f29e8045034f2828ad7054f8f
   nixpkgs-piper:
