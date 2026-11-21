@@ -15,7 +15,9 @@
     "noHivesMatchingSearch": "Aucune ruche trouvée correspondant à \"{{searchTerm}}\"",
     "noHivesWithStatus": "Aucune ruche {{status}} trouvée",
     "clearFilters": "Effacer les filtres",
-    "createFirst": "Créez votre première ruche"
+    "createFirst": "Créez votre première ruche",
+    "captionFiltered_one": "Affichage de {{count}} ruche avec le statut {{status}}",
+    "captionFiltered_other": "Affichage de {{count}} ruche(s) avec le statut {{status}}"
   },
   "create": {
     "title": "Créer une nouvelle ruche",
