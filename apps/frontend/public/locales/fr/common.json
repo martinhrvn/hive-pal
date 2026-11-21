@@ -1127,5 +1127,15 @@
         }
       }
     }
+  },
+  "feedTypes": {
+    "title": "Types de nourrissement",
+    "description": "Vos propres types de nourrissement (par exemple, un sirop inverti du commerce), avec leur densité et leur teneur en sucre. Ils apparaissent dans le formulaire de nourrissement, à côté des types standard.",
+    "empty": "Aucun type de nourrissement personnalisé pour le moment.",
+    "add": "Ajouter un type de nourrissement",
+    "name": "Nom",
+    "namePlaceholder": "Par exemple : Apiinvert",
+    "form": "Formulaire",
+    "sugarContent": "Teneur en sucre (% en poids)"
   }
 }
