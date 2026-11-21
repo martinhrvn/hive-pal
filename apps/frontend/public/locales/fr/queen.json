@@ -5,7 +5,8 @@
   "create": {
     "title": "Nouvelle reine",
     "button": "Créer la reine",
-    "success": "Reine créée avec succès"
+    "success": "Reine créée avec succès",
+    "error": "Échec de la création de la reine"
   },
   "edit": {
     "title": "Modifier la reine",
