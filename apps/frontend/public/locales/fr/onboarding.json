@@ -10,7 +10,8 @@
   "welcome": {
     "title": "Commencez votre aventure apicole",
     "description": "Bienvenue sur Hive-Pal, votre assistant numérique pour l’apiculture ! Nous allons vous guider pour configurer votre premier rucher et votre première ruche.",
-    "action": "Commencer"
+    "action": "Commencer",
+    "logoAlt": "Hive-Pal Logo"
   },
   "apiary": {
     "title": "Créer votre premier rucher",
@@ -25,5 +26,42 @@
     "title": "Félicitations !",
     "description": "Vous avez configuré votre premier rucher et votre première ruche. Vous pouvez maintenant commencer à suivre vos activités apicoles avec Hive-Pal !",
     "action": "Aller au tableau de bord"
+  },
+  "nudges": {
+    "addHive": {
+      "title": "Vous débutez sur Hive-Pal",
+      "description": "Ajoutez votre première ruche pour commencer à suivre vos inspections et vos activités apicoles.",
+      "action": "Ajouter une ruche"
+    },
+    "addLocation": {
+      "title": "Consultez la météo de votre rucher",
+      "description": "Ajoutez l'emplacement de votre rucher pour accéder aux mises à jour et aux prévisions météo.",
+      "action": "Ajouter un emplacement"
+    }
+  },
+  "empty": {
+    "noApiary": {
+      "title": "Créez votre premier rucher",
+      "description": "Un rucher est un emplacement où sont installées vos ruches. Créez-en un pour commencer.",
+      "action": "Créer un rucher",
+      "guided": "Vous préférez être guidé ?"
+    },
+    "noHives": {
+      "title": "Aucune ruche pour le moment",
+      "description": "Ajoutez votre première ruche à ce rucher pour commencer à en suivre l'activité.",
+      "action": "Ajouter votre première ruche",
+      "descriptionAll": "Ajoutez une ruche à l'un de vos ruchers pour commencer à en suivre l'activité."
+    },
+    "noLocation": {
+      "title": "Ajoutez un emplacement pour consulter la météo",
+      "description": "Indiquez l'emplacement de votre rucher pour obtenir des mises à jour et des prévisions météo.",
+      "action": "Ajouter un emplacement",
+      "dismiss": "Ignorer"
+    },
+    "pendingApproval": {
+      "title": "En attente d'approbation",
+      "description_one": "Vous avez demandé à rejoindre un rucher. Son propriétaire examinera votre demande prochainement.",
+      "description_other": "Vous avez demandé à rejoindre {{count}} ruchers. Leurs propriétaires examineront vos demandes prochainement."
+    }
   }
 }
