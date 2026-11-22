@@ -3,7 +3,7 @@
   "singular": "Inspection",
   "plural": "Inspections",
   "tabs": {
-    "all": "Tous",
+    "all": "Toutes",
     "recent": "Récentes",
     "upcoming": "À venir"
   },
@@ -16,26 +16,31 @@
     "filterByHive": "Filtrer par ruche",
     "allHives": "Toutes les ruches",
     "noInspections": "Aucune inspection trouvée",
-    "unknownHive": "Ruche inconnue"
+    "unknownHive": "Ruche inconnue",
+    "broodNestStats": "Statistiques du nid à couvain",
+    "noFrameData": "Aucune donnée sur les cadres enregistrée"
   },
   "status": {
     "scheduled": "Planifiée",
     "completed": "Terminée",
     "overdue": "En retard",
-    "cancelled": "Annulée"
+    "cancelled": "Annulée",
+    "unknown": "Inconnu"
   },
   "fields": {
     "dateTime": "Date et heure",
     "hive": "Ruche",
     "weather": "Météo",
-    "scoreStatus": "Score/Statut",
+    "scoreStatus": "Score / statut",
     "status": "Statut",
-    "queenSeen": "Reine vue",
+    "queenSeen": "Reine observée",
     "temperature": "Température",
     "weatherConditions": "Conditions météorologiques",
-    "notRecorded": "Non enregistré",
+    "notRecorded": "Non renseigné",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "notes": "Notes",
+    "actions": "Actions"
   },
   "scores": {
     "title": "Scores de santé",
@@ -44,37 +49,38 @@
     "queen": "Reine",
     "overall": "Global",
     "warnings": "Avertissements",
-    "override": "Passer outre",
-    "resetToCalculated": "Réinitialiser au calcul",
-    "autoCalculated": "Auto-calculé",
-    "overridden": "Personnalisé"
+    "override": "Remplacer",
+    "resetToCalculated": "Rétablir la valeur calculée",
+    "autoCalculated": "Calculé automatiquement",
+    "overridden": "Personnalisé",
+    "calculatedValue": "Valeur calculée : {{value}}"
   },
   "observations": {
     "title": "Observations",
-    "queenSeen": "Reine vue",
-    "strength": "Force",
+    "queenSeen": "Reine observée",
+    "strength": "Force de la colonie",
     "cappedBrood": "Couvain operculé",
-    "uncappedBrood": "Couvain non operculé",
+    "uncappedBrood": "Couvain ouvert",
     "honeyStores": "Réserves de miel",
     "pollenStores": "Réserves de pollen",
     "queenCells": "Cellules royales",
     "swarmCells": "Cellules d'essaimage",
-    "swarmCellsDescription": "",
-    "supersedureCells": "Cellules de supersédure",
-    "supersedureCellsDescription": "",
-    "clearRating": "Évaluation claire",
-    "rateAs": "Noter comme {{value}}",
-    "broodPattern": "Disposition du couvain",
-    "selectBroodPattern": "Sélectionner la disposition du couvain",
+    "swarmCellsDescription": "Construites sur le bas ou les bords des cadres. Elles sont souvent nombreuses. La colonie se prépare à essaimer.",
+    "supersedureCells": "Cellules de remérage",
+    "supersedureCellsDescription": "Construites au milieu de la face d'un cadre. Généralement une ou deux seulement. Les abeilles élèvent une nouvelle reine pour remplacer une reine âgée ou défaillante.",
+    "clearRating": "Effacer l'évaluation",
+    "rateAs": "Évaluer comme {{value}}",
+    "broodPattern": "Aspect du couvain",
+    "selectBroodPattern": "Sélectionner l'aspect du couvain",
     "broodPatternOptions": {
       "solid": "Compact",
-      "spotty": "Tacheté",
+      "spotty": "En mosaïque",
       "scattered": "Dispersé",
       "patchy": "Inégal",
       "excellent": "Excellent",
-      "poor": "Mauvais"
+      "poor": "Médiocre"
     },
-    "additionalObservations": "Observations supplémentaires",
+    "additionalObservations": "Observations complémentaires",
     "additional": {
       "calm": "Calme",
       "defensive": "Défensive",
@@ -82,22 +88,51 @@
       "nervous": "Nerveuse",
       "varroa_present": "Présence de varroas",
       "small_hive_beetle": "Petit coléoptère des ruches",
-      "wax_moths": "Fausse teigne",
+      "wax_moths": "Fausses teignes",
       "ants_present": "Présence de fourmis",
       "healthy": "En bonne santé",
       "active": "Active",
-      "sluggish": "Lente",
-      "thriving": "Prospère"
+      "sluggish": "Peu active",
+      "thriving": "Florissante"
     },
-    "reminderObservations": "Rappels",
+    "reminderObservations": "Points à surveiller",
     "reminder": {
-      "honey_bound": "Blocage par le miel",
-      "overcrowded": "Surpeuplée",
-      "needs_super": "Besoin d'une hausse",
+      "honey_bound": "Blocage de ponte",
+      "overcrowded": "Encombrée",
+      "needs_super": "Nécessite une hausse",
       "queen_issues": "Problèmes de reine",
-      "requires_treatment": "Nécessite un traitement",
-      "low_stores": "Réserves faibles",
-      "prepare_for_winter": "Préparer pour l'hiver"
+      "requires_treatment": "Traitement nécessaire",
+      "low_stores": "Réserves insuffisantes",
+      "prepare_for_winter": "Préparer l'hivernage"
+    },
+    "increaseField": "Augmenter {{field}}",
+    "decreaseField": "Diminuer {{field}}",
+    "clearField": "Effacer",
+    "frameCounts": {
+      "title": "Comptage des cadres du nid à couvain",
+      "totalFrames": "{{count}} cadres au total",
+      "framesOf": "/ {{total}} cadres",
+      "framesUnassigned_one": "{{count}} cadre non attribué actuellement",
+      "framesUnassigned_other": "{{count}} cadres non attribués actuellement",
+      "frameDeltaHint": "Cadres ajoutés ou retirés pendant cette inspection"
+    },
+    "eggsFrames": "Œufs",
+    "uncappedBroodFrames": "Couvain ouvert",
+    "cappedBroodFrames": "Couvain operculé",
+    "droneBroodFrames": "Couvain de mâles",
+    "pollenFrames": "Pollen",
+    "nectarFrames": "Nectar",
+    "honeyFrames": "Miel",
+    "emptyFrames": "Vides / cire gaufrée",
+    "frameShort": {
+      "eggsFrames": "Œufs",
+      "uncappedBroodFrames": "Ouvert",
+      "cappedBroodFrames": "Operculé",
+      "droneBroodFrames": "Mâles",
+      "pollenFrames": "Pollen",
+      "nectarFrames": "Nectar",
+      "honeyFrames": "Réserves",
+      "emptyFrames": "Vides"
     }
   },
   "actions": {
@@ -106,16 +141,20 @@
     "addInspection": "Ajouter une inspection",
     "scheduleInspection": "Planifier une inspection",
     "refreshData": "Actualiser les données",
-    "exportCSV": "Exporter en CSV",
+    "exportCSV": "Exporter au format CSV",
     "printList": "Imprimer la liste",
     "shareList": "Partager la liste",
-    "dataOptions": "Options de données",
+    "dataOptions": "Options des données",
     "doInspection": "Effectuer l'inspection",
     "reschedule": "Replanifier",
     "cancel": "Annuler",
     "completeInspection": "Terminer l'inspection",
     "print": "Imprimer",
-    "share": "Partager"
+    "share": "Partager",
+    "view": "Voir",
+    "edit": "Modifier",
+    "mobileInspection": "Inspection sur mobile",
+    "audioInspection": "Inspection audio"
   },
   "sidebar": {
     "actions": "Actions",
@@ -127,13 +166,14 @@
     "shareInspectionList": "Partager la liste des inspections"
   },
   "messages": {
-    "exportComingSoon": "Fonction d'export bientôt disponible",
-    "shareComingSoon": "Fonction de partage bientôt disponible"
+    "exportComingSoon": "La fonction d'exportation sera bientôt disponible",
+    "shareComingSoon": "La fonction de partage sera bientôt disponible",
+    "savedSuccessfully": "Inspection enregistrée avec succès"
   },
   "scheduled": {
     "title": "Inspections planifiées",
     "overdueInspections": "Inspections en retard",
-    "todaysInspections": "Inspections d'aujourd'hui",
+    "todaysInspections": "Inspections du jour",
     "upcomingInspections": "Inspections à venir",
     "otherUpcomingInspections": "Autres inspections à venir",
     "doInspection": "Effectuer l'inspection",
@@ -145,20 +185,21 @@
   "dialogs": {
     "cancelInspection": {
       "title": "Annuler l'inspection",
-      "description": "Êtes-vous sûr de vouloir annuler l'inspection de {{hiveName}} prévue pour {{date}} ? Cette action est irréversible.",
+      "description": "Voulez-vous vraiment annuler l'inspection de {{hiveName}}, prévue le {{date}} ? Cette action est irréversible.",
       "keepInspection": "Conserver l'inspection",
       "cancelInspection": "Annuler l'inspection"
     },
     "reschedule": {
       "title": "Replanifier l'inspection",
-      "description": "Choisissez une nouvelle date pour l'inspection de {{hiveName}}. Les prévisions météo sont affichées pour les 7 prochains jours.",
+      "description": "Choisissez une nouvelle date pour l'inspection de {{hiveName}}. Les prévisions météorologiques des 7 prochains jours sont affichées.",
       "newDate": "Nouvelle date d'inspection : {{date}}",
       "cancel": "Annuler",
       "reschedule": "Replanifier l'inspection",
       "showFewerDays": "Afficher moins de jours",
       "showMoreDays": "Afficher plus de jours (+7)",
       "noForecast": "Aucune prévision disponible",
-      "noWeatherData": "Aucune donnée météo"
+      "noWeatherData": "Aucune donnée météorologique",
+      "noApiaryWeather": "Cette ruche n'est associée à aucun rucher permettant d'obtenir des données météorologiques."
     },
     "completingScheduled": {
       "title": "Finalisation de l'inspection planifiée du {{date}}",
@@ -167,7 +208,7 @@
   },
   "weather": {
     "sunny": "Ensoleillé",
-    "clear": "Dégagé",
+    "clear": "Ciel dégagé",
     "partlyCloudy": "Partiellement nuageux",
     "cloudy": "Nuageux",
     "overcast": "Couvert",
@@ -176,13 +217,14 @@
   "detail": {
     "loading": "Chargement de l'inspection...",
     "error": "Erreur",
-    "errorDescription": "Échec du chargement des détails de l'inspection.",
+    "errorDescription": "Impossible de charger les détails de l'inspection.",
     "goBack": "Retour",
     "notFound": "Inspection introuvable",
     "back": "Retour",
     "share": "Partager",
-    "shareFailed": "Échec de la création du lien de partage",
-    "viewHive": "Voir la ruche"
+    "shareFailed": "Impossible de créer le lien de partage",
+    "viewHive": "Voir la ruche",
+    "showApiaryLayout": "Afficher le plan du rucher"
   },
   "statusCard": {
     "title": "Statut",
@@ -201,15 +243,15 @@
   },
   "observationsCard": {
     "title": "Observations",
-    "strength": "Force",
-    "uncappedBrood": "Couvain non operculé",
+    "strength": "Force de la colonie",
+    "uncappedBrood": "Couvain ouvert",
     "cappedBrood": "Couvain operculé",
     "honeyStores": "Réserves de miel",
     "pollenStores": "Réserves de pollen",
     "queenCells": "Cellules royales",
-    "broodPattern": "Disposition du couvain",
-    "additionalObservations": "Observations supplémentaires",
-    "reminders": "Rappels"
+    "broodPattern": "Aspect du couvain",
+    "additionalObservations": "Observations complémentaires",
+    "reminders": "Points à surveiller"
   },
   "form": {
     "newInspection": "Nouvelle inspection",
@@ -218,18 +260,18 @@
     "selectHive": "Sélectionner une ruche",
     "inspectionDate": "Date de l'inspection",
     "pickDate": "Choisir une date",
-    "allDay": "All day",
-    "specificTime": "Set specific time",
+    "allDay": "Toute la journée",
+    "specificTime": "Définir une heure précise",
     "futureScheduled": "Cette inspection est planifiée dans le futur",
-    "futureScheduledDescription": "Vous planifiez une inspection pour une date future.",
+    "futureScheduledDescription": "Vous planifiez une inspection à une date ultérieure.",
     "cancel": "Annuler",
-    "saveAndNext": "Enregistrer et continuer",
+    "saveAndNext": "Enregistrer et suivant",
     "saving": "Enregistrement...",
     "save": "Enregistrer",
     "completeInspection": "Terminer l'inspection",
     "saveAndComplete": "Enregistrer et terminer",
     "weather": {
-      "title": "Informations météo",
+      "title": "Informations météorologiques",
       "description": "Ajouter les conditions météorologiques",
       "temperature": "Température",
       "condition": "Condition",
@@ -240,57 +282,90 @@
     },
     "notes": {
       "title": "Notes",
-      "description": "Ajouter des notes supplémentaires sur cette inspection",
+      "description": "Ajoutez des notes complémentaires concernant cette inspection",
       "label": "Notes",
-      "placeholder": "Saisissez les observations, constats ou actions effectuées lors de l'inspection..."
+      "placeholder": "Saisissez vos observations, constatations ou interventions réalisées pendant l'inspection..."
     },
     "actions": {
       "title": "Actions",
       "titleSingular": "Action",
-      "feeding": "Nourrissage",
+      "feeding": "Nourrissement",
       "treatment": "Traitement",
       "frames": "Cadres",
       "note": "Note",
       "save": "Enregistrer",
       "feeding_section": {
-        "title": "Nourrissage",
-        "feedType": "Type de nourriture",
+        "title": "Nourrissement",
+        "feedType": "Type de nourrissement",
         "syrup": "Sirop",
         "honey": "Miel",
-        "candy": "Candy",
-        "proteinCandy": "Protein Candy",
-        "pollenPatty": "Pollen Patty",
+        "candy": "Candi",
+        "proteinCandy": "Candi protéiné",
+        "pollenPatty": "Pâte protéinée",
         "other": "Autre",
-        "customFeedName": "Nom de l'aliment",
-        "customFeedNamePlaceholder": "Entrez un type d'aliment personnalisé",
+        "customFeedName": "Nom du nourrissement",
+        "customFeedNamePlaceholder": "Saisissez le nom du type de nourrissement personnalisé",
         "quantity": "Quantité",
         "concentration": "Concentration",
         "selectConcentration": "Sélectionner une concentration",
-        "notesOptional": "Notes (optionnel)",
-        "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce nourrissage"
+        "notesOptional": "Notes (facultatif)",
+        "notesPlaceholder": "Ajoutez des notes complémentaires sur ce nourrissement",
+        "unit": "Unité",
+        "selectFeedType": "Sélectionner un type de nourrissement",
+        "builtinTypes": "Types standard",
+        "myTypes": "Mes types de nourrissement",
+        "otherGroup": "Autre",
+        "customOneOff": "Personnalisé (ponctuel)…",
+        "manageTypesHint": "Ajoutez vos propres types de nourrissement (avec leur densité et leur teneur en sucre) dans Paramètres → Types de nourrissement.",
+        "waterAdded": "Dilution avec de l'eau (ml, facultatif)",
+        "sugarReadout": "≈ {{amount}} de sucre",
+        "sugarShort": "≈ {{amount}} de sucre",
+        "waterShort": "+ {{amount}} ml d'eau",
+        "types": {
+          "SYRUP_1_1": "Sirop 1:1",
+          "SYRUP_3_2": "Sirop 3:2",
+          "SYRUP_2_1": "Sirop 2:1",
+          "APIINVERT": "Apiinvert",
+          "FONDANT": "Candi fondant",
+          "CANDY": "Candi",
+          "DRY_SUGAR": "Sucre sec",
+          "HONEY": "Miel",
+          "POLLEN_PATTY": "Pâte protéinée",
+          "PROTEIN_CANDY": "Candi protéiné"
+        }
       },
       "treatment_section": {
         "title": "Traitement",
         "treatmentType": "Type de traitement",
         "selectTreatmentType": "Sélectionner un type de traitement",
         "productName": "Nom du produit",
-        "productNamePlaceholder": "Saisir le nom du produit de traitement",
+        "productNamePlaceholder": "Saisissez le nom du produit de traitement",
         "unit": "Unité",
         "selectUnit": "Sélectionner une unité",
         "amount": "Quantité",
-        "notesOptional": "Notes (optionnel)",
-        "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce traitement"
+        "notesOptional": "Notes (facultatif)",
+        "notesPlaceholder": "Ajoutez des notes complémentaires sur ce traitement",
+        "other": "Autre (texte libre)",
+        "manageProducts": "Gérer les produits",
+        "addEfficacy": "+ Ajouter un comptage de varroas (efficacité)",
+        "miteMethod": "Méthode de comptage des varroas",
+        "miteBefore": "Varroas avant traitement",
+        "miteAfter": "Varroas après traitement",
+        "sampleSize": "Taille de l'échantillon (abeilles)",
+        "efficacy": "Efficacité : {{p}} %"
       },
       "frames_section": {
         "title": "Cadres",
-        "framesLabel": "Nombre de cadres ajoutés/supprimés",
-        "framesHint": "Utilisez des nombres positifs pour les cadres ajoutés, négatifs pour les cadres retirés",
-        "notesOptional": "Notes (optionnel)",
-        "notesPlaceholder": "Ajoutez des notes supplémentaires sur les modifications de cadres"
+        "framesLabel": "Nombre de cadres ajoutés ou retirés",
+        "framesHint": "Utilisez des nombres positifs pour les cadres ajoutés et négatifs pour les cadres retirés",
+        "notesOptional": "Notes (facultatif)",
+        "notesPlaceholder": "Ajoutez des notes complémentaires sur les modifications des cadres",
+        "warningNoFramesToRemove": "Aucun cadre à retirer.",
+        "warningExceedsCapacity": "Cela dépasse la capacité du corps de ruche ({{capacity}} cadres). Ajoutez d'abord un nouvel élément."
       },
       "note_section": {
         "title": "Note",
-        "description": "Ajouter une note ou observation sur cette ruche",
+        "description": "Ajoutez une note ou une observation concernant cette ruche",
         "noteContent": "Contenu de la note",
         "placeholder": "Saisissez votre note ou observation...",
         "characters": "{{count}}/500 caractères",
@@ -298,19 +373,29 @@
         "saveNote": "Enregistrer la note",
         "edit": "Modifier"
       },
-      "maintenance": "Maintenance",
+      "maintenance": "Entretien",
       "maintenance_section": {
-        "title": "Maintenance",
+        "title": "Entretien",
         "component": "Composant",
-        "box": "Ruche",
-        "bottomBoard": "Fond de caisse",
+        "box": "Élément de la ruche",
+        "bottomBoard": "Plancher",
         "cover": "Couvre-cadres",
         "status": "Statut",
         "cleaned": "Nettoyé",
         "replaced": "Remplacé",
-        "notesOptional": "Notes (optionnel)",
-        "notesPlaceholder": "Notes additionnelles sur l’entretien…"
-      }
+        "notesOptional": "Notes (facultatif)",
+        "notesPlaceholder": "Notes complémentaires sur l'entretien...",
+        "savedToast": "{{status}} — {{date}}",
+        "saveError": "Impossible d'enregistrer l'intervention d'entretien"
+      },
+      "statusChange": "Changement de statut",
+      "statusChange_section": {
+        "title": "Changement de statut",
+        "current": "Actuel",
+        "newStatus": "Nouveau statut",
+        "notesOptional": "Motif (facultatif)"
+      },
+      "notesValue": "Notes : {{notes}}"
     },
     "audio": {
       "title": "Notes audio",
@@ -319,12 +404,47 @@
     },
     "photos": {
       "title": "Photos",
-      "addPhoto": "Ajouter Photo",
-      "pendingUpload": "{{count}} Téléversement en attente",
-      "uploadWarning": "Les photos seront téléversées quand l'inspection sera sauvegardée",
+      "addPhoto": "Ajouter une photo",
+      "pendingUpload": "{{count}} en attente d'envoi",
+      "uploadWarning": "Les photos seront envoyées lorsque vous enregistrerez l'inspection.",
       "deleteConfirm": "Supprimer cette photo ?",
-      "maxReached": "Maximum {{max}} photos par inspection"
-    }
+      "maxReached": "Maximum de {{max}} photos par inspection",
+      "takePhoto": "Prendre une photo",
+      "unsupportedType": "{{name}} : format d'image non pris en charge",
+      "tooLarge": "{{name}} dépasse {{max}} Mo",
+      "uploadFailed": "Impossible d'envoyer {{name}}",
+      "deleteFailed": "Impossible de supprimer la photo",
+      "someFailed_one": "Impossible d'envoyer {{count}} photo",
+      "someFailed_other": "Impossible d'envoyer {{count}} photos"
+    },
+    "now": "Maintenant",
+    "weights": {
+      "title": "Pesée",
+      "description": "Enregistrez les mesures de poids de la ruche. Précisez l'emplacement de la balance : laissez le côté vide pour une pesée de la ruche entière et utilisez la base pour soulever toute la ruche par le bas.",
+      "empty": "Aucune pesée enregistrée pour le moment.",
+      "add": "Ajouter une mesure",
+      "remove": "Supprimer la mesure",
+      "value": "Poids ({{unit}})",
+      "position": "Position",
+      "wholeHive": "Ruche entière (base)",
+      "boxLabel": "Élément {{position}} · {{type}}",
+      "boxType": {
+        "BROOD": "Corps de ruche",
+        "HONEY": "Hausse",
+        "FEEDER": "Nourrisseur"
+      },
+      "side": "Côté",
+      "wholeWeight": "Total (sans côté)",
+      "sides": {
+        "FRONT": "Avant (entrée)",
+        "BACK": "Arrière",
+        "LEFT": "Gauche",
+        "RIGHT": "Droite"
+      },
+      "chartTitle": "Poids",
+      "chartDescription": "Poids de la ruche enregistrés au fil du temps ({{unit}}), classés par position et par côté"
+    },
+    "strengthSubjectiveRange": "En mode subjectif, la valeur doit être comprise entre 0 et 10"
   },
   "detailSidebar": {
     "inspectionActions": "Actions de l'inspection",
@@ -338,7 +458,14 @@
     "allInspections": "Toutes les inspections",
     "recentInspections": "Inspections récentes",
     "goBack": "Retour",
-    "deleteFailed": "Échec de la suppression de l'inspection"
+    "deleteFailed": "Impossible de supprimer l'inspection",
+    "hiveChangesDescription": "Cette inspection a modifié la ruche. Vous pouvez conserver ces modifications ou les annuler en même temps que l'inspection.",
+    "undoListTitle": "L'annulation rétablira :",
+    "frameChange": "Cadres : {{change}}",
+    "boxChange": "Configuration des éléments : {{changes}}",
+    "boxChangeNotUndoable": "La modification de la configuration des éléments ne peut pas être annulée automatiquement : les éléments actuellement présents dans la ruche ne correspondent plus à ceux laissés par cette inspection.",
+    "deleteKeepHive": "Supprimer en conservant la ruche en l'état",
+    "deleteUndoHiveChanges": "Supprimer et annuler les modifications de la ruche"
   },
   "timeline": {
     "scheduledInspections": "Inspections planifiées",
@@ -352,53 +479,56 @@
     "brood": "Couvain :",
     "weather": "Météo :",
     "queen": "Reine :",
-    "queenSeen": "Vue",
-    "queenNotSeen": "Non vue",
+    "queenSeen": "Observée",
+    "queenNotSeen": "Non observée",
     "notesAvailable": "Notes disponibles",
     "showFewer": "Afficher moins",
-    "showAllCount": "Afficher toutes les {{count}} inspections"
+    "showAllCount": "Afficher les {{count}} inspections",
+    "unknownHive": "Ruche inconnue"
   },
   "schedule": {
     "title": "Planifier une inspection",
-    "description": "Planifiez vos inspections pour les 7 prochains jours avec les prévisions météo",
+    "description": "Planifiez vos inspections des 7 prochains jours en tenant compte des prévisions météorologiques",
     "selectHives": "Sélectionner les ruches",
     "selectHivesDescription": "Choisissez les ruches pour lesquelles vous souhaitez planifier des inspections",
     "hivesSelected": "{{count}} ruche sélectionnée",
     "hivesSelectedPlural": "{{count}} ruches sélectionnées",
     "clear": "Effacer",
     "scheduleCalendar": "Calendrier de planification",
-    "calendarDescription": "Sélectionnez un jour pour planifier votre inspection avec les prévisions météo ({{days}} prochains jours)",
-    "selectHiveFirst": "Veuillez sélectionner au moins une ruche pour voir les prévisions météo",
-    "noApiaryWeather": "Les ruches sélectionnées n'ont pas de rucher associé pour les données météo",
+    "calendarDescription": "Sélectionnez un jour pour planifier votre inspection en tenant compte des prévisions météo ({{days}} prochains jours)",
+    "selectHiveFirst": "Veuillez sélectionner au moins une ruche pour afficher les prévisions météorologiques",
+    "noApiaryWeather": "Les ruches sélectionnées ne sont associées à aucun rucher permettant d'obtenir des données météorologiques",
     "today": "Aujourd'hui",
     "noForecast": "Aucune prévision disponible",
-    "noWeatherData": "Aucune donnée météo",
+    "noWeatherData": "Aucune donnée météorologique",
     "showFewerDays": "Afficher moins de jours",
     "showMoreDays": "Afficher plus de jours (+7)",
     "inspectionDetails": "Détails de l'inspection",
-    "schedulingCount": "Planification de {{count}} inspection pour {{date}}",
-    "schedulingCountPlural": "Planification de {{count}} inspections pour {{date}}",
+    "schedulingCount": "Planification de {{count}} inspection pour le {{date}}",
+    "schedulingCountPlural": "Planification de {{count}} inspections pour le {{date}}",
     "selectedHives": "Ruches sélectionnées :",
-    "createAsBatch": "Créer en lot",
-    "batchDescription": "Effectuer les inspections de manière séquentielle avec un workflow guidé",
-    "batchName": "Nom du lot",
-    "batchNamePlaceholder": "ex : Inspection printemps 2025",
-    "notesOptional": "Notes (optionnel)",
+    "createAsBatch": "Créer une inspection groupée",
+    "batchDescription": "Effectuez les inspections successivement à l'aide d'un parcours guidé",
+    "batchName": "Nom du groupe",
+    "batchNamePlaceholder": "Ex. : Inspection de printemps 2027",
+    "notesOptional": "Notes (facultatif)",
     "notesPlaceholder": "Ajoutez des notes pour cette inspection planifiée...",
-    "batchInfo": "Ce lot sera créé et prêt à être lancé",
-    "scheduledInfo": "Cette inspection sera planifiée pour une date future",
-    "batchStartInfo": "Vous pouvez commencer le lot immédiatement ou plus tard.",
+    "batchInfo": "Ce groupe va être créé et sera prêt à démarrer",
+    "scheduledInfo": "Cette inspection sera planifiée à une date ultérieure",
+    "batchStartInfo": "Vous pouvez commencer les inspections du groupe immédiatement ou les démarrer plus tard.",
     "scheduledStartInfo": "Vous pourrez ajouter des détails et terminer l'inspection à la date prévue.",
-    "createBatchInspection": "Créer un lot d'inspections",
+    "createBatchInspection": "Créer le groupe d'inspections",
     "scheduleCount": "Planifier {{count}} inspection",
     "scheduleCountPlural": "Planifier {{count}} inspections",
-    "batchCreated": "Lot d'inspections créé avec succès : {{name}}",
-    "batchCreateFailed": "Échec de la création du lot d'inspections",
+    "batchCreated": "Groupe d'inspections créé avec succès : {{name}}",
+    "batchCreateFailed": "Impossible de créer le groupe d'inspections",
     "scheduledSuccess": "{{count}} inspection planifiée avec succès",
     "scheduledSuccessPlural": "{{count}} inspections planifiées avec succès",
     "scheduledFailed": "Échec de la planification de {{count}} inspection",
     "scheduledFailedPlural": "Échec de la planification de {{count}} inspections",
-    "noApiary": "Impossible de déterminer le rucher pour les ruches sélectionnées"
+    "noApiary": "Impossible de déterminer le rucher des ruches sélectionnées",
+    "selectAtLeastOneHive": "Veuillez sélectionner au moins une ruche",
+    "batchNameRequired": "Le nom du groupe est obligatoire pour créer un groupe d'inspections"
   },
   "edit": {
     "completingFrom": "Finalisation de l'inspection planifiée du {{date}}",
@@ -407,8 +537,240 @@
   "dashboard": {
     "title": "Statut des inspections",
     "overdue": "En retard",
-    "dueToday": "À faire aujourd'hui",
+    "dueToday": "À effectuer aujourd'hui",
     "overdueCount": "{{count}} inspection{{count, plural, one {} other{s}}} en retard",
-    "dueTodayCount": "{{count}} inspection{{count, plural, one {} other{s}}} à faire aujourd'hui"
+    "dueTodayCount": "{{count}} inspection{{count, plural, one {} other{s}}} à effectuer aujourd'hui"
+  },
+  "actionsCard": {
+    "actionLabels": {
+      "FEEDING": "Nourrissement",
+      "TREATMENT": "Traitement",
+      "FRAME": "Cadres",
+      "BOX_CONFIGURATION": "Configuration des éléments",
+      "MAINTENANCE": "Entretien",
+      "NOTE": "Note",
+      "STATUS_CHANGE": "Changement de statut",
+      "SPLIT": "Division de colonie",
+      "HARVEST": "Récolte",
+      "OTHER": "Autre"
+    },
+    "frameQuantity_one": "{{value}} cadre",
+    "frameQuantity_other": "{{value}} cadres",
+    "boxesAdded_one": "+{{count}} élément ajouté",
+    "boxesAdded_other": "+{{count}} éléments ajoutés",
+    "boxesRemoved_one": "-{{count}} élément retiré",
+    "boxesRemoved_other": "-{{count}} éléments retirés",
+    "framesAdded_one": "+{{count}} cadre ajouté",
+    "framesAdded_other": "+{{count}} cadres ajoutés",
+    "framesRemoved_one": "-{{count}} cadre retiré",
+    "framesRemoved_other": "-{{count}} cadres retirés",
+    "result": "Résultat",
+    "noChanges": "Aucune modification",
+    "boxType": {
+      "BROOD_one": "Corps de ruche",
+      "BROOD_other": "Corps de ruche",
+      "HONEY_one": "Hausse",
+      "HONEY_other": "Hausses",
+      "FEEDER_one": "Nourrisseur",
+      "FEEDER_other": "Nourrisseurs"
+    },
+    "frameCount_one": "{{count}} cadre",
+    "frameCount_other": "{{count}} cadres",
+    "frameList": "{{frames}} cadres",
+    "queenDisposition": {
+      "STAYED_WITH_SOURCE": "La reine est restée dans la colonie d'origine",
+      "MOVED_TO_NEW": "La reine a été transférée dans la nouvelle ruche",
+      "NEW_IS_QUEENLESS": "La nouvelle ruche est orpheline"
+    },
+    "splitFrames_one": "{{sign}}{{count}} cadre",
+    "splitFrames_other": "{{sign}}{{count}} cadres"
+  },
+  "mobile": {
+    "vitals": {
+      "title": "Force et couvain",
+      "hint": "Population, couvain operculé et non operculé"
+    },
+    "stores": {
+      "title": "Réserves",
+      "hint": "Miel et pollen"
+    },
+    "queen": {
+      "title": "Reine",
+      "hint": "L'avez-vous vue ? Y a-t-il des cellules royales ?",
+      "yes": "Observée",
+      "no": "Non observée",
+      "notLooked": "Non recherchée"
+    },
+    "mediaNotes": {
+      "title": "Photos et notes",
+      "hint": "Photos, enregistrements audio ou notes écrites (facultatif)",
+      "addPhoto": "Ajouter une photo",
+      "recordingNumber": "Enregistrement {{n}}",
+      "removeRecording": "Supprimer l'enregistrement",
+      "removePhoto": "Supprimer la photo",
+      "notesPlaceholder": "Autre chose à retenir ?"
+    },
+    "review": {
+      "title": "Vérification",
+      "hint": "Vérifiez le récapitulatif, puis enregistrez.",
+      "readyToSave": "Prêt à enregistrer",
+      "save": "Enregistrer l'inspection",
+      "invalid": "Veuillez vérifier les informations saisies",
+      "hasNotes": "Notes ajoutées",
+      "cellTypes": "Types de cellules"
+    }
+  },
+  "audioQuick": {
+    "recordingFor": "Inspection audio pour",
+    "prompt": "Appuyez pour commencer l'enregistrement. L'inspection est créée au début de l'enregistrement.",
+    "tapToStart": "Appuyez pour commencer",
+    "tapToStop": "Appuyez pour arrêter et enregistrer",
+    "start": "Démarrer l'enregistrement",
+    "starting": "Démarrage...",
+    "stop": "Arrêter l'enregistrement",
+    "uploading": "Enregistrement du fichier audio...",
+    "uploadFailed": "Échec de l'envoi de l'enregistrement audio. L'inspection a bien été enregistrée.",
+    "tryAgain": "Réessayer",
+    "unsupported": "L'enregistrement audio n'est pas pris en charge par ce navigateur."
+  },
+  "units": {
+    "celsius": "{{value}} °C",
+    "kmh": "{{value}} km/h",
+    "outOfTen": "/ 10",
+    "valueOutOfTen": "{{value}} / 10",
+    "unsetOutOfTen": "— / 10"
+  },
+  "wizard": {
+    "inspection": "Inspection",
+    "continue": "Continuer",
+    "goToStep": "Aller à l'étape {{step}}",
+    "decrease": "Diminuer",
+    "increase": "Augmenter",
+    "max": "max. {{max}}"
+  },
+  "boxConfigAction": {
+    "instruction": "Configurez les éléments de la ruche. Les modifications seront enregistrées comme une action de cette inspection et appliquées à la ruche lors de l'enregistrement de l'inspection.",
+    "confirmChanges": "Confirmer les modifications",
+    "boxesAdded_one": "+{{count}} élément ajouté",
+    "boxesAdded_other": "+{{count}} éléments ajoutés",
+    "boxesRemoved_one": "−{{count}} élément retiré",
+    "boxesRemoved_other": "−{{count}} éléments retirés",
+    "framesAdded_one": "+{{count}} cadre ajouté",
+    "framesAdded_other": "+{{count}} cadres ajoutés",
+    "framesRemoved_one": "−{{count}} cadre retiré",
+    "framesRemoved_other": "−{{count}} cadres retirés",
+    "total": "Total : {{boxes}}, {{frames}}",
+    "boxCount_one": "{{count}} élément",
+    "boxCount_other": "{{count}} éléments",
+    "frameCount_one": "{{count}} cadre",
+    "frameCount_other": "{{count}} cadres"
+  },
+  "audioCard": {
+    "title": "Audio",
+    "recordings_one": "{{count}} enregistrement",
+    "recordings_other": "{{count}} enregistrements",
+    "aiOutput": "Résultat de l'IA",
+    "hide": "Masquer",
+    "show": "Afficher",
+    "status": "Statut : {{status}}",
+    "noWorker": "Aucun agent de traitement en ligne : la tâche sera prise en charge lorsqu'un agent se connectera.",
+    "analysisFailed": "Échec de l'analyse par l'IA : {{error}}",
+    "unknownError": "Erreur inconnue",
+    "structuringFailed": "La structuration par l'IA a échoué, mais la transcription est disponible.",
+    "transcript": "Transcription",
+    "editTranscript": "Modifier la transcription",
+    "copied": "Copié",
+    "copyFailed": "Échec de la copie",
+    "copyTranscript": "Copier la transcription",
+    "saveAndReanalyze": "Enregistrer et relancer l'analyse",
+    "noTranscript": "Aucune transcription n'a été renvoyée.",
+    "structuredJson": "JSON structuré",
+    "copyJson": "Copier le JSON",
+    "debugRaw": "Débogage / Réponse brute de l'IA",
+    "loadingResult": "Chargement du résultat de l'IA...",
+    "loadingAudio": "Chargement du fichier audio...",
+    "preparingAudio": "Préparation du fichier audio...",
+    "prefill": "Préremplir l'inspection avec l'IA",
+    "runAnalysisFirst": "Lancez d'abord l'analyse.",
+    "transcriptEmpty": "La transcription ne doit pas être vide.",
+    "saveTranscriptFailed": "Impossible d'enregistrer la transcription. Veuillez réessayer.",
+    "startFailed": "Impossible de démarrer l'analyse par l'IA.",
+    "stage": {
+      "transcriptionFailed": "Échec de la transcription",
+      "analysisFailed": "Échec de l'analyse",
+      "waitingToTranscribe": "En attente de transcription",
+      "transcribing": "Transcription en cours...",
+      "waitingToAnalyze": "En attente d'analyse",
+      "analyzing": "Analyse en cours...",
+      "completed": "Terminé",
+      "transcribed": "Transcrit",
+      "idle": "En attente"
+    },
+    "analyze": {
+      "starting": "Démarrage...",
+      "queued": "En file d'attente...",
+      "analyzing": "Analyse en cours...",
+      "start": "Analyser avec l'IA"
+    }
+  },
+  "batch": {
+    "backToList": "Retour aux inspections groupées",
+    "startedAt": "Démarré le {{date}}",
+    "createdAt": "Créé le {{date}}",
+    "completedAt": "Terminé le {{date}}",
+    "minutes": "{{minutes}} min",
+    "status": {
+      "DRAFT": "BROUILLON",
+      "IN_PROGRESS": "EN COURS",
+      "COMPLETED": "TERMINÉ",
+      "CANCELLED": "ANNULÉ"
+    },
+    "progress": {
+      "completed": "Terminées",
+      "remaining": "Restantes",
+      "elapsed": "Temps écoulé",
+      "avgPerHive": "Moyenne par ruche"
+    },
+    "list": {
+      "title": "Inspections groupées",
+      "subtitle": "Gérez vos parcours d'inspections groupées",
+      "newBatch": "Nouveau groupe",
+      "emptyTitle": "Aucune inspection groupée pour le moment",
+      "emptyDescription": "Créez votre premier groupe d'inspections pour commencer",
+      "loadFailed": "Impossible de charger les inspections groupées",
+      "hiveCount_one": "{{count}} ruche",
+      "hiveCount_other": "{{count}} ruches",
+      "startInspection": "Commencer l'inspection",
+      "continueInspection": "Continuer l'inspection",
+      "viewDetails": "Voir les détails",
+      "deleteTitle": "Supprimer le groupe ?",
+      "deleteDescription": "Ce groupe d'inspections sera définitivement supprimé. Cette action est irréversible.",
+      "startFailed": "Impossible de démarrer le groupe d'inspections",
+      "deleteFailed": "Impossible de supprimer le groupe d'inspections"
+    },
+    "detail": {
+      "loadFailed": "Impossible de charger les détails du groupe d'inspections",
+      "hivesTitle": "Ruches ({{count}})",
+      "order": "Ordre : {{order}}",
+      "skipped_one": "{{count}} passage ignoré",
+      "skipped_other": "{{count}} passages ignorés"
+    },
+    "inspect": {
+      "noMoreHives": "Il n'y a plus de ruches à inspecter dans ce groupe",
+      "loadFailed": "Impossible de charger le groupe d'inspections",
+      "completeTitle": "Groupe d'inspections terminé !",
+      "completeDescription": "Toutes les ruches de ce groupe ont été inspectées.",
+      "skipFailed": "Impossible de passer cette ruche",
+      "completed": "Groupe d'inspections terminé !",
+      "saveFailed": "Impossible d'enregistrer l'inspection",
+      "hivePosition": "Ruche {{position}} sur {{total}}",
+      "completeBadge": "{{completed}}/{{total}} terminées",
+      "currentHive": "Ruche actuelle",
+      "skipHive": "Passer cette ruche",
+      "inspectionForm": "Formulaire d'inspection",
+      "saveAndFinish": "Enregistrer et terminer",
+      "skipTitle": "Passer cette ruche ?",
+      "skipDescription": "Cette ruche sera déplacée à la fin de la file d'attente. Vous pourrez l'inspecter plus tard dans ce groupe."
+    }
   }
 }
