@@ -33,7 +33,7 @@
     "weather": "Météo",
     "scoreStatus": "Score / statut",
     "status": "Statut",
-    "queenSeen": "Reine observée",
+    "queenSeen": "Reine vue",
     "temperature": "Température",
     "weatherConditions": "Conditions météorologiques",
     "notRecorded": "Non renseigné",
@@ -57,7 +57,7 @@
   },
   "observations": {
     "title": "Observations",
-    "queenSeen": "Reine observée",
+    "queenSeen": "Reine vue",
     "strength": "Force de la colonie",
     "cappedBrood": "Couvain operculé",
     "uncappedBrood": "Couvain ouvert",
@@ -128,7 +128,7 @@
       "eggsFrames": "Œufs",
       "uncappedBroodFrames": "Ouvert",
       "cappedBroodFrames": "Operculé",
-      "droneBroodFrames": "Mâles",
+      "droneBroodFrames": "Couvain mâle",
       "pollenFrames": "Pollen",
       "nectarFrames": "Nectar",
       "honeyFrames": "Réserves",
@@ -546,7 +546,7 @@
       "FEEDING": "Nourrissement",
       "TREATMENT": "Traitement",
       "FRAME": "Cadres",
-      "BOX_CONFIGURATION": "Configuration des éléments",
+      "BOX_CONFIGURATION": "Configuration des éléments de la ruche",
       "MAINTENANCE": "Entretien",
       "NOTE": "Note",
       "STATUS_CHANGE": "Changement de statut",
@@ -588,7 +588,7 @@
   "mobile": {
     "vitals": {
       "title": "Force et couvain",
-      "hint": "Population, couvain operculé et non operculé"
+      "hint": "Population, couvain operculé et couvain ouvert"
     },
     "stores": {
       "title": "Réserves",
