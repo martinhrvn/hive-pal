@@ -11,7 +11,26 @@
     "apiaries": "Ruchers",
     "hives": "Ruches",
     "inspections": "Inspections",
-    "lastActivity": "Dernière activité"
+    "lastActivity": "Dernière activité",
+    "type": "Type",
+    "status": "Statut",
+    "subject": "Objet",
+    "from": "De",
+    "date": "Date",
+    "widthMm": "Largeur (mm)",
+    "heightMm": "Hauteur (mm)",
+    "depthMm": "Profondeur (mm)",
+    "dimensionsMm": "Dimensions (mm)",
+    "submitted": "Soumis le",
+    "source": "Source",
+    "file": "Fichier",
+    "owner": "Propriétaire",
+    "apiary": "Rucher",
+    "size": "Taille",
+    "uploaded": "Téléversé le",
+    "prefix": "Préfixe",
+    "created": "Créé le",
+    "lastSeen": "Vu pour la dernière fois"
   },
   "actions": {
     "resetPassword": "Réinitialiser le mot de passe"
@@ -21,7 +40,7 @@
     "description": "Définir un mot de passe temporaire pour {email}. L'utilisateur devra le modifier lors de sa prochaine connexion.",
     "tempPasswordLabel": "Mot de passe temporaire",
     "tempPasswordPlaceholder": "Saisir un mot de passe temporaire",
-    "minCharacters": "Minimum 6 caractères",
+    "minCharacters": "Minimum {{count}} caractères",
     "submit": "Réinitialiser le mot de passe"
   },
   "messages": {
@@ -63,6 +82,173 @@
       "inspections": "Inspections",
       "lastInspection": "Dernière inspection",
       "noApiaries": "Aucun rucher trouvé pour cet utilisateur"
+    }
+  },
+  "accessDenied": "Accès refusé. Des droits d'administrateur sont requis.",
+  "feedback": {
+    "title": "Gestion des retours utilisateurs",
+    "description": "Gérer les retours des utilisateurs et les demandes d'assistance",
+    "filterByType": "Filtrer par type",
+    "allTypes": "Tous les types",
+    "typeSuggestion": "Suggestion",
+    "filterByStatus": "Filtrer par statut",
+    "allStatuses": "Tous les statuts",
+    "statuses": {
+      "NEW": "Nouveau",
+      "REVIEWED": "Examiné",
+      "RESOLVED": "Résolu"
+    },
+    "loading": "Chargement des retours...",
+    "empty": "Aucun retour trouvé",
+    "anonymous": "Anonyme",
+    "fromLine": "De : {{sender}} • {{date}}",
+    "messageLabel": "Message :",
+    "statusLabel": "Statut :",
+    "showing": "Affichage de {{from}} à {{to}} sur {{total}} résultats",
+    "toasts": {
+      "statusUpdated": "Statut du retour mis à jour",
+      "statusUpdateFailed": "Échec de la mise à jour du statut du retour"
+    }
+  },
+  "frameSizes": {
+    "pendingTitle": "Demandes de formats de cadres en attente",
+    "pendingDescription": "Examiner et approuver les formats de cadres proposés par la communauté",
+    "noPending": "Aucune demande en attente",
+    "approve": "Approuver",
+    "reject": "Refuser",
+    "allTitle": "Tous les formats de cadres",
+    "allDescription": "Gérer les formats de cadres approuvés et refusés",
+    "empty": "Aucun format de cadre trouvé",
+    "dimensions": "{{width}} × {{height}} × {{depth}}",
+    "builtIn": "Intégré",
+    "community": "Communauté",
+    "toasts": {
+      "approved": "Format de cadre approuvé",
+      "approveFailed": "Échec de l'approbation du format de cadre",
+      "rejected": "Format de cadre refusé",
+      "rejectFailed": "Échec du refus du format de cadre",
+      "deleted": "Format de cadre supprimé",
+      "deleteFailed": "Échec de la suppression du format de cadre"
+    }
+  },
+  "media": {
+    "title": "Médias",
+    "description": "Parcourir et prévisualiser tous les fichiers téléversés sur la plateforme",
+    "totalFiles": "Nombre total de fichiers",
+    "spaceUsed": "Espace utilisé",
+    "byType": "Par type",
+    "countAndSize": "{{files}} · {{size}}",
+    "files": "Fichiers",
+    "listSummary": "{{total}} au total · page {{page}} sur {{pages}}",
+    "searchPlaceholder": "Rechercher un nom de fichier, une légende...",
+    "types": {
+      "photo": "Photo",
+      "document": "Document",
+      "inspection-audio": "Audio d'inspection",
+      "quick-check-photo": "Photo de contrôle rapide"
+    },
+    "filters": {
+      "all": "Tous les types",
+      "photo": "Photos",
+      "document": "Documents",
+      "inspection-audio": "Audios d'inspection",
+      "quick-check-photo": "Photos de contrôle rapide"
+    },
+    "empty": "Aucun fichier trouvé.",
+    "prev": "Précédent",
+    "noInlinePreview": "Aucun aperçu intégré n'est disponible pour ce type de fichier.",
+    "previewFailed": "Impossible de charger l'URL de prévisualisation.",
+    "openInNewTab": "Ouvrir dans un nouvel onglet"
+  },
+  "platformMetrics": {
+    "title": "Statistiques de la plateforme",
+    "description": "Suivre la croissance de la plateforme et les statistiques d'utilisation",
+    "totalUsers": "Nombre total d'utilisateurs",
+    "active30d_one": "{{count}} utilisateur actif (30 j)",
+    "active30d_other": "{{count}} utilisateurs actifs (30 j)",
+    "totalApiaries": "Nombre total de ruchers",
+    "totalHives": "Nombre total de ruches",
+    "totalInspections": "Nombre total d'inspections",
+    "trendsTitle": "Évolution des statistiques de la plateforme",
+    "trendsDescription": "Suivre la croissance de la plateforme et l'activité des utilisateurs au fil du temps",
+    "dateRanges": {
+      "7d": "7 derniers jours",
+      "30d": "30 derniers jours",
+      "90d": "90 derniers jours",
+      "6m": "6 derniers mois",
+      "1y": "Année dernière",
+      "all": "Depuis toujours"
+    },
+    "additionalTitle": "Statistiques supplémentaires",
+    "additionalDescription": "Autres indicateurs suivis dans le dernier relevé",
+    "actions": "Actions",
+    "queens": "Reines",
+    "harvests": "Récoltes",
+    "equipmentItems": "Éléments d'équipement",
+    "weatherTitle": "Requêtes météorologiques",
+    "weatherDescription": "Appels à l'API Open-Meteo au cours des dernières 24 heures (selon le dernier relevé)",
+    "totalFetches": "Nombre total de requêtes",
+    "errors": "Erreurs",
+    "activeUsersTitle": "Utilisateurs actifs",
+    "activeUsersDescription": "Utilisateurs ayant créé des inspections ou des actions pendant la période sélectionnée",
+    "allApiariesTitle": "Tous les ruchers",
+    "allApiariesDescription": "Carte de tous les ruchers géolocalisés",
+    "map": {
+      "loading": "Chargement de la carte...",
+      "failed": "Échec du chargement des ruchers",
+      "empty": "Aucun rucher avec des coordonnées géographiques trouvé",
+      "hiveCount_one": "{{count}} ruche",
+      "hiveCount_other": "{{count}} ruches",
+      "coordinates": "{{lat}}, {{lng}}"
+    },
+    "chart": {
+      "noData": "Aucune donnée statistique disponible pour le moment. Les données apparaîtront après le premier relevé quotidien.",
+      "view": "Afficher :",
+      "metrics": {
+        "entities": "Nombre d'entités",
+        "activity": "Utilisateurs actifs",
+        "weather": "Requêtes météorologiques (24 h)"
+      },
+      "series": {
+        "users": "Utilisateurs",
+        "apiaries": "Ruchers",
+        "hives": "Ruches",
+        "inspections": "Inspections",
+        "active7Days": "Actifs (7 jours)",
+        "active30Days": "Actifs (30 jours)",
+        "weatherFetches": "Requêtes météorologiques",
+        "errors": "Erreurs"
+      }
+    }
+  },
+  "workerTokens": {
+    "title": "Jetons des workers",
+    "newToken": "Nouveau jeton",
+    "description": "Jetons API à longue durée de validité pour les workers de transcription et d'analyse qui récupèrent les tâches à traiter. Ils permettent aux workers de prendre en charge et de terminer des tâches depuis une machine distante (par exemple, avec Whisper et Ollama en local).",
+    "workersOnline_one": "{{count}} worker en ligne",
+    "workersOnline_other": "{{count}} workers en ligne",
+    "noWorkersOnline": "Aucun worker en ligne",
+    "lastSeenAgo": "· vu pour la dernière fois {{time}}",
+    "empty": "Aucun jeton de worker pour le moment. Créez-en un pour permettre à un worker distant de récupérer des tâches.",
+    "prefixValue": "{{prefix}}…",
+    "never": "jamais",
+    "revoked": "Révoqué",
+    "online": "En ligne",
+    "idle": "En attente",
+    "revoke": "Révoquer",
+    "copied": "Jeton copié dans le presse-papiers",
+    "createdTitle": "Jeton créé",
+    "createdDescription": "Copiez ce jeton maintenant. Il ne sera plus affiché : seul son préfixe restera visible.",
+    "copy": "Copier",
+    "done": "Terminé",
+    "newTitle": "Nouveau jeton de worker",
+    "newDescription": "Donnez un nom au jeton pour identifier la machine ou le worker qui l’utilise.",
+    "namePlaceholder": "Par ex. ordinateur-maison",
+    "toasts": {
+      "created": "Jeton de worker créé",
+      "createFailed": "Échec de la création du jeton de worker",
+      "revoked": "Jeton de worker révoqué",
+      "revokeFailed": "Échec de la révocation du jeton de worker"
     }
   }
 }
