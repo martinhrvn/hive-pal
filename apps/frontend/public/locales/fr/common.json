@@ -2379,7 +2379,7 @@
       "summary": "Vous en avez assez de l'acide formique ? Après la dernière récolte de miel, la méthode « diviser et traiter » permet de mettre la colonie de production en période d'absence de couvain. Un seul traitement à l'acide oxalique ou lactique, indépendant des conditions météorologiques, permet alors d'atteindre tous les varroas. Découvrez pas à pas la méthode de division en deux unités : l'unité des butineuses et l'unité de couvain.",
       "intro": {
         "0": "À la fin du mois de juillet, une colonie de production forte peut compter jusqu'à 30 000 abeilles et 30 000 cellules de couvain. Plus le volume de couvain est important, plus il est difficile d'obtenir un bon résultat avec l'acide formique sans endommager le couvain, surtout par temps frais et humide. La méthode « diviser et traiter », perfectionnée à partir du système de rotation de Celle dans le projet allemand « Betriebsweisen im Vergleich », contourne entièrement ce problème : la colonie est divisée en deux unités sans couvain, qui peuvent chacune être traitées efficacement à l'acide oxalique ou lactique, indépendamment de la météo.",
-        "1": "Vous divisez la colonie de production en une unité des butineuses avec reine et une unité de couvain sans reine mais contenant tout le couvain. Il vous faut seulement un plancher supplémentaire, un couvre-cadres ou une feuille, un toit et une cage à reine munie d'une fermeture au candi ou à la guimauve. En cinq visites au rucher et environ 15 minutes de travail effectif, cette méthode permet de traiter la colonie contre le varroa en deux étapes, de renouveler complètement les rayons et même, si vous le souhaitez, d'élever une jeune reine et de créer une nouvelle colonie en parallèle."
+        "1": "Vous divisez la colonie de production en deux unités : une unité des butineuses avec la reine et une unité de couvain, sans reine, mais contenant l'ensemble du couvain. Il vous faut seulement un plancher supplémentaire, un couvre-cadres ou une feuille, un toit et une cage à reine munie d'une fermeture au candi ou à la guimauve. En cinq visites au rucher et environ 15 minutes de travail effectif, cette méthode permet de traiter la colonie contre le varroa en deux étapes, de renouveler complètement les rayons et même, si vous le souhaitez, d'élever une jeune reine et de créer une nouvelle colonie en parallèle."
       },
       "concepts": {
         "flightling": {
@@ -2396,7 +2396,7 @@
           "title": "Unité de couvain",
           "subtitle": "Colonie avec couvain, sans reine",
           "points": [
-            "Les deux corps de couvain sont placés sur un nouveau plancher, soit directement au-dessus de l'unité des butineuses (dans le même sens d'envol), soit à quelques mètres de distance.",
+            "Les deux corps de ruche sont placés sur un nouveau plancher, soit directement au-dessus de l'unité des butineuses (dans le même sens d'envol), soit à quelques mètres de distance.",
             "Elle contient tout le couvain et environ 90 % des varroas. Les abeilles qui partent butiner retournent toutefois dans l'unité des butineuses.",
             "Élève une reine de sauveté à partir des plus jeunes larves ; dans environ 90 % des cas, celle-ci réussit son vol de fécondation.",
             "Se retrouve sans couvain au jour X+21, lorsque tout le couvain d'ouvrières a émergé : c'est le moment de traiter."
