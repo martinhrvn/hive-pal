@@ -2,7 +2,7 @@
   "title": "Gestion des utilisateurs",
   "description": "Gérer les utilisateurs et réinitialiser les mots de passe",
   "table": {
-    "email": "Email",
+    "email": "E-mail",
     "name": "Nom",
     "role": "Rôle",
     "passwordChangeRequired": "Changement de mot de passe requis",
@@ -14,7 +14,7 @@
     "lastActivity": "Dernière activité",
     "type": "Type",
     "status": "Statut",
-    "subject": "Objet",
+    "subject": "Sujet",
     "from": "De",
     "date": "Date",
     "widthMm": "Largeur (mm)",
@@ -120,7 +120,7 @@
     "allDescription": "Gérer les formats de cadres approuvés et refusés",
     "empty": "Aucun format de cadre trouvé",
     "dimensions": "{{width}} × {{height}} × {{depth}}",
-    "builtIn": "Intégré",
+    "builtIn": "Prédéfini",
     "community": "Communauté",
     "toasts": {
       "approved": "Format de cadre approuvé",
@@ -177,7 +177,7 @@
       "90d": "90 derniers jours",
       "6m": "6 derniers mois",
       "1y": "Année dernière",
-      "all": "Depuis toujours"
+      "all": "Depuis le début"
     },
     "additionalTitle": "Statistiques supplémentaires",
     "additionalDescription": "Autres indicateurs suivis dans le dernier relevé",
