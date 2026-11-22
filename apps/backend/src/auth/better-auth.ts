@@ -7,6 +7,7 @@ import {
   genericOAuth,
   jwt,
 } from 'better-auth/plugins';
+import { adminAc, userAc } from 'better-auth/plugins/admin/access';
 import { passkey } from '@better-auth/passkey';
 import { mcp } from '@better-auth/mcp';
 import {
@@ -29,6 +30,7 @@ import {
   isLocalLoginDisabled,
   loadOidcConfig,
 } from './oidc-config';
+import { isRegistrationDisabled } from './registration-config';
 import { secureSsoAccountLink } from './sso-linking';
 import { enabledSocialProviders, loadSocialProviders } from './social-config';
 import {
@@ -126,6 +128,10 @@ if (
   );
 }
 
+// Admin-created accounts (POST /api/users, scripts/seed-admin.ts) bypass this:
+// the admin plugin's createUser has no sign-up gate.
+const registrationDisabled = isRegistrationDisabled();
+
 const socialProviders = loadSocialProviders();
 // Providers whose sign-in proves the user owns the account's email address.
 const ssoProviderIds: string[] = [
@@ -145,6 +151,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
+    disableSignUp: registrationDisabled,
     minPasswordLength: PASSWORD_MIN_LENGTH,
     password: {
       hash: scryptHash,
@@ -157,6 +164,14 @@ export const auth = betterAuth({
     },
     sendResetPassword: async ({ user, url }) => {
       await authDeps.mail.sendPasswordResetEmail(user.email, url);
+    },
+    // A password set through a reset or account-setup link is the user's own,
+    // so a pending forced change (temp password from an admin) is satisfied.
+    onPasswordReset: async ({ user }) => {
+      await authDeps.prisma.user.update({
+        where: { id: user.id },
+        data: { passwordChangeRequired: false },
+      });
     },
   },
 
@@ -183,9 +198,18 @@ export const auth = betterAuth({
 
   socialProviders: {
     ...(socialProviders.google && {
-      google: { ...socialProviders.google, prompt: 'select_account' },
+      google: {
+        ...socialProviders.google,
+        prompt: 'select_account',
+        disableSignUp: registrationDisabled,
+      },
     }),
-    ...(socialProviders.facebook && { facebook: socialProviders.facebook }),
+    ...(socialProviders.facebook && {
+      facebook: {
+        ...socialProviders.facebook,
+        disableSignUp: registrationDisabled,
+      },
+    }),
   },
 
   account: {
@@ -378,6 +402,7 @@ export const auth = betterAuth({
         await authDeps.mail.sendMagicLink(email, url);
       },
       expiresIn: 60 * 15,
+      disableSignUp: registrationDisabled,
     }),
     passkey({
       rpID: process.env.PASSKEY_RP_ID ?? 'localhost',
@@ -433,6 +458,10 @@ export const auth = betterAuth({
     admin({
       defaultRole: 'USER',
       adminRoles: ['ADMIN'],
+      // Permission checks look roles up by name, and the built-in table only
+      // knows lowercase admin/user: without this, ADMIN may not set
+      // passwords, ban, change roles or create users.
+      roles: { ADMIN: adminAc, USER: userAc },
     }),
     customSession(async ({ user, session }) => {
       const dbUser = await authDeps.prisma.user.findUnique({
@@ -441,17 +470,11 @@ export const auth = betterAuth({
           passwordChangeRequired: true,
           role: true,
           privacyPolicyConsent: true,
-          accounts: { select: { providerId: true } },
         },
       });
-      const providers = new Set(dbUser?.accounts.map((a) => a.providerId));
-      // Accounts created through SSO never went through the signup form, so
-      // they're asked for privacy-policy consent once after the first login.
-      const consentRequired =
-        !!dbUser &&
-        !dbUser.privacyPolicyConsent &&
-        ssoProviderIds.some((id) => providers.has(id)) &&
-        !providers.has('credential');
+      // The signup form records consent. Accounts that skipped it (created
+      // through SSO or by an admin) are asked once after their first login.
+      const consentRequired = !!dbUser && !dbUser.privacyPolicyConsent;
       return {
         user: {
           ...user,

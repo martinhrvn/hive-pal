@@ -27,10 +27,6 @@ export class UsersService {
     });
   }
 
-  async findAll(): Promise<User[]> {
-    return this.prismaService.user.findMany();
-  }
-
   /**
    * Returns a lightweight list of all users (id, email, name).
    * Used by the swarm alert scheduler to iterate over users that

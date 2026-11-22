@@ -5,6 +5,7 @@ import {
   HiveHubAlertTemplateItem,
 } from './templates/hivehub-alert.template';
 import { magicLinkTemplate } from './templates/magic-link.template';
+import { accountSetupTemplate } from './templates/account-setup.template';
 import { MailConfigService } from './mail-config.service';
 
 export interface HiveHubAlertEmailItem extends HiveHubAlertTemplateItem {
@@ -154,6 +155,55 @@ export class MailService {
       return true;
     } catch (error) {
       this.logger.error('Error sending magic link:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Sends the "set your password" link for an account an admin created.
+   * Unlike the other mails this reports `false` when mail is not configured:
+   * the admin asked for the email, so silently skipping it would strand the
+   * user without a password.
+   */
+  async sendAccountSetupEmail(
+    email: string,
+    setupUrl: string,
+    expiresInHours: number,
+  ): Promise<boolean> {
+    const provider = this.mailConfig.getProvider();
+    if (!provider) {
+      this.logger.warn(
+        `Email sending disabled - cannot send account setup link to ${email}`,
+      );
+      return false;
+    }
+
+    try {
+      const { subject, html } = accountSetupTemplate({
+        email,
+        setupUrl,
+        appName: 'Hive Pal',
+        expiresInHours,
+      });
+      const result = await provider.sendEmail({
+        from: this.mailConfig.getFromEmail(),
+        to: [email],
+        subject,
+        html,
+      });
+      if (!result.success) {
+        this.logger.error(
+          `Failed to send account setup email via ${provider.getName()}:`,
+          result.error,
+        );
+        return false;
+      }
+      this.logger.log(
+        `Account setup email sent to ${email} via ${provider.getName()} with ID: ${result.id}`,
+      );
+      return true;
+    } catch (error) {
+      this.logger.error('Error sending account setup email:', error);
       return false;
     }
   }

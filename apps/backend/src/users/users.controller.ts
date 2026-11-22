@@ -10,6 +10,7 @@ import {
   NotFoundException,
   Req,
   HttpCode,
+  Query,
 } from '@nestjs/common';
 import {
   JwtAuthGuard,
@@ -21,6 +22,7 @@ import { UsersService } from './users.service';
 import { EquipmentService } from './equipment.service';
 import { FeedTypesService } from './feed-types.service';
 import { UsersStatsService } from './users-stats.service';
+import { AdminUsersService } from './admin-users.service';
 import {
   UserResponse,
   UserPreferences,
@@ -32,8 +34,14 @@ import {
   UpdateEquipmentItem,
   userPreferencesSchema,
   updateUserInfoSchema,
-  UserWithStatsResponse,
   UserDetailedStats,
+  AdminUser,
+  AdminCreateUser,
+  AdminUserCapabilities,
+  AdminUserListQuery,
+  AdminUserListResponse,
+  adminCreateUserSchema,
+  adminUserListQuerySchema,
   UserFeedTypeResponse,
   CreateUserFeedType,
   UpdateUserFeedType,
@@ -58,6 +66,7 @@ export class UsersController {
     private readonly equipmentService: EquipmentService,
     private readonly feedTypesService: FeedTypesService,
     private readonly usersStatsService: UsersStatsService,
+    private readonly adminUsersService: AdminUsersService,
     private readonly logger: CustomLoggerService,
   ) {
     this.logger.setContext('UsersController');
@@ -67,22 +76,52 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get all users with stats (admin only)' })
-  async findAll(): Promise<UserWithStatsResponse[]> {
-    this.logger.log('Admin requesting list of all users with stats');
-    const users = await this.usersService.findAll();
-    const userIds = users.map((u) => u.id);
-    const statsMap = await this.usersStatsService.getUsersSummaryStats(userIds);
+  @ApiOperation({
+    summary: 'Search, filter and page through users with stats (admin only)',
+  })
+  async findAll(
+    @Query(new ZodValidationPipe(adminUserListQuerySchema, 'query'))
+    query: AdminUserListQuery,
+  ): Promise<AdminUserListResponse> {
+    return this.adminUsersService.list(query);
+  }
 
-    return users.map((user) => ({
-      ...user,
-      stats: statsMap.get(user.id) || {
-        apiariesCount: 0,
-        hivesCount: 0,
-        inspectionsCount: 0,
-        lastActivityDate: null,
-      },
-    }));
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Create a user with a temporary password or an emailed setup link (admin only)',
+  })
+  @ApiResponse({ status: 201, description: 'User created' })
+  @ApiResponse({ status: 409, description: 'Email already in use' })
+  async createUser(
+    @Body(new ZodValidationPipe(adminCreateUserSchema)) body: AdminCreateUser,
+    @Req() req: RequestWithUser,
+  ): Promise<AdminUser> {
+    this.logger.log(`Admin ${req.user.id} creating a user`);
+    return this.adminUsersService.create(body);
+  }
+
+  @Get('admin/capabilities')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Instance settings that shape user management (admin only)',
+  })
+  getAdminCapabilities(): AdminUserCapabilities {
+    return this.adminUsersService.getCapabilities();
+  }
+
+  @Get(':id/account')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get a user account (admin only)' })
+  async getUserAccount(@Param('id') id: string): Promise<AdminUser> {
+    return this.adminUsersService.findOne(id);
   }
 
   @Get(':id/stats')
@@ -351,5 +390,22 @@ export class UsersController {
   async deleteMyAccount(@Req() req: RequestWithUser): Promise<void> {
     this.logger.log(`User ${req.user.id} deleting their own account`);
     await this.usersService.deleteAccount(req.user.id);
+  }
+
+  // Declared after `DELETE me` so that route keeps matching first.
+  @Delete(':id')
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Delete a user and all data they own (admin only)',
+  })
+  @ApiResponse({ status: 204, description: 'User deleted' })
+  async deleteUser(
+    @Param('id') id: string,
+    @Req() req: RequestWithUser,
+  ): Promise<void> {
+    await this.adminUsersService.delete(id, req.user.id);
   }
 }

@@ -5,10 +5,12 @@
  *   ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=<plaintext> \
  *     pnpm --filter backend exec tsx scripts/seed-admin.ts
  *
- * ADMIN_PASSWORD is a plaintext password: it is passed to Better Auth's
- * sign-up flow, which hashes it (so it is what you type to log in — not a
- * pre-computed hash). Creates the admin user, then promotes the User row's
- * `role` to 'ADMIN'. If the user already exists, only the role is promoted.
+ * ADMIN_PASSWORD is a plaintext password: Better Auth hashes it (so it is what
+ * you type to log in — not a pre-computed hash). Creates the admin user with
+ * the ADMIN role; if the user already exists, only the role is promoted.
+ *
+ * Uses the admin plugin's createUser rather than sign-up, so it keeps working
+ * when DISABLE_REGISTRATION closes public sign-up.
  */
 import { auth } from '../src/auth/better-auth';
 import { PrismaPg } from '@prisma/adapter-pg';
@@ -19,9 +21,9 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
 });
 
-// Auth hooks use authDeps; populate before any auth API call. Sign-up also
-// signs the user in, and the session hook emits a login event: nothing
-// listens outside Nest, so a no-op emitter is enough.
+// Auth hooks use authDeps (the user-create hook adds the default apiary);
+// populate before any auth API call. Nothing listens for events outside Nest,
+// so a no-op emitter is enough.
 authDeps.prisma = prisma as never;
 authDeps.eventEmitter = { emit: () => true } as never;
 
@@ -45,12 +47,16 @@ async function main() {
     return;
   }
 
-  await auth.api.signUpEmail({
-    body: { email, password, name: 'Admin' },
-  });
-  await prisma.user.update({
-    where: { email },
-    data: { role: 'ADMIN', privacyPolicyConsent: true, emailVerified: true },
+  // Called without request headers, createUser runs as a trusted server call.
+  await auth.api.createUser({
+    body: {
+      email,
+      password,
+      name: 'Admin',
+      // Role goes through `data`: the typed `role` field only knows Better
+      // Auth's default lowercase roles, while Hive Pal stores USER/ADMIN.
+      data: { role: 'ADMIN', privacyPolicyConsent: true, emailVerified: true },
+    },
   });
   console.log(`Created admin user ${email}`);
 }
