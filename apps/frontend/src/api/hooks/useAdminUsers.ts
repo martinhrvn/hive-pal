@@ -42,14 +42,18 @@ async function get<T>(url: string, params?: object): Promise<T> {
 /**
  * Better Auth's client reports failures in `error` instead of throwing; turn
  * that into a rejected promise so React Query treats it as a failed mutation.
- * Its messages are English-only, so the error carries none and callers show
- * their own translated message.
+ * Its messages are English-only: callers show their own translated message
+ * and keep this one for logs.
  */
 async function unwrapAuth<T>(
   call: Promise<{ data: T | null; error: { message?: string } | null }>,
 ): Promise<T> {
   const { data, error } = await call;
-  if (error) throw new Error();
+  if (error) {
+    throw new Error(error.message || 'Better Auth admin request failed', {
+      cause: error,
+    });
+  }
   return data as T;
 }
 

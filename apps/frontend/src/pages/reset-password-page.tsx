@@ -21,6 +21,9 @@ const ResetPasswordPage = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
   const { t } = useTranslation('auth');
+  const submitLabel = t(
+    isSetup ? 'resetPassword.setupButton' : 'resetPassword.resetButton',
+  );
 
   useEffect(() => {
     if (!token) {
@@ -174,13 +177,7 @@ const ResetPasswordPage = () => {
                 className="w-full"
                 disabled={!token || isLoading}
               >
-                {isLoading
-                  ? t('common:status.loading')
-                  : t(
-                      isSetup
-                        ? 'resetPassword.setupButton'
-                        : 'resetPassword.resetButton',
-                    )}
+                {isLoading ? t('common:status.loading') : submitLabel}
               </Button>
             </div>
 

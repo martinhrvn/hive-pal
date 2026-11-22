@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { isAxiosError } from 'axios';
 import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
 import { apiErrorMessage } from '@/api/api-error-message';
 import {
@@ -40,9 +41,15 @@ export function useUserActions({ onDeleted }: UseUserActionsOptions = {}) {
   const { mutateAsync: unban } = useUnbanUser();
   const { mutateAsync: remove, isPending: removing } = useDeleteUser();
 
+  // API errors carry a backend message; Better Auth's English-only ones don't
+  // reach the toast.
   const fail = useCallback(
-    (error: unknown) =>
-      toast.error(apiErrorMessage(error, t('messages.unexpectedError'))),
+    (error: unknown) => {
+      const fallback = t('messages.unexpectedError');
+      toast.error(
+        isAxiosError(error) ? apiErrorMessage(error, fallback) : fallback,
+      );
+    },
     [t],
   );
   const close = () => setPending(null);
