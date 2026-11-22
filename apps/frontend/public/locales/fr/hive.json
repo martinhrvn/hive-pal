@@ -42,7 +42,7 @@
     "notes": "Notes",
     "queen": "Reine",
     "lastInspection": "Dernière inspection",
-    "installationDate": "Date d'introduction",
+    "installationDate": "Date d'installation",
     "established": "Établie",
     "boxes": "Éléments de la ruche",
     "frames": "Cadres",
@@ -210,8 +210,8 @@
     "noHivesInApiary": "Aucune ruche dans ce rucher pour le moment.",
     "dragToOrganize": "Ajoutez des ruches et faites-les glisser dans la grille ci-dessus pour organiser la disposition de votre rucher.",
     "boxTypeLong": {
-      "honey": "Miel",
-      "brood": "Couvain",
+      "honey": "Hausse",
+      "brood": "Corps de ruche",
       "feeder": "Nourrisseur"
     },
     "edit": "Modifier la disposition",
