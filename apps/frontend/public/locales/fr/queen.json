@@ -4,30 +4,48 @@
   "plural": "Reines",
   "create": {
     "title": "Nouvelle reine",
-    "button": "Créer la reine",
+    "button": "Créer une reine",
     "success": "Reine créée avec succès",
     "error": "Échec de la création de la reine"
   },
   "edit": {
     "title": "Modifier la reine",
     "button": "Enregistrer les modifications",
-    "success": "Reine mise à jour avec succès"
+    "success": "Reine mise à jour avec succès",
+    "error": "Échec de la mise à jour de la reine"
   },
   "delete": {
-    "confirm": "Êtes-vous sûr de vouloir supprimer cette reine ?",
-    "success": "Reine supprimée avec succès"
+    "confirm": "Voulez-vous vraiment supprimer cette reine ?",
+    "success": "Reine supprimée avec succès",
+    "title": "Supprimer cette reine ?",
+    "description": "Cette action supprime définitivement la reine ainsi que son historique de déplacements. Ses filles sont conservées, mais ne seront plus reliées à elle.",
+    "error": "Échec de la suppression de la reine"
   },
   "fields": {
     "hive": "Ruche",
     "year": "Année",
     "color": "Couleur",
     "marking": "Marquage",
-    "source": "Origine",
+    "source": "Provenance",
     "status": "Statut",
-    "installationDate": "Date d'installation",
-    "replacedDate": "Date de remplacement (optionnel)",
-    "installedOn": "Installée le {{date}}",
-    "via": "via {{source}}"
+    "installationDate": "Date d'introduction",
+    "replacedDate": "Date de remplacement (facultatif)",
+    "installedOn": "Introduite le {{date}}",
+    "via": "par {{source}}",
+    "notes": "Notes",
+    "name": "Nom",
+    "breeder": "Éleveur",
+    "line": "Lignée",
+    "mother": "Mère",
+    "matingType": "Mode de fécondation",
+    "matingStation": "Station de fécondation",
+    "matedAt": "Fécondée le",
+    "installed": "Introduite",
+    "replaced": "Remplacée",
+    "cellCappedAt": "Cellule royale operculée le",
+    "emergedAt": "Date d'émergence",
+    "expectedEmergence": "Émergence prévue",
+    "installedAt": "Introduite dans la ruche"
   },
   "colors": {
     "blue": "Bleu",
@@ -45,29 +63,162 @@
     "active": "Active",
     "replaced": "Remplacée",
     "dead": "Morte",
-    "unknown": "Inconnue"
+    "unknown": "Inconnu",
+    "virgin": "Vierge"
   },
   "actions": {
     "replaceQueen": "Remplacer la reine",
     "markAsDead": "Marquer comme morte",
-    "markAsLostMissing": "Marquer comme perdue/absente",
+    "markAsLostMissing": "Marquer comme perdue ou introuvable",
     "addQueen": "Ajouter une reine",
     "editQueen": "Modifier la reine",
     "viewDetails": "Voir les détails",
     "manageQueen": "Gérer la reine",
-    "transferQueen": "Transférer reine"
+    "transferQueen": "Transférer la reine",
+    "title": "Actions sur la reine",
+    "viewHive": "Voir la ruche",
+    "deleteQueen": "Supprimer la reine"
   },
   "form": {
     "selectHive": "Sélectionner une ruche",
     "enterYear": "Saisir l'année",
     "selectColor": "Sélectionner une couleur",
     "enterMarking": "Saisir le marquage de la reine",
-    "enterSource": "Saisir l'origine de la reine",
+    "enterSource": "Saisir la provenance de la reine",
     "selectStatus": "Sélectionner un statut",
-    "pickDate": "Choisir une date"
+    "pickDate": "Choisir une date",
+    "enterName": "Facultatif, ex. : Maya",
+    "enterBreeder": "Qui a élevé cette reine",
+    "enterLine": "Ex. : Carnica Troiseck",
+    "selectMother": "Sélectionner la reine mère",
+    "noMother": "Aucune",
+    "selectMatingType": "Sélectionner le mode de fécondation",
+    "enterMatingStation": "Nom de la station",
+    "enterNotes": "Tempérament, détails sur la provenance et toute information utile à conserver",
+    "hiveLocked": "Pour transférer la reine dans une autre ruche, utilisez l’action « Transférer la reine » depuis sa page.",
+    "notInHive": "Dans aucune ruche",
+    "notSet": "Non renseigné",
+    "estimateHint": "Une estimation suffit.",
+    "pickColor": "Choisir une couleur"
   },
   "information": {
     "noActiveQueen": "Aucune reine active trouvée",
-    "hasActiveQueen": "Cette ruche possède déjà une reine active. Remplacer la reine marquera l’actuelle comme remplacée."
+    "hasActiveQueen": "Cette ruche possède déjà une reine active. Si vous la remplacez, son statut passera à « Remplacée »."
+  },
+  "table": {
+    "status": "Statut",
+    "queen": "Reine",
+    "color": "Couleur",
+    "year": "Année",
+    "hive": "Ruche",
+    "installed": "Introduite",
+    "replaced": "Remplacée",
+    "noHive": "Aucune ruche",
+    "details": "Détails"
+  },
+  "fallbackName": "Reine {{year}}",
+  "sections": {
+    "queen": "Reine",
+    "hive": "Ruche",
+    "origin": "Origine",
+    "mating": "Fécondation",
+    "dates": "Dates",
+    "traits": "Caractéristiques",
+    "notes": "Notes",
+    "details": "Détails",
+    "lineage": "Lignée",
+    "movements": "Historique des déplacements"
+  },
+  "matingType": {
+    "OPEN": "Fécondation naturelle",
+    "INSTRUMENTAL": "Insémination artificielle",
+    "MATING_STATION": "Station de fécondation"
+  },
+  "traits": {
+    "gentleness": "Douceur",
+    "hygiene": "Hygiène",
+    "swarmResistance": "Résistance à l'essaimage",
+    "honeyProduction": "Production de miel",
+    "hint": "1 = faible, 5 = excellent.",
+    "value": "{{value}} sur 5",
+    "rate": "Évaluer {{trait}} : {{value}} sur 5",
+    "clear": "Effacer",
+    "clearLabel": "Effacer l'évaluation de {{trait}}",
+    "notRated": "Non évaluée"
+  },
+  "detail": {
+    "notInHive": "Dans aucune ruche",
+    "notFound": {
+      "title": "Reine introuvable",
+      "description": "Elle a peut-être été supprimée ou appartient à un rucher auquel vous n'avez plus accès.",
+      "cta": "Retour à la liste des reines"
+    },
+    "mother": "Mère",
+    "daughters": "Filles",
+    "noDaughters": "Aucune fille enregistrée pour le moment.",
+    "addDaughter": "Ajouter une fille",
+    "noMovements": {
+      "title": "Aucun déplacement pour le moment",
+      "description": "Les transferts entre ruches apparaîtront ici."
+    },
+    "movement": {
+      "date": "Date",
+      "from": "De",
+      "direction": "Sens",
+      "to": "Vers",
+      "reason": "Motif",
+      "none": "Aucun",
+      "removed": "Retirée"
+    },
+    "approxDate": "vers le {{date}}",
+    "overline": "Reine",
+    "installedOn": "Introduite · {{date}}"
+  },
+  "transfer": {
+    "title": "Transférer la reine",
+    "moveTo": "Déplacer vers une ruche",
+    "currentlyIn": "Actuellement dans {{hive}}",
+    "currentlyInApiary": "Actuellement dans {{hive}} ({{apiary}})",
+    "selectDestination": "Sélectionner la ruche de destination",
+    "removeFromHive": "Retirer de la ruche",
+    "date": "Date du transfert",
+    "reason": "Motif (facultatif)",
+    "reasonPlaceholder": "Ex. : division de la colonie, remérage",
+    "notes": "Notes (facultatif)",
+    "notesPlaceholder": "Notes complémentaires",
+    "submit": "Transférer la reine",
+    "submitting": "Transfert en cours…",
+    "success": "Reine transférée avec succès",
+    "error": "Échec du transfert de la reine"
+  },
+  "list": {
+    "statusFilter": "Statut",
+    "hiveFilter": "Ruche",
+    "allStatuses": "Tous les statuts",
+    "allHives": "Toutes les ruches",
+    "empty": {
+      "title": "Aucune reine pour le moment",
+      "description": "Ajoutez une reine pour suivre son âge, son marquage et sa lignée.",
+      "cta": "Ajouter votre première reine"
+    },
+    "noMatches": {
+      "title": "Aucune reine ne correspond à ces filtres",
+      "description": "Essayez un autre statut ou une autre ruche.",
+      "cta": "Effacer les filtres"
+    },
+    "searchPlaceholder": "Rechercher des reines…",
+    "noHiveHistory": "Aucun historique de reine pour cette ruche."
+  },
+  "validation": {
+    "hiveRequired": "Sélectionnez une ruche",
+    "yearRange": "Saisissez une année comprise entre {{min}} et {{max}}"
+  },
+  "virgin": {
+    "days_one": "Vierge depuis {{count}} jour.",
+    "days_other": "Vierge depuis {{count}} jours.",
+    "checkForEggs": "Vérifiez la présence d’œufs : elle devrait avoir commencé à pondre maintenant.",
+    "emergesIn_one": "Émergence prévue demain ({{date}}).",
+    "emergesIn_other": "Émergence prévue dans {{count}} jours ({{date}}).",
+    "expectLayingFrom": "Recherchez les premiers œufs à partir du {{date}} environ."
   }
 }
