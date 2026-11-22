@@ -25,7 +25,7 @@
     "metrics": "Statistiques",
     "files": "Fichiers",
     "calendar": "Calendrier",
-    "equipment": "Équipement",
+    "equipment": "Matériel",
     "actions": "Ajouts groupés",
     "allQueens": "Toutes les reines",
     "tools": "Outils",
@@ -456,7 +456,7 @@
     "notes": "Notes",
     "quickChecks": "Contrôles rapides",
     "other": "Autre",
-    "allTime": "Depuis toujours",
+    "allTime": "Depuis le début",
     "lastMonth": "Dernier mois",
     "last3Months": "3 derniers mois",
     "last6Months": "6 derniers mois",
@@ -466,13 +466,13 @@
     "showMore": "Afficher {{count}} de plus",
     "showLess": "Afficher moins",
     "notesAvailable": "Notes disponibles",
-    "boxConfiguration": "Configuration de la ruche",
+    "boxConfiguration": "Configuration des éléments de la ruche",
     "inspection": "Inspection",
     "overdue": "En retard",
     "scheduled": "Planifiée",
     "cancelled": "Annulée",
     "doInspection": "Effectuer l'inspection",
-    "reschedule": "Reprogrammer",
+    "reschedule": "Replanifier",
     "inspectHive": "Inspecter {{hiveName}}",
     "strength": "Force",
     "honey": "Miel",
@@ -481,7 +481,7 @@
     "photos": "Photos",
     "documents": "Documents",
     "fromInspection": "À partir de l’inspection",
-    "maintenance": "Maintenance",
+    "maintenance": "Entretien",
     "today": "Aujourd'hui",
     "yesterday": "Hier",
     "filterEventType": "Type",
@@ -548,7 +548,7 @@
       "6months": "6 mois",
       "ytd": "Depuis le début de l'année",
       "1year": "1 an",
-      "all": "Depuis toujours"
+      "all": "Depuis le début"
     },
     "filters": {
       "period": "Période",
@@ -678,7 +678,7 @@
     "queen": "Reine",
     "worker": "Ouvrière",
     "drone": "Faux-bourdon",
-    "compareAll": "Comparer tout",
+    "compareAll": "Tout comparer",
     "dateSelector": "Date de départ",
     "dateSelectorDescription": "Sélectionnez éventuellement la date de ponte des œufs pour afficher les dates du calendrier sur la chronologie",
     "pickDate": "Choisissez une date",
@@ -686,7 +686,7 @@
     "totalDays": "Total : {{days}} jours",
     "daysUnit": "jours",
     "stage": {
-      "egg": "Oeuf",
+      "egg": "Œuf",
       "larva": "Larve",
       "pupa": "Nymphe",
       "adult": "Adulte"
@@ -696,13 +696,13 @@
     "durationOne": "1 jour",
     "durationOther": "{{count}} jours",
     "queenEggDesc": "Pondus dans une cupule à reine",
-    "queenLarvaDesc": "Nourri exclusivement à la gelée royale",
-    "queenPupaDesc": "Operculé, se développe rapidement",
+    "queenLarvaDesc": "Nourrie exclusivement à la gelée royale",
+    "queenPupaDesc": "La cellule est operculée ; la nymphe se transforme en faux-bourdon",
     "queenAdultDesc": "Émerge, s’accouple dans les jours suivants",
     "workerEggDesc": "Petit œuf blanc dressé dans la cellule",
     "workerLarvaDesc": "Nourrie à la gelée royale, puis au pain d’abeille et au miel",
     "workerPupaDesc": "Cellule operculée, métamorphose",
-    "workerAdultDesc": "Émerge en tant qu’ouvrière entièrement formée",
+    "workerAdultDesc": "Émerge sous forme d'une ouvrière pleinement développée",
     "droneEggDesc": "Cellules plus grandes, œufs non fécondés",
     "droneLarvaDesc": "Nourrissement similaire à celui des ouvrières",
     "dronePupaDesc": "Operculé, se développe en faux-bourdon",
@@ -715,7 +715,7 @@
     "fact3Title": "Le stade de l’œuf",
     "fact3Description": "Les trois castes partagent le même stade d’œuf de 3 jours. La reine pond chaque œuf verticalement dans la cellule ; il s’incline progressivement avant l’éclosion.",
     "fact4Title": "Période d’operculation",
-    "fact4Description": "Les ouvrières operculent les cellules royales au 8eme jour, les cellules d’ouvrières au 9eme jour et celles des faux-bourdons au 10eme jour. L’observation des cellules operculées permet d’identifier ce qui s’y développe.",
+    "fact4Description": "Les ouvrières operculent les cellules royales au 8e jour, les cellules d'ouvrières au 9e jour et les cellules de faux-bourdons au 10e jour. L'observation des cellules operculées permet d'identifier ce qui s'y développe.",
     "intro": "Visualisez le développement du couvain d'abeille, de l'œuf à l'adulte. Les reines émergent en 16 jours, les ouvrières en 21 jours et les mâles en 24 jours, selon quatre stades : œuf, larve, nymphe et adulte. Choisissez une date de départ pour prévoir les dates d'operculation et d'émergence et planifier vos inspections.",
     "faq": {
       "title": "Questions fréquentes",
@@ -887,19 +887,19 @@
         "Comme la colonie reste réunie, cette méthode peut mieux préserver la dynamique de récolte du miel qu'une division artificielle complète."
       ],
       "followUpTitle": "Calendrier des visites de suivi",
-      "followUpDayHeader": "Day",
+      "followUpDayHeader": "Jour",
       "followUpTaskHeader": "Tâche",
       "followUp": [
         {
-          "day": "Day 7-8",
+          "day": "Jour 7-8",
           "task": "Inspectez le corps de ruche contenant le couvain, placé au-dessus des hausses, afin de repérer les cellules royales et de détruire celles qui sont amorcées."
         },
         {
-          "day": "Day 14-15",
+          "day": "Jour 14-15",
           "task": "Inspectez à nouveau la ruche pour repérer d'éventuelles cellules royales apparues tardivement et vérifiez que la disposition du couvain respecte toujours le dispositif Demaree."
         },
         {
-          "day": "Day 21-22",
+          "day": "Jour 21-22",
           "task": "Effectuez une dernière vérification pour déterminer si la colonie peut reprendre une conduite normale ou si elle nécessite encore une surveillance étroite des signes de préparation à l'essaimage."
         }
       ],
@@ -920,7 +920,7 @@
         "Des inspections régulières sont indispensables.",
         "Vous DEVEZ maîtriser les bases."
       ],
-      "intro": "La méthode Demaree est une technique classique de maîtrise de l'essaimage destinée aux colonies fortes. Elle permet de réduire la congestion sans diviser la colonie. La reine reste sous une grille à reine, avec des rayons disponibles pour pondre ; la majeure partie du couvain est déplacée au-dessus de deux hausses à miel, ce qui sépare la zone de couvain de la piste de phéromones de la reine. Effectuez des contrôles vers les jours 7–8, 14–15 et 21–22 afin de détruire les cellules royales de sauveté avant leur émergence.",
+      "intro": "La méthode Demaree est une méthode classique de gestion de l'essaimage destinée aux colonies fortes. Elle permet de réduire l'encombrement sans diviser la colonie. La reine reste sous une grille à reine, avec des rayons bâtis disponibles pour pondre ; la majeure partie du couvain est déplacée au-dessus de deux hausses, ce qui éloigne le nid à couvain de la reine et de ses phéromones. Effectuez des visites de suivi vers les 7e–8e, 14e–15e et 21e–22e jours pour détruire les cellules royales de sauveté avant leur émergence.",
       "faq": {
         "title": "Questions fréquentes",
         "items": [
@@ -1005,13 +1005,13 @@
       "notesLabel": "Notes d'inspection",
       "notesChecklistLabel": "Liste de suivi",
       "checkpointPrefix": "Point de contrôle Demaree :",
-      "dayOffset_one": "Day {{count}}",
-      "dayOffset_other": "Day {{count}}",
+      "dayOffset_one": "Jour {{count}}",
+      "dayOffset_other": "Jour {{count}}",
       "save": "Enregistrer les inspections planifiées",
       "saving": "Enregistrement des inspections...",
       "saveSuccess_one": "{{count}} étape de suivi Demaree enregistrée comme inspection planifiée.",
       "saveSuccess_other": "{{count}} étapes de suivi Demaree enregistrées comme inspections planifiées.",
-      "partialSave": "{{successCount}} étapes de suivi ont été enregistrées, mais {{failedCount}} n'ont pas pu l'être. Vérifiez les inspections à venir avant de réessayer.",
+      "partialSave": "{{successCount}} étapes ont été enregistrées, mais {{failedCount}} ont échoué. Vérifiez les inspections à venir avant de réessayer.",
       "saveError": "Impossible d'enregistrer le plan Demaree. Certaines inspections n'ont peut-être pas été créées.",
       "noHives": "Vous devez avoir au moins une ruche dans le rucher actif pour pouvoir créer un plan Demaree.",
       "checkpoints": {
@@ -1161,7 +1161,7 @@
         "La colonie souche avec son couvain est déplacée à l'écart et conserve ses cellules royales. Elle peut ainsi élever une nouvelle reine et devenir une deuxième colonie productive.",
         "Les deux colonies restent actives et peuvent contribuer à la récolte de miel ou constituer leurs réserves pour l'hiver."
       ],
-      "followUpTitle": "Calendrier de suivi",
+      "followUpTitle": "Calendrier des visites de suivi",
       "followUpDayHeader": "Jour",
       "followUpTaskHeader": "Tâche",
       "followUp": [
@@ -1226,7 +1226,7 @@
         "generateButton": "Générer les étapes de suivi",
         "saveButton": "Enregistrer les inspections planifiées",
         "checkpointPrefix": "Étape de suivi Pagden :",
-        "notesChecklistLabel": "Liste de contrôle",
+        "notesChecklistLabel": "Liste de suivi",
         "savedSuccess": "{{count}} étape de suivi Pagden enregistrée comme inspection planifiée.",
         "savedPartial": "{{successCount}} étapes ont été enregistrées, mais {{failedCount}} ont échoué. Vérifiez les inspections à venir avant de réessayer.",
         "savedError": "Impossible d'enregistrer le plan Pagden. Certaines inspections n'ont peut-être pas été créées.",
@@ -1242,7 +1242,7 @@
             ]
           },
           "queenCellCheck": {
-            "title": "Contrôle des cellules royales",
+            "title": "Vérification des cellules royales",
             "summary": "Inspectez la colonie souche vers les jours 7 à 8 et réduisez le nombre de cellules royales à une seule, en conservant la mieux placée et la mieux formée pour élever la nouvelle reine.",
             "checklist": [
               "Inspecter chaque cadre de couvain de la colonie souche à la recherche de cellules royales.",
@@ -1251,7 +1251,7 @@
             ]
           },
           "secondQueenCellCheck": {
-            "title": "Deuxième contrôle des cellules royales",
+            "title": "Deuxième vérification des cellules royales",
             "summary": "Effectuez un nouveau contrôle environ une semaine plus tard pour repérer les cellules apparues tardivement et vérifier le développement de la nouvelle reine.",
             "checklist": [
               "Rechercher à nouveau les cellules royales récemment amorcées ou oubliées.",
@@ -1272,16 +1272,16 @@
       },
       "warnings": {
         "lateQueenCellCheck": {
-          "title": "Le premier contrôle des cellules royales est prévu après le 8e jour",
+          "title": "La première vérification des cellules royales est prévue après le 8e jour",
           "description": "Ce retard augmente le risque que les cellules royales émergent avant que vous puissiez les examiner et en réduire le nombre. Essayez d'effectuer le premier contrôle dans un délai de 7 à 8 jours."
         },
         "unsafeCheckpointSpacing": {
-          "title": "L'espacement des étapes de suivi semble risqué",
-          "description": "Les inspections de suivi sont exceptionnellement espacées ou, au contraire, trop rapprochées, ce qui peut rendre le contrôle des cellules royales moins fiable."
+          "title": "L'espacement entre les étapes de suivi semble risqué",
+          "description": "Les inspections de suivi sont soit trop espacées, soit trop rapprochées, ce qui peut rendre le contrôle des cellules royales moins fiable."
         },
         "illogicalScheduleOrder": {
           "title": "Les étapes de suivi ne sont plus dans l'ordre chronologique",
-          "description": "L'une des étapes ultérieures est planifiée à une date antérieure ou égale à celle d'une visite précédente. Réorganisez les dates avant d'enregistrer le plan."
+          "description": "L'une des étapes de suivi ultérieures est programmée à la même date ou avant une visite précédente. Réorganisez les dates avant d'enregistrer le plan."
         }
       },
       "meta": {
@@ -1410,7 +1410,7 @@
         "Les butineuses reviennent à l'emplacement initial et renforcent rapidement la nouvelle colonie.",
         "La colonie souche continue de pondre et reste productive, contribuant à la récolte de miel ou à la constitution des réserves hivernales."
       ],
-      "followUpTitle": "Calendrier de suivi",
+      "followUpTitle": "Calendrier des visites de suivi",
       "followUpDayHeader": "Jour",
       "followUpTaskHeader": "Tâche",
       "followUp": [
@@ -1475,7 +1475,7 @@
         "generateButton": "Générer les étapes de suivi",
         "saveButton": "Enregistrer les inspections planifiées",
         "checkpointPrefix": "Étape de suivi de l'essaim artificiel :",
-        "notesChecklistLabel": "Liste de contrôle",
+        "notesChecklistLabel": "Liste de suivi",
         "savedSuccess": "{{count}} étape de suivi de l'essaim artificiel enregistrée comme inspection planifiée.",
         "savedPartial": "{{successCount}} étapes ont été enregistrées, mais {{failedCount}} ont échoué. Vérifiez les inspections à venir avant de réessayer.",
         "savedError": "Impossible d'enregistrer le plan d'essaim artificiel. Certaines inspections n'ont peut-être pas été créées.",
@@ -1491,7 +1491,7 @@
             ]
           },
           "queenCellCheck": {
-            "title": "Contrôle de la cellule royale",
+            "title": "Vérification de la cellule royale",
             "summary": "Inspectez la nouvelle colonie vers les jours 7 à 8 pour vérifier le développement de la cellule royale et rechercher d'éventuelles cellules supplémentaires.",
             "checklist": [
               "Inspecter la nouvelle colonie pour vérifier que la cellule royale se développe.",
@@ -1500,7 +1500,7 @@
             ]
           },
           "secondQueenCellCheck": {
-            "title": "Deuxième contrôle de la cellule royale",
+            "title": "Deuxième vérification de la cellule royale",
             "summary": "Effectuez un nouveau contrôle environ une semaine plus tard pour vérifier que la cellule royale est operculée et surveiller la colonie souche.",
             "checklist": [
               "Vérifier que la cellule royale est operculée et se développe normalement.",
@@ -1521,16 +1521,16 @@
       },
       "warnings": {
         "lateQueenCellCheck": {
-          "title": "Le premier contrôle de la cellule royale est prévu après le 8e jour",
+          "title": "La première vérification de la cellule royale est prévue après le 8e jour",
           "description": "Ce retard augmente le risque de manquer une étape du développement de la cellule royale. Essayez d'effectuer le premier contrôle dans un délai de 7 à 8 jours."
         },
         "unsafeCheckpointSpacing": {
-          "title": "L'espacement des étapes de suivi semble risqué",
-          "description": "Les inspections de suivi sont exceptionnellement espacées ou, au contraire, trop rapprochées, ce qui peut rendre la surveillance moins fiable."
+          "title": "L'espacement entre les étapes de suivi semble risqué",
+          "description": "Les inspections de suivi sont soit trop espacées, soit trop rapprochées, ce qui peut rendre la surveillance moins fiable."
         },
         "illogicalScheduleOrder": {
           "title": "Les étapes de suivi ne sont plus dans l'ordre chronologique",
-          "description": "L'une des étapes ultérieures est planifiée à une date antérieure ou égale à celle d'une visite précédente. Réorganisez les dates avant d'enregistrer le plan."
+          "description": "L'une des étapes de suivi ultérieures est programmée à la même date ou avant une visite précédente. Réorganisez les dates avant d'enregistrer le plan."
         }
       },
       "meta": {
@@ -2124,7 +2124,7 @@
       "title": "Résultat",
       "empty": "Saisissez vos comptages en huitièmes ci-dessus pour afficher l'estimation.",
       "bees": "Abeilles",
-      "wabengassen": "Rues d'abeilles",
+      "wabengassen": "Espaces intercadres",
       "wabengassenNote": "≈ 1 000 abeilles chacune",
       "strengthField": "Force de la colonie",
       "strengthFieldNote": "À reporter dans l'inspection",
@@ -2134,7 +2134,7 @@
       "cells": "cellules",
       "pollen": "Pollen",
       "feed": "Réserves / miel",
-      "emergeNote": "Au cours des 12 prochains jours, environ {{cells}} abeilles émergeront du couvain operculé d'ouvrières, soit environ {{gassen}} rues d'abeilles supplémentaires. Agrandissez la ruche à temps."
+      "emergeNote": "Au cours des 12 prochains jours, environ {{cells}} abeilles émergeront du couvain operculé d'ouvrières, soit environ {{gassen}} espaces intercadres occupés supplémentaires. Agrandissez la ruche à temps."
     },
     "evaluation": {
       "title": "Évaluation saisonnière",
@@ -2153,16 +2153,16 @@
         "minCappedBrood": "≥ {{min}} cellules de couvain operculé d'ouvrières (mesuré : ~{{measured}})",
         "minOpenBrood": "≥ {{min}} cellules de couvain ouvert d'ouvrières (mesuré : ~{{measured}})"
       },
-      "splitNote": "Une division de fécondation sans couvain (nucléi de fécondation), réalisée avant la mi-mai, ne nécessite que ≥ 1 000 abeilles et aucun couvain.",
+      "splitNote": "Un nucléi de fécondation sans couvain, constitué avant la mi-mai, ne nécessite que 1 000 abeilles au minimum.",
       "winterAug": {
         "check": "> 15 000 abeilles, quel que soit le couvain (mesuré : ~{{measured}})",
-        "note": "S'applique aux colonies établies à la mi-août : une colonie aussi forte occupe plus de 5 rues d'abeilles jusqu'au plancher. Les colonies plus faibles et en régression, ainsi que les divisions de l'année, sont plutôt évaluées à la fin octobre."
+        "note": "S'applique aux colonies établies à la mi-août : une colonie de cette force s'étend jusqu'au plancher et occupe plus de 5 espaces intercadres. Les colonies plus faibles et en régression, ainsi que les divisions de l'année, sont plutôt évaluées à la fin octobre."
       },
       "winterOct": {
-        "ready": "Prête pour l'hiver — environ {{bees}} abeilles réparties sur {{gassen}} rues d'abeilles (au moins 5 intervalles occupés ; plus de 5 000 abeilles).",
-        "minimal": "Force minimale pour l'hivernage — environ {{bees}} abeilles réparties sur 4 rues d'abeilles (environ 5 000 abeilles).",
-        "atRisk": "Risque élevé de perte hivernale — environ {{bees}} abeilles réparties sur {{gassen}} rues d'abeilles (3 intervalles occupés ou moins ; moins de 5 000 abeilles). Réunir ou supprimer la colonie.",
-        "note": "Évaluez la colonie le plus tard possible, après une nuit froide (≈ 5 °C), en comptant les rues d'abeilles occupées."
+        "ready": "Prête pour l'hiver — environ {{bees}} abeilles occupant {{gassen}} espaces intercadres (au moins 5 espaces occupés ; plus de 5 000 abeilles).",
+        "minimal": "Force minimale pour l'hivernage — environ {{bees}} abeilles occupant 4 espaces intercadres (environ 5 000 abeilles).",
+        "atRisk": "Risque élevé de pertes hivernales — environ {{bees}} abeilles occupant {{gassen}} espaces intercadres (3 espaces intercadres occupés ou moins ; moins de 5 000 abeilles). Réunir ou supprimer la colonie.",
+        "note": "Évaluez la colonie le plus tard possible, après une nuit froide (≈ 5 °C), en comptant les espaces intercadres occupés par les abeilles."
       }
     },
     "reference": {
@@ -2207,7 +2207,7 @@
         },
         "ruleOfThumb": {
           "title": "Règle pratique",
-          "description": "Environ 1 000 abeilles émergées occupent une rue d'abeilles. Agrandissez la ruche avant que la colonie ne manque de place."
+          "description": "Environ 1 000 abeilles émergées occupent un espace intercadre. Agrandissez la ruche avant que la colonie ne manque de place."
         }
       },
       "feed": {
@@ -2256,15 +2256,15 @@
   "varroaManagement": {
     "eyebrow": "Outil gratuit",
     "title": "Plan de lutte contre le varroa",
-    "intro": "Calendrier de lutte contre le varroa sur toute la saison pour les colonies de production (Wirtschaftsvölker) et les essaims/nucléi (Ableger), fondé sur la méthode éprouvée du Dr Pia Aumeier, du Dr Gerhard Liebig et du Dr Otto Boecking. Règle essentielle : ne traitez jamais selon un calendrier fixe. Mesurez d'abord la chute naturelle des varroas et ne traitez que lorsque le seuil est dépassé.",
+    "intro": "Calendrier de lutte contre le varroa sur toute la saison pour les colonies de production et les nucléis, fondé sur la méthode éprouvée du Dr Pia Aumeier, du Dr Gerhard Liebig et du Dr Otto Boecking. Règle essentielle : ne traitez jamais selon un calendrier fixe. Mesurez d'abord la chute naturelle des varroas et ne traitez que lorsque le seuil est dépassé.",
     "columns": {
       "production": {
         "title": "Colonie de production",
-        "subtitle": "Wirtschaftsvolk (y compris l'essaim par secouage)"
+        "subtitle": "Colonie de production (y compris les essaims par secouage)"
       },
       "nucleus": {
         "title": "Essaim / nucléus",
-        "subtitle": "Ableger (jeune colonie)"
+        "subtitle": "Nucléi (jeune colonie)"
       }
     },
     "treatments": {
@@ -2375,15 +2375,15 @@
       }
     },
     "divideAndTreat": {
-      "title": "Diviser et traiter (Teilen und Behandeln)",
-      "summary": "Vous en avez assez de l'acide formique ? La méthode « diviser et traiter » met une colonie de production en absence de couvain après la dernière récolte de miel. Un seul traitement à l'acide oxalique ou lactique, indépendant des conditions météo, permet alors d'atteindre tous les varroas. Découvrez pas à pas la méthode du Flugling et du Brutling.",
+      "title": "Diviser et traiter",
+      "summary": "Vous en avez assez de l'acide formique ? Après la dernière récolte de miel, la méthode « diviser et traiter » permet de mettre la colonie de production en période d'absence de couvain. Un seul traitement à l'acide oxalique ou lactique, indépendant des conditions météorologiques, permet alors d'atteindre tous les varroas. Découvrez pas à pas la méthode de division en deux unités : l'unité des butineuses et l'unité de couvain.",
       "intro": {
-        "0": "À la fin juillet, une colonie de production forte peut compter jusqu'à 30 000 abeilles et 30 000 cellules de couvain. Plus le volume de couvain est important, plus il est difficile d'obtenir un bon résultat avec l'acide formique sans endommager le couvain, surtout par temps frais et humide. La méthode « diviser et traiter », perfectionnée à partir du système de rotation de Celle dans le projet allemand « Betriebsweisen im Vergleich », contourne entièrement ce problème : la colonie est divisée en deux unités sans couvain, qui peuvent chacune être traitées efficacement à l'acide oxalique ou lactique, indépendamment de la météo.",
-        "1": "Vous divisez la colonie de production en un Flugling avec reine et butineuses, et un Brutling sans reine mais avec tout le couvain. Il vous faut seulement un plancher supplémentaire, un couvre-cadres ou une feuille, un toit et une cage à reine munie d'une fermeture au candi ou à la guimauve. En cinq visites au rucher et environ 15 minutes de travail effectif, vous déparasitez la colonie en deux interventions, renouvelez complètement les rayons et pouvez même, si vous le souhaitez, élever une jeune reine et créer une nouvelle colonie en parallèle."
+        "0": "À la fin du mois de juillet, une colonie de production forte peut compter jusqu'à 30 000 abeilles et 30 000 cellules de couvain. Plus le volume de couvain est important, plus il est difficile d'obtenir un bon résultat avec l'acide formique sans endommager le couvain, surtout par temps frais et humide. La méthode « diviser et traiter », perfectionnée à partir du système de rotation de Celle dans le projet allemand « Betriebsweisen im Vergleich », contourne entièrement ce problème : la colonie est divisée en deux unités sans couvain, qui peuvent chacune être traitées efficacement à l'acide oxalique ou lactique, indépendamment de la météo.",
+        "1": "Vous divisez la colonie de production en une unité des butineuses avec reine et une unité de couvain sans reine mais contenant tout le couvain. Il vous faut seulement un plancher supplémentaire, un couvre-cadres ou une feuille, un toit et une cage à reine munie d'une fermeture au candi ou à la guimauve. En cinq visites au rucher et environ 15 minutes de travail effectif, cette méthode permet de traiter la colonie contre le varroa en deux étapes, de renouveler complètement les rayons et même, si vous le souhaitez, d'élever une jeune reine et de créer une nouvelle colonie en parallèle."
       },
       "concepts": {
         "flightling": {
-          "title": "Flugling (unité de butineuses)",
+          "title": "Unité des butineuses",
           "subtitle": "Colonie avec reine et abeilles de vol",
           "points": [
             "La hausse à miel récoltée, avec ses abeilles, est placée sur le plancher d'origine, à l'emplacement initial : toutes les butineuses y reviennent.",
@@ -2393,11 +2393,11 @@
           ]
         },
         "broodling": {
-          "title": "Brutling (unité de couvain)",
+          "title": "Unité de couvain",
           "subtitle": "Colonie avec couvain, sans reine",
           "points": [
-            "Les deux corps de couvain sont placés sur un nouveau plancher, soit directement au-dessus du Flugling (dans le même sens d'envol), soit à quelques mètres de distance.",
-            "Contient tout le couvain et environ 90 % des varroas, mais perd ses butineuses au profit du Flugling.",
+            "Les deux corps de couvain sont placés sur un nouveau plancher, soit directement au-dessus de l'unité des butineuses (dans le même sens d'envol), soit à quelques mètres de distance.",
+            "Elle contient tout le couvain et environ 90 % des varroas. Les abeilles qui partent butiner retournent toutefois dans l'unité des butineuses.",
             "Élève une reine de sauveté à partir des plus jeunes larves ; dans environ 90 % des cas, celle-ci réussit son vol de fécondation.",
             "Se retrouve sans couvain au jour X+21, lorsque tout le couvain d'ouvrières a émergé : c'est le moment de traiter."
           ]
@@ -2418,31 +2418,31 @@
           "day": "Jour X",
           "title": "Diviser la colonie",
           "items": [
-            "Par beau temps, démontez la colonie. Placez la hausse à miel avec les abeilles sur le plancher d'origine : elle devient le Flugling. Si elle ne contient aucune réserve alimentaire, ajoutez un cadre de nourriture (1 à 2 kg, généralement situé en bordure du corps de couvain supérieur).",
-            "Trouvez la reine dans le corps de couvain (elle se trouve généralement dans le corps supérieur), enfermez-la dans une cage munie d'une fermeture au candi ou à la guimauve, puis suspendez la cage dans le Flugling.",
-            "Vous ne trouvez pas la reine ou les abeilles sont trop agressives ? Placez plutôt un cadre de couvain ouvert dans le Flugling, puis échangez-le contre la reine deux jours plus tard : elle sera bien plus facile à trouver dans le Brutling, qui aura perdu ses butineuses. Le traitement du jour X+21 sera alors reporté au jour X+23.",
-            "Placez les deux corps de couvain (les rayons les plus anciens en bas) sur un nouveau plancher, soit directement au-dessus du Flugling dans le même sens, soit à plusieurs mètres : ils constituent le Brutling. Ne le placez jamais juste à côté du Flugling, sinon les butineuses retourneraient dans l'unité la plus importante.",
-            "Réduisez les entrées des deux unités à environ 2 cm : pendant quelques jours, le Brutling n'a ni reine ni butineuses et risque fortement d'être pillé.",
+            "Par beau temps, séparez la colonie. Placez la hausse avec les abeilles sur le plancher d'origine : elle devient l'unité des butineuses. Si elle ne contient aucune réserve alimentaire, ajoutez un cadre de nourriture (1 à 2 kg, généralement situé en bordure du corps de couvain supérieur).",
+            "Trouvez la reine dans le corps de couvain (elle se trouve généralement dans le corps supérieur), enfermez-la dans une cage munie d'une fermeture au candi ou à la guimauve, puis suspendez la cage dans l'unité des butineuses.",
+            "Vous ne trouvez pas la reine ou les abeilles sont trop agressives ? Placez plutôt un cadre de couvain ouvert dans l'unité des butineuses, puis échangez-le contre la reine deux jours plus tard : elle sera bien plus facile à trouver dans l'unité de couvain, qui aura perdu ses butineuses. Le traitement du jour X+21 sera alors reporté au jour X+23.",
+            "Placez les deux corps de couvain (les rayons les plus anciens en bas) sur un nouveau plancher, soit directement au-dessus de l'unité des butineuses dans le même sens, soit à plusieurs mètres : ils constituent l'unité de couvain. Ne la placez jamais juste à côté de l'unité des butineuses, sinon les butineuses retourneraient dans l'unité la plus importante.",
+            "Réduisez les entrées des deux unités à environ 2 cm : pendant quelques jours, l'unité de couvain n'a ni reine ni butineuses et risque fortement d'être pillée.",
             "Ne distribuez jamais de nourriture liquide le jour de la division : cela déclenche le pillage."
           ]
         },
         "dayTwo": {
           "day": "Jour X+2",
-          "title": "Traiter le Flugling",
+          "title": "Traiter l'unité des butineuses",
           "items": [
-            "Jusqu'aux deux tiers des abeilles se trouvent maintenant dans le Flugling ; la reine est libérée et pond à nouveau.",
+            "Jusqu'aux deux tiers des abeilles se trouvent maintenant dans l'unité des butineuses ; la reine est libérée et pond à nouveau.",
             "Tôt le matin, lorsque les abeilles sont regroupées, faites couler 100 à 200 ml de solution d'acide oxalique à 3,5 %. Mieux encore, sortez chaque cadre pendant la journée et pulvérisez les abeilles avec une solution d'acide oxalique à 3 % (en été, la pulvérisation est plus efficace que le dégouttement).",
-            "Un seul traitement suffit : environ 90 % des varroas se trouvent dans le couvain et sur les nourrices, c'est-à-dire dans le Brutling.",
-            "Si aucune miellée tardive n'est attendue, nourrissez maintenant le Flugling avec jusqu'à 6 litres de sirop. Ne distribuez ensuite plus rien jusqu'en octobre afin de ne pas freiner l'élevage du couvain."
+            "Un seul traitement suffit : environ 90 % des varroas se trouvent dans le couvain et sur les abeilles nourrices, c'est-à-dire dans l'unité de couvain.",
+            "Si aucune miellée tardive n'est attendue, nourrissez maintenant l'unité des butineuses avec jusqu'à 6 litres de sirop. Ne distribuez ensuite plus rien jusqu'en octobre afin de ne pas freiner l'élevage du couvain."
           ]
         },
         "dayTwentyOne": {
           "day": "Jour X+21",
-          "title": "Traiter le Brutling",
+          "title": "Traiter l'unité de couvain",
           "items": [
-            "Tout le couvain d'ouvrières a maintenant émergé : le Brutling est donc sans couvain. La reine de sauveté a généralement émergé, mais ne pond pas encore. Inutile de chercher des œufs trop tôt.",
-            "Démontez le Brutling et resserrez-le dans un seul corps : retirez les vieux rayons (en général les 10 plus anciens, situés en bas) et secouez leurs abeilles dans le Brutling ou devant son entrée. Si les rayons de couvain contiennent du miel de forêt ou de bruyère, vous pouvez tous les récolter et installer la colonie sur des cadres gaufrés avec un cadre de nourriture.",
-            "Traitez exactement comme le Flugling : faites couler ou pulvérisez de l'acide oxalique pendant la période sans couvain.",
+            "Tout le couvain d'ouvrières a maintenant émergé : l'unité de couvain est donc sans couvain. La reine de sauveté a généralement émergé, mais ne pond pas encore. Inutile de rechercher des œufs trop tôt.",
+            "Démontez l'unité de couvain et resserrez-la dans un seul corps : retirez les vieux rayons (en général les 10 plus anciens, situés en bas) et secouez leurs abeilles dans l'unité de couvain ou devant son entrée. Si les rayons contiennent du miel de forêt ou de bruyère, vous pouvez tous les récolter et installer la colonie sur des cadres gaufrés avec un cadre de nourriture.",
+            "Traitez de la même manière que l'unité des butineuses : faites couler ou pulvérisez de l'acide oxalique pendant la période sans couvain.",
             "Un deuxième traitement quatre jours plus tard est souvent nécessaire ici : si plus de 5 000 varroas tombent dans la semaine suivant le traitement, traitez à nouveau immédiatement.",
             "Nourrissez après le traitement, ou attendez d'avoir confirmé que la jeune reine pond : une reine en ponte réduit le risque de pillage."
           ]
@@ -2451,15 +2451,15 @@
           "day": "Jour X+28",
           "title": "Vérifier la jeune reine",
           "items": [
-            "La semaine écoulée a-t-elle été favorable aux vols de fécondation (20 °C, temps ensoleillé et calme) ? Dans ce cas, 9 Brutlings sur 10 possèdent maintenant une jeune reine qui pond : recherchez des œufs.",
-            "Si aucune reine ne pond, supprimez le Brutling en secouant ses abeilles des cadres devant l'entrée du Flugling."
+            "Les conditions météorologiques de la semaine écoulée étaient-elles favorables aux vols de fécondation (20 °C, temps ensoleillé et calme) ? Dans ce cas, 9 unités de couvain sur 10 ont désormais une jeune reine en ponte : recherchez la présence d'œufs.",
+            "Si aucune reine ne pond, supprimez l'unité de couvain en secouant ses abeilles des cadres devant l'entrée de l'unité des butineuses."
           ]
         },
         "october": {
           "day": "Octobre",
           "title": "Réunir les unités ou les hiverner séparément",
           "items": [
-            "Si vous souhaitez obtenir une seule colonie forte, placez simplement le Brutling au-dessus du Flugling, sans papier journal. En règle générale, la reine de la colonie supérieure survit. Pour être certain de conserver une reine précise, retirez l'autre au préalable. Une réunion tardive permet d'obtenir des colonies hivernantes très robustes, dirigées par une jeune reine.",
+            "Si vous souhaitez obtenir une seule colonie forte, placez simplement l'unité de couvain au-dessus de l'unité des butineuses, sans papier journal. En règle générale, la reine de l'unité supérieure survit. Pour être certain de conserver une reine précise, retirez l'autre au préalable. Une réunion tardive permet d'obtenir des colonies hivernantes très robustes, dirigées par une jeune reine.",
             "Si vous conservez les deux unités, nourrissez chacune d'elles afin qu'elle entre en hiver avec au moins 15 kg de réserves (environ 15 litres de sirop si les rayons sont vides), idéalement répartis en une portion précoce et une portion tardive."
           ]
         }
@@ -2476,8 +2476,8 @@
       ],
       "caution": {
         "title": "Quand ne pas utiliser cette méthode",
-        "body": "Mesurez la chute naturelle des varroas avant la division. Au-delà d'environ 30 varroas par jour, le couvain est si fortement infesté que les abeilles du Brutling meurent rapidement après leur émergence et que l'unité s'effondre avant le jour X+21. Traitez plutôt immédiatement ces colonies à l'acide formique.",
-        "robbing": "Et ne distribuez jamais de nourriture liquide le jour de la division : le Brutling, privé de reine et de nombreuses gardiennes, serait immédiatement pillé."
+        "body": "Mesurez la chute naturelle des varroas avant la division. Au-delà d'environ 30 varroas par jour, le couvain est si fortement infesté que les abeilles de l'unité de couvain meurent rapidement après leur émergence et que cette unité s'effondre avant le jour X+21. Traitez plutôt immédiatement ces colonies à l'acide formique.",
+        "robbing": "Ne distribuez jamais de nourriture liquide le jour de la division : l'unité de couvain, privée de reine et de nombreuses abeilles gardiennes, serait immédiatement pillée."
       }
     },
     "monitoring": {
@@ -2647,7 +2647,7 @@
     "treatment": "Traitement",
     "frame": "Cadres",
     "harvest": "Récolte",
-    "boxConfiguration": "Configuration des hausses",
+    "boxConfiguration": "Configuration des éléments de la ruche",
     "maintenance": "Entretien",
     "note": "Note",
     "other": "Autre",
@@ -2755,7 +2755,7 @@
     "brand": "Hive Pal",
     "logoAlt": "Logo Hive Pal",
     "openSource": "Open source",
-    "liebefelder": "Méthode Liebefeld",
+    "liebefelder": "Méthode d'estimation de Liebefeld",
     "docs": "Documentation",
     "signIn": "Se connecter",
     "startFree": "Commencer gratuitement",
@@ -2776,8 +2776,8 @@
   },
   "frameSizes": {
     "title": "Mes formats de cadres",
-    "description": "Formats de cadres personnalisés que vous avez créés. La modification de l'un d'eux met à jour toutes les hausses qui l'utilisent.",
-    "empty": "Aucun format de cadre personnalisé pour le moment. Ajoutez-en un lors de la modification des hausses d'une ruche.",
+    "description": "Formats de cadres personnalisés que vous avez créés. La modification de l'un d'eux met à jour toutes les éléments de la ruche qui l'utilisent.",
+    "empty": "Aucun format de cadre personnalisé pour le moment. Ajoutez-en un lors de la modification des éléments de la ruche.",
     "emptyCta": "Accéder aux ruches",
     "dimensions": "{{width}} × {{height}} × {{depth}} mm",
     "statusShared": "Partagé",
@@ -2786,8 +2786,8 @@
   },
   "frameSizeEdit": {
     "title": "Modifier le format de cadre",
-    "description": "Corrigez le nom ou les dimensions. Toutes les hausses utilisant ce format de cadre seront mises à jour.",
-    "sharedNotice": "Ce format a été approuvé et est partagé avec la communauté. Toute modification s'appliquera donc également aux hausses des autres apiculteurs.",
+    "description": "Corrigez le nom ou les dimensions. Tous les éléments de la ruche utilisant ce format de cadre seront mises à jour.",
+    "sharedNotice": "Ce format a été approuvé et est partagé avec la communauté. Toute modification s'appliquera donc également aux éléments de la ruche des autres apiculteurs.",
     "name": "Nom",
     "width": "Largeur (mm)",
     "height": "Hauteur (mm)",
