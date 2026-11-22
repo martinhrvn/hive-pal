@@ -28,7 +28,7 @@
     "marking": "Marquage",
     "source": "Provenance",
     "status": "Statut",
-    "installationDate": "Date d'introduction",
+    "installationDate": "Date d'installation",
     "replacedDate": "Date de remplacement (facultatif)",
     "installedOn": "Introduite le {{date}}",
     "via": "par {{source}}",
