@@ -8,7 +8,9 @@
     "searchPlaceholder": "Rechercher des ruchers...",
     "noApiaries": "Aucun rucher trouvé",
     "noApiariesMatching": "Aucun rucher trouvé correspondant à \"{{searchTerm}}\"",
-    "clearFilters": "Effacer les filtres"
+    "clearFilters": "Effacer les filtres",
+    "sharedEdit": "Partagé · Modification",
+    "sharedView": "Partagé · Lecture seule"
   },
   "create": {
     "title": "Créer un rucher",
@@ -27,9 +29,11 @@
     "notFound": "Rucher introuvable",
     "noLocationSpecified": "Aucune localisation spécifiée",
     "tabs": {
-      "overview": "Vue d'ensemble",
+      "overview": "Vue d’ensemble",
       "hives": "Ruches",
-      "location": "Localisation"
+      "location": "Localisation",
+      "seasons": "Saisons",
+      "sharing": "Partage"
     },
     "apiaryInformation": "Informations du rucher",
     "locationMap": "Carte de localisation",
@@ -38,33 +42,35 @@
   },
   "fields": {
     "name": "Nom",
-    "location": "Localisation",
+    "location": "Emplacement",
     "locationDescription": "Description de la localisation",
     "coordinates": "Coordonnées",
     "hivesCount": "Nombre de ruches",
     "latitude": "Latitude",
     "longitude": "Longitude",
-    "notSpecified": "Non spécifié",
+    "notSpecified": "Non renseigné",
     "noLocation": "Aucune localisation",
     "noCoordinates": "Aucune coordonnée"
   },
   "actions": {
     "details": "Détails",
     "refreshData": "Actualiser les données",
-    "exportCSV": "Exporter en CSV",
+    "exportCSV": "Exporter au format CSV",
     "print": "Imprimer la liste des ruchers",
     "share": "Partager la liste des ruchers",
     "dataOptions": "Options des données"
   },
   "messages": {
-    "exportComingSoon": "Fonction d'export bientôt disponible",
-    "shareComingSoon": "Fonction de partage bientôt disponible"
+    "exportComingSoon": "La fonction d'exportation sera bientôt disponible",
+    "shareComingSoon": "La fonction de partage sera bientôt disponible"
   },
   "switcher": {
     "teams": "Équipes",
     "addApiary": "Ajouter un rucher",
     "noApiarySelected": "Aucun rucher sélectionné",
-    "selectOrCreate": "Sélectionner ou créer un rucher"
+    "selectOrCreate": "Sélectionner ou créer un rucher",
+    "allApiaries": "Tous les ruchers",
+    "allApiariesSubtitle": "Affichage de tous les ruchers"
   },
   "map": {
     "selectLocation": "Sélectionner la localisation du rucher",
@@ -89,11 +95,88 @@
     "namePlaceholder": "Nom du rucher",
     "locationPlaceholder": "Description de la localisation",
     "inspectionType": {
-      "label": "",
-      "placeholder": "",
-      "dataDriven": "",
-      "subjective": "",
-      "description": ""
+      "label": "Type d’inspection",
+      "placeholder": "Sélectionner un type d’inspection",
+      "dataDriven": "Basé sur les données",
+      "subjective": "Subjectif",
+      "description": "Le mode « Basé sur les données » utilise le comptage des cadres et une évaluation automatique. Le mode « Subjectif » utilise des évaluations qualitatives de 0 à 10."
+    }
+  },
+  "seasons": {
+    "title": "Saisons",
+    "description": "Définissez les paramètres par défaut applicables toute l’année ainsi que les saisons qui les remplacent. Les ruches héritent de ce calendrier jusqu’à ce qu’elles personnalisent le leur.",
+    "emptyNotice": "Sans saison définie, les ruches de ce rucher utilisent toute l’année l’intervalle d’inspection annuel et n’ont aucun objectif de nourrissement.",
+    "save": "Enregistrer les saisons",
+    "saving": "Enregistrement...",
+    "saveSuccess": "Saisons du rucher enregistrées",
+    "saveError": "Échec de l’enregistrement des saisons du rucher",
+    "validationError": "Impossible d’enregistrer les saisons : vérifiez les chevauchements de dates et les objectifs de nourrissement.",
+    "applyToAll": "Appliquer à toutes les ruches",
+    "saveFirst": "Enregistrez d’abord les saisons, puis appliquez-les aux ruches.",
+    "applySuccess_one": "Saison appliquée à {{count}} ruche",
+    "applySuccess_other": "Saisons appliquées à {{count}} ruches",
+    "applyError": "Échec de l’application des saisons aux ruches",
+    "applyConfirmTitle": "Appliquer les saisons à toutes les ruches ?",
+    "applyConfirmDescription": "Cette opération remplace les saisons propres à chaque ruche ainsi que son intervalle d’inspection annuel dans ce rucher, y compris les anciens paramètres de nourrissement d’automne.",
+    "applyConfirm": "Appliquer à toutes les ruches",
+    "applying": "Application...",
+    "scheduleTitle": "Calendrier",
+    "yearRound": {
+      "title": "Toute l’année",
+      "description": "S’applique à tous les jours qui ne sont couverts par aucune saison.",
+      "inspectionInterval": "Intervalle entre les inspections (jours)",
+      "inspectionIntervalPlaceholder": "Intervalle propre à chaque ruche",
+      "inspectionIntervalHint": "Laissez vide pour conserver l’intervalle propre à chaque ruche."
+    }
+  },
+  "roles": {
+    "EDITOR": "Accès complet",
+    "VIEWER": "Lecture seule"
+  },
+  "join": {
+    "goToDashboard": "Accéder au tableau de bord",
+    "notFound": {
+      "title": "Invitation introuvable",
+      "description": "Ce lien d’invitation a peut-être été révoqué ou n’est pas valide."
+    },
+    "expired": {
+      "title": "Invitation expirée",
+      "description": "Ce lien d’invitation a expiré. Demandez-en un nouveau au responsable du rucher."
+    },
+    "alreadyMember": {
+      "title": "Vous êtes déjà membre",
+      "description": "Vous avez déjà accès à <strong>{{apiaryName}}</strong>."
+    },
+    "requested": {
+      "title": "Demande envoyée !",
+      "description": "Votre demande pour rejoindre <strong>{{apiaryName}}</strong> a été envoyée. Le responsable l’examinera prochainement."
+    },
+    "title": "Rejoindre {{apiaryName}}",
+    "invited": "Vous avez été invité à rejoindre ce rucher avec les autorisations suivantes : <badge>{{role}}</badge>.",
+    "signInPrompt": "Connectez-vous ou créez un compte pour continuer.",
+    "signIn": "Se connecter",
+    "createAccount": "Créer un compte",
+    "requesting": "Envoi de la demande...",
+    "requestToJoin": "Demander à rejoindre",
+    "joinFailed": "Échec de la demande d’adhésion. Veuillez réessayer."
+  },
+  "sharing": {
+    "inviteLinks": {
+      "title": "Liens d’invitation",
+      "createLink": "Créer un lien",
+      "dialogTitle": "Créer un lien d’invitation",
+      "permissionLevel": "Niveau d’autorisation",
+      "viewerHint": "Peut consulter toutes les données, mais ne peut apporter aucune modification.",
+      "editorHint": "Peut créer, modifier et supprimer des ruches, des inspections, etc.",
+      "empty": "Aucun lien d’invitation actif. Créez-en un pour partager ce rucher."
+    },
+    "members": {
+      "title": "Membres",
+      "empty": "Aucun membre pour le moment. Partagez un lien d’invitation pour commencer.",
+      "pending": "Demandes en attente ({{total}})",
+      "active": "Membres actifs ({{total}})",
+      "approve": "Approuver",
+      "reject": "Refuser"
     }
   }
 }
