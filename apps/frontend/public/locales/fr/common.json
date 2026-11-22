@@ -26,12 +26,29 @@
     "files": "Fichiers",
     "calendar": "Calendrier",
     "equipment": "Équipement",
-    "actions": "Actions",
+    "actions": "Ajouts groupés",
     "allQueens": "Toutes les reines",
     "tools": "Outils",
     "syrupCalculator": "Calculateur de sirop",
     "broodTimeline": "Cycle du couvain",
-    "hivehub": "HiveHub"
+    "hivehub": "HiveHub",
+    "todos": "Tâches",
+    "allTodos": "Toutes les tâches",
+    "swarmManagement": "Gestion de l'essaimage",
+    "liebefelder": "Méthode Liebefeld",
+    "varroaManagement": "Lutte contre le varroa",
+    "documentation": "Documentation",
+    "treatmentProducts": "Produits de traitement",
+    "batchInspections": "Inspections groupées",
+    "frameSizes": "Formats de cadres",
+    "media": "Médias",
+    "workerTokens": "Jetons des workers",
+    "userAvatar": "avatar de l'utilisateur",
+    "more": "Plus",
+    "viewProject": "Voir le projet",
+    "shareProject": "Partager le projet",
+    "deleteProject": "Supprimer le projet",
+    "brand": "Hive Pal"
   },
   "actions": {
     "save": "Enregistrer",
@@ -66,7 +83,12 @@
     "newInspection": "Nouvelle inspection",
     "scheduleInspection": "Planifier une inspection",
     "newQueen": "Nouvelle reine",
-    "recentInspections": "Inspections récentes"
+    "recentInspections": "Inspections récentes",
+    "openMenu": "Ouvrir le menu",
+    "deleting": "Suppression...",
+    "tryAgain": "Réessayer",
+    "resolve": "Résoudre",
+    "dismiss": "Ignorer"
   },
   "status": {
     "loading": "Chargement...",
@@ -78,8 +100,8 @@
     "completed": "Terminé",
     "failed": "Échec",
     "active": "Actif",
-    "inactive": "Inactif",
-    "archived": "Archivé"
+    "inactive": "Inactive",
+    "archived": "Archivée"
   },
   "messages": {
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet élément ?",
@@ -160,7 +182,106 @@
     "changePassword": "Modifier le mot de passe de votre compte",
     "saveSettings": "Enregistrer les paramètres",
     "preferencesUpdated": "Vos préférences ont été mises à jour avec succès.",
-    "saving": "Enregistrement..."
+    "saving": "Enregistrement en cours...",
+    "sso": "Authentification unique (SSO)",
+    "linkedAccounts": {
+      "title": "Comptes associés",
+      "description": "Autres comptes que vous pouvez utiliser pour vous connecter à Hive Pal",
+      "linked": "Associé",
+      "notLinked": "Non associé",
+      "link": "Associer",
+      "unlink": "Dissocier",
+      "linkFailed": "Impossible d'associer votre compte {{provider}}",
+      "unlinkFailed": "Impossible de dissocier votre compte {{provider}}"
+    },
+    "firstDayOfWeek": "Premier jour de la semaine",
+    "monday": "Lundi",
+    "sunday": "Dimanche",
+    "timeFormat": "Format de l'heure",
+    "time24h": "24 heures (17:00)",
+    "time12h": "12 heures (5:00 PM)",
+    "newsletter": {
+      "title": "Actualités du produit",
+      "description": "Recevez ponctuellement des e-mails sur les nouveautés de Hive Pal et des conseils apicoles. Les modifications prennent effet immédiatement.",
+      "label": "M'envoyer les actualités du produit",
+      "subscribed": "Vous recevrez les actualités du produit.",
+      "unsubscribed": "Vous ne recevrez plus les actualités du produit.",
+      "updateFailed": "Impossible de modifier vos préférences d'e-mail. Veuillez réessayer."
+    },
+    "passkeys": "Clés d'accès",
+    "passkeysDescription": "Connectez-vous sans mot de passe à l'aide de la biométrie de votre appareil ou d'une clé de sécurité",
+    "passkeyNamePlaceholder": "Nom (ex. : Touch ID du MacBook)",
+    "passkeyAdd": "Ajouter une clé d'accès",
+    "passkeyAdding": "Ajout en cours…",
+    "passkeyRemove": "Supprimer",
+    "passkeyUnnamed": "Clé d'accès sans nom",
+    "passkeyAddedOn": "Ajoutée le {{date}}",
+    "passkeysLoading": "Chargement…",
+    "passkeysEmpty": "Aucune clé d'accès pour le moment.",
+    "passkeysLoadFailed": "Impossible de charger les clés d'accès",
+    "passkeyAddFailed": "Impossible d'ajouter la clé d'accès",
+    "passkeyAddCancelled": "L'enregistrement de la clé d'accès a été annulé ou a échoué",
+    "passkeyDeleteFailed": "Impossible de supprimer la clé d'accès",
+    "failedToSavePreferences": "Impossible d'enregistrer vos préférences. Veuillez réessayer.",
+    "dangerZone": "Zone dangereuse",
+    "dangerZoneDescription": "Actions irréversibles concernant votre compte.",
+    "deleteAccount": "Supprimer le compte",
+    "deleteAccountDescription": "Supprime définitivement votre compte ainsi que tous vos ruchers, ruches, inspections, photos et autres données. Cette opération est irréversible. Exportez d'abord vos données si vous souhaitez en conserver une copie.",
+    "deleteAccountConfirmTitle": "Supprimer votre compte ?",
+    "deleteAccountConfirmDescription": "Cette opération supprimera définitivement votre compte et toutes les données dont vous êtes propriétaire. Les ruchers partagés avec vous par d'autres personnes ne seront pas affectés. Le contenu que vous avez ajouté aux ruchers d'autres personnes sera conservé, mais anonymisé. Cette opération est irréversible.",
+    "deleteAccountExportReminder": "Vous souhaitez conserver une copie ? Exportez vos données avant de supprimer votre compte.",
+    "deleteAccountExportLink": "Exporter mes données",
+    "deleteAccountTypeEmail": "Saisissez votre adresse e-mail {{email}} pour confirmer :",
+    "deleteAccountButton": "Supprimer mon compte",
+    "deleteAccountDeleting": "Suppression du compte...",
+    "accountDeleted": "Votre compte a été supprimé.",
+    "deleteAccountFailed": "Impossible de supprimer le compte. Veuillez réessayer.",
+    "data": {
+      "title": "Données",
+      "description": "Exportez les données de votre compte pour les sauvegarder ou importez-les depuis un export précédent.",
+      "transferTitle": "Exporter et importer",
+      "transferDescription": "Migrez d'une instance à une autre ou conservez vos propres sauvegardes.",
+      "open": "Ouvrir"
+    },
+    "dataTransfer": {
+      "title": "Transfert de données",
+      "description": "Exportez les données de votre compte pour les sauvegarder ou importez un export précédent dans ce compte.",
+      "exportDescription": "Téléchargez une archive ZIP contenant tous les ruchers dont vous êtes propriétaire et leurs données, notamment les photos, les documents et les fichiers audio.",
+      "startExport": "Lancer l'exportation",
+      "exportInProgress": "Exportation en cours…",
+      "importDescription": "Restaurez des données à partir d'une archive ZIP exportée précédemment. L'importation est additive : chaque rucher importé devient un nouvel enregistrement dans votre compte.",
+      "chooseFile": "Choisir un fichier ZIP…",
+      "importInProgress": "Importation en cours…",
+      "recentJobs": "Opérations récentes",
+      "recentJobsDescription": "Les exports restent téléchargeables pendant 7 jours.",
+      "noJobs": "Aucune opération pour le moment.",
+      "columns": {
+        "type": "Type",
+        "status": "Statut",
+        "created": "Date de création",
+        "progress": "Progression"
+      },
+      "failed": "Échec",
+      "expired": "Expiré",
+      "viewSummary": "Voir le récapitulatif",
+      "viewError": "Voir l'erreur",
+      "confirmImportTitle": "Importer des données dans votre compte ?",
+      "confirmImportDescription": "Toutes les données du fichier <bold>{{fileName}}</bold> seront ajoutées à votre compte. L'importation est additive et ne peut pas être annulée automatiquement.",
+      "startImport": "Lancer l'importation",
+      "jobError": "Erreur de l'opération",
+      "importSummary": "Récapitulatif de l'importation",
+      "deleteConfirm": "Supprimer cette opération et le fichier qu'elle contient ?",
+      "toasts": {
+        "exportStarted": "Exportation lancée",
+        "exportStartedDescription": "Votre export est en cours de préparation. Cela peut prendre quelques minutes.",
+        "exportFailed": "Impossible de lancer l'exportation",
+        "importStarted": "Importation lancée",
+        "importStartedDescription": "Vos données sont en cours d'importation. Cela peut prendre quelques minutes.",
+        "importFailed": "Impossible de lancer l'importation",
+        "jobDeleted": "Opération supprimée",
+        "deleteFailed": "Impossible de supprimer l'opération"
+      }
+    }
   },
   "feedback": {
     "title": "Envoyer un retour",
@@ -181,7 +302,11 @@
     "submit": "Envoyer le retour",
     "thankYou": "Merci !",
     "submittedMessage": "Votre retour a bien été envoyé. Nous apprécions votre contribution et l'examinerons bientôt.",
-    "submitAnother": "Envoyer un autre retour"
+    "submitAnother": "Envoyer un autre retour",
+    "toasts": {
+      "submitted": "Merci pour votre commentaire !",
+      "submitFailed": "Impossible d'envoyer le commentaire"
+    }
   },
   "alerts": {
     "alert": "alerte",
@@ -204,7 +329,15 @@
     "dayHeader": "{{date}}",
     "noEvents": "Aucun événement",
     "overdueInspections": "Inspections en retard ({{overdueInspectionsSize}})",
-    "viewInspection": "Voir l'inspection"
+    "viewInspection": "Voir l'inspection",
+    "unknownHive": "Ruche inconnue",
+    "inspectionCount_one": "{{count}} inspection",
+    "inspectionCount_other": "{{count}} inspections",
+    "actionCount_one": "{{count}} action",
+    "actionCount_other": "{{count}} actions",
+    "inspectionOf": "Inspection de <hiveLink>{{hiveName}}</hiveLink>",
+    "actionsList": "Actions : {{types}}",
+    "actionOn": "{{type}} sur <hiveLink>{{hiveName}}</hiveLink>"
   },
   "quickAdd": {
     "title": "Ajouter une entrée",
@@ -228,7 +361,15 @@
     "deleteTitle": "Supprimer la photo ?",
     "deleteDescription": "Cette action est irréversible. Cette photo sera définitivement supprimée.",
     "deleted": "Photo supprimée",
-    "deleteFailed": "Échec de la suppression de la photo"
+    "deleteFailed": "Échec de la suppression de la photo",
+    "replace": "Remplacer",
+    "featurePhoto": "Photo principale",
+    "featureAlt": "Photo de {{name}}",
+    "fileInfo": "{{name}} ({{size}} Mo)",
+    "count_one": "{{count}} photo",
+    "count_other": "{{count}} photos",
+    "lightboxTitle": "Photo",
+    "featurePhotoAlt": "Photo principale"
   },
   "document": {
     "title": "Ajouter un document",
@@ -262,7 +403,25 @@
     "hive": "Ruche",
     "size": "Taille",
     "download": "Télécharger",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+    "audio": "Audio",
+    "status": "Statut",
+    "sendToAi": "Envoyer à l'IA",
+    "sendAllPending": "Tout envoyer à l'IA ({{count}})",
+    "sentToAi": "Traitement IA lancé pour {{count}} enregistrements",
+    "audioStatus": {
+      "notTranscribed": "Non transcrit",
+      "queued": "En file d'attente",
+      "transcribing": "Transcription en cours…",
+      "failed": "Échec de la transcription",
+      "transcribed": "Transcrit",
+      "analyzing": "Analyse en cours…",
+      "analysisFailed": "Échec de l'analyse",
+      "ready": "Suggestions de l'IA disponibles"
+    },
+    "audioDeleteTitle": "Supprimer l'enregistrement audio ?",
+    "audioDeleted": "Fichier audio supprimé",
+    "apiary": "Rucher"
   },
   "quickCheck": {
     "title": "Contrôle rapide",
@@ -270,7 +429,19 @@
     "deleteTitle": "Supprimer le contrôle rapide ?",
     "deleteDescription": "Cette action est irréversible. Ce contrôle rapide et ses photos seront définitivement supprimés.",
     "deleted": "Contrôle rapide supprimé",
-    "deleteFailed": "Échec de la suppression du contrôle rapide"
+    "deleteFailed": "Échec de la suppression du contrôle rapide",
+    "dialogDescription": "Consignez une observation rapide à l'aide d'étiquettes et d'une note facultative.",
+    "note": "Note",
+    "optional": "(facultatif)",
+    "notePlaceholder": "Qu'avez-vous observé ?",
+    "photos": "Photos",
+    "photosOptional": "(facultatif, 5 maximum)",
+    "addPhotos": "Ajouter des photos",
+    "save": "Enregistrer la vérification rapide",
+    "saved": "Vérification rapide enregistrée",
+    "saveFailed": "Échec de l'enregistrement de la vérification rapide",
+    "uploadFailed": "Échec de l'importation de {{name}}",
+    "maxPhotos": "Vous pouvez importer 5 photos maximum. Vous pouvez encore en ajouter {{remaining}}."
   },
   "timeline": {
     "recentActivity": "Activité récente",
@@ -279,7 +450,7 @@
     "noMatchingFilters": "Aucun événement ne correspond aux filtres sélectionnés",
     "allEvents": "Tous les événements",
     "inspections": "Inspections",
-    "feeding": "Nourrissage",
+    "feeding": "Nourrissement",
     "treatments": "Traitements",
     "harvests": "Récoltes",
     "notes": "Notes",
@@ -310,7 +481,36 @@
     "photos": "Photos",
     "documents": "Documents",
     "fromInspection": "À partir de l’inspection",
-    "maintenance": "Maintenance"
+    "maintenance": "Maintenance",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "filterEventType": "Type",
+    "filterDateRange": "Période",
+    "filterHive": "Ruche",
+    "undoSplit": "Annuler la division",
+    "actionLabel": {
+      "feeding": "Nourrissement",
+      "fed": "{{amount}} de {{feed}} distribués{{extra}}",
+      "sugarEquivalent": " (≈ {{kg}} kg de sucre)",
+      "treatment": "Traitement",
+      "treatedWith": "Traité avec {{product}} ({{quantity}} {{unit}})",
+      "frameManagement": "Gestion des cadres",
+      "addedFrames_one": "{{count}} cadre ajouté",
+      "addedFrames_other": "{{count}} cadres ajoutés",
+      "harvest": "Récolte",
+      "harvested": "Récolte de {{amount}} {{unit}}",
+      "note": "Note",
+      "statusChange": "Changement de statut",
+      "statusChangedTo": "Statut passé à {{to}}",
+      "statusChangedFromTo": "Statut passé de {{from}} à {{to}}",
+      "split": "Division de colonie",
+      "splitSource_one": "Division de colonie : {{count}} cadre de couvain donné à une nouvelle colonie",
+      "splitSource_other": "Division de colonie : {{count}} cadres de couvain donnés à une nouvelle colonie",
+      "splitTarget_one": "Division de colonie : créée avec {{count}} cadre de couvain",
+      "splitTarget_other": "Division de colonie : créée avec {{count}} cadres de couvain",
+      "cleaned": "{{component}} nettoyé",
+      "replaced": "{{component}} remplacé"
+    }
   },
   "reports": {
     "title": "Rapports",
@@ -332,10 +532,15 @@
       "population": "Population",
       "stores": "Réserves",
       "queen": "Reine",
-      "lastInspection": "Dernière inspection"
+      "lastInspection": "Dernière inspection",
+      "kgValue": "{{value}} kg"
     },
     "charts": {
-      "hiveScoreTrends": "Tendances des scores des ruches"
+      "hiveScoreTrends": "Tendances des scores des ruches",
+      "sugarKg": "Sucre (kg)",
+      "honeyKg": "Miel (kg)",
+      "noInspectionData": "Aucune donnée d'inspection disponible pour la période sélectionnée",
+      "scoreType": "Type de score :"
     },
     "periods": {
       "1month": "1 mois",
@@ -346,7 +551,8 @@
       "all": "Depuis toujours"
     },
     "filters": {
-      "period": "Période"
+      "period": "Période",
+      "selectPeriod": "Sélectionner une période"
     },
     "export": {
       "title": "Exporter",
@@ -360,7 +566,11 @@
       "viewReports": "Voir les rapports",
       "apiaryDetails": "Détails du rucher",
       "noApiary": "Sélectionnez un rucher pour voir les statistiques"
-    }
+    },
+    "treatmentTotals": "Substances actives appliquées (tous produits confondus)",
+    "treatmentTotalsEmpty": "Aucun traitement enregistré pour cette période.",
+    "feedingTotalsDescription": "Quantité totale de sucre distribuée par ruche (kg)",
+    "honeyProductionDescription": "Quantité totale de miel récoltée par ruche (kg)"
   },
   "syrupCalculator": {
     "title": "Calculateur de sirop",
@@ -391,7 +601,74 @@
     "tip3Title": "Sirop épais (2:1)",
     "tip3Description": "Idéal pour le nourrissement d’automne afin de constituer les réserves hivernales. Les abeilles peuvent le stocker rapidement avec moins d’effort pour évaporer l’excès d’eau.",
     "tip4Title": "Conseils généraux",
-    "tip4Description": "Utilisez toujours du sucre blanc en poudre — jamais de sucre brun, de mélasse ou d’édulcorants artificiels. Ne faites pas bouillir le sirop, car cela peut produire du HMF (hydroxyméthylfurfural), toxique pour les abeilles. Nourrissez de préférence le soir pour limiter le pillage."
+    "tip4Description": "Utilisez toujours du sucre blanc en poudre — jamais de sucre brun, de mélasse ou d’édulcorants artificiels. Ne faites pas bouillir le sirop, car cela peut produire du HMF (hydroxyméthylfurfural), toxique pour les abeilles. Nourrissez de préférence le soir pour limiter le pillage.",
+    "intro": "Calculateur gratuit de sirop de sucre pour les apiculteurs. Utilisez un sirop 1:1 (liquide) pour stimuler la ponte au printemps, un sirop 3:2 (moyen) comme nourrissement polyvalent et un sirop 2:1 (épais) à l'automne pour constituer les réserves hivernales. Choisissez la taille du récipient et le ratio : les poids exacts de sucre et d'eau sont calculés en tenant compte du déplacement de volume dû au saccharose, afin que le sirop obtenu remplisse votre récipient.",
+    "units": "Unités",
+    "unitsDescription": "Basculer entre les unités métriques et impériales",
+    "metric": "Métrique (L, g, kg)",
+    "imperial": "Impérial (qt, gal, lb)",
+    "faq": {
+      "title": "Questions fréquentes",
+      "items": [
+        {
+          "question": "Quel ratio sucre/eau utiliser pour nourrir les abeilles ?",
+          "answer": "Utilisez un sirop 1:1 (parts égales de sucre et d'eau en poids) au printemps pour stimuler l'élevage du couvain, un sirop 3:2 comme nourrissement polyvalent et un sirop 2:1 (deux parts de sucre pour une part d'eau) à l'automne pour constituer les réserves hivernales. Le sirop épais est plus facile à transformer en réserves operculées ; le sirop fluide imite une miellée."
+        },
+        {
+          "question": "Quand faut-il nourrir les abeilles avec un sirop fluide (1:1) ?",
+          "answer": "Distribuez du sirop 1:1 au printemps ou chaque fois que vous souhaitez stimuler l'élevage du couvain. Sa teneur en eau imite celle d'un nectar naturel, ce qui encourage la reine à pondre et la colonie à se développer."
+        },
+        {
+          "question": "Quand faut-il nourrir les abeilles avec un sirop épais (2:1) ?",
+          "answer": "Distribuez du sirop 2:1 à la fin de l'été et en automne pour aider les colonies à constituer leurs réserves hivernales. Sa plus faible teneur en eau réduit l'énergie nécessaire aux abeilles pour l'évaporer avant l'operculation."
+        },
+        {
+          "question": "Puis-je utiliser du sucre roux, du miel ou de la mélasse pour préparer du sirop pour les abeilles ?",
+          "answer": "Non. Utilisez uniquement du sucre blanc cristallisé de canne ou de betterave. Le sucre roux, la mélasse et les édulcorants non raffinés contiennent des composés susceptibles de provoquer la dysenterie chez les abeilles. Le miel de provenance inconnue peut également transmettre des maladies."
+        },
+        {
+          "question": "Faut-il faire bouillir le sirop de sucre destiné aux abeilles ?",
+          "answer": "Non. Faites chauffer l'eau juste assez pour dissoudre le sucre, mais ne la faites pas bouillir. L'ébullition du sirop de sucre produit de l'hydroxyméthylfurfural (HMF), qui est toxique pour les abeilles."
+        },
+        {
+          "question": "Quelle quantité de sucre faut-il pour préparer un litre de sirop 1:1 ?",
+          "answer": "Pour obtenir un litre de sirop 1:1, il faut environ 613 g d'eau et 613 g de sucre blanc cristallisé. Les quantités exactes dépendent du ratio et du volume final : ce calculateur les détermine en tenant compte du déplacement de volume dû au saccharose."
+        }
+      ]
+    },
+    "meta": {
+      "title": "Calculateur de sirop de sucre pour apiculteurs — Hive Pal",
+      "description": "Calculateur gratuit de sirop de sucre pour apiculteurs. Calculez précisément les quantités de sucre et d'eau pour des sirops 1:1, 3:2 ou 2:1, quelle que soit la taille du récipient, en unités métriques ou impériales.",
+      "ogDescription": "Calculateur gratuit de sirop de sucre pour abeilles. Obtenez les quantités précises de sucre et d'eau pour des ratios 1:1, 3:2 ou 2:1, quelle que soit la taille du récipient.",
+      "appName": "Calculateur de sirop de sucre",
+      "appDescription": "Calculateur gratuit de sirop de nourrissement pour abeilles. Calcule précisément les quantités de sucre et d'eau pour des ratios 1:1, 3:2 ou 2:1, quelle que soit la taille du récipient, en unités métriques ou impériales.",
+      "howTo": {
+        "name": "Comment préparer du sirop de sucre pour les abeilles",
+        "description": "Recette pas à pas pour préparer du sirop de sucre 1:1, 3:2 ou 2:1 destiné au nourrissement des abeilles, avec calcul des quantités de sucre et d'eau selon le volume du récipient.",
+        "steps": [
+          {
+            "name": "Mesurer l'eau",
+            "text": "Mesurez {{water}} d'eau ({{waterWeight}})."
+          },
+          {
+            "name": "Faire tiédir l'eau",
+            "text": "Faites chauffer l'eau jusqu'à ce qu'elle soit tiède (sans la faire bouillir)."
+          },
+          {
+            "name": "Ajouter le sucre",
+            "text": "Ajoutez {{sugar}} de sucre blanc cristallisé."
+          },
+          {
+            "name": "Remuer jusqu'à dissolution",
+            "text": "Remuez jusqu'à dissolution complète du sucre."
+          },
+          {
+            "name": "Laisser refroidir avant distribution",
+            "text": "Laissez le sirop refroidir à température ambiante avant de le distribuer."
+          }
+        ]
+      }
+    }
   },
   "broodTimeline": {
     "title": "Cycle de développement du couvain",
@@ -406,7 +683,7 @@
     "dateSelectorDescription": "Sélectionnez éventuellement la date de ponte des œufs pour afficher les dates du calendrier sur la chronologie",
     "pickDate": "Choisissez une date",
     "timeline": "Cycle de développement",
-    "totalDays": "Total: {{days}} jours",
+    "totalDays": "Total : {{days}} jours",
     "daysUnit": "jours",
     "stage": {
       "egg": "Oeuf",
@@ -438,695 +715,1262 @@
     "fact3Title": "Le stade de l’œuf",
     "fact3Description": "Les trois castes partagent le même stade d’œuf de 3 jours. La reine pond chaque œuf verticalement dans la cellule ; il s’incline progressivement avant l’éclosion.",
     "fact4Title": "Période d’operculation",
-    "fact4Description": "Les ouvrières operculent les cellules royales au 8eme jour, les cellules d’ouvrières au 9eme jour et celles des faux-bourdons au 10eme jour. L’observation des cellules operculées permet d’identifier ce qui s’y développe."
+    "fact4Description": "Les ouvrières operculent les cellules royales au 8eme jour, les cellules d’ouvrières au 9eme jour et celles des faux-bourdons au 10eme jour. L’observation des cellules operculées permet d’identifier ce qui s’y développe.",
+    "intro": "Visualisez le développement du couvain d'abeille, de l'œuf à l'adulte. Les reines émergent en 16 jours, les ouvrières en 21 jours et les mâles en 24 jours, selon quatre stades : œuf, larve, nymphe et adulte. Choisissez une date de départ pour prévoir les dates d'operculation et d'émergence et planifier vos inspections.",
+    "faq": {
+      "title": "Questions fréquentes",
+      "items": [
+        {
+          "question": "Combien de temps faut-il à une abeille pour se développer ?",
+          "answer": "Les reines émergent après 16 jours, les ouvrières après 21 jours et les mâles après 24 jours. Les trois castes passent par quatre stades — œuf (3 jours), larve, nymphe et adulte — mais la durée des stades larvaire et nymphal varie selon la caste."
+        },
+        {
+          "question": "Quand les cellules de couvain d'ouvrières sont-elles operculées ?",
+          "answer": "Les cellules de couvain d'ouvrières sont operculées au 9e jour, lorsque la larve tisse son cocon et entre au stade nymphal. Les ouvrières émergent au 21e jour."
+        },
+        {
+          "question": "Quand les cellules royales sont-elles operculées et quand les reines émergent-elles ?",
+          "answer": "Les cellules royales sont operculées au 8e jour et les reines vierges émergent au 16e jour après la ponte. Les reines se développent plus rapidement parce qu'elles sont nourries à la gelée royale pendant toute la durée du stade larvaire."
+        },
+        {
+          "question": "Combien de temps faut-il aux mâles pour émerger ?",
+          "answer": "Les mâles mettent 24 jours entre la ponte et l'émergence, soit la durée la plus longue de toutes les castes. Leurs cellules sont operculées vers le 10e jour."
+        }
+      ]
+    },
+    "meta": {
+      "title": "Cycle de développement du couvain d'abeille — Hive Pal",
+      "description": "Cycle gratuit de développement du couvain des reines, ouvrières et mâles. Visualisez chaque stade (œuf, larve, nymphe, adulte) avec sa durée en jours et prévoyez les dates d'operculation ou d'émergence à partir de n'importe quelle date de départ.",
+      "ogDescription": "Visualisez les stades de développement du couvain des reines, ouvrières et mâles, avec leurs durées et les dates prévisionnelles.",
+      "appName": "Cycle de développement du couvain d'abeille",
+      "appDescription": "Visualisez les étapes du développement du couvain (œuf, larve, nymphe, adulte) chez les reines, les ouvrières et les mâles. Prévoyez les dates d'operculation et d'émergence à partir d'une date de départ."
+    }
   },
   "swarmManagement": {
-    "backToOverview": "Back to Swarm Management",
-    "eyebrow": "Swarm control guidance",
-    "title": "Swarm Management",
+    "backToOverview": "Retour à la gestion de l'essaimage",
+    "eyebrow": "Conseils pour maîtriser l'essaimage",
+    "title": "Gestion de l'essaimage",
     "cards": {
-      "available": "Available",
-      "comingSoon": "Coming soon",
-      "placeholderCta": "Not available yet",
+      "available": "Disponible",
+      "comingSoon": "Disponible bientôt",
+      "placeholderCta": "Pas encore disponible",
       "demaree": {
-        "title": "Demaree Method",
-        "description": "A swarm-control method that separates the queen from most brood, reducing congestion while keeping the colony strong and productive.",
-        "detail": "Review the method, generate a follow-up plan, and save the checkpoints as scheduled inspections.",
-        "cta": "Open guide"
+        "title": "Méthode Demaree",
+        "description": "Une méthode de gestion de l'essaimage qui sépare la reine de la majeure partie du couvain. Elle permet de limiter l'encombrement de la ruche tout en maintenant une colonie forte et productive.",
+        "detail": "Consultez la méthode, générez un plan de suivi et enregistrez les étapes comme inspections planifiées.",
+        "cta": "Ouvrir le guide"
       },
       "pagden": {
-        "title": "Pagden split",
-        "description": "Placeholder for a future guide covering the classic artificial swarm split.",
-        "detail": "",
-        "cta": ""
+        "title": "Division Pagden",
+        "description": "Méthode classique d'essaimage artificiel. Déplacez la reine d'origine dans une nouvelle ruche à l'emplacement initial afin de maîtriser l'instinct d'essaimage tout en préservant la force de la colonie.",
+        "detail": "Consultez la méthode, générez un plan de suivi et enregistrez les étapes comme inspections planifiées.",
+        "cta": "Ouvrir le guide"
       },
       "artificialSwarm": {
-        "title": "Artificial swarm",
-        "description": "Placeholder for a future guide focused on moving flying bees and brood apart.",
-        "detail": "",
-        "cta": ""
+        "title": "Essaim artificiel",
+        "description": "Variante dans laquelle la reine reste dans la colonie souche. Déplacez dans une nouvelle ruche, à l'emplacement initial, un cadre portant une cellule royale : cette méthode est utile lorsque la reine est introuvable.",
+        "detail": "Consultez la méthode, générez un plan de suivi et enregistrez les étapes comme inspections planifiées.",
+        "cta": "Ouvrir le guide"
       }
     },
     "aside": {
-      "title": "Choosing a method",
-      "description": "Use this section to compare swarm-control approaches and pick the one that fits your hive setup, labour rhythm, and management style.",
+      "title": "Choisir une méthode",
+      "description": "Utilisez cette section pour comparer les différentes méthodes de gestion de l'essaimage et choisir celle qui convient à la configuration de vos ruches, à votre rythme de travail et à votre façon de gérer vos colonies.",
       "points": [
-        "Start with a method whose follow-up schedule you can reliably meet during the swarm season.",
-        "Prefer techniques that match your preferred brood arrangement, available equipment, and comfort finding queens quickly.",
-        "Once you choose a method, open its guide page for the step-by-step reference and planning tools."
+        "Commencez par une méthode dont vous pourrez respecter le calendrier des visites de suivi pendant la période d'essaimage.",
+        "Privilégiez les techniques adaptées à l'organisation du nid à couvain que vous préférez, au matériel dont vous disposez et à votre aisance à repérer rapidement les reines.",
+        "Une fois votre méthode choisie, ouvrez la page du guide correspondant pour consulter les instructions étape par étape et accéder aux outils de planification."
       ],
-      "criticalTimingTitle": "Critical timing",
-      "criticalTimingLead": "The first follow-up is the point where timing matters most.",
-      "criticalTimingDetail": "If that queen-cell check slips beyond the recommended window, cells may be close to emergence and the colony can quickly return to swarm mode."
+      "criticalTimingTitle": "Périodes clés",
+      "criticalTimingLead": "C'est lors de la première visite de suivi que le respect du calendrier est le plus important.",
+      "criticalTimingDetail": "Si cette vérification des cellules royales est effectuée au-delà de la période recommandée, les reines peuvent être proches de leur émergence et la colonie peut rapidement retrouver une dynamique d'essaimage."
     },
     "demaree": {
-      "badge": "Reference method",
-      "title": "Demaree Method",
-      "description": "A reference Demaree workflow for strong colonies showing swarm pressure, with practical follow-up timing built into an inspection planner.",
-      "overviewTitle": "Method overview",
-      "overviewLead": "Use the Demaree method when the colony is strong, the queen is laying well, and you want to ease swarm pressure without breaking the production colony into separate units.",
+      "badge": "Méthode de référence",
+      "title": "Méthode Demaree",
+      "description": "Un déroulement de référence de la méthode Demaree pour les colonies fortes présentant des signes de préparation à l'essaimage, avec un calendrier pratique des visites de suivi intégré à un planificateur d'inspections.",
+      "overviewTitle": "Présentation de la méthode",
+      "overviewLead": "Utilisez la méthode Demaree lorsque la colonie est forte, que la reine pond activement et que vous souhaitez réduire la pression d'essaimage sans diviser la colonie de production en plusieurs colonies.",
       "overviewPoints": [
-        "Read through the full method before opening the hive, then carry it out consistently so the brood moves, box order, and flying-bee return pattern all support the same plan.",
-        "Keep the laying queen below the excluder with room to continue laying, move most brood above, and give the colony space upward so congestion does not rebuild immediately.",
-        "Once the initial setup is finished, generate the follow-up plan from the actual setup date and treat the warning banners as prompts to review your timing, especially around the day 7 to 8 queen-cell check."
+        "Lisez l'intégralité de la méthode avant d'ouvrir la ruche, puis appliquez-la de manière cohérente afin que le déplacement du couvain, la disposition des corps de ruche et le retour des butineuses contribuent tous au même objectif.",
+        "Maintenez la reine pondeuse sous la grille à reine, en lui laissant suffisamment de place pour poursuivre sa ponte. Placez la majeure partie du couvain au-dessus et donnez de l'espace supplémentaire à la colonie vers le haut afin d'éviter que l'encombrement ne se reconstitue trop rapidement.",
+        "Une fois la mise en place initiale terminée, générez le plan de suivi à partir de la date réelle de mise en place. Considérez les bandeaux d'avertissement comme des invitations à revoir votre calendrier, en particulier pour la vérification des cellules royales prévue entre le 7e et le 8e jour."
       ],
-      "prerequisitesTitle": "Prerequisites",
+      "prerequisitesTitle": "Prérequis",
       "prerequisites": [
-        "Check that the hive is a strong colony with enough bees and brood to justify the method.",
-        "Confirm there is clear swarm pressure, such as congestion, charged queen cells, or a colony building hard into the flow.",
-        "Make sure you can find and confidently retain the laying queen in the lower brood box.",
-        "Have a queen excluder ready, with at least two honey supers available to stack above it.",
-        "Prepare a spare brood box with drawn comb so the colony can be rearranged without leaving the queen cramped.",
-        "Choose a settled weather window so the colony can reorganise without a prolonged interruption."
+        "Vérifiez que la colonie est suffisamment forte et dispose d'assez d'abeilles et de couvain pour justifier le recours à cette méthode.",
+        "Confirmez la présence de signes manifestes de préparation à l'essaimage, tels qu'un encombrement de la ruche, des cellules royales amorcées et approvisionnées, ou une colonie qui se développe très rapidement pendant la miellée.",
+        "Assurez-vous de pouvoir repérer la reine pondeuse et de la maintenir dans le corps inférieur de la ruche.",
+        "Préparez une grille à reine ainsi qu'au moins deux hausses à placer au-dessus.",
+        "Préparez un corps de ruche supplémentaire équipé de cadres bâtis afin de pouvoir réorganiser la colonie sans restreindre l'espace disponible pour la ponte de la reine.",
+        "Choisissez une période de météo stable afin que la colonie puisse se réorganiser sans interruption prolongée."
       ],
-      "stepsTitle": "Method Detail",
-      "stepsDescription": "If unexpected queen cells are found during an inspection follow the steps below",
+      "stepsTitle": "Détail de la méthode",
+      "stepsDescription": "Si vous découvrez des cellules royales inattendues lors d'une inspection, suivez les étapes ci-dessous",
       "methodDetail": {
         "preparation": {
-          "title": "Preparation",
+          "title": "Préparation",
           "items": [
             {
-              "text": "Find a spare brood box with foundation or drawn comb.",
+              "text": "Préparez un corps de ruche supplémentaire équipé de cadres avec des feuilles de cire gaufrée ou des rayons déjà bâtis.",
               "children": [
-                "Using foundation may reduce honey crop as the bees will use a lot of stores for wax generation."
+                "L'utilisation de feuilles de cire gaufrée peut réduire la récolte de miel, car les abeilles consommeront une part importante de leurs réserves pour produire de la cire et bâtir les rayons."
               ]
             },
             {
-              "text": "Move the brood box(es) off the hive floor and place the new empty box at the bottom."
+              "text": "Retirez le ou les corps de ruche du plancher, puis placez le nouveau corps vide directement sur celui-ci."
             }
           ]
         },
         "huntTheQueen": {
-          "title": "Hunt the Queen",
+          "title": "Repérer la reine",
           "items": [
             {
-              "text": "Inspect the old brood box(es) and locate the Queen."
+              "text": "Inspectez le ou les anciens corps de ruche pour y repérer la reine."
             },
             {
-              "text": "Take her and the frame she was found on and place it in the centre of the new box, removing any queen cells that are on that frame."
+              "text": "Prenez la reine avec le cadre sur lequel vous l'avez trouvée et placez l'ensemble au centre du nouveau corps de ruche, après avoir supprimé toutes les cellules royales présentes sur ce cadre."
             }
           ]
         },
         "broodManipulation": {
-          "title": "Brood Manipulation",
+          "title": "Réorganisation du couvain",
           "items": [
             {
-              "text": "If using double brood, manipulate the frames so that all brood is in a single box.",
+              "text": "Si vous travaillez avec deux corps de ruche, réorganisez les cadres afin de regrouper tout le couvain dans un seul corps.",
               "children": [
-                "If there are more than will fit, add the remainder to the bottom box with the queen and redistribute the empty frames."
+                "S'il y a plus de cadres de couvain que le corps ne peut en contenir, placez les cadres restants dans le corps inférieur avec la reine, puis répartissez les cadres vides."
               ]
             },
             {
-              "text": "Make sure to knock down all queen cells.",
+              "text": "Veillez à détruire toutes les cellules royales.",
               "children": [
-                "With the queen safe you can shake bees off the frames to make sure you find them all."
+                "Une fois la reine mise à l'abri, vous pouvez secouer les abeilles de chaque cadre afin de repérer toutes les cellules royales."
               ]
             },
             {
-              "text": "(Double Brood) - You should now have three brood boxes.",
+              "text": "(Conduite en double corps) — Vous devriez maintenant avoir trois corps de ruche.",
               "children": [
-                "Box with the queen, mostly empty directly on the hive floor.",
-                "Box with no brood - place this on top of the queen to retain double brood status.",
-                "Box with all the brood - keep this aside for now."
+                "Corps de ruche contenant la reine, presque vide, directement posé sur le plancher de la ruche.",
+                "Corps de ruche sans couvain — placez-le au-dessus de celui contenant la reine afin de conserver la conduite en double corps.",
+                "Corps de ruche contenant tout le couvain — mettez-le de côté pour le moment."
               ]
             }
           ]
         },
         "reassembly": {
-          "title": "Reassembly",
+          "title": "Remontage de la ruche",
           "items": [
             {
-              "text": "Put the queen excluder on top of the new brood boxes."
+              "text": "Placez la grille à reine au-dessus des nouveaux corps de ruche."
             },
             {
-              "text": "Add the supers (minimum 2, add extra if more space is required)."
+              "text": "Ajoutez les hausses (au moins deux, et davantage si nécessaire)."
             },
             {
-              "text": "Place an additional queen excluder over the supers."
+              "text": "Placez une deuxième grille à reine au-dessus des hausses."
             },
             {
-              "text": "The box with all the brood now goes on top of the supers."
+              "text": "Placez maintenant le corps de ruche contenant tout le couvain au-dessus des hausses."
             },
             {
-              "text": "Fit crown board and roof and the job is done."
+              "text": "Placez le couvre-cadres, puis le toit. La manipulation est terminée."
             }
           ]
         }
       },
-      "advantagesTitle": "Why the method works",
-      "advantagesDescription": "The Demaree method relieves swarm pressure by redistributing brood and flying bees without splitting the colony into separate working units.",
+      "advantagesTitle": "Pourquoi cette méthode fonctionne",
+      "advantagesDescription": "La méthode Demaree réduit la pression d'essaimage en redistribuant le couvain et les abeilles butineuses, sans diviser la colonie en plusieurs unités distinctes.",
       "advantages": [
-        "The queen keeps laying in the lower box while the upper brood area loses the support pattern that usually feeds swarm preparation.",
-        "Flying bees continue to return to the original stand, which helps maintain activity below and reduces congestion in the brood moved upward.",
-        "Because the colony stays together, the method can preserve honey-gathering momentum better than a full artificial split."
+        "La reine continue de pondre dans le corps inférieur, tandis que la zone de couvain supérieure perd la dynamique qui favorise habituellement la préparation à l'essaimage.",
+        "Les abeilles butineuses continuent de revenir à l'emplacement initial de la ruche, ce qui contribue à maintenir l'activité dans le corps inférieur et à réduire l'encombrement dans le couvain déplacé vers le haut.",
+        "Comme la colonie reste réunie, cette méthode peut mieux préserver la dynamique de récolte du miel qu'une division artificielle complète."
       ],
-      "followUpTitle": "Follow-up timing",
+      "followUpTitle": "Calendrier des visites de suivi",
       "followUpDayHeader": "Day",
-      "followUpTaskHeader": "Task",
+      "followUpTaskHeader": "Tâche",
       "followUp": [
         {
           "day": "Day 7-8",
-          "task": "Inspect the brood-above-super box for queen cells and remove any that have been started."
+          "task": "Inspectez le corps de ruche contenant le couvain, placé au-dessus des hausses, afin de repérer les cellules royales et de détruire celles qui sont amorcées."
         },
         {
           "day": "Day 14-15",
-          "task": "Review again for any late-started queen cells and confirm the brood arrangement still supports the Demaree setup."
+          "task": "Inspectez à nouveau la ruche pour repérer d'éventuelles cellules royales apparues tardivement et vérifiez que la disposition du couvain respecte toujours le dispositif Demaree."
         },
         {
           "day": "Day 21-22",
-          "task": "Carry out a final review to decide whether the colony can be normalised or still needs close swarm-pressure monitoring."
+          "task": "Effectuez une dernière vérification pour déterminer si la colonie peut reprendre une conduite normale ou si elle nécessite encore une surveillance étroite des signes de préparation à l'essaimage."
         }
       ],
-      "prosConsTitle": "Pros and Cons",
-      "prosTitle": "Advantages",
-      "consTitle": "Disadvantages",
+      "prosConsTitle": "Avantages et inconvénients",
+      "prosTitle": "Avantages",
+      "consTitle": "Inconvénients",
       "pros": [
-        "Works well as a swarm control method.",
-        "Can be used for queen-right cell raising when queen rearing, without the need to set up another colony.",
-        "Comb renewal is simple.",
-        "Good brood combs can be drawn out in the top box.",
-        "The effect is similar to an artificial swarm, but the colony is kept together."
+        "Fonctionne bien comme méthode de gestion de l'essaimage.",
+        "Peut également être utilisée pour l'élevage de cellules royales en présence de la reine, sans avoir besoin de constituer une autre colonie.",
+        "Le renouvellement des rayons est simple.",
+        "Les abeilles peuvent bâtir de beaux rayons de couvain dans le corps supérieur.",
+        "L'effet est similaire à celui d'un essaim artificiel, mais la colonie reste réunie."
       ],
       "cons": [
-        "As with other swarm control methods one queen cell missed in the top box may result in a swarm.",
-        "Large colonies result, so probably not a good method for beginners as bees need to be shaken off all combs.",
-        "There may be heavy lifting.",
-        "Regular inspections are essential.",
-        "You MUST understand the basics."
-      ]
+        "Comme avec les autres méthodes de gestion de l'essaimage, une seule cellule royale oubliée dans le corps supérieur peut suffire à provoquer un essaimage.",
+        "Les colonies deviennent très populeuses. Cette méthode n'est donc probablement pas adaptée aux débutants, car il faut secouer les abeilles de tous les cadres.",
+        "Certaines manipulations peuvent nécessiter de soulever des charges lourdes.",
+        "Des inspections régulières sont indispensables.",
+        "Vous DEVEZ maîtriser les bases."
+      ],
+      "intro": "La méthode Demaree est une technique classique de maîtrise de l'essaimage destinée aux colonies fortes. Elle permet de réduire la congestion sans diviser la colonie. La reine reste sous une grille à reine, avec des rayons disponibles pour pondre ; la majeure partie du couvain est déplacée au-dessus de deux hausses à miel, ce qui sépare la zone de couvain de la piste de phéromones de la reine. Effectuez des contrôles vers les jours 7–8, 14–15 et 21–22 afin de détruire les cellules royales de sauveté avant leur émergence.",
+      "faq": {
+        "title": "Questions fréquentes",
+        "items": [
+          {
+            "question": "Qu'est-ce que la méthode Demaree ?",
+            "answer": "La méthode Demaree est une technique classique de maîtrise de l'essaimage qui sépare verticalement la reine pondeuse de la majeure partie du couvain au sein d'une même ruche. La reine reste sous une grille à reine, sur des rayons en grande partie vides ; le couvain est déplacé au-dessus de deux hausses à miel ou plus. La colonie reste ainsi unie tandis que la pression d'essaimage diminue."
+          },
+          {
+            "question": "Quand utiliser la méthode Demaree ?",
+            "answer": "Utilisez la méthode Demaree avec des colonies fortes qui présentent une pression d'essaimage manifeste — forte congestion, cellules royales chargées ou développement intense pendant une miellée — lorsque vous souhaitez conserver la colonie entière plutôt que la diviser."
+          },
+          {
+            "question": "Quand inspecter la ruche après la mise en place d'un dispositif Demaree ?",
+            "answer": "Inspectez la ruche aux jours 7–8, 14–15 et 21–22 après la mise en place. Le contrôle des jours 7–8 est le plus important : les cellules royales de sauveté amorcées pendant la préparation à l'essaimage doivent être détruites avant leur émergence, vers les jours 14 à 16."
+          },
+          {
+            "question": "La méthode Demaree crée-t-elle une division ou un nucléus séparé ?",
+            "answer": "Non. Contrairement à l'essaim artificiel ou à la division Pagden, la méthode Demaree conserve toutes les abeilles dans une seule ruche. La colonie reste une unité fonctionnelle, ce qui permet souvent de mieux préserver la dynamique de récolte du miel qu'une division."
+          },
+          {
+            "question": "Quel matériel faut-il pour appliquer la méthode Demaree ?",
+            "answer": "Il vous faut une grille à reine (parfois deux), un corps de couvain supplémentaire avec des rayons bâtis ou des cadres gaufrés, ainsi qu'au moins deux hausses à miel à placer entre la reine et le couvain déplacé."
+          },
+          {
+            "question": "Quel est le principal risque de la méthode Demaree ?",
+            "answer": "Le principal risque est d'oublier une cellule royale dans le corps supérieur lors du contrôle des jours 7–8 : la colonie peut encore essaimer si une reine vierge émerge au-dessus de la grille à reine. Secouer les abeilles de chaque cadre de couvain aide à repérer toutes les cellules."
+          }
+        ]
+      },
+      "meta": {
+        "title": "Méthode Demaree : guide et planificateur de maîtrise de l'essaimage — Hive Pal",
+        "description": "Guide de référence gratuit et planificateur d'inspections pour la méthode Demaree de maîtrise de l'essaimage. Prérequis, instructions pas à pas, calendrier de suivi et avantages/inconvénients pour les apiculteurs.",
+        "ogDescription": "Méthode Demaree pas à pas pour maîtriser l'essaimage des abeilles, avec calendrier de suivi et planificateur d'inspections.",
+        "appName": "Guide et planificateur de la méthode Demaree",
+        "appDescription": "Guide de référence et planificateur d'inspections pour la méthode Demaree, avec prérequis, instructions pas à pas, avantages, inconvénients et calendrier de suivi.",
+        "howTo": {
+          "name": "Comment appliquer la méthode Demaree pour maîtriser l'essaimage",
+          "description": "Procédure Demaree pas à pas pour réduire la pression d'essaimage dans une colonie forte sans la diviser.",
+          "steps": [
+            {
+              "name": "Préparation",
+              "text": "Placez un corps de couvain supplémentaire contenant des rayons bâtis ou des cadres gaufrés sous le corps de couvain existant, sur le plancher de la ruche."
+            },
+            {
+              "name": "Rechercher la reine",
+              "text": "Trouvez la reine pondeuse, placez-la avec le cadre sur lequel elle se trouve au centre du nouveau corps inférieur et retirez toutes les cellules royales présentes sur ce cadre."
+            },
+            {
+              "name": "Réorganisation du couvain",
+              "text": "Regroupez les cadres de couvain dans le corps supérieur et détruisez toutes les cellules royales. Secouez les abeilles des cadres pour ne manquer aucune cellule."
+            },
+            {
+              "name": "Remontage de la ruche",
+              "text": "Empilez une grille à reine, deux hausses à miel ou plus, une deuxième grille à reine et le corps contenant le couvain. Remettez le couvre-cadres et le toit."
+            },
+            {
+              "name": "Suivi aux jours 7–8",
+              "text": "Inspectez le corps supérieur à la recherche de cellules royales de sauveté et détruisez celles qui ont été amorcées."
+            },
+            {
+              "name": "Suivi aux jours 14–15",
+              "text": "Recherchez les cellules royales amorcées tardivement et vérifiez que l'organisation du couvain correspond toujours au dispositif Demaree."
+            },
+            {
+              "name": "Suivi aux jours 21–22",
+              "text": "Effectuez un dernier contrôle et déterminez si la colonie peut retrouver une organisation normale ou si elle nécessite encore une surveillance rapprochée."
+            }
+          ]
+        }
+      }
     },
     "planner": {
-      "title": "Demaree inspection planner",
-      "description": "Generate the standard checkpoints, adjust dates if needed, and save them as scheduled inspections for one hive.",
-      "hiveLabel": "Hive",
-      "hivePlaceholder": "Select a hive",
-      "startDateLabel": "Demaree setup date",
-      "startDatePlaceholder": "Pick the setup date",
-      "generate": "Generate checkpoints",
-      "selectedHive": "Selected hive",
-      "emptyState": "Choose a hive and setup date, then generate the follow-up checkpoints.",
-      "notesLabel": "Inspection notes",
-      "notesChecklistLabel": "Checklist",
-      "checkpointPrefix": "Demaree checkpoint:",
+      "title": "Planificateur d'inspections Demaree",
+      "description": "Générez les étapes de suivi standard, ajustez les dates si nécessaire et enregistrez-les comme inspections planifiées pour une ruche.",
+      "hiveLabel": "Ruche",
+      "hivePlaceholder": "Sélectionner une ruche",
+      "startDateLabel": "Date de mise en place de la méthode Demaree",
+      "startDatePlaceholder": "Sélectionnez la date de mise en place",
+      "generate": "Générer les étapes de suivi",
+      "selectedHive": "Ruche sélectionnée",
+      "emptyState": "Choisissez une ruche et une date de mise en place, puis générez les étapes de suivi.",
+      "notesLabel": "Notes d'inspection",
+      "notesChecklistLabel": "Liste de suivi",
+      "checkpointPrefix": "Point de contrôle Demaree :",
       "dayOffset_one": "Day {{count}}",
       "dayOffset_other": "Day {{count}}",
-      "save": "Save scheduled inspections",
-      "saving": "Saving inspections...",
-      "saveSuccess_one": "Saved {{count}} Demaree checkpoint as scheduled inspection.",
-      "saveSuccess_other": "Saved {{count}} Demaree checkpoints as scheduled inspections.",
-      "partialSave": "Saved {{successCount}} checkpoints, but {{failedCount}} failed. Review upcoming inspections before retrying.",
-      "saveError": "Unable to save the Demaree plan. Some inspections may not have been created.",
-      "noHives": "You need at least one hive in the active apiary before you can create a Demaree plan.",
+      "save": "Enregistrer les inspections planifiées",
+      "saving": "Enregistrement des inspections...",
+      "saveSuccess_one": "{{count}} étape de suivi Demaree enregistrée comme inspection planifiée.",
+      "saveSuccess_other": "{{count}} étapes de suivi Demaree enregistrées comme inspections planifiées.",
+      "partialSave": "{{successCount}} étapes de suivi ont été enregistrées, mais {{failedCount}} n'ont pas pu l'être. Vérifiez les inspections à venir avant de réessayer.",
+      "saveError": "Impossible d'enregistrer le plan Demaree. Certaines inspections n'ont peut-être pas été créées.",
+      "noHives": "Vous devez avoir au moins une ruche dans le rucher actif pour pouvoir créer un plan Demaree.",
       "checkpoints": {
         "setup": {
-          "title": "Initial Demaree setup",
-          "summary": "Perform the brood rearrangement, confirm the laying queen is below the excluder, and leave the colony with room above.",
+          "title": "Mise en place initiale de la méthode Demaree",
+          "summary": "Réorganisez le couvain, vérifiez que la reine pondeuse se trouve sous la grille à reine et veillez à laisser suffisamment d'espace au-dessus pour la colonie.",
           "checklist": [
-            "Confirm the laying queen is in the lower brood box.",
-            "Place the brood and supers in the planned Demaree order.",
-            "Record any details you want visible at the next inspection."
+            "Vérifiez que la reine pondeuse se trouve dans le corps de ruche inférieur.",
+            "Disposez les corps de ruche contenant le couvain et les hausses dans l'ordre prévu par la méthode Demaree.",
+            "Notez toute information que vous souhaitez retrouver lors de la prochaine inspection."
           ]
         },
         "queenCellCheck": {
-          "title": "Queen-cell check",
-          "summary": "Inspect the upper brood area around day 7 to 8 and remove emergency queen cells before they approach emergence.",
+          "title": "Vérification des cellules royales",
+          "summary": "Inspectez la zone de couvain supérieure vers le 7e ou 8e jour et détruisez les cellules royales de sauveté avant que les reines ne soient sur le point d'émerger.",
           "checklist": [
-            "Inspect every brood frame above the excluder for queen cells.",
-            "Remove queen cells started during the swarm impulse.",
-            "Confirm the queen still has room and activity below."
+            "Inspectez tous les cadres de couvain situés au-dessus de la grille à reine afin d'y repérer les cellules royales.",
+            "Détruisez les cellules royales amorcées sous l'effet de la fièvre d'essaimage.",
+            "Vérifiez que la reine dispose toujours de suffisamment d'espace pour pondre et que l'activité se maintient dans le corps inférieur."
           ]
         },
         "secondQueenCellCheck": {
-          "title": "Second queen-cell check",
-          "summary": "Recheck about a week later to catch any late-started cells and make sure the brood nest remains balanced.",
+          "title": "Deuxième vérification des cellules royales",
+          "summary": "Effectuez une nouvelle vérification environ une semaine plus tard pour repérer d'éventuelles cellules royales amorcées tardivement et vous assurer que le nid à couvain reste équilibré.",
           "checklist": [
-            "Look again for newly started or missed queen cells.",
-            "Check whether brood and stores need to be rebalanced.",
-            "Note whether the colony is settling or still crowding upward."
+            "Recherchez à nouveau les cellules royales récemment amorcées ou celles qui auraient échappé à la vérification précédente.",
+            "Vérifiez s'il est nécessaire de rééquilibrer le couvain et les réserves.",
+            "Notez si la colonie se stabilise ou si les abeilles continuent à s'accumuler dans les éléments supérieurs de la ruche."
           ]
         },
         "colonyReview": {
-          "title": "Colony review",
-          "summary": "Confirm swarm pressure has eased, decide whether to normalise the stack, and record any next steps.",
+          "title": "Bilan de la colonie",
+          "summary": "Vérifiez que la pression d'essaimage est retombée, déterminez s'il est possible de remettre les corps de ruche dans leur disposition habituelle, puis notez les prochaines étapes.",
           "checklist": [
-            "Assess whether the colony can return to a more normal arrangement.",
-            "Check space, brood pattern, and nectar intake across the stack.",
-            "Schedule any additional inspection you want beyond the standard plan."
+            "Évaluez si la colonie peut retrouver une disposition plus classique des corps de ruche.",
+            "Vérifiez l'espace disponible, la répartition du couvain et les rentrées de nectar dans l'ensemble des éléments de la ruche.",
+            "Planifiez toute inspection supplémentaire que vous souhaitez ajouter au calendrier de suivi standard."
           ]
         }
-      }
+      },
+      "signInTitle": "Connectez-vous pour planifier vos inspections",
+      "signInDescription": "Créez un compte gratuit pour générer les étapes de suivi Demaree, les associer à l'une de vos ruches et les enregistrer comme inspections planifiées.",
+      "signInCta": "Se connecter",
+      "registerCta": "Créer un compte gratuit",
+      "atAGlanceTitle": "En un coup d'œil",
+      "atAGlanceDescription": "Récapitulatif rapide des contrôles de suivi standard de la méthode Demaree."
     },
     "warnings": {
-      "bannerTitle": "Timing warnings",
+      "bannerTitle": "Alertes sur le calendrier",
       "lateQueenCellCheck": {
-        "title": "First queen-cell check is later than day 8",
-        "description": "This delay increases the risk of queen cells reaching emergence before you remove them. Try to keep the first follow-up within the 7 to 8 day window."
+        "title": "La première vérification des cellules royales est prévue après le 8e jour",
+        "description": "Ce retard augmente le risque que les reines soient sur le point d'émerger avant que vous ayez pu détruire les cellules royales. Essayez de programmer la première visite de suivi entre le 7e et le 8e jour."
       },
       "unsafeCheckpointSpacing": {
-        "title": "Checkpoint spacing looks risky",
-        "description": "These follow-up inspections are spread unusually far apart or packed too tightly, which can make queen-cell control and brood review less reliable."
+        "title": "L'espacement entre les étapes de suivi semble risqué",
+        "description": "Les inspections de suivi sont soit trop espacées, soit trop rapprochées, ce qui peut nuire à la fiabilité de la surveillance des cellules royales et de l'examen du couvain."
       },
       "illogicalScheduleOrder": {
-        "title": "Checkpoint order is no longer chronological",
-        "description": "One of the later checkpoints is scheduled on or before an earlier visit. Reorder the dates before saving the plan."
+        "title": "L'ordre des étapes de suivi n'est plus chronologique",
+        "description": "L'une des étapes de suivi ultérieures est programmée à la même date ou avant une visite précédente. Réorganisez les dates avant d'enregistrer le plan."
       }
     },
     "pagden": {
-      "badge": "",
-      "title": "",
-      "description": "",
-      "intro": "",
-      "overviewTitle": "",
-      "overviewLead": "",
+      "badge": "Méthode de référence",
+      "title": "Division Pagden",
+      "description": "Méthode classique de division dans laquelle la reine est transférée dans une nouvelle ruche installée à l'emplacement initial, tandis que la colonie souche avec son couvain est déplacée à l'écart.",
+      "intro": "La division Pagden est une méthode éprouvée de maîtrise de l'essaimage et de multiplication des colonies. Elle sépare la reine pondeuse de la majeure partie du couvain en transférant la reine dans une nouvelle ruche placée à l'emplacement initial. Les butineuses reviennent vers la reine, tandis que la colonie souche avec son couvain est installée à proximité et élève une nouvelle reine à partir de ses cellules royales existantes. Effectuez des contrôles vers les jours 7–8, 14–15 et 21–22 pour suivre le développement des cellules royales et vérifier que la nouvelle reine s'est accouplée et a commencé à pondre.",
+      "overviewTitle": "Présentation de la méthode",
+      "overviewLead": "Utilisez la division Pagden lorsque vous souhaitez maîtriser la pression d'essaimage tout en conservant la reine et le couvain dans des colonies actives, et que vous disposez d'un corps de ruche supplémentaire et de rayons bâtis.",
       "overviewPoints": [
-        "",
-        "",
-        ""
+        "La reine est transférée dans une nouvelle ruche installée à l'emplacement initial. Les butineuses reviennent ainsi vers elle et la nouvelle colonie se développe rapidement.",
+        "La colonie souche avec son couvain est déplacée à l'écart et conserve ses cellules royales : elle élèvera une nouvelle reine, ce qui permet de multiplier les colonies.",
+        "Les deux colonies restent actives et productives. La division Pagden est donc intéressante si vous souhaitez augmenter le nombre de colonies tout en maîtrisant l'essaimage."
       ],
-      "prerequisitesTitle": "",
+      "prerequisitesTitle": "Prérequis",
       "prerequisites": [
-        "",
-        "",
-        "",
-        "",
-        ""
+        "Vérifiez que la colonie est forte et dispose de suffisamment d'abeilles et de couvain pour justifier la division.",
+        "Repérez la reine pondeuse et assurez-vous de pouvoir la capturer et la déplacer : vous devrez la transférer dans la nouvelle ruche.",
+        "Préparez un plancher, un corps de ruche avec des rayons bâtis, une grille à reine, un couvre-cadres et un toit supplémentaires.",
+        "Préparez un deuxième plancher et un emplacement pour la colonie souche avec son couvain.",
+        "Choisissez une période de météo stable pour permettre aux deux colonies de se réorganiser sans interruption prolongée."
       ],
-      "stepsTitle": "",
-      "stepsDescription": "",
+      "stepsTitle": "Détail de la méthode",
+      "stepsDescription": "Suivez les étapes ci-dessous pour réaliser une division Pagden",
       "methodDetail": {
         "preparation": {
-          "title": "",
+          "title": "Préparation",
           "items": [
             {
-              "text": ""
+              "text": "Trouvez un corps de ruche supplémentaire avec des rayons bâtis (et non des cadres gaufrés, qui ralentiraient le développement de la nouvelle colonie)."
             },
             {
-              "text": ""
+              "text": "Préparez un deuxième plancher et un emplacement situés à quelques mètres de l'emplacement initial."
             }
           ]
         },
         "relocateQueen": {
-          "title": "",
+          "title": "Déplacer la reine",
           "items": [
             {
-              "text": ""
+              "text": "Inspectez la ruche d'origine et repérez la reine pondeuse."
             },
             {
-              "text": ""
+              "text": "Prenez le cadre portant la reine et placez-le au centre du nouveau corps de ruche, après avoir retiré toutes les cellules royales présentes sur ce cadre."
             },
             {
-              "text": ""
+              "text": "Complétez le nouveau corps avec des cadres de rayons bâtis, en veillant à ce que la reine dispose de suffisamment de place pour pondre."
             },
             {
-              "text": ""
+              "text": "Placez le nouveau corps sur le plancher de la ruche d'origine : les butineuses reviendront à cet emplacement."
             }
           ]
         },
         "queenCells": {
-          "title": "",
+          "title": "Gérer la colonie souche",
           "items": [
             {
-              "text": ""
+              "text": "Déplacez la ruche d'origine, désormais privée de sa reine, sur le deuxième plancher situé à quelques mètres."
             },
             {
-              "text": ""
+              "text": "Inspectez tous les cadres de couvain et réduisez le nombre de cellules royales à une ou deux cellules bien placées et bien formées. Ne les détruisez pas toutes : la colonie souche doit conserver au moins une cellule pour élever une nouvelle reine."
             },
             {
-              "text": ""
+              "text": "Vérifiez que la colonie souche dispose de réserves et d'un espace suffisants pour se développer."
             }
           ]
         },
         "reassembly": {
-          "title": "",
+          "title": "Remontage des ruches",
           "items": [
             {
-              "text": ""
+              "text": "Placez une grille à reine au-dessus de la nouvelle ruche (celle qui contient la reine) si vous souhaitez ajouter des hausses pour stocker le miel."
             },
             {
-              "text": ""
+              "text": "Ajoutez des hausses selon les besoins de la miellée de la saison."
             },
             {
-              "text": ""
+              "text": "Remettez le couvre-cadres et le toit sur les deux ruches."
             }
           ]
         }
       },
-      "advantagesTitle": "",
-      "advantagesDescription": "",
+      "advantagesTitle": "Pourquoi cette méthode fonctionne",
+      "advantagesDescription": "La division Pagden réduit la pression d'essaimage en séparant la reine du couvain tout en conservant deux colonies productives.",
       "advantages": [
-        "",
-        "",
-        ""
+        "La reine, installée à l'emplacement initial, attire les butineuses, ce qui permet à la nouvelle colonie de se développer rapidement et de maintenir l'activité de butinage.",
+        "La colonie souche avec son couvain est déplacée à l'écart et conserve ses cellules royales. Elle peut ainsi élever une nouvelle reine et devenir une deuxième colonie productive.",
+        "Les deux colonies restent actives et peuvent contribuer à la récolte de miel ou constituer leurs réserves pour l'hiver."
       ],
-      "followUpTitle": "",
-      "followUpDayHeader": "",
-      "followUpTaskHeader": "",
+      "followUpTitle": "Calendrier de suivi",
+      "followUpDayHeader": "Jour",
+      "followUpTaskHeader": "Tâche",
       "followUp": [
         {
-          "day": "",
-          "task": ""
+          "day": "Jour 7–8",
+          "task": "Inspectez la colonie souche et réduisez le nombre de cellules royales à une ou deux cellules bien placées et bien formées. La colonie doit en conserver au moins une pour élever une nouvelle reine."
         },
         {
-          "day": "",
-          "task": ""
+          "day": "Jour 14–15",
+          "task": "Vérifiez que la cellule royale conservée est operculée et se développe normalement. Recherchez les éventuelles cellules supplémentaires apparues depuis et supprimez-les pour n'en conserver qu'une."
         },
         {
-          "day": "",
-          "task": ""
+          "day": "Jour 21–22",
+          "task": "Effectuez un dernier contrôle pour évaluer les deux colonies et décider des prochaines étapes de la saison."
         }
       ],
-      "prosConsTitle": "",
-      "prosTitle": "",
-      "consTitle": "",
+      "prosConsTitle": "Avantages et inconvénients",
+      "prosTitle": "Avantages",
+      "consTitle": "Inconvénients",
       "pros": [
-        "",
-        "",
-        "",
-        "",
-        ""
+        "Maîtrise efficacement l'essaimage tout en conservant deux colonies productives.",
+        "La reine, installée à l'emplacement initial, attire les butineuses et permet à la nouvelle colonie de se développer rapidement.",
+        "Les deux colonies peuvent contribuer à la production de miel.",
+        "Plus simple que certaines méthodes : aucun empilage complexe ni grille à reine n'est nécessaire.",
+        "Permet d'augmenter le nombre de colonies tout en maîtrisant la pression d'essaimage."
       ],
       "cons": [
-        "",
-        "",
-        "",
-        "",
-        ""
+        "Il faut trouver et déplacer la reine, ce qui demande de l'expérience et de l'assurance.",
+        "Il faut disposer d'un corps de ruche supplémentaire avec des rayons bâtis et d'un deuxième plancher.",
+        "La colonie souche peut élever une reine vierge qui devra réussir son vol de fécondation.",
+        "Des inspections régulières sont indispensables pour gérer les cellules royales.",
+        "Cette méthode ne convient pas aux débutants qui ne sont pas familiarisés avec la manipulation des reines."
       ],
       "faq": {
-        "title": "",
+        "title": "Questions fréquentes",
         "items": [
           {
-            "question": "",
-            "answer": ""
+            "question": "Qu'est-ce que la division Pagden ?",
+            "answer": "La division Pagden est une méthode de maîtrise de l'essaimage dans laquelle la reine pondeuse est transférée dans une nouvelle ruche placée à l'emplacement initial, tandis que la colonie souche avec son couvain est déplacée à l'écart. Les butineuses rejoignent la reine et renforcent la nouvelle colonie, tandis que la colonie souche se développe et élève une nouvelle reine."
           },
           {
-            "question": "",
-            "answer": ""
+            "question": "Quand utiliser la division Pagden ?",
+            "answer": "Utilisez la division Pagden sur des colonies fortes présentant une pression d'essaimage manifeste lorsque vous souhaitez maîtriser l'essaimage tout en conservant deux colonies productives. Cette méthode convient bien si vous disposez de matériel supplémentaire et savez trouver et déplacer la reine."
           },
           {
-            "question": "",
-            "answer": ""
+            "question": "Quel est le principal risque de la division Pagden ?",
+            "answer": "Le principal risque est de laisser trop de cellules royales dans la colonie souche : la première reine vierge à émerger pourrait essaimer avec une partie des abeilles si d'autres cellules operculées sont encore présentes. Réduisez le nombre de cellules à une ou deux, bien placées, lors du contrôle des jours 7–8. Secouez les abeilles des cadres pour toutes les repérer. Ne détruisez pas toutes les cellules : la colonie doit en conserver une pour élever une nouvelle reine."
           },
           {
-            "question": "",
-            "answer": ""
+            "question": "Combien de temps faut-il à la colonie souche pour élever une nouvelle reine ?",
+            "answer": "La colonie souche élèvera une reine de sauveté à partir des plus jeunes larves. La nouvelle reine émerge vers le 16e jour, puis a besoin d'une à deux semaines pour s'accoupler et commencer à pondre. La colonie souche recommence donc généralement à avoir une ponte entre les jours 21 et 28."
           }
         ]
       },
       "planner": {
-        "title": "",
-        "description": "",
-        "selectHiveLabel": "",
-        "selectHivePlaceholder": "",
-        "startDateLabel": "",
-        "startDatePlaceholder": "",
-        "generateButton": "",
-        "saveButton": "",
-        "checkpointPrefix": "",
-        "notesChecklistLabel": "",
-        "savedSuccess": "",
-        "savedPartial": "",
-        "savedError": "",
-        "noHivesMessage": "",
+        "title": "Planificateur d'inspections Pagden",
+        "description": "Générez les étapes de suivi standard, ajustez les dates si nécessaire et enregistrez-les comme inspections planifiées pour une ruche.",
+        "selectHiveLabel": "Ruche",
+        "selectHivePlaceholder": "Sélectionner une ruche",
+        "startDateLabel": "Date de la division Pagden",
+        "startDatePlaceholder": "Choisir la date de la division",
+        "generateButton": "Générer les étapes de suivi",
+        "saveButton": "Enregistrer les inspections planifiées",
+        "checkpointPrefix": "Étape de suivi Pagden :",
+        "notesChecklistLabel": "Liste de contrôle",
+        "savedSuccess": "{{count}} étape de suivi Pagden enregistrée comme inspection planifiée.",
+        "savedPartial": "{{successCount}} étapes ont été enregistrées, mais {{failedCount}} ont échoué. Vérifiez les inspections à venir avant de réessayer.",
+        "savedError": "Impossible d'enregistrer le plan Pagden. Certaines inspections n'ont peut-être pas été créées.",
+        "noHivesMessage": "Vous devez avoir au moins une ruche dans le rucher actif pour créer un plan Pagden.",
         "checkpoints": {
           "setup": {
-            "title": "",
-            "summary": "",
+            "title": "Mise en place initiale de la division Pagden",
+            "summary": "Transférez la reine dans la nouvelle ruche à l'emplacement initial, déplacez la colonie souche avec son couvain à l'écart et réduisez le nombre de cellules royales à une ou deux cellules bien placées.",
             "checklist": [
-              "",
-              "",
-              ""
+              "Repérer et transférer la reine pondeuse dans la nouvelle ruche à l'emplacement initial.",
+              "Déplacer la colonie souche avec son couvain vers un nouvel emplacement situé à quelques mètres.",
+              "Réduire le nombre de cellules royales de la colonie souche à une ou deux cellules bien formées et bien placées : la colonie doit en conserver au moins une pour élever une nouvelle reine."
             ]
           },
           "queenCellCheck": {
-            "title": "",
-            "summary": "",
+            "title": "Contrôle des cellules royales",
+            "summary": "Inspectez la colonie souche vers les jours 7 à 8 et réduisez le nombre de cellules royales à une seule, en conservant la mieux placée et la mieux formée pour élever la nouvelle reine.",
             "checklist": [
-              "",
-              "",
-              ""
+              "Inspecter chaque cadre de couvain de la colonie souche à la recherche de cellules royales.",
+              "Conserver une cellule royale bien placée et bien formée et supprimer les autres pour réduire le risque d'essaimage secondaire.",
+              "Vérifier que la colonie souche dispose de réserves et d'espace suffisants."
             ]
           },
           "secondQueenCellCheck": {
-            "title": "",
-            "summary": "",
+            "title": "Deuxième contrôle des cellules royales",
+            "summary": "Effectuez un nouveau contrôle environ une semaine plus tard pour repérer les cellules apparues tardivement et vérifier le développement de la nouvelle reine.",
             "checklist": [
-              "",
-              "",
-              ""
+              "Rechercher à nouveau les cellules royales récemment amorcées ou oubliées.",
+              "Vérifier que la colonie souche se développe normalement.",
+              "Noter si la nouvelle reine est sur le point d'émerger ou a déjà émergé."
             ]
           },
           "colonyReview": {
-            "title": "",
-            "summary": "",
+            "title": "Bilan des colonies",
+            "summary": "Évaluez les deux colonies, vérifiez que la nouvelle reine pond et décidez des prochaines étapes de la saison.",
             "checklist": [
-              "",
-              "",
-              ""
+              "Vérifier la présence d'une ponte régulière et de réserves dans la nouvelle colonie.",
+              "Confirmer que la colonie souche possède une reine pondeuse.",
+              "Évaluer l'espace disponible, la structure du couvain et les entrées de nectar dans les deux colonies."
             ]
           }
         }
       },
       "warnings": {
         "lateQueenCellCheck": {
-          "title": "",
-          "description": ""
+          "title": "Le premier contrôle des cellules royales est prévu après le 8e jour",
+          "description": "Ce retard augmente le risque que les cellules royales émergent avant que vous puissiez les examiner et en réduire le nombre. Essayez d'effectuer le premier contrôle dans un délai de 7 à 8 jours."
         },
         "unsafeCheckpointSpacing": {
-          "title": "",
-          "description": ""
+          "title": "L'espacement des étapes de suivi semble risqué",
+          "description": "Les inspections de suivi sont exceptionnellement espacées ou, au contraire, trop rapprochées, ce qui peut rendre le contrôle des cellules royales moins fiable."
         },
         "illogicalScheduleOrder": {
-          "title": "",
-          "description": ""
+          "title": "Les étapes de suivi ne sont plus dans l'ordre chronologique",
+          "description": "L'une des étapes ultérieures est planifiée à une date antérieure ou égale à celle d'une visite précédente. Réorganisez les dates avant d'enregistrer le plan."
+        }
+      },
+      "meta": {
+        "title": "Division Pagden : guide et planificateur de maîtrise de l'essaimage — Hive Pal",
+        "description": "Guide de référence gratuit et planificateur d'inspections pour la division Pagden. Prérequis, instructions pas à pas, calendrier de suivi et avantages/inconvénients pour les apiculteurs.",
+        "ogDescription": "Méthode de division Pagden pas à pas pour maîtriser l'essaimage des abeilles, avec calendrier de suivi et planificateur d'inspections.",
+        "appName": "Guide et planificateur de la division Pagden",
+        "appDescription": "Guide de référence et planificateur d'inspections pour la division Pagden, avec prérequis, instructions pas à pas, avantages, inconvénients et calendrier de suivi.",
+        "howTo": {
+          "name": "Comment réaliser une division Pagden",
+          "description": "Procédure Pagden pas à pas pour réduire la pression d'essaimage en transférant la reine dans une nouvelle ruche à l'emplacement initial, tandis que la colonie souche avec son couvain est déplacée à l'écart.",
+          "steps": [
+            {
+              "name": "Préparation",
+              "text": "Trouvez un corps de ruche supplémentaire avec des rayons bâtis et préparez un deuxième plancher ainsi qu'un emplacement situé à quelques mètres."
+            },
+            {
+              "name": "Déplacer la reine",
+              "text": "Repérez la reine pondeuse et placez-la avec son cadre dans le nouveau corps de ruche installé à l'emplacement initial. Les butineuses reviendront vers elle."
+            },
+            {
+              "name": "Gérer la colonie souche",
+              "text": "Déplacez la ruche d'origine de quelques mètres. Réduisez le nombre de cellules royales à une ou deux cellules bien placées afin que la colonie puisse élever une nouvelle reine."
+            },
+            {
+              "name": "Remontage des ruches",
+              "text": "Ajoutez une grille à reine et des hausses à la nouvelle ruche selon les besoins. Remettez le couvre-cadres et le toit sur les deux ruches."
+            },
+            {
+              "name": "Suivi aux jours 7–8",
+              "text": "Inspectez la colonie souche et réduisez le nombre de cellules royales à une cellule bien placée."
+            },
+            {
+              "name": "Suivi aux jours 14–15",
+              "text": "Vérifiez que la cellule royale conservée est operculée et se développe. Supprimez toutes les cellules supplémentaires."
+            },
+            {
+              "name": "Suivi aux jours 21–22",
+              "text": "Vérifiez que la nouvelle reine s'est accouplée et pond dans la colonie souche."
+            }
+          ]
         }
       }
     },
     "artificialSwarm": {
-      "badge": "",
-      "title": "",
-      "description": "",
-      "intro": "",
-      "overviewTitle": "",
-      "overviewLead": "",
+      "badge": "Méthode de référence",
+      "title": "Essaim artificiel",
+      "description": "Méthode de maîtrise de l'essaimage dans laquelle la reine reste dans la colonie souche, tandis qu'une nouvelle colonie est créée à l'emplacement initial à l'aide d'un cadre portant une cellule royale.",
+      "intro": "La méthode de l'essaim artificiel est une technique pratique de maîtrise de l'essaimage lorsque la reine est introuvable ou que vous préférez ne pas la déplacer. La colonie souche est déplacée vers un nouvel emplacement et une nouvelle ruche est installée à l'emplacement initial avec un cadre de couvain contenant des œufs ou une cellule royale existante, entouré de rayons bâtis. Les butineuses reviennent à l'emplacement initial et renforcent rapidement la nouvelle ruche. Effectuez des contrôles vers les jours 7–8, 14–15 et 21–22 pour gérer les cellules royales et surveiller les deux colonies.",
+      "overviewTitle": "Présentation de la méthode",
+      "overviewLead": "Utilisez la méthode de l'essaim artificiel lorsque vous souhaitez maîtriser la pression d'essaimage sans rechercher la reine, ou lorsque vous préférez la laisser dans la colonie souche tout en créant une nouvelle colonie.",
       "overviewPoints": [
-        "",
-        "",
-        ""
+        "La reine reste dans la colonie souche, qui est déplacée vers un nouvel emplacement.",
+        "Une nouvelle ruche est installée à l'emplacement initial avec un cadre de couvain portant une cellule royale, afin d'attirer les butineuses.",
+        "La nouvelle colonie se développe à partir de la cellule royale tandis que la colonie souche continue de pondre. Vous obtenez ainsi deux unités productives."
       ],
-      "prerequisitesTitle": "",
+      "prerequisitesTitle": "Prérequis",
       "prerequisites": [
-        "",
-        "",
-        "",
-        "",
-        ""
+        "Vérifiez que la colonie est suffisamment forte en abeilles et en couvain pour justifier la division.",
+        "Repérez un cadre portant une cellule royale, ou susceptible d'en développer une, à transférer dans la nouvelle ruche.",
+        "Préparez un plancher de ruche supplémentaire, un corps avec des rayons bâtis et un toit pour la nouvelle colonie.",
+        "Préparez un deuxième emplacement pour la colonie souche.",
+        "Choisissez une période de météo stable pour permettre aux deux colonies de se réorganiser sans interruption prolongée."
       ],
-      "stepsTitle": "",
-      "stepsDescription": "",
+      "stepsTitle": "Détail de la méthode",
+      "stepsDescription": "Suivez les étapes ci-dessous pour réaliser un essaim artificiel",
       "methodDetail": {
         "preparation": {
-          "title": "",
+          "title": "Préparation",
           "items": [
             {
-              "text": ""
+              "text": "Trouvez un corps de ruche supplémentaire avec des rayons bâtis (et non des cadres gaufrés, qui ralentiraient le développement de la nouvelle colonie)."
             },
             {
-              "text": ""
+              "text": "Préparez un deuxième plancher et un emplacement situés à quelques mètres de l'emplacement initial."
             }
           ]
         },
         "relocateQueen": {
-          "title": "",
+          "title": "Déplacer la colonie souche",
           "items": [
             {
-              "text": ""
+              "text": "Déplacez la ruche d'origine (avec sa reine) vers un nouvel emplacement situé à quelques mètres."
             },
             {
-              "text": ""
+              "text": "Inspectez les cadres de couvain et repérez un cadre portant une cellule royale, ou susceptible d'en développer une."
             },
             {
-              "text": ""
+              "text": "Détruisez toutes les autres cellules royales présentes sur les cadres de couvain de la colonie souche."
             }
           ]
         },
         "queenCells": {
-          "title": "",
+          "title": "Installer la nouvelle colonie",
           "items": [
             {
-              "text": ""
+              "text": "Placez le nouveau corps de ruche sur le plancher d'origine : les butineuses reviendront à cet emplacement."
             },
             {
-              "text": ""
+              "text": "Transférez au centre du nouveau corps le cadre portant la cellule royale."
             },
             {
-              "text": ""
+              "text": "Complétez le nouveau corps avec des cadres de rayons bâtis et veillez à ce que les réserves soient suffisantes."
             }
           ]
         },
         "reassembly": {
-          "title": "",
+          "title": "Remontage des ruches",
           "items": [
             {
-              "text": ""
+              "text": "Ajoutez une grille à reine au-dessus de la nouvelle ruche si vous souhaitez installer des hausses pour stocker le miel."
             },
             {
-              "text": ""
+              "text": "Ajoutez des hausses selon les besoins de la miellée de la saison."
             },
             {
-              "text": ""
+              "text": "Remettez le couvre-cadres et le toit sur les deux ruches."
             }
           ]
         }
       },
-      "advantagesTitle": "",
-      "advantagesDescription": "",
+      "advantagesTitle": "Pourquoi cette méthode fonctionne",
+      "advantagesDescription": "L'essaim artificiel réduit la pression d'essaimage en créant une nouvelle colonie à l'emplacement initial tout en laissant la reine dans la colonie souche.",
       "advantages": [
-        "",
-        "",
-        ""
+        "La reine n'est pas déplacée, ce qui simplifie la méthode lorsqu'il est difficile de la trouver ou que vous préférez ne pas la manipuler.",
+        "Les butineuses reviennent à l'emplacement initial et renforcent rapidement la nouvelle colonie.",
+        "La colonie souche continue de pondre et reste productive, contribuant à la récolte de miel ou à la constitution des réserves hivernales."
       ],
-      "followUpTitle": "",
-      "followUpDayHeader": "",
-      "followUpTaskHeader": "",
+      "followUpTitle": "Calendrier de suivi",
+      "followUpDayHeader": "Jour",
+      "followUpTaskHeader": "Tâche",
       "followUp": [
         {
-          "day": "",
-          "task": ""
+          "day": "Jour 7–8",
+          "task": "Inspectez la nouvelle colonie pour vérifier que la cellule royale se développe et recherchez d'éventuelles cellules royales supplémentaires."
         },
         {
-          "day": "",
-          "task": ""
+          "day": "Jour 14–15",
+          "task": "Vérifiez la présence de cellules royales operculées dans la nouvelle colonie et assurez-vous que la colonie souche se stabilise."
         },
         {
-          "day": "",
-          "task": ""
+          "day": "Jour 21–22",
+          "task": "Effectuez un dernier contrôle pour évaluer les deux colonies et décider des prochaines étapes de la saison."
         }
       ],
-      "prosConsTitle": "",
-      "prosTitle": "",
-      "consTitle": "",
+      "prosConsTitle": "Avantages et inconvénients",
+      "prosTitle": "Avantages",
+      "consTitle": "Inconvénients",
       "pros": [
-        "",
-        "",
-        "",
-        "",
-        ""
+        "Maîtrise efficacement l'essaimage sans avoir besoin de trouver et de déplacer la reine.",
+        "Les butineuses reviennent à l'emplacement initial et renforcent rapidement la nouvelle colonie.",
+        "Les deux colonies restent productives et peuvent contribuer à la récolte de miel.",
+        "Plus simple que les méthodes qui nécessitent de manipuler la reine.",
+        "Permet d'augmenter le nombre de colonies tout en maîtrisant la pression d'essaimage."
       ],
       "cons": [
-        "",
-        "",
-        "",
-        "",
-        ""
+        "Il faut repérer un cadre portant une cellule royale appropriée.",
+        "Il faut disposer d'un corps de ruche supplémentaire avec des rayons bâtis et d'un deuxième plancher.",
+        "La nouvelle colonie dépend du bon développement de la cellule royale.",
+        "Des inspections régulières sont indispensables pour surveiller le développement de la cellule royale.",
+        "La colonie souche peut conserver une pression d'essaimage si elle n'est pas gérée avec soin."
       ],
       "faq": {
-        "title": "",
+        "title": "Questions fréquentes",
         "items": [
           {
-            "question": "",
-            "answer": ""
+            "question": "Qu'est-ce que la méthode de l'essaim artificiel ?",
+            "answer": "La méthode de l'essaim artificiel est une technique de maîtrise de l'essaimage dans laquelle la reine reste dans la colonie souche, déplacée vers un nouvel emplacement, tandis qu'une nouvelle ruche est installée à l'emplacement initial avec un cadre portant une cellule royale. Les butineuses reviennent dans cette nouvelle ruche, qui se développe à partir de la cellule royale."
           },
           {
-            "question": "",
-            "answer": ""
+            "question": "Quand utiliser la méthode de l'essaim artificiel ?",
+            "answer": "Utilisez la méthode de l'essaim artificiel lorsque vous souhaitez maîtriser la pression d'essaimage sans parvenir à trouver la reine, ou lorsque vous préférez ne pas la déplacer. Elle fonctionne bien si vous disposez de matériel supplémentaire et savez repérer une cellule royale appropriée."
           },
           {
-            "question": "",
-            "answer": ""
+            "question": "Quel cadre faut-il transférer dans la nouvelle ruche ?",
+            "answer": "Transférez dans la nouvelle ruche un cadre de couvain portant une cellule royale, ou susceptible d'en développer une. Le cadre doit contenir suffisamment de réserves et être placé au centre du nouveau corps pour favoriser le bon développement de la cellule royale."
           },
           {
-            "question": "",
-            "answer": ""
+            "question": "Combien de temps faut-il à la nouvelle reine pour commencer à pondre ?",
+            "answer": "La reine émerge de sa cellule vers le 16e jour, puis a besoin d'une à deux semaines pour effectuer son vol de fécondation et commencer à pondre. La nouvelle colonie recommence généralement à avoir une ponte entre les jours 21 et 28."
           }
         ]
       },
       "planner": {
-        "title": "",
-        "description": "",
-        "selectHiveLabel": "",
-        "selectHivePlaceholder": "",
-        "startDateLabel": "",
-        "startDatePlaceholder": "",
-        "generateButton": "",
-        "saveButton": "",
-        "checkpointPrefix": "",
-        "notesChecklistLabel": "",
-        "savedSuccess": "",
-        "savedPartial": "",
-        "savedError": "",
-        "noHivesMessage": "",
+        "title": "Planificateur d'inspections pour essaim artificiel",
+        "description": "Générez les étapes de suivi standard, ajustez les dates si nécessaire et enregistrez-les comme inspections planifiées pour une ruche.",
+        "selectHiveLabel": "Ruche",
+        "selectHivePlaceholder": "Sélectionner une ruche",
+        "startDateLabel": "Date de l'essaim artificiel",
+        "startDatePlaceholder": "Choisir la date de l'essaim artificiel",
+        "generateButton": "Générer les étapes de suivi",
+        "saveButton": "Enregistrer les inspections planifiées",
+        "checkpointPrefix": "Étape de suivi de l'essaim artificiel :",
+        "notesChecklistLabel": "Liste de contrôle",
+        "savedSuccess": "{{count}} étape de suivi de l'essaim artificiel enregistrée comme inspection planifiée.",
+        "savedPartial": "{{successCount}} étapes ont été enregistrées, mais {{failedCount}} ont échoué. Vérifiez les inspections à venir avant de réessayer.",
+        "savedError": "Impossible d'enregistrer le plan d'essaim artificiel. Certaines inspections n'ont peut-être pas été créées.",
+        "noHivesMessage": "Vous devez avoir au moins une ruche dans le rucher actif pour créer un plan d'essaim artificiel.",
         "checkpoints": {
           "setup": {
-            "title": "",
-            "summary": "",
+            "title": "Mise en place initiale de l'essaim artificiel",
+            "summary": "Déplacez la colonie souche à l'écart, installez la nouvelle ruche à l'emplacement initial avec un cadre portant une cellule royale et détruisez les autres cellules royales.",
             "checklist": [
-              "",
-              "",
-              ""
+              "Déplacer la colonie souche avec sa reine vers un nouvel emplacement.",
+              "Repérer et transférer un cadre portant une cellule royale dans la nouvelle ruche installée à l'emplacement initial.",
+              "Détruire toutes les autres cellules royales présentes sur les cadres de couvain de la colonie souche."
             ]
           },
           "queenCellCheck": {
-            "title": "",
-            "summary": "",
+            "title": "Contrôle de la cellule royale",
+            "summary": "Inspectez la nouvelle colonie vers les jours 7 à 8 pour vérifier le développement de la cellule royale et rechercher d'éventuelles cellules supplémentaires.",
             "checklist": [
-              "",
-              "",
-              ""
+              "Inspecter la nouvelle colonie pour vérifier que la cellule royale se développe.",
+              "Rechercher les éventuelles cellules royales supplémentaires qui auraient été amorcées.",
+              "Vérifier que la nouvelle colonie dispose de réserves et d'espace suffisants."
             ]
           },
           "secondQueenCellCheck": {
-            "title": "",
-            "summary": "",
+            "title": "Deuxième contrôle de la cellule royale",
+            "summary": "Effectuez un nouveau contrôle environ une semaine plus tard pour vérifier que la cellule royale est operculée et surveiller la colonie souche.",
             "checklist": [
-              "",
-              "",
-              ""
+              "Vérifier que la cellule royale est operculée et se développe normalement.",
+              "Rechercher de nouvelles cellules royales dans la colonie souche.",
+              "Évaluer l'espace disponible et les réserves des deux colonies."
             ]
           },
           "colonyReview": {
-            "title": "",
-            "summary": "",
+            "title": "Bilan des colonies",
+            "summary": "Évaluez les deux colonies, vérifiez que la nouvelle reine émerge ou commence à pondre et décidez des prochaines étapes de la saison.",
             "checklist": [
-              "",
-              "",
-              ""
+              "Vérifier l'émergence de la reine ou la régularité de sa ponte dans la nouvelle colonie.",
+              "Confirmer que la colonie souche se stabilise et que la ponte se poursuit normalement.",
+              "Évaluer l'espace disponible, la structure du couvain et les entrées de nectar dans les deux colonies."
             ]
           }
         }
       },
       "warnings": {
         "lateQueenCellCheck": {
-          "title": "",
-          "description": ""
+          "title": "Le premier contrôle de la cellule royale est prévu après le 8e jour",
+          "description": "Ce retard augmente le risque de manquer une étape du développement de la cellule royale. Essayez d'effectuer le premier contrôle dans un délai de 7 à 8 jours."
         },
         "unsafeCheckpointSpacing": {
-          "title": "",
-          "description": ""
+          "title": "L'espacement des étapes de suivi semble risqué",
+          "description": "Les inspections de suivi sont exceptionnellement espacées ou, au contraire, trop rapprochées, ce qui peut rendre la surveillance moins fiable."
         },
         "illogicalScheduleOrder": {
-          "title": "",
-          "description": ""
+          "title": "Les étapes de suivi ne sont plus dans l'ordre chronologique",
+          "description": "L'une des étapes ultérieures est planifiée à une date antérieure ou égale à celle d'une visite précédente. Réorganisez les dates avant d'enregistrer le plan."
+        }
+      },
+      "meta": {
+        "title": "Essaim artificiel : guide et planificateur de maîtrise de l'essaimage — Hive Pal",
+        "description": "Guide de référence gratuit et planificateur d'inspections pour la méthode de l'essaim artificiel. Prérequis, instructions pas à pas, calendrier de suivi et avantages/inconvénients pour les apiculteurs.",
+        "ogDescription": "Méthode de l'essaim artificiel pas à pas pour maîtriser l'essaimage lorsque la reine est introuvable, avec calendrier de suivi et planificateur d'inspections.",
+        "appName": "Guide et planificateur de la méthode de l'essaim artificiel",
+        "appDescription": "Guide de référence et planificateur d'inspections pour la méthode de l'essaim artificiel, avec prérequis, instructions pas à pas, avantages, inconvénients et calendrier de suivi.",
+        "howTo": {
+          "name": "Comment réaliser un essaim artificiel",
+          "description": "Procédure pas à pas pour déplacer la colonie souche à l'écart tout en installant une nouvelle ruche à l'emplacement initial avec un cadre portant une cellule royale.",
+          "steps": [
+            {
+              "name": "Préparation",
+              "text": "Trouvez un corps de ruche supplémentaire avec des rayons bâtis et préparez un deuxième plancher ainsi qu'un emplacement situé à quelques mètres."
+            },
+            {
+              "name": "Déplacer la colonie souche",
+              "text": "Déplacez la ruche d'origine (avec sa reine) vers un nouvel emplacement. Repérez un cadre portant une cellule royale ou des œufs et réduisez le nombre des autres cellules royales."
+            },
+            {
+              "name": "Installer la nouvelle colonie",
+              "text": "Placez le nouveau corps de ruche à l'emplacement initial avec le cadre de couvain sélectionné au centre, entouré de rayons bâtis."
+            },
+            {
+              "name": "Remontage des ruches",
+              "text": "Ajoutez une grille à reine et des hausses à la nouvelle ruche selon les besoins. Remettez le couvre-cadres et le toit sur les deux ruches."
+            },
+            {
+              "name": "Suivi aux jours 7–8",
+              "text": "Inspectez la nouvelle colonie pour vérifier le développement de la cellule royale et rechercher d'éventuelles cellules supplémentaires."
+            },
+            {
+              "name": "Suivi aux jours 14–15",
+              "text": "Vérifiez que la cellule royale est operculée et se développe normalement. Surveillez la colonie souche."
+            },
+            {
+              "name": "Suivi aux jours 21–22",
+              "text": "Vérifiez que la nouvelle reine s'est accouplée et pond dans la nouvelle colonie."
+            }
+          ]
         }
       }
     },
     "cushmanCredit": {
-      "text": "",
-      "linkLabel": ""
+      "text": "Références méthodologiques issues du site apicole de Dave Cushman.",
+      "linkLabel": "Site apicole de Dave Cushman"
+    },
+    "intro": "Guides pratiques gratuits pour maîtriser l'essaimage des colonies d'abeilles. Comparez des méthodes éprouvées comme la méthode Demaree, planifiez les inspections de suivi et réduisez le risque de perdre des colonies par essaimage pendant la période intense du printemps.",
+    "meta": {
+      "title": "Méthodes de maîtrise de l'essaimage des abeilles — Hive Pal",
+      "description": "Guides de référence gratuits sur les méthodes de maîtrise de l'essaimage. Comparez les techniques Demaree, Pagden et de l'essaim artificiel, et planifiez les inspections de suivi.",
+      "ogDescription": "Comparez des méthodes éprouvées de maîtrise de l'essaimage des abeilles et planifiez les inspections de suivi.",
+      "collectionName": "Méthodes de maîtrise de l'essaimage des abeilles",
+      "collectionDescription": "Guides de référence sur les méthodes de maîtrise de l'essaimage, notamment la méthode Demaree, la division Pagden et l'essaim artificiel, avec prérequis, procédures pas à pas et calendrier des inspections de suivi.",
+      "parts": {
+        "demaree": {
+          "name": "Méthode Demaree",
+          "description": "Protocole de référence de la méthode Demaree pour maîtriser l'essaimage, avec un planificateur d'inspections."
+        },
+        "pagden": {
+          "name": "Division Pagden",
+          "description": "Protocole de référence de la division Pagden pour maîtriser l'essaimage, avec un planificateur d'inspections."
+        },
+        "artificial": {
+          "name": "Essaim artificiel",
+          "description": "Protocole de référence de la méthode de l'essaim artificiel pour maîtriser l'essaimage, avec un planificateur d'inspections."
+        }
+      }
     }
   },
   "footer": {
-    "privacyPolicy": "Politique de confidentialité"
+    "privacyPolicy": "Politique de confidentialité",
+    "dataDeletion": "Suppression des données",
+    "copyright": "© {{year}} HRVN s.r.o."
   },
   "marketing": {
     "toolsIndex": {
       "items": {
         "liebefelder": {
-          "title": "Liebefelder Schätzmethode",
-          "body": "Estimate colony strength and bee population by counting covered frame sides in 1/8 increments — the standard method from the Swiss Bee Research Centre."
+          "title": "Méthode d'estimation de Liebefeld",
+          "body": "Estimez la force de la colonie et sa population d'abeilles en comptant les faces de cadres couvertes d'abeilles par fractions de 1/8. Il s'agit de la méthode standard du Centre suisse de recherche apicole."
+        },
+        "syrup": {
+          "title": "Calculateur de sirop de sucre",
+          "body": "Calculez précisément les quantités de sucre et d'eau pour des sirops 1:1, 3:2 ou 2:1, quelle que soit la taille du récipient. Unités métriques ou impériales."
+        },
+        "brood": {
+          "title": "Cycle de développement du couvain",
+          "body": "Visualisez les stades de développement du couvain des reines, ouvrières et mâles, avec leur durée et les dates prévisionnelles à partir de n'importe quel jour de départ."
+        },
+        "swarm": {
+          "title": "Gestion de l'essaimage",
+          "body": "Protocole pas à pas de la méthode Demaree pour maîtriser l'essaimage, avec calendrier de suivi et planificateur d'inspections."
+        },
+        "varroa": {
+          "title": "Plan de lutte contre le varroa",
+          "body": "Calendrier de traitements sur toute la saison pour les colonies de production et les nucléi, fondé sur les seuils de chute des varroas, avec une explication pas à pas de la méthode « diviser et traiter »."
         }
+      },
+      "meta": {
+        "title": "Outils apicoles gratuits — Hive Pal",
+        "description": "Calculateurs et guides de référence gratuits et open source pour les apiculteurs. Calculateur de sirop de sucre, cycle de développement du couvain et méthodes de maîtrise de l'essaimage.",
+        "ogDescription": "Calculateurs et guides de référence gratuits pour les apiculteurs, sans inscription."
+      },
+      "eyebrow": "Outils gratuits",
+      "title": "Des outils apicoles sans inscription",
+      "intro": "Des calculateurs et guides de référence open source utilisables directement dans votre navigateur. Ajoutez-les à vos favoris pour les retrouver au rucher."
+    },
+    "nav": {
+      "features": "Fonctionnalités",
+      "freeTools": "Outils gratuits",
+      "documentation": "Documentation",
+      "releaseNotes": "Notes de version",
+      "github": "GitHub",
+      "signIn": "Se connecter",
+      "startFree": "Commencer gratuitement",
+      "ariaLabel": "Menu principal"
+    },
+    "footer": {
+      "tagline": "Gestion apicole gratuite et open source. Pour une pratique plus simple, plus productive et un peu plus agréable.",
+      "product": "Produit",
+      "features": "Fonctionnalités",
+      "freeTools": "Outils gratuits",
+      "releaseNotes": "Notes de version",
+      "project": "Projet",
+      "documentation": "Documentation",
+      "reportIssue": "Signaler un problème",
+      "privacyPolicy": "Politique de confidentialité",
+      "source": "Code source",
+      "github": "GitHub",
+      "signIn": "Se connecter",
+      "createAccount": "Créer un compte",
+      "copyright": "© 2025 Hive Pal · Licence MIT",
+      "builtWith": "Conçu avec soin pour les apiculteurs du monde entier."
+    },
+    "ai": {
+      "eyebrow": "Voix et IA",
+      "title": "Inspectez à la voix,<br/><accent>pas au clavier</accent>.",
+      "lede": "Hive Pal enregistre l'audio pendant les inspections, le transcrit automatiquement et utilise l'IA pour préparer des notes structurées. Les tâches fastidieuses sont ainsi effectuées pendant que vous êtes encore au rucher.",
+      "items": {
+        "record": {
+          "title": "Enregistrer à la ruche",
+          "body": "Appuyez sur le bouton d'enregistrement de votre téléphone, décrivez à voix haute ce que vous observez sur chaque cadre, puis passez au suivant. Les enregistrements sont directement ajoutés à l'inspection, même si vous perdez le réseau au milieu du rucher."
+        },
+        "transcribe": {
+          "title": "Transcription automatique",
+          "body": "La reconnaissance vocale Whisper transforme chaque enregistrement en une transcription consultable, jointe à l'inspection. La prise en charge de plusieurs langues est intégrée."
+        },
+        "draft": {
+          "title": "Notes préparées par l'IA",
+          "body": "Des modèles de langage locaux extraient les observations de reine, les caractéristiques du couvain, les traitements et les remarques pour préremplir l'inspection. Il ne vous reste qu'à vérifier et enregistrer."
+        },
+        "mcp": {
+          "title": "Utilisez votre propre assistant",
+          "body": "Connectez Claude ou un autre assistant compatible MCP à votre Hive Pal. Demandez quelles ruches doivent être inspectées ou faites-lui enregistrer un nourrissement, après vous être connecté et avoir autorisé l'accès."
+        }
+      },
+      "assuranceLead": "Vos enregistrements, vos modèles.",
+      "assuranceBody": "La chaîne de traitement IA repose sur des modèles open source (faster-whisper + Ollama). Elle peut être auto-hébergée avec vos données ou fonctionner comme worker pull sur votre ordinateur personnel.",
+      "assuranceNote": "Aucun service cloud tiers nécessaire"
+    },
+    "landing": {
+      "meta": {
+        "title": "Hive Pal — Logiciel de gestion apicole avec intelligence artificielle",
+        "description": "Gérez efficacement vos ruches avec Hive Pal. Enregistrez des notes vocales au rucher et laissez l'IA transcrire vos enregistrements et préparer vos comptes rendus d'inspection. Open source, auto-hébergeable et gratuit pour les premiers utilisateurs.",
+        "ogTitle": "Hive Pal — Logiciel de gestion apicole avec intelligence artificielle",
+        "ogDescription": "Plateforme apicole gratuite et open source avec inspections vocales assistées par IA. Enregistrez des notes audio au rucher et laissez l'IA préparer automatiquement vos comptes rendus."
+      },
+      "hero": {
+        "badge": "Nouveau · Inspections vocales avec IA",
+        "title": "Votre compagnon<br/>apicole <accent>open source</accent>.",
+        "lede": "Enregistrez des notes vocales à la ruche. Laissez l'IA les transcrire et préparer automatiquement vos comptes rendus d'inspection : vous gardez les mains sur les cadres, pas sur le clavier.",
+        "ctaSignup": "S'inscrire — c'est gratuit",
+        "ctaSelfHost": "Auto-héberger",
+        "tagline": "Licence MIT · auto-hébergeable · priorité à la voix"
+      },
+      "features": {
+        "label": "L'apiculture moderne",
+        "title": "Tout ce qu'il vous faut pour <accent>prendre soin</accent> de vos ruches.",
+        "lede": "Des outils professionnels conçus par des apiculteurs, pour des apiculteurs, afin de garder des colonies saines, productives et bien suivies en toute saison.",
+        "pillars": "Quatre piliers · une seule plateforme",
+        "seeAll": "Découvrir toutes les fonctionnalités",
+        "items": {
+          "apiary": {
+            "title": "Gestion des ruchers",
+            "body": "Organisez et suivez plusieurs ruchers grâce à des informations détaillées sur leur emplacement, aux données météo et à des notes propres à chaque site."
+          },
+          "inspections": {
+            "title": "Inspections des ruches",
+            "body": "Planifiez et consignez des inspections détaillées avec des listes de contrôle personnalisables, des photos et des évaluations de l'état des colonies."
+          },
+          "queen": {
+            "title": "Suivi des reines",
+            "body": "Suivez les performances des reines, les informations de reproduction et les remplacements prévus afin de maintenir des colonies fortes."
+          },
+          "harvest": {
+            "title": "Gestion des récoltes",
+            "body": "Suivez la production de miel, les dates d'extraction et les rendements selon les saisons et les emplacements des ruches."
+          }
+        }
+      },
+      "run": {
+        "label": "Modes d'utilisation",
+        "title": "Auto-hébergez Hive Pal ou <accent>confiez-nous son hébergement</accent>.",
+        "lede": "Deux façons d'utiliser Hive Pal : toutes deux gratuites et basées sur le même code open source.",
+        "selfHosted": {
+          "title": "Auto-hébergé",
+          "badge": "Gratuit, pour toujours",
+          "body": "Gardez le contrôle total de vos données et de votre infrastructure. Installez Hive Pal sur votre propre serveur, votre ordinateur portable, un Raspberry Pi ou tout autre appareil adapté.",
+          "items": [
+            "Licence MIT : consultez le code, créez une version dérivée et distribuez-la",
+            "Hébergement partout où Docker fonctionne",
+            "Vos données restent sur votre matériel",
+            "Assistance communautaire via GitHub"
+          ],
+          "cta": "Consulter la documentation"
+        },
+        "hosted": {
+          "title": "Hébergé par nos soins",
+          "badge": "Gratuit",
+          "body": "Aucune installation nécessaire. Nous gérons les serveurs, les mises à jour et le fonctionnement du service. C'est la même application open source, simplement hébergée sur notre matériel.",
+          "items": [
+            "Inscrivez-vous et commencez, sans installation",
+            "Mises à jour et sauvegardes automatiques",
+            "Disponibilité surveillée, avec engagement au mieux des possibilités",
+            "Assistance communautaire via GitHub"
+          ],
+          "cta": "S'inscrire — c'est gratuit"
+        }
+      },
+      "tools": {
+        "label": "Outils gratuits",
+        "title": "Des outils gratuits, sans inscription.",
+        "lede": "Des calculateurs et planificateurs pratiques, utilisables directement dans votre navigateur. Ajoutez-les à vos favoris pour les retrouver au rucher.",
+        "seeAll": "Voir tous les outils",
+        "items": {
+          "syrup": {
+            "title": "Calculateur de sirop de sucre",
+            "body": "Calculez précisément les quantités de sucre et d'eau pour des sirops 1:1, 3:2 ou 2:1, quelle que soit la taille du récipient. Unités métriques ou impériales."
+          },
+          "brood": {
+            "title": "Cycle de développement du couvain",
+            "body": "Visualisez les stades de développement du couvain des reines, ouvrières et mâles, avec leur durée et les dates prévisionnelles à partir de n'importe quel jour de départ."
+          },
+          "swarm": {
+            "title": "Gestion de l'essaimage",
+            "body": "Protocole pas à pas de la méthode Demaree pour maîtriser l'essaimage, avec calendrier de suivi et planificateur d'inspections."
+          },
+          "liebefelder": {
+            "title": "Méthode d'estimation de Liebefeld",
+            "body": "Estimez la force de la colonie — abeilles, couvain, pollen et réserves — en comptant les huitièmes de surface des cadres, avec des repères d'évaluation saisonnière."
+          },
+          "varroa": {
+            "title": "Plan de lutte contre le varroa",
+            "body": "Calendrier de traitements sur toute la saison pour les colonies de production et les nucléi, fondé sur les seuils de chute des varroas, avec une explication pas à pas de la méthode « diviser et traiter »."
+          }
+        }
+      },
+      "cta": {
+        "title": "<accent>Essayez</accent> Hive Pal.",
+        "lede": "Inscrivez-vous à la version hébergée ou téléchargez le code source pour l'installer vous-même. Dans les deux cas, c'est gratuit.",
+        "signup": "S'inscrire gratuitement",
+        "github": "Voir sur GitHub"
       }
-    }
+    },
+    "features": {
+      "meta": {
+        "title": "Fonctionnalités — Tout ce que Hive Pal propose aux apiculteurs",
+        "description": "Découvrez toutes les fonctionnalités de Hive Pal : inspections vocales assistées par IA et transcription automatique, gestion des ruches et des reines, inspections groupées, planification et rapports, suivi des récoltes, collaboration et logiciel open source auto-hébergeable qui privilégie la confidentialité.",
+        "ogTitle": "Fonctionnalités de Hive Pal — Inspections vocales IA et gestion apicole",
+        "ogDescription": "Inspections vocales assistées par IA, gestion des ruches et des reines, planification, rapports, collaboration et auto-hébergement open source. Découvrez tout ce que Hive Pal propose."
+      },
+      "hero": {
+        "eyebrow": "Tout au même endroit",
+        "title": "Tout ce qu'il vous faut pour <accent>gérer vos colonies</accent>.",
+        "lede": "Hive Pal rassemble dans une seule plateforme open source les inspections vocales assistées par IA, les dossiers des colonies et des reines, la planification, les rapports et les outils de collaboration. L'utilisation est gratuite et vous pouvez l'héberger vous-même.",
+        "ctaSignup": "S'inscrire — c'est gratuit",
+        "ctaSelfHost": "Auto-héberger",
+        "tagline": "Licence MIT · auto-hébergeable · priorité à la voix"
+      },
+      "groups": {
+        "inspections": {
+          "label": "Inspections et suivi",
+          "title": "Chaque inspection, consignée dans le détail",
+          "lede": "Consignez vos observations à la ruche à l'aide d'inspections structurées et reproductibles, puis retrouvez-les dès que vous en avez besoin.",
+          "items": {
+            "structured": {
+              "title": "Inspections structurées",
+              "body": "Consignez la structure du couvain, les réserves, le comportement, l'espace disponible et le statut de la reine à l'aide de champs cohérents, afin de comparer les colonies d'une visite à l'autre et au fil des saisons."
+            },
+            "quickChecks": {
+              "title": "Vérifications rapides",
+              "body": "Un processus d'inspection allégé pour les passages rapides au rucher, lorsque vous souhaitez noter uniquement l'essentiel et continuer votre tournée."
+            },
+            "batch": {
+              "title": "Inspections groupées",
+              "body": "Inspectez tout un rucher en une seule session : passez successivement d'une ruche à l'autre sans devoir rouvrir manuellement chaque fiche."
+            },
+            "scheduled": {
+              "title": "Inspections planifiées et rappels",
+              "body": "Planifiez vos prochaines visites et recevez des rappels concernant les nouveautés et les tâches, afin de ne rien oublier entre deux sessions."
+            },
+            "photos": {
+              "title": "Photos et observations",
+              "body": "Joignez des photos et des notes libres à n'importe quelle inspection pour documenter des signes de maladie, l'état des rayons ou tout autre élément à réexaminer."
+            },
+            "actions": {
+              "title": "Actions et traitements",
+              "body": "Consignez les nourrissements, les traitements et les interventions dans le cadre de l'inspection pour constituer un historique complet de chaque colonie."
+            }
+          }
+        },
+        "colony": {
+          "label": "Gestion des colonies et des ruches",
+          "title": "Organisez vos ruchers, ruches et reines",
+          "lede": "Une représentation claire de votre exploitation apicole, du rucher jusqu'aux cadres individuels et aux lignées de reines.",
+          "items": {
+            "apiaries": {
+              "title": "Plusieurs ruchers",
+              "body": "Regroupez les ruches par emplacement et associez à chaque rucher des notes spécifiques et des informations météorologiques locales."
+            },
+            "hiveConfig": {
+              "title": "Configuration des ruches",
+              "body": "Suivez les corps, les cadres et la configuration de chaque ruche afin que sa fiche reflète le matériel réellement utilisé au rucher."
+            },
+            "queens": {
+              "title": "Suivi des reines",
+              "body": "Suivez le marquage, l'origine, la lignée, les performances et l'historique de remplacement de chaque reine pour maintenir des colonies fortes."
+            },
+            "equipment": {
+              "title": "Planification du matériel",
+              "body": "Planifiez et comptabilisez les corps, les cadres et le matériel de vos ruches afin de savoir quoi préparer avant la saison."
+            },
+            "qrCodes": {
+              "title": "Codes QR",
+              "body": "Générez et imprimez des étiquettes QR pour les ruches, puis scannez-les au rucher pour accéder directement à la bonne fiche."
+            },
+            "hiveScale": {
+              "title": "Suivi par balances de ruches",
+              "body": "Connectez des balances de ruches pour suivre l'évolution du poids : miellées, consommation et hivernage en un coup d'œil."
+            }
+          }
+        },
+        "planning": {
+          "label": "Planification et analyse",
+          "title": "Visualisez toute la saison, pas seulement la journée",
+          "lede": "Transformez vos enregistrements en un plan d'action et en une vue d'ensemble de votre activité.",
+          "items": {
+            "calendar": {
+              "title": "Calendrier",
+              "body": "Un calendrier unifié des inspections et des tâches planifiées dans tous vos ruchers, pour toujours garder une vue sur la semaine à venir."
+            },
+            "reports": {
+              "title": "Rapports et analyses",
+              "body": "Regroupez vos données dans des rapports sur la santé et la productivité des colonies afin de repérer tôt les tendances et les ruches faibles."
+            },
+            "harvest": {
+              "title": "Suivi des récoltes",
+              "body": "Consignez les récoltes de miel, les dates d'extraction et les rendements par ruche et par saison pour mesurer la production réelle."
+            },
+            "assistant": {
+              "title": "Assistant IA",
+              "body": "Posez des questions sur votre rucher et obtenez de l'aide pour interpréter vos données, directement dans l'application."
+            },
+            "mcp": {
+              "title": "Compatible avec les assistants IA (MCP)",
+              "body": "Connectez Claude et d'autres clients MCP pour consulter les données de votre rucher et enregistrer des inspections, des nourrissements et des tâches après avoir autorisé l'accès."
+            },
+            "bulkActions": {
+              "title": "Actions groupées",
+              "body": "Appliquez une même action à plusieurs ruches en une seule fois au lieu de les modifier une par une."
+            }
+          }
+        },
+        "collaboration": {
+          "label": "Collaboration et partage",
+          "title": "L'apiculture est rarement une activité solitaire",
+          "lede": "Travaillez avec des partenaires, des membres de votre association ou des apiculteurs que vous accompagnez, et partagez les informations utiles sans leur donner tous les droits.",
+          "items": {
+            "sharing": {
+              "title": "Partage de ruchers",
+              "body": "Invitez d'autres apiculteurs à collaborer sur un rucher afin que toute l'équipe utilise les mêmes informations."
+            },
+            "inviteLinks": {
+              "title": "Liens d'invitation",
+              "body": "Partagez un lien d'invitation pour permettre à quelqu'un de rejoindre rapidement un rucher, sans gestion manuelle complexe des comptes."
+            },
+            "sharedViews": {
+              "title": "Vues partagées",
+              "body": "Donnez un accès en lecture aux colonies ou aux données afin qu'un mentor ou une association puisse les suivre sans les modifier."
+            }
+          }
+        },
+        "data": {
+          "label": "Vos données, vos règles",
+          "title": "Open source, privé et portable",
+          "lede": "Hive Pal est un logiciel libre que vous pouvez héberger vous-même : vos dossiers restent les vôtres.",
+          "items": {
+            "openSource": {
+              "title": "Open source (MIT)",
+              "body": "L'ensemble de l'application est sous licence MIT. Consultez le code, créez une version dérivée, auditez-le ou contribuez au projet : aucune boîte noire."
+            },
+            "selfHostable": {
+              "title": "Auto-hébergeable",
+              "body": "Exécutez Hive Pal partout où Docker fonctionne : sur un serveur, un ordinateur portable ou un Raspberry Pi. La version hébergée utilise le même code."
+            },
+            "importExport": {
+              "title": "Importation et exportation",
+              "body": "Importez et exportez librement vos données. L'historique de votre activité apicole n'est jamais prisonnier de l'application."
+            },
+            "privacyAI": {
+              "title": "IA respectueuse de la confidentialité",
+              "body": "La chaîne de traitement vocal et IA utilise des modèles ouverts (faster-whisper + Ollama) et peut fonctionner sur votre propre matériel, sans service cloud tiers."
+            },
+            "multilingual": {
+              "title": "Multilingue",
+              "body": "Utilisez Hive Pal dans votre langue. Les traductions communautaires sont gérées via Weblate et s'enrichissent au fil du temps."
+            },
+            "pwa": {
+              "title": "Installable et utilisable hors ligne",
+              "body": "Installez l'application comme PWA sur votre téléphone et continuez à travailler au rucher même lorsque le réseau disparaît."
+            }
+          }
+        }
+      },
+      "tools": {
+        "label": "Sans inscription",
+        "title": "Des outils gratuits utilisables dès maintenant",
+        "lede": "Des calculateurs et planificateurs utilisables dans votre navigateur, sans compte. Découvrez la façon dont Hive Pal aborde la gestion apicole.",
+        "seeAll": "Voir tous les outils"
+      },
+      "cta": {
+        "title": "Prêt à <accent>essayer</accent> ?",
+        "lede": "Inscrivez-vous à la version hébergée ou téléchargez le code source pour l'installer vous-même. Dans les deux cas, c'est gratuit.",
+        "signup": "S'inscrire gratuitement",
+        "github": "Voir sur GitHub"
+      }
+    },
+    "brand": "Hive Pal"
   },
   "feedTypes": {
     "title": "Types de nourrissement",
@@ -1136,6 +1980,845 @@
     "name": "Nom",
     "namePlaceholder": "Par exemple : Apiinvert",
     "form": "Formulaire",
-    "sugarContent": "Teneur en sucre (% en poids)"
+    "sugarContent": "Teneur en sucre (% en poids)",
+    "density": "Densité (g/ml, liquides uniquement)",
+    "densityHint": "Laissez vide pour les aliments solides : ils sont saisis uniquement en fonction de leur poids.",
+    "sugarShort": "{{value}} % de sucre",
+    "densityShort": "{{value}} g/ml",
+    "saveFailed": "Impossible d'enregistrer ce type de nourrissement. Ce nom est-il déjà utilisé ?",
+    "deleteFailed": "Impossible de supprimer ce type de nourrissement.",
+    "forms": {
+      "SYRUP": "Sirop",
+      "INVERT_SYRUP": "Sirop inverti",
+      "FONDANT": "Candi fondant",
+      "CANDY": "Candi",
+      "DRY_SUGAR": "Sucre sec",
+      "HONEY": "Miel",
+      "PROTEIN": "Complément protéiné",
+      "OTHER": "Autre"
+    }
+  },
+  "scoreLevel": {
+    "good": "Bon",
+    "fair": "Moyen",
+    "poor": "Faible"
+  },
+  "months": {
+    "selectMonth": "Sélectionner un mois",
+    "january": "Janvier",
+    "february": "Février",
+    "march": "Mars",
+    "april": "Avril",
+    "may": "Mai",
+    "june": "Juin",
+    "july": "Juillet",
+    "august": "Août",
+    "september": "Septembre",
+    "october": "Octobre",
+    "november": "Novembre",
+    "december": "Décembre"
+  },
+  "season": {
+    "title": "Saisons",
+    "name": "Nom",
+    "namePlaceholder": "Ex. : Développement printanier",
+    "unnamedHint": "Affiché sous le nom « Nourrissement d'automne » tant que vous ne lui avez pas donné de nom.",
+    "start": "Début",
+    "end": "Fin",
+    "pickDay": "Choisir un jour",
+    "takenHint": "Les jours en pointillés appartiennent à une autre saison. En sélectionner un raccourcira cette saison.",
+    "shortened": "« {{name}} » a été raccourcie jusqu'au {{range}}.",
+    "undo": "Annuler",
+    "editSeason": "Modifier « {{name}} »",
+    "done": "Terminé",
+    "add": "Ajouter une saison",
+    "remove": "Supprimer la saison",
+    "edit": "Modifier la saison",
+    "empty": "Aucune saison pour le moment. Ajoutez-en une pour définir votre calendrier d'inspection et de nourrissement.",
+    "activeNow": "En cours",
+    "inspectionInterval": "Intervalle entre les inspections (jours)",
+    "inspectionIntervalHint": "Laissez vide pour utiliser l'intervalle d'inspection de base de la ruche.",
+    "inspectionEvery": "Inspection tous les {{days}} jours",
+    "inspections": "Inspections",
+    "inspectionsHint": "Désactivez cette option pour une saison sans inspection, par exemple en hiver. Aucune inspection ne sera planifiée ni considérée comme en retard avant la fin de cette période.",
+    "noInspections": "Aucune inspection",
+    "feeding": "Période de nourrissement",
+    "feedingHint": "Suivez les nourrissements effectués pendant cette période par rapport à un objectif.",
+    "feedingTarget": "Objectif de nourrissement (kg de sucre)",
+    "feedingTargetValue": "Nourrir avec {{amount}} kg de sucre",
+    "overlapTitle": "Chevauchement entre saisons",
+    "overlap": "« {{first}} » et « {{second}} » couvrent toutes deux la période {{range}}. Une date ne peut appartenir qu'à une seule saison.",
+    "unnamed": "Nourrissement d'automne",
+    "untitled": "Saison sans nom",
+    "noneConfigured": "Aucune saison configurée.",
+    "source": {
+      "hive": "Cette ruche",
+      "legacy": "Anciens paramètres de nourrissement d'automne",
+      "apiary": "Le rucher",
+      "default": "Paramètres par défaut de Hive Pal"
+    },
+    "inheritedHint": "Ces saisons proviennent du rucher. Personnalisez-les pour modifier les dates, le nourrissement ou les intervalles d'inspection de cette ruche.",
+    "customHint": "Ces saisons s'appliquent uniquement à cette ruche. Réinitialisez-les pour que la ruche hérite à nouveau des saisons du rucher.",
+    "customise": "Personnaliser pour cette ruche",
+    "useApiarySeasons": "Utiliser les saisons du rucher",
+    "strip": {
+      "today": "Aujourd'hui, nous sommes le {{date}}.",
+      "yearRound": "Toute l'année",
+      "yearRoundHint": "Aucune saison ne couvre ces jours : les paramètres applicables toute l'année sont donc utilisés.",
+      "hiveInterval": "Chaque ruche utilise son propre intervalle d'inspection",
+      "fromYearRound": "(toute l'année)",
+      "addSeason": "Ajouter une saison ici",
+      "more": "Plus d'options",
+      "key": {
+        "inspect": "Inspections",
+        "feeding": "Nourrissement",
+        "paused": "Aucune inspection",
+        "yearRound": "Toute l'année",
+        "tick": "Une inspection"
+      }
+    }
+  },
+  "unsavedChanges": "Modifications non enregistrées",
+  "liebefelder": {
+    "title": "Méthode d'estimation de Liebefeld",
+    "description": "Estimateur de la force de la colonie",
+    "intro": "La méthode de Liebefeld permet d'estimer la force d'une colonie en évaluant, par huitièmes (pas de 1/8), la surface des deux faces des rayons occupée par les abeilles, le couvain, le pollen et les réserves. Les valeurs d'estimation et les repères saisonniers proviennent du mémento d'estimation de la population du Dr Pia Aumeier, en Allemagne.",
+    "source": "Source : Dr Pia Aumeier, Allemagne",
+    "frameType": {
+      "title": "Type de cadre",
+      "description": "Choisissez le format de cadre utilisé dans votre ruche : il détermine les valeurs d'estimation pour chaque huitième.",
+      "custom": "Personnalisé",
+      "customDescription": "Saisissez vos propres valeurs d'estimation pour un huitième d'une face de rayon.",
+      "names": {
+        "zander": "Zander",
+        "dnm": "Deutsch-Normal",
+        "langstroth": "Langstroth",
+        "dadant": "Dadant"
+      },
+      "customHint": "Saisissez les dimensions de la face du cadre. Hive Pal calcule les valeurs par huitième pour les abeilles, les mâles, les cellules de couvain, le pollen et les réserves à partir du format Zander, en appliquant un coefficient fondé sur la surface du cadre.",
+      "customWidth": "Largeur (mm)",
+      "customHeight": "Hauteur (mm)",
+      "customDerived": "Calculé à partir du format Zander ({{dimensions}}), avec une surface multipliée par {{ratio}}. Les valeurs calculées pour chaque 1/8 sont affichées dans la fiche de référence."
+    },
+    "counts": {
+      "title": "Comptages — total des huitièmes",
+      "description": "Additionnez les huitièmes de surface de rayon, sur toutes les faces, pour chaque catégorie. Un huitième contient environ {{bees}} abeilles ({{frame}}). Le couvain et les réserves sont facultatifs : ils sont nécessaires pour évaluer une division et les réserves alimentaires.",
+      "decrease": "Diminuer",
+      "increase": "Augmenter"
+    },
+    "fields": {
+      "bees": "Abeilles",
+      "beesHint": "surface du rayon couverte par une couche d'abeilles, les deux faces étant comptabilisées",
+      "cappedWorkerBrood": "Couvain operculé d'ouvrières",
+      "cappedWorkerBroodHint": "émergence dans les 0 à 12 jours",
+      "openWorkerBrood": "Couvain ouvert d'ouvrières",
+      "openWorkerBroodHint": "émergence dans les 13 à 21 jours",
+      "droneBrood": "Couvain de mâles",
+      "droneBroodHint": "operculé : 0 à 14 j ; ouvert : 15 à 24 j",
+      "pollen": "Pollen",
+      "pollenHint": "pain d'abeilles stocké",
+      "feed": "Réserves / miel",
+      "feedHint": "réserves operculées ou non"
+    },
+    "result": {
+      "title": "Résultat",
+      "empty": "Saisissez vos comptages en huitièmes ci-dessus pour afficher l'estimation.",
+      "bees": "Abeilles",
+      "wabengassen": "Rues d'abeilles",
+      "wabengassenNote": "≈ 1 000 abeilles chacune",
+      "strengthField": "Force de la colonie",
+      "strengthFieldNote": "À reporter dans l'inspection",
+      "cappedBrood": "Couvain operculé d'ouvrières",
+      "openBrood": "Couvain ouvert d'ouvrières",
+      "droneBrood": "Couvain de mâles",
+      "cells": "cellules",
+      "pollen": "Pollen",
+      "feed": "Réserves / miel",
+      "emergeNote": "Au cours des 12 prochains jours, environ {{cells}} abeilles émergeront du couvain operculé d'ouvrières, soit environ {{gassen}} rues d'abeilles supplémentaires. Agrandissez la ruche à temps."
+    },
+    "evaluation": {
+      "title": "Évaluation saisonnière",
+      "description": "Comparez les mesures de la colonie aux valeurs de référence saisonnières du Dr Pia Aumeier, en Allemagne.",
+      "selectPrompt": "Sélectionnez un contexte pour évaluer la colonie.",
+      "enterCountsFirst": "Commencez par saisir vos comptages ci-dessus.",
+      "contexts": {
+        "split_mid_may": "Division avant la mi-mai",
+        "split_end_may": "Division avant la fin mai",
+        "split_mid_june": "Division avant la mi-juin",
+        "winter_aug": "Préparation à l'hivernage, mi-août",
+        "winter_oct": "Préparation à l'hivernage, fin octobre"
+      },
+      "checks": {
+        "minBees": "≥ {{min}} abeilles (mesuré : ~{{measured}})",
+        "minCappedBrood": "≥ {{min}} cellules de couvain operculé d'ouvrières (mesuré : ~{{measured}})",
+        "minOpenBrood": "≥ {{min}} cellules de couvain ouvert d'ouvrières (mesuré : ~{{measured}})"
+      },
+      "splitNote": "Une division de fécondation sans couvain (nucléi de fécondation), réalisée avant la mi-mai, ne nécessite que ≥ 1 000 abeilles et aucun couvain.",
+      "winterAug": {
+        "check": "> 15 000 abeilles, quel que soit le couvain (mesuré : ~{{measured}})",
+        "note": "S'applique aux colonies établies à la mi-août : une colonie aussi forte occupe plus de 5 rues d'abeilles jusqu'au plancher. Les colonies plus faibles et en régression, ainsi que les divisions de l'année, sont plutôt évaluées à la fin octobre."
+      },
+      "winterOct": {
+        "ready": "Prête pour l'hiver — environ {{bees}} abeilles réparties sur {{gassen}} rues d'abeilles (au moins 5 intervalles occupés ; plus de 5 000 abeilles).",
+        "minimal": "Force minimale pour l'hivernage — environ {{bees}} abeilles réparties sur 4 rues d'abeilles (environ 5 000 abeilles).",
+        "atRisk": "Risque élevé de perte hivernale — environ {{bees}} abeilles réparties sur {{gassen}} rues d'abeilles (3 intervalles occupés ou moins ; moins de 5 000 abeilles). Réunir ou supprimer la colonie.",
+        "note": "Évaluez la colonie le plus tard possible, après une nuit froide (≈ 5 °C), en comptant les rues d'abeilles occupées."
+      }
+    },
+    "reference": {
+      "title": "Un huitième d'une face de rayon {{frame}} contient…",
+      "bees": "Abeilles",
+      "drones": "Mâles",
+      "workerBroodCells": "Couvain d'ouvrières (operculé/ouvert)",
+      "droneBroodCells": "Couvain de mâles (operculé/ouvert)",
+      "pollenG": "Pollen",
+      "feedG": "Réserves / miel",
+      "cellsValue": "{{value}} cellules"
+    },
+    "tips": {
+      "coverage": {
+        "title": "Comment évaluer la surface occupée",
+        "pullFrames": {
+          "title": "Sortir chaque cadre",
+          "description": "Retirez les cadres un par un. Regardez chaque face bien en face et estimez, par huitièmes, la part de la surface du rayon couverte par les abeilles, le couvain, le pollen ou les réserves."
+        },
+        "bothSides": {
+          "title": "Compter les deux faces",
+          "description": "Chaque cadre possède deux faces. Un cadre entièrement couvert d'abeilles sur ses deux faces ajoute 16 huitièmes au total."
+        },
+        "roundDown": {
+          "title": "En cas de doute, arrondir à l'inférieur",
+          "description": "Il est plus prudent de sous-estimer que de surestimer : arrondissez à l'huitième inférieur le plus proche."
+        }
+      },
+      "emergence": {
+        "title": "Quand le couvain émerge-t-il ?",
+        "capped": {
+          "title": "Couvain operculé d'ouvrières",
+          "description": "Toutes les cellules d'ouvrières actuellement operculées émergeront dans les 0 à 12 jours."
+        },
+        "open": {
+          "title": "Couvain ouvert d'ouvrières",
+          "description": "Les cellules de couvain ouvert d'ouvrières émergeront dans les 13 à 21 jours."
+        },
+        "drone": {
+          "title": "Couvain de mâles",
+          "description": "Les cellules de mâles operculées émergeront dans les 0 à 14 jours, et les cellules ouvertes dans les 15 à 24 jours."
+        },
+        "ruleOfThumb": {
+          "title": "Règle pratique",
+          "description": "Environ 1 000 abeilles émergées occupent une rue d'abeilles. Agrandissez la ruche avant que la colonie ne manque de place."
+        }
+      },
+      "feed": {
+        "title": "Réserves alimentaires nécessaires",
+        "yearRound": {
+          "title": "Toute l'année",
+          "description": "Au moins 1 kg de réserves en permanence, aussi bien pour les colonies de production que pour les divisions."
+        },
+        "warmRegion": {
+          "title": "Hivernage en région à hiver doux (ex. : Midi, Corse, littoral méditerranéen)",
+          "description": "Colonies de production : viser environ 10 à 12 kg de réserves au total, soit l'équivalent indicatif de 3 cadres de corps Dadant pleins. Divisions : adapter les réserves à la force de la colonie et au nombre de cadres couverts."
+        },
+        "coolRegion": {
+          "title": "Hivernage en région à hiver tempéré à froid (ex. : plaines de l'Ouest et du Centre, Est, zones d'altitude)",
+          "description": "Colonies de production : viser environ 15 à 20 kg de réserves au total, soit l'équivalent indicatif de 4 à 5 cadres de corps Dadant pleins. Divisions : adapter les réserves à la force de la colonie et au nombre de cadres couverts."
+        },
+        "spring": {
+          "title": "Avant la miellée de printemps (février–mars)",
+          "description": "Au début d'un printemps froid et pluvieux, il doit rester au moins 10 kg de réserves."
+        }
+      },
+      "development": {
+        "title": "Durée du développement jusqu'à l'émergence",
+        "queen": {
+          "title": "Reine — 16 jours",
+          "description": "De l'œuf à l'émergence (essaimage ou supersédure silencieuse) : 3 jours au stade œuf + 5 jours au stade larvaire + 8 jours au stade nymphal. Les cellules de sauveté amorcées à partir d'une larve âgée d'environ 2 jours donnent une reine en seulement 11 jours. Une reine par colonie."
+        },
+        "worker": {
+          "title": "Ouvrière — 21 jours",
+          "description": "De l'œuf fécondé à l'émergence : 3 jours au stade œuf + 6 jours au stade larvaire + 12 jours au stade nymphal. Une colonie compte de 5 000 à 40 000 ouvrières."
+        },
+        "drone": {
+          "title": "Mâle — 24 jours",
+          "description": "De l'œuf non fécondé à l'émergence : 3 jours au stade œuf + 7 jours au stade larvaire + 14 jours au stade nymphal. Une colonie compte de 0 à 1 000 mâles."
+        }
+      }
+    },
+    "meta": {
+      "title": "Calculateur de force de colonie selon la méthode de Liebefeld — Hive Pal",
+      "description": "Calculateur gratuit selon la méthode de Liebefeld. Estimez la population d'abeilles, les cellules de couvain, les réserves de pollen et de nourriture en comptant les huitièmes de rayon, avec les repères d'évaluation saisonnière du Dr Pia Aumeier.",
+      "ogDescription": "Estimez la force d'une colonie avec la méthode de Liebefeld : abeilles, couvain, pollen et réserves à partir du comptage des huitièmes de rayon, avec une évaluation saisonnière.",
+      "appName": "Calculateur de force de colonie selon la méthode de Liebefeld",
+      "appDescription": "Calculateur gratuit selon la méthode de Liebefeld. Estimez la population d'abeilles, les cellules de couvain, les réserves de pollen et de nourriture en comptant les huitièmes de rayon, avec les repères d'évaluation saisonnière du Dr Pia Aumeier."
+    }
+  },
+  "varroaManagement": {
+    "eyebrow": "Outil gratuit",
+    "title": "Plan de lutte contre le varroa",
+    "intro": "Calendrier de lutte contre le varroa sur toute la saison pour les colonies de production (Wirtschaftsvölker) et les essaims/nucléi (Ableger), fondé sur la méthode éprouvée du Dr Pia Aumeier, du Dr Gerhard Liebig et du Dr Otto Boecking. Règle essentielle : ne traitez jamais selon un calendrier fixe. Mesurez d'abord la chute naturelle des varroas et ne traitez que lorsque le seuil est dépassé.",
+    "columns": {
+      "production": {
+        "title": "Colonie de production",
+        "subtitle": "Wirtschaftsvolk (y compris l'essaim par secouage)"
+      },
+      "nucleus": {
+        "title": "Essaim / nucléus",
+        "subtitle": "Ableger (jeune colonie)"
+      }
+    },
+    "treatments": {
+      "biotech": "Biotechnique",
+      "lactic": "Acide lactique",
+      "formic": "Acide formique",
+      "oxalic": "Acide oxalique"
+    },
+    "legend": {
+      "title": "Légende :",
+      "threshold": "un encadré rouge signifie : traiter uniquement si la chute naturelle de varroas par jour dépasse le seuil indiqué"
+    },
+    "timeline": {
+      "springSummer": {
+        "time": "Avril – juillet",
+        "production": {
+          "badge": "3–4 fois",
+          "title": "Détruire le couvain de mâles",
+          "items": [
+            "À la floraison des cerisiers, équipez chaque colonie d'une grille à reine et d'une hausse à miel, puis placez un cadre à mâles vide dans le corps de couvain supérieur, entre le cadre de rive et les cadres bâtis.",
+            "Retirez et détruisez le cadre au plus tôt après 14 jours et au plus tard après 24 jours : ne laissez jamais émerger les mâles. Répétez l'opération aussi souvent que possible d'avril à juillet."
+          ]
+        },
+        "nucleus": {
+          "badge": "1 fois",
+          "title": "Pulvériser de l'acide lactique",
+          "items": [
+            "Pendant la période sans couvain, juste après la constitution du nucléus, pulvérisez les abeilles de chaque face de tous les cadres (environ 3 pulvérisations par face) avec de l'acide lactique à 15 %.",
+            "En cas de forte infestation par le varroa, répétez le traitement après quelques jours."
+          ],
+          "note": "Portez des gants, des vêtements couvrants et des lunettes de protection. Les colonies ainsi pulvérisées ne doivent pas être utilisées pour la production de miel la même année."
+        }
+      },
+      "endOfJuly": {
+        "time": "Fin juillet",
+        "production": {
+          "monitor": "Après la dernière récolte de miel : placez une plaque de comptage engluée pendant exactement 3 jours et comptez la chute naturelle des varroas.",
+          "threshold": {
+            "condition": "Chute naturelle supérieure à 10 varroas par jour :",
+            "action": "1 traitement d'urgence"
+          },
+          "note": "Nécessaire très rarement. En dessous du seuil, ne traitez pas : préservez le couvain et les abeilles."
+        },
+        "nucleus": {
+          "monitor": "Comptage des varroas sur 3 jours.",
+          "threshold": {
+            "condition": "Chute naturelle supérieure à 5 varroas par jour :",
+            "action": "1 traitement d'urgence"
+          },
+          "note": "Nécessaire très rarement. En dessous du seuil, ne traitez pas."
+        }
+      },
+      "lateAugust": {
+        "time": "Deuxième quinzaine d'août",
+        "production": {
+          "title": "Commencer les soins de fin d'été",
+          "items": [
+            "Resserrez la colonie en retirant le corps de couvain inférieur (hygiène des rayons).",
+            "Effectuez un traitement à l'acide formique.",
+            "Distribuez ensuite une grande portion de nourriture pour constituer les réserves hivernales."
+          ],
+          "note": "Autre possibilité : mettre la colonie en absence de couvain avec la méthode « diviser et traiter », puis utiliser de l'acide oxalique à la place de l'acide formique. Voir le guide détaillé ci-dessous."
+        },
+        "nucleus": {
+          "title": "Aucun traitement",
+          "items": [
+            "Continuez simplement à distribuer de petites portions de nourriture et laissez la colonie se développer et bâtir ses rayons."
+          ]
+        }
+      },
+      "september": {
+        "time": "Début – mi-septembre",
+        "production": {
+          "monitor": "Après la fin du nourrissement : comptez les varroas sur 3 jours.",
+          "threshold": {
+            "condition": "Chute naturelle supérieure à 5 varroas par jour :",
+            "action": "1 traitement"
+          },
+          "note": "En dessous du seuil, aucun autre traitement n'est nécessaire."
+        },
+        "nucleus": {
+          "monitor": "Comptage des varroas sur 3 jours.",
+          "threshold": {
+            "condition": "Chute naturelle supérieure à 1 varroa par jour :",
+            "action": "1 traitement"
+          },
+          "note": "Le nourrissement hivernal suit le traitement."
+        }
+      },
+      "novemberDecember": {
+        "time": "Fin novembre – mi-décembre",
+        "production": {
+          "monitor": "Pendant la période hivernale sans couvain : comptez les varroas sur 3 jours.",
+          "threshold": {
+            "condition": "Chute naturelle supérieure à 1 varroa par jour :",
+            "action": "1 traitement résiduel"
+          },
+          "note": "Faites couler 30 à 50 ml de solution d'acide oxalique à 3,5 % sur les abeilles dans les intercadres occupés. En dessous du seuil, aucun traitement n'est nécessaire."
+        },
+        "nucleus": {
+          "monitor": "Pendant la période hivernale sans couvain : comptez les varroas sur 3 jours.",
+          "threshold": {
+            "condition": "Chute naturelle supérieure à 1 varroa par jour :",
+            "action": "1 traitement résiduel"
+          },
+          "note": "Faites couler 30 à 50 ml de solution d'acide oxalique à 3,5 %. En dessous du seuil, aucun traitement n'est nécessaire."
+        }
+      }
+    },
+    "divideAndTreat": {
+      "title": "Diviser et traiter (Teilen und Behandeln)",
+      "summary": "Vous en avez assez de l'acide formique ? La méthode « diviser et traiter » met une colonie de production en absence de couvain après la dernière récolte de miel. Un seul traitement à l'acide oxalique ou lactique, indépendant des conditions météo, permet alors d'atteindre tous les varroas. Découvrez pas à pas la méthode du Flugling et du Brutling.",
+      "intro": {
+        "0": "À la fin juillet, une colonie de production forte peut compter jusqu'à 30 000 abeilles et 30 000 cellules de couvain. Plus le volume de couvain est important, plus il est difficile d'obtenir un bon résultat avec l'acide formique sans endommager le couvain, surtout par temps frais et humide. La méthode « diviser et traiter », perfectionnée à partir du système de rotation de Celle dans le projet allemand « Betriebsweisen im Vergleich », contourne entièrement ce problème : la colonie est divisée en deux unités sans couvain, qui peuvent chacune être traitées efficacement à l'acide oxalique ou lactique, indépendamment de la météo.",
+        "1": "Vous divisez la colonie de production en un Flugling avec reine et butineuses, et un Brutling sans reine mais avec tout le couvain. Il vous faut seulement un plancher supplémentaire, un couvre-cadres ou une feuille, un toit et une cage à reine munie d'une fermeture au candi ou à la guimauve. En cinq visites au rucher et environ 15 minutes de travail effectif, vous déparasitez la colonie en deux interventions, renouvelez complètement les rayons et pouvez même, si vous le souhaitez, élever une jeune reine et créer une nouvelle colonie en parallèle."
+      },
+      "concepts": {
+        "flightling": {
+          "title": "Flugling (unité de butineuses)",
+          "subtitle": "Colonie avec reine et abeilles de vol",
+          "points": [
+            "La hausse à miel récoltée, avec ses abeilles, est placée sur le plancher d'origine, à l'emplacement initial : toutes les butineuses y reviennent.",
+            "Conserve l'ancienne reine, maintenue en cage avec une fermeture au candi jusqu'à ce que les ouvrières la libèrent.",
+            "Sans couvain dès le départ : tous les varroas se trouvent sur les abeilles. Un seul traitement au jour X+2 permet donc de les atteindre.",
+            "Deux jours après la division, cette unité rassemble jusqu'aux deux tiers des abeilles ; la reine est déjà libérée et a recommencé à pondre."
+          ]
+        },
+        "broodling": {
+          "title": "Brutling (unité de couvain)",
+          "subtitle": "Colonie avec couvain, sans reine",
+          "points": [
+            "Les deux corps de couvain sont placés sur un nouveau plancher, soit directement au-dessus du Flugling (dans le même sens d'envol), soit à quelques mètres de distance.",
+            "Contient tout le couvain et environ 90 % des varroas, mais perd ses butineuses au profit du Flugling.",
+            "Élève une reine de sauveté à partir des plus jeunes larves ; dans environ 90 % des cas, celle-ci réussit son vol de fécondation.",
+            "Se retrouve sans couvain au jour X+21, lorsque tout le couvain d'ouvrières a émergé : c'est le moment de traiter."
+          ]
+        }
+      },
+      "stepsTitle": "Étape par étape",
+      "steps": {
+        "preparation": {
+          "day": "Avant le jour X",
+          "title": "Préparation",
+          "items": [
+            "Entre la mi-juillet et la mi-août, récoltez le miel d'été. Retirez la grille à reine pour la rapporter chez vous et glissez une plaque de comptage engluée sous la ruche pour mesurer la chute des varroas.",
+            "Si possible, remettez la hausse à miel extraite en place le lendemain et laissez les abeilles la nettoyer pendant deux à trois jours.",
+            "Comptez les varroas tombés pendant les 2 à 3 jours où la plaque est restée en place : la chute ne doit pas dépasser 30 varroas par jour. Les colonies plus fortement infestées risquent de s'effondrer avant le jour X+21 : traitez-les plutôt immédiatement à l'acide formique."
+          ]
+        },
+        "dayZero": {
+          "day": "Jour X",
+          "title": "Diviser la colonie",
+          "items": [
+            "Par beau temps, démontez la colonie. Placez la hausse à miel avec les abeilles sur le plancher d'origine : elle devient le Flugling. Si elle ne contient aucune réserve alimentaire, ajoutez un cadre de nourriture (1 à 2 kg, généralement situé en bordure du corps de couvain supérieur).",
+            "Trouvez la reine dans le corps de couvain (elle se trouve généralement dans le corps supérieur), enfermez-la dans une cage munie d'une fermeture au candi ou à la guimauve, puis suspendez la cage dans le Flugling.",
+            "Vous ne trouvez pas la reine ou les abeilles sont trop agressives ? Placez plutôt un cadre de couvain ouvert dans le Flugling, puis échangez-le contre la reine deux jours plus tard : elle sera bien plus facile à trouver dans le Brutling, qui aura perdu ses butineuses. Le traitement du jour X+21 sera alors reporté au jour X+23.",
+            "Placez les deux corps de couvain (les rayons les plus anciens en bas) sur un nouveau plancher, soit directement au-dessus du Flugling dans le même sens, soit à plusieurs mètres : ils constituent le Brutling. Ne le placez jamais juste à côté du Flugling, sinon les butineuses retourneraient dans l'unité la plus importante.",
+            "Réduisez les entrées des deux unités à environ 2 cm : pendant quelques jours, le Brutling n'a ni reine ni butineuses et risque fortement d'être pillé.",
+            "Ne distribuez jamais de nourriture liquide le jour de la division : cela déclenche le pillage."
+          ]
+        },
+        "dayTwo": {
+          "day": "Jour X+2",
+          "title": "Traiter le Flugling",
+          "items": [
+            "Jusqu'aux deux tiers des abeilles se trouvent maintenant dans le Flugling ; la reine est libérée et pond à nouveau.",
+            "Tôt le matin, lorsque les abeilles sont regroupées, faites couler 100 à 200 ml de solution d'acide oxalique à 3,5 %. Mieux encore, sortez chaque cadre pendant la journée et pulvérisez les abeilles avec une solution d'acide oxalique à 3 % (en été, la pulvérisation est plus efficace que le dégouttement).",
+            "Un seul traitement suffit : environ 90 % des varroas se trouvent dans le couvain et sur les nourrices, c'est-à-dire dans le Brutling.",
+            "Si aucune miellée tardive n'est attendue, nourrissez maintenant le Flugling avec jusqu'à 6 litres de sirop. Ne distribuez ensuite plus rien jusqu'en octobre afin de ne pas freiner l'élevage du couvain."
+          ]
+        },
+        "dayTwentyOne": {
+          "day": "Jour X+21",
+          "title": "Traiter le Brutling",
+          "items": [
+            "Tout le couvain d'ouvrières a maintenant émergé : le Brutling est donc sans couvain. La reine de sauveté a généralement émergé, mais ne pond pas encore. Inutile de chercher des œufs trop tôt.",
+            "Démontez le Brutling et resserrez-le dans un seul corps : retirez les vieux rayons (en général les 10 plus anciens, situés en bas) et secouez leurs abeilles dans le Brutling ou devant son entrée. Si les rayons de couvain contiennent du miel de forêt ou de bruyère, vous pouvez tous les récolter et installer la colonie sur des cadres gaufrés avec un cadre de nourriture.",
+            "Traitez exactement comme le Flugling : faites couler ou pulvérisez de l'acide oxalique pendant la période sans couvain.",
+            "Un deuxième traitement quatre jours plus tard est souvent nécessaire ici : si plus de 5 000 varroas tombent dans la semaine suivant le traitement, traitez à nouveau immédiatement.",
+            "Nourrissez après le traitement, ou attendez d'avoir confirmé que la jeune reine pond : une reine en ponte réduit le risque de pillage."
+          ]
+        },
+        "dayTwentyEight": {
+          "day": "Jour X+28",
+          "title": "Vérifier la jeune reine",
+          "items": [
+            "La semaine écoulée a-t-elle été favorable aux vols de fécondation (20 °C, temps ensoleillé et calme) ? Dans ce cas, 9 Brutlings sur 10 possèdent maintenant une jeune reine qui pond : recherchez des œufs.",
+            "Si aucune reine ne pond, supprimez le Brutling en secouant ses abeilles des cadres devant l'entrée du Flugling."
+          ]
+        },
+        "october": {
+          "day": "Octobre",
+          "title": "Réunir les unités ou les hiverner séparément",
+          "items": [
+            "Si vous souhaitez obtenir une seule colonie forte, placez simplement le Brutling au-dessus du Flugling, sans papier journal. En règle générale, la reine de la colonie supérieure survit. Pour être certain de conserver une reine précise, retirez l'autre au préalable. Une réunion tardive permet d'obtenir des colonies hivernantes très robustes, dirigées par une jeune reine.",
+            "Si vous conservez les deux unités, nourrissez chacune d'elles afin qu'elle entre en hiver avec au moins 15 kg de réserves (environ 15 litres de sirop si les rayons sont vides), idéalement répartis en une portion précoce et une portion tardive."
+          ]
+        }
+      },
+      "advantagesTitle": "Pourquoi diviser et traiter ?",
+      "advantages": [
+        "Lutte contre le varroa indépendante de la météo et réalisable selon le calendrier de votre choix, sans vous soucier de l'évaporation de l'acide formique.",
+        "Hygiène complète et renouvellement des rayons au cours de la même opération.",
+        "Il est possible de récolter le miel même dans les corps de couvain saturés de miel, y compris le miel tardif de forêt ou de bruyère.",
+        "Pas de cellules royales de sauveté indésirables à rechercher et à détruire, contrairement à l'encagement de la reine pendant plusieurs semaines.",
+        "Pas de risque lié à l'encagement prolongé de la reine : après leur libération, environ une reine encagée sur cinq est rejetée par les ouvrières. Cette méthode évite entièrement ce problème.",
+        "Lorsque les deux unités sont réunies en octobre, on obtient généralement des colonies hivernantes exceptionnellement fortes, dirigées par de jeunes reines.",
+        "Autre possibilité : obtenir gratuitement une nouvelle colonie en juillet ou en août au lieu de réunir les deux unités."
+      ],
+      "caution": {
+        "title": "Quand ne pas utiliser cette méthode",
+        "body": "Mesurez la chute naturelle des varroas avant la division. Au-delà d'environ 30 varroas par jour, le couvain est si fortement infesté que les abeilles du Brutling meurent rapidement après leur émergence et que l'unité s'effondre avant le jour X+21. Traitez plutôt immédiatement ces colonies à l'acide formique.",
+        "robbing": "Et ne distribuez jamais de nourriture liquide le jour de la division : le Brutling, privé de reine et de nombreuses gardiennes, serait immédiatement pillé."
+      }
+    },
+    "monitoring": {
+      "title": "Mesurer la chute naturelle des varroas (diagnostic par les débris)",
+      "summary": "Toutes les décisions de traitement de ce plan reposent sur une seule donnée : la chute naturelle de varroas par jour. Voici comment la mesurer correctement.",
+      "intro": "Trop tôt, trop souvent ou trop tard : les traitements contre le varroa en fin d'été sont rarement adaptés aux besoins réels de la colonie. En relevant la chute naturelle des varroas à l'aide d'une plaque de comptage engluée appropriée, vous connaissez précisément la situation de chaque colonie, ciblez mieux le parasite et évitez les mauvaises surprises.",
+      "items": [
+        "Utilisez un plancher grillagé (maille de 3 mm) sous lequel une plaque de comptage engluée peut être insérée de façon à empêcher le passage des abeilles.",
+        "Retirez les réducteurs d'entrée et les protections contre les souris avant le diagnostic.",
+        "Insérez la plaque exactement 3 jours avant chaque traitement prévu (première mesure : fin juillet, avant le premier traitement).",
+        "Retirez la plaque et comptez les varroas brun foncé et brun clair. Utilisez une loupe si nécessaire.",
+        "Divisez le nombre obtenu par 3 : vous obtenez la chute naturelle quotidienne de varroas, la valeur à laquelle se rapportent tous les seuils du plan."
+      ],
+      "conversionTitle": "Ce que représente la chute d'un varroa mort par jour",
+      "conversion": [
+        "Fin juillet – mi-août : environ 150 à 250 varroas vivants dans la colonie",
+        "Début – mi-septembre : environ 250 à 350 varroas vivants",
+        "Fin novembre : environ 500 varroas vivants"
+      ],
+      "note": "Ne laissez pas la plaque en place en permanence : elle attire les fourmis et les fausses teignes et ne doit être utilisée que pour le diagnostic (ou pendant un traitement à l'acide formique). Le lavage d'échantillons d'abeilles demande davantage de travail et n'est pas plus fiable que le diagnostic par les débris."
+    },
+    "aside": {
+      "thresholdsTitle": "Seuils de traitement",
+      "thresholdsDescription": "Un traitement devient urgent lorsque la chute naturelle dépasse ... varroas par jour :",
+      "periodHeader": "Période",
+      "productionHeader": "Production",
+      "nucleusHeader": "Nucléi",
+      "thresholdRows": [
+        {
+          "period": "Mi-juillet – mi-août (après récolte)",
+          "production": "10 /jour",
+          "nucleus": "5 /jour"
+        },
+        {
+          "period": "Début septembre – mi-septembre (après nourrissement)",
+          "production": "5 /jour",
+          "nucleus": "1 /jour"
+        },
+        {
+          "period": "Mi-novembre – début décembre",
+          "production": "1 /jour",
+          "nucleus": "1 /jour"
+        }
+      ],
+      "thresholdsNote": "Chute naturelle quotidienne des varroas, mesurée pendant exactement 3 jours à l'aide d'une plaque engluée placée sous un plancher grillagé.",
+      "principleTitle": "Ne traitez pas à l'aveugle !",
+      "principleBody": "Le facteur clé de réussite de cette méthode : mesurer la chute naturelle des varroas à l'aide de planchers grillagés et de plaques engluées plutôt que de traiter selon un calendrier fixe. Chaque traitement est adapté à l'infestation réelle et au développement de la colonie. Utilisée dans toute l'Allemagne depuis 2008 dans 140 ruchers amateurs, professionnels et institutionnels, cette approche a permis de maintenir les pertes de colonies à 7 % ou moins, sans produits chimiques pendant les miellées et sans acaricides laissant des résidus ou favorisant les résistances.",
+      "sourceTitle": "Source",
+      "sourceBody": "Méthode conçue par le Dr Pia Aumeier, développée avec le Dr Gerhard Liebig et le Dr Otto Boecking à l'Université de la Ruhr à Bochum dans le cadre du projet « Imkerberatung NRW » ; méthode « diviser et traiter » publiée dans le Deutsches Bienen-Journal (DNB 07/2017)."
+    },
+    "meta": {
+      "title": "Plan de lutte contre le varroa : calendrier pour colonies de production et nucléi — Hive Pal",
+      "description": "Calendrier gratuit de traitements contre le varroa sur toute la saison pour les colonies de production et les nucléi. Seuils de chute des varroas, retrait du couvain de mâles, calendrier des traitements à l'acide formique et oxalique, et méthode « diviser et traiter » expliqués pas à pas.",
+      "ogDescription": "Quand traiter chaque type de colonie contre le varroa : calendrier fondé sur des seuils et méthode « diviser et traiter ».",
+      "appName": "Plan de lutte contre le varroa pour colonies de production et nucléi",
+      "appDescription": "Calendrier de traitements contre le varroa sur toute la saison pour les colonies de production et les nucléi, fondé sur les seuils de chute naturelle des varroas, avec un guide pas à pas de la méthode « diviser et traiter ».",
+      "howTo": {
+        "name": "Comment maîtriser le varroa tout au long de la saison",
+        "description": "Plan de lutte contre le varroa en cinq étapes combinant le retrait du couvain de mâles, la constitution de nucléi, le suivi de la chute des varroas et les traitements à l'acide formique et à l'acide oxalique pendant les périodes sans couvain.",
+        "steps": [
+          {
+            "name": "Avril à juillet : retirer le couvain de mâles",
+            "text": "Retirez le couvain de mâles operculé des colonies de production 3 à 4 fois entre avril et juillet."
+          },
+          {
+            "name": "Avril à juillet : traiter les nouveaux nucléi à l'acide lactique",
+            "text": "Pulvérisez une fois les colonies de nucléus avec de l'acide lactique à 15 % pendant la période sans couvain qui suit leur constitution."
+          },
+          {
+            "name": "Fin juillet : mesurer la chute des varroas après la récolte",
+            "text": "Comptez la chute naturelle des varroas pendant exactement 3 jours. Traitez à l'acide formique uniquement au-delà de 10 varroas par jour pour une colonie de production ou de 5 pour un nucléus."
+          },
+          {
+            "name": "Août/septembre : soins de fin d'été",
+            "text": "Resserrez la colonie de production, effectuez un traitement à l'acide formique, nourrissez et mesurez à nouveau la chute des varroas, ou mettez la colonie sans couvain avec la méthode « diviser et traiter » et utilisez plutôt de l'acide oxalique."
+          },
+          {
+            "name": "Fin novembre à mi-décembre : acide oxalique",
+            "text": "Pendant la période hivernale sans couvain, faites un traitement à l'acide oxalique si la chute naturelle dépasse 1 varroa par jour."
+          }
+        ]
+      }
+    }
+  },
+  "bulkAdd": {
+    "title": "Ajouts groupés",
+    "subtitle": "Choisissez une date et les ruches concernées, créez une action, une inspection ou une entrée de reine, puis ajoutez-la à la file d'attente.",
+    "loading": "Chargement des ruches…",
+    "sections": {
+      "when": "Quand",
+      "hives": "Ruches",
+      "what": "Quoi",
+      "queue": "File d'attente"
+    },
+    "tabs": {
+      "actions": "Actions",
+      "inspections": "Inspections",
+      "queens": "Reines"
+    },
+    "hives": {
+      "filterPlaceholder": "Filtrer les ruches",
+      "selectAll": "Tout sélectionner",
+      "clearVisible": "Désélectionner les éléments visibles",
+      "noMatches": "Aucune ruche ne correspond à « {{filter}} »"
+    },
+    "datePlaceholder": "Choisir une date",
+    "applyHint": "Appliquer à {{count}} ruche le {{date}}",
+    "applyHintPlural": "Appliquer à {{count}} ruches le {{date}}",
+    "selectHivesHint": "Sélectionnez au moins une ruche à gauche",
+    "addToQueue": {
+      "action": "Ajouter l'action à la file d'attente",
+      "inspection": "Ajouter l'inspection à la file d'attente",
+      "queen": "Ajouter la reine à la file d'attente"
+    },
+    "queue": {
+      "clear": "Vider",
+      "emptyTitle": "La file d'attente est vide",
+      "emptyBody": "Créez un élément à gauche, puis ajoutez-le à la file d'attente.",
+      "submit": "Envoyer",
+      "submitOne": "Envoyer {{count}} élément",
+      "submitMany": "Envoyer {{count}} éléments",
+      "submitting": "Envoi en cours…"
+    },
+    "kind": {
+      "action": "Action",
+      "inspection": "Inspection",
+      "queen": "Reine"
+    },
+    "edit": {
+      "title": "Modifier l'action",
+      "hive": "Ruche",
+      "type": "Type",
+      "date": "Date",
+      "cancel": "Annuler",
+      "save": "Enregistrer les modifications"
+    },
+    "errors": {
+      "noHives": "Veuillez sélectionner au moins une ruche",
+      "emptyAction": "Ajoutez au moins une action à envoyer dans la file d'attente",
+      "emptyInspection": "Renseignez d'abord quelques champs de l'inspection",
+      "emptyQueen": "Renseignez d'abord les informations sur la reine",
+      "noItems": "Aucun élément à envoyer"
+    },
+    "toast": {
+      "addedOne": "{{count}} élément ajouté à la file d'attente",
+      "addedMany": "{{count}} éléments ajoutés à la file d'attente",
+      "actionUpdated": "Action mise à jour",
+      "createdOne": "{{count}} élément créé : {{breakdown}}",
+      "createdMany": "{{count}} éléments créés : {{breakdown}}",
+      "partial": "{{success}} créé(s), {{failed}} échec(s). Les éléments en échec ont été conservés dans la file d'attente.",
+      "breakdown": {
+        "actionOne": "{{count}} action",
+        "actionMany": "{{count}} actions",
+        "inspectionOne": "{{count}} inspection",
+        "inspectionMany": "{{count}} inspections",
+        "queenOne": "{{count}} reine",
+        "queenMany": "{{count}} reines"
+      }
+    }
+  },
+  "pwa": {
+    "updateAvailable": "Une nouvelle version est disponible",
+    "reload": "Recharger"
+  },
+  "actionTypes": {
+    "feeding": "Nourrissement",
+    "treatment": "Traitement",
+    "frame": "Cadres",
+    "harvest": "Récolte",
+    "boxConfiguration": "Configuration des hausses",
+    "maintenance": "Entretien",
+    "note": "Note",
+    "other": "Autre",
+    "weighing": "Pesée"
+  },
+  "table": {
+    "columns": "Colonnes",
+    "toggleColumns": "Afficher/masquer les colonnes",
+    "resetColumns": "Rétablir les colonnes par défaut"
+  },
+  "treatmentProducts": {
+    "title": "Produits de traitement",
+    "subtitle": "Définissez vos propres produits de traitement et leur composition en substances actives.",
+    "add": "Ajouter un produit",
+    "noComposition": "Aucune composition définie",
+    "withdrawalDays": "Délai d'attente : {{d}} jours",
+    "withdrawalUnknown": "Délai d'attente : non renseigné",
+    "editTitle": "Modifier le produit",
+    "dialogHint": "Indiquez la forme physique et les substances actives avec leur concentration.",
+    "name": "Nom",
+    "form": "Forme physique",
+    "method": "Mode d'application (facultatif)",
+    "defaultUnit": "Unité de quantité",
+    "withdrawal": "Délai d'attente (jours)",
+    "composition": "Substances actives",
+    "addIngredient": "Ajouter une substance active",
+    "density": "Densité (g/ml)",
+    "densityHint": "La densité est nécessaire pour convertir l'unité de quantité en une concentration exprimée dans une autre unité, et inversement.",
+    "advanced": "Paramètres avancés",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "deleteTitle": "Supprimer le produit de traitement ?",
+    "deleteDesc": "Votre produit personnalisé sera supprimé. Cette action est irréversible.",
+    "toasts": {
+      "created": "Produit de traitement créé",
+      "createFailed": "Échec de la création du produit",
+      "updated": "Produit de traitement mis à jour",
+      "updateFailed": "Échec de la mise à jour du produit",
+      "deleted": "Produit de traitement supprimé",
+      "deleteFailed": "Échec de la suppression du produit",
+      "ingredientAdded": "Substance active ajoutée",
+      "ingredientAddFailed": "Échec de l'ajout de la substance active"
+    },
+    "loading": "Chargement…",
+    "namePlaceholder": "VarroMed",
+    "ingredientPlaceholder": "Substance active"
+  },
+  "imageDisplay": {
+    "label": "Images : {{mode}}",
+    "modes": {
+      "banner": "Bannière",
+      "side": "Latéral",
+      "hidden": "Masquées"
+    }
+  },
+  "releasesPage": {
+    "meta": {
+      "title": "Notes de version - Hive Pal",
+      "description": "Suivez les dernières fonctionnalités de Hive Pal, ses améliorations et ses corrections de bugs. Découvrez les nouveautés de chaque version."
+    },
+    "brand": "Hive Pal",
+    "openSource": "Open source",
+    "home": "Accueil",
+    "github": "GitHub",
+    "signIn": "Se connecter",
+    "startFree": "Commencer gratuitement",
+    "backToHome": "Retour à l'accueil",
+    "title": "Notes de version",
+    "intro": "Suivez les dernières fonctionnalités, améliorations et corrections de bugs de Hive Pal. Suivez notre développement sur <githubLink>GitHub</githubLink>.",
+    "versionBadge": "v{{version}}",
+    "latest": "Dernière version",
+    "empty": "Aucune note de version disponible.",
+    "footer": {
+      "tagline": "Plateforme gratuite et open source de gestion apicole. Pour une apiculture plus simple, plus productive et plus agréable.",
+      "documentation": "Documentation",
+      "reportIssue": "Signaler un problème",
+      "copyright": "© 2025 Hive Pal. Publié sous licence MIT. Tous droits réservés."
+    }
+  },
+  "breadcrumbs": {
+    "queen": "Reine",
+    "details": "Détails",
+    "inspectionFrom": "Inspection du {{date}}",
+    "harvestFrom": "Récolte du {{date}}"
+  },
+  "pageTitles": {
+    "home": "Hive Pal - Logiciel moderne de gestion apicole"
+  },
+  "errorPage": {
+    "notFound": {
+      "title": "Page introuvable",
+      "message": "Nous n'avons pas trouvé la page que vous recherchez.",
+      "pageTitle": "Page introuvable - Hive Pal",
+      "heading": "Introuvable"
+    },
+    "heading": "Erreur",
+    "title": "Une erreur s'est produite",
+    "message": "Nous rencontrons un problème lors du chargement de cette page. Veuillez réessayer ou revenir à l'accueil.",
+    "code": "Erreur {{code}}",
+    "tryAgain": "Réessayer",
+    "backToHome": "Retour à l'accueil",
+    "persists": "Si le problème persiste, vérifiez votre connexion Internet ou réessayez plus tard."
+  },
+  "publicLayout": {
+    "brand": "Hive Pal",
+    "logoAlt": "Logo Hive Pal",
+    "openSource": "Open source",
+    "liebefelder": "Méthode Liebefeld",
+    "docs": "Documentation",
+    "signIn": "Se connecter",
+    "startFree": "Commencer gratuitement",
+    "tagline": "Plateforme gratuite et open source de gestion apicole.",
+    "freeTools": "Outils gratuits",
+    "project": "Projet",
+    "documentation": "Documentation",
+    "releaseNotes": "Notes de version",
+    "github": "GitHub",
+    "privacyPolicy": "Politique de confidentialité",
+    "copyright": "© {{year}} Hive Pal. Publié sous licence MIT."
+  },
+  "frameSizeToasts": {
+    "submitted": "Format de cadre envoyé pour examen",
+    "submitFailed": "Échec de l'envoi du format de cadre",
+    "updated": "Format de cadre mis à jour",
+    "updateFailed": "Échec de la mise à jour du format de cadre"
+  },
+  "frameSizes": {
+    "title": "Mes formats de cadres",
+    "description": "Formats de cadres personnalisés que vous avez créés. La modification de l'un d'eux met à jour toutes les hausses qui l'utilisent.",
+    "empty": "Aucun format de cadre personnalisé pour le moment. Ajoutez-en un lors de la modification des hausses d'une ruche.",
+    "emptyCta": "Accéder aux ruches",
+    "dimensions": "{{width}} × {{height}} × {{depth}} mm",
+    "statusShared": "Partagé",
+    "statusPending": "En attente de validation",
+    "statusRejected": "Refusé"
+  },
+  "frameSizeEdit": {
+    "title": "Modifier le format de cadre",
+    "description": "Corrigez le nom ou les dimensions. Toutes les hausses utilisant ce format de cadre seront mises à jour.",
+    "sharedNotice": "Ce format a été approuvé et est partagé avec la communauté. Toute modification s'appliquera donc également aux hausses des autres apiculteurs.",
+    "name": "Nom",
+    "width": "Largeur (mm)",
+    "height": "Hauteur (mm)",
+    "depth": "Profondeur (mm)"
+  },
+  "audioRecorder": {
+    "notSupported": "L'enregistrement audio n'est pas pris en charge par ce navigateur.",
+    "preview": "Aperçu de l'enregistrement",
+    "discard": "Supprimer",
+    "save": "Enregistrer l'enregistrement",
+    "paused": "En pause",
+    "recording": "Enregistrement en cours...",
+    "start": "Démarrer l'enregistrement",
+    "hint": "Enregistrez des notes audio pour cette inspection",
+    "empty": "Aucun enregistrement audio"
+  },
+  "fab": {
+    "addInspection": "Ajouter une inspection",
+    "open": "Ouvrir les actions rapides",
+    "close": "Fermer les actions rapides"
+  },
+  "qrScanner": {
+    "title": "Scanner un code QR",
+    "description": "Pointez votre caméra vers le code QR d'une ruche pour accéder à sa fiche",
+    "cameraUnavailable": "L'accès à la caméra n'est pas disponible dans ce navigateur."
+  },
+  "temperatureField": {
+    "placeholder": "Saisir la température"
+  },
+  "numericField": {
+    "increment": "Augmenter la valeur",
+    "decrement": "Diminuer la valeur"
   }
 }
