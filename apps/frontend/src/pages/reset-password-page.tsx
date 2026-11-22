@@ -12,6 +12,8 @@ const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token');
+  // Account-setup links from an admin reuse this page with ?setup=1.
+  const isSetup = searchParams.get('setup') === '1';
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -116,7 +118,9 @@ const ResetPasswordPage = () => {
         <h1 className="text-center text-2xl font-semibold mb-2">
           {t('appTitle')}
         </h1>
-        <h2 className="text-center text-lg mb-8">{t('resetPassword.title')}</h2>
+        <h2 className="text-center text-lg mb-8">
+          {t(isSetup ? 'resetPassword.setupTitle' : 'resetPassword.title')}
+        </h2>
       </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -172,7 +176,11 @@ const ResetPasswordPage = () => {
               >
                 {isLoading
                   ? t('common:status.loading')
-                  : t('resetPassword.resetButton')}
+                  : t(
+                      isSetup
+                        ? 'resetPassword.setupButton'
+                        : 'resetPassword.resetButton',
+                    )}
               </Button>
             </div>
 

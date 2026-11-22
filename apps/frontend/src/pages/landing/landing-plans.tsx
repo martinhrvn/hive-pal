@@ -9,6 +9,7 @@ import {
 import { MarketingButton } from '@/components/marketing/marketing-button';
 import { MarketingHeading } from '@/components/marketing/marketing-primitives';
 import { GITHUB_URL } from '@/components/marketing/marketing-constants';
+import { useSignUpAvailable } from '@/hooks/use-sign-up-available';
 
 /** `t(key, { returnObjects: true })` as a string list, empty if the key is missing. */
 const toList = (value: unknown): string[] =>
@@ -74,6 +75,7 @@ function PlanCard({
 
 export function LandingPlans() {
   const { t } = useTranslation('common');
+  const signUpAvailable = useSignUpAvailable();
   return (
     <section className="border-b border-stone-900/10 bg-cream py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -133,8 +135,10 @@ export function LandingPlans() {
                 className="w-full shadow-none"
                 asChild
               >
-                <Link to="/register">
-                  {t('marketing.landing.run.hosted.cta')}
+                <Link to={signUpAvailable ? '/register' : '/login'}>
+                  {signUpAvailable
+                    ? t('marketing.landing.run.hosted.cta')
+                    : t('marketing.nav.signIn')}
                   <ArrowUpRight className="size-4" />
                 </Link>
               </MarketingButton>

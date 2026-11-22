@@ -1,7 +1,9 @@
 import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { ArrowUpRight, Rocket } from 'lucide-react';
 import { GithubIcon } from '@/components/icons/github-icon';
 import { cn } from '@/lib/utils';
+import { useSignUpAvailable } from '@/hooks/use-sign-up-available';
 import { MarketingButton } from './marketing-button';
 import { GITHUB_URL, MARKETING_FOCUS } from './marketing-constants';
 import { HexBullet } from './marketing-chrome';
@@ -93,7 +95,8 @@ export function FeatureItem({
 }
 
 /**
- * The sign-up + GitHub button pair.
+ * The sign-up + GitHub button pair. When the instance has closed sign-up
+ * (DISABLE_REGISTRATION), the sign-up button becomes a sign-in link.
  * - `heroOnImage`: amber sign-up over the hero photo
  * - `hero`: dark sign-up on cream
  * - `closing`: end-of-page call to action with a trailing arrow
@@ -107,13 +110,15 @@ export function MarketingCtas({
   signupLabel: string;
   githubLabel: string;
 }>) {
+  const { t } = useTranslation('common');
+  const signUpAvailable = useSignUpAvailable();
   const onImage = variant === 'heroOnImage';
   return (
     <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
       <MarketingButton size="lg" variant={onImage ? 'primary' : 'dark'} asChild>
-        <Link to="/register">
+        <Link to={signUpAvailable ? '/register' : '/login'}>
           {variant !== 'closing' && <Rocket className="size-4" />}
-          {signupLabel}
+          {signUpAvailable ? signupLabel : t('marketing.nav.signIn')}
           {variant === 'closing' && <ArrowUpRight className="size-4" />}
         </Link>
       </MarketingButton>

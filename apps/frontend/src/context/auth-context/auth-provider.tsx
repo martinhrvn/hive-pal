@@ -51,7 +51,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [user?.passwordChangeRequired]);
 
-  // SSO-created accounts must accept the privacy policy once before using the app
+  // Accounts that skipped the signup form (SSO, created by an admin) must accept
+  // the privacy policy once before using the app
   useEffect(() => {
     const path = window.location.pathname;
     if (

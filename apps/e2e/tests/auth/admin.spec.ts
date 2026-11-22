@@ -30,7 +30,7 @@ test('Admin can view users', async ({ page, isMobile }) => {
     }
     await page.getByRole('link', {name: 'Users'}).click()
     await expect(page).toHaveURL('/admin/users')
-    await expect(page.getByText('Manage users and reset passwords')).toBeVisible()
+    await expect(page.getByText('Create accounts, find users and manage their access')).toBeVisible()
 })
 
 test('Admin can reset password', async ({ page, browser }) => {
@@ -48,12 +48,13 @@ test('Admin can reset password', async ({ page, browser }) => {
     const adminContext = await browser.newContext({ storageState: 'playwright/.auth/admin.json' });
     const adminPage = await adminContext.newPage();
 
-    await adminPage.goto('/admin/users')
+    await adminPage.goto(`/admin/users?q=${encodeURIComponent(name)}`)
     await takeScreenshot(adminPage, 'user-list')
-    await adminPage.getByRole('row').filter({ hasText: name }).getByRole('button', { name: 'Reset password'}).click()
-    await adminPage.getByRole('textbox').fill('new-password')
+    await adminPage.getByRole('button', { name: `Actions for ${name}` }).click()
+    await adminPage.getByRole('menuitem', { name: 'Reset password' }).click()
+    await adminPage.getByLabel('Temporary password').fill('new-password')
     await takeScreenshot(adminPage, 'reset-password')
-    await adminPage.getByRole('button', { name: 'Reset password'}).click()
+    await adminPage.getByRole('dialog').getByRole('button', { name: 'Reset password'}).click()
     await expect(adminPage.getByText('Password reset successful')).toBeVisible()
 
     await signupPage.logOut()
@@ -66,4 +67,35 @@ test('Admin can reset password', async ({ page, browser }) => {
 
     await userPage.getByText('Forgetful Sam')
 
+})
+
+test('Admin can create a user with a temporary password', async ({ browser }) => {
+    const adminContext = await browser.newContext({ storageState: 'playwright/.auth/admin.json' });
+    const adminPage = await adminContext.newPage();
+    const email = `${generateRandomString(6, false)}@created.com`
+
+    await adminPage.goto('/admin/users')
+    await adminPage.getByRole('button', { name: 'Create user' }).click()
+    const dialog = adminPage.getByRole('dialog')
+    await dialog.getByLabel('Name').fill('Created Carla')
+    await dialog.getByLabel('Email').fill(email)
+    await dialog.getByLabel('Temporary password').fill('temp-password-1')
+    await takeScreenshot(adminPage, 'create-user')
+    await dialog.getByRole('button', { name: 'Create user' }).click()
+    await expect(dialog.getByText('temp-password-1')).toBeVisible()
+    await dialog.getByRole('button', { name: 'Close' }).first().click()
+
+    await adminPage.goto(`/admin/users?q=${encodeURIComponent(email)}`)
+    await expect(adminPage.getByText('Must change password')).toBeVisible()
+
+    const userContext = await browser.newContext({ storageState: { cookies: [], origins: []} });
+    const loginPage = new LoginPage(await userContext.newPage())
+    await loginPage.logIn(email, 'temp-password-1')
+    await expect(loginPage.page).toHaveURL('/account/change-password')
+    await loginPage.changePassword('temp-password-1', 'my-own-password')
+    // Changing the password signs out; admin-created accounts never saw the
+    // signup form's privacy checkbox, so the next sign-in asks for consent.
+    await expect(loginPage.page).toHaveURL('/login')
+    await loginPage.logIn(email, 'my-own-password')
+    await expect(loginPage.page).toHaveURL('/account/consent')
 })

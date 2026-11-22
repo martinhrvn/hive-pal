@@ -5,6 +5,7 @@ import { GithubIcon } from '@/components/icons/github-icon';
 import { Button } from '@/components/ui/button';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
 import { LanguageMenu } from '@/components/language-menu';
+import { useSignUpAvailable } from '@/hooks/use-sign-up-available';
 
 const TOOL_LINKS = [
   {
@@ -32,6 +33,7 @@ const TOOL_LINKS = [
 export const PublicLayout = () => {
   const localize = useLocalizedPath();
   const { t } = useTranslation('common');
+  const signUpAvailable = useSignUpAvailable();
   return (
     <div className="min-h-screen w-full flex flex-col bg-gradient-to-br from-amber-50 to-green-50">
       <header className="bg-white/80 backdrop-blur-sm border-b">
@@ -76,13 +78,15 @@ export const PublicLayout = () => {
               <Button variant="outline" size="sm" asChild>
                 <Link to="/login">{t('publicLayout.signIn')}</Link>
               </Button>
-              <Button
-                asChild
-                size="sm"
-                className="bg-amber-500 hover:bg-amber-600"
-              >
-                <Link to="/register">{t('publicLayout.startFree')}</Link>
-              </Button>
+              {signUpAvailable && (
+                <Button
+                  asChild
+                  size="sm"
+                  className="bg-amber-500 hover:bg-amber-600"
+                >
+                  <Link to="/register">{t('publicLayout.startFree')}</Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>

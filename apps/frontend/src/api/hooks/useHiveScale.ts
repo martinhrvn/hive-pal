@@ -6,27 +6,10 @@ import type {
   HiveHubTempCompensationFit,
 } from 'shared-schemas';
 import { apiClient } from '../client';
+import { apiErrorMessage } from '../api-error-message';
 
-/**
- * Pull the backend message out of an Axios error so a toast shows e.g. "No
- * active hiveinside firmware release" instead of "Request failed with status
- * code 404".
- */
-export function hiveHubErrorMessage(error: unknown, fallback: string): string {
-  if (isAxiosError<{ message?: string | string[] }>(error)) {
-    const data = error.response?.data;
-    const message =
-      typeof data === 'object' && data !== null
-        ? Array.isArray(data.message)
-          ? data.message.join(', ')
-          : data.message
-        : typeof data === 'string'
-          ? data
-          : undefined;
-    return message || error.message || fallback;
-  }
-  return error instanceof Error ? error.message : fallback;
-}
+/** @see apiErrorMessage */
+export const hiveHubErrorMessage = apiErrorMessage;
 
 export interface HiveScaleDevice {
   device_id: string;

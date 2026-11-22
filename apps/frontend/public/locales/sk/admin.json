@@ -1,6 +1,6 @@
 {
   "title": "Správa používateľov",
-  "description": "Spravovať používateľov a resetovať heslá",
+  "description": "Vytvárajte účty, vyhľadávajte používateľov a spravujte ich prístup",
   "table": {
     "email": "Email",
     "name": "Meno",
@@ -37,7 +37,7 @@
   },
   "resetPasswordDialog": {
     "title": "Resetovať heslo používateľa",
-    "description": "Nastavte dočasné heslo pre {email}. Používateľ bude musieť zmeniť svoje heslo pri ďalšom prihlásení.",
+    "description": "Nastavte dočasné heslo pre {{email}}. Pri ďalšom prihlásení si ho bude musieť zmeniť.",
     "tempPasswordLabel": "Dočasné heslo",
     "tempPasswordPlaceholder": "Zadajte dočasné heslo",
     "minCharacters": "Minimálne {{count}} znakov",
@@ -255,6 +255,96 @@
       "createFailed": "Token workera sa nepodarilo vytvoriť",
       "revoked": "Token workera bol zrušený",
       "revokeFailed": "Token workera sa nepodarilo zrušiť"
+    }
+  },
+  "users": {
+    "registrationClosed": "Verejná registrácia je na tomto serveri vypnutá, nové účty sa vytvárajú tu.",
+    "createButton": "Vytvoriť používateľa",
+    "searchLabel": "Hľadať používateľov",
+    "searchPlaceholder": "Hľadať podľa mena alebo e-mailu",
+    "count_one": "{{count}} používateľ",
+    "count_few": "{{count}} používatelia",
+    "count_many": "{{count}} používateľa",
+    "count_other": "{{count}} používateľov",
+    "you": "Vy",
+    "filters": {
+      "allRoles": "Všetky roly",
+      "allStatuses": "Všetky stavy"
+    },
+    "roles": {
+      "USER": "Používateľ",
+      "ADMIN": "Správca"
+    },
+    "status": {
+      "active": "Aktívny",
+      "banned": "Zablokovaný",
+      "mustChangePassword": "Musí zmeniť heslo"
+    },
+    "table": {
+      "user": "Používateľ",
+      "lastLogin": "Posledné prihlásenie",
+      "never": "Nikdy"
+    },
+    "empty": {
+      "title": "Žiadny používateľ nezodpovedá filtru",
+      "description": "Skúste iné vyhľadávanie alebo zrušte filtre.",
+      "noUsers": "Prvý účet vytvoríte tlačidlom Vytvoriť používateľa.",
+      "clear": "Zrušiť filtre"
+    },
+    "actions": {
+      "menu": "Akcie pre {{email}}",
+      "view": "Zobraziť detail",
+      "makeAdmin": "Urobiť správcom",
+      "makeUser": "Odobrať rolu správcu",
+      "ban": "Zablokovať",
+      "unban": "Odblokovať",
+      "delete": "Odstrániť používateľa"
+    },
+    "toasts": {
+      "roleChanged": "{{email}} má teraz rolu: {{role}}",
+      "banned": "{{email}} je zablokovaný",
+      "unbanned": "{{email}} sa môže znova prihlásiť",
+      "deleted": "{{email}} bol odstránený"
+    },
+    "password": {
+      "generate": "Vygenerovať",
+      "copy": "Kopírovať heslo",
+      "copied": "Heslo skopírované",
+      "copyFailed": "Kopírovanie zlyhalo. Označte heslo a skopírujte ho ručne."
+    },
+    "create": {
+      "title": "Vytvoriť používateľa",
+      "description": "Účet funguje hneď, aj keď je verejná registrácia vypnutá.",
+      "name": "Meno",
+      "credential": "Ako sa bude prihlasovať?",
+      "credentialPassword": "Dočasné heslo",
+      "credentialSetupLink": "Poslať odkaz e-mailom",
+      "mailDisabled": "Na tomto serveri nie je nastavený e-mail, odkaz na nastavenie preto nemožno poslať.",
+      "passwordHint": "Odovzdajte mu ho. Pri prvom prihlásení si zvolí nové heslo.",
+      "setupLinkHint": "Dostane e-mail s odkazom, kde si zvolí vlastné heslo. Odkaz platí {{hours}} hodín.",
+      "submit": "Vytvoriť používateľa",
+      "createdPassword": "{{email}} sa teraz môže prihlásiť týmto dočasným heslom. Skopírujte si ho, znova sa už nezobrazí.",
+      "createdSetupLink": "Odkaz na nastavenie účtu bol odoslaný na {{email}}.",
+      "errors": {
+        "nameRequired": "Zadajte meno",
+        "emailInvalid": "Zadajte platnú e-mailovú adresu",
+        "emailTaken": "Používateľ s týmto e-mailom už existuje"
+      }
+    },
+    "ban": {
+      "title": "Zablokovať {{email}}?",
+      "description": "Hneď bude odhlásený a nebude sa môcť prihlásiť, kým ho neodblokujete.",
+      "reason": "Dôvod (nepovinné)",
+      "reasonPlaceholder": "Vidia ho iba správcovia"
+    },
+    "delete": {
+      "title": "Odstrániť {{email}}?",
+      "description": "Natrvalo odstráni účet a všetky jeho včelnice, úle a prehliadky. Nedá sa to vrátiť späť."
+    },
+    "detail": {
+      "lastLogin": "Posledné prihlásenie:",
+      "memberSince": "Členom od",
+      "banReason": "Dôvod zablokovania: {{reason}}"
     }
   }
 }

@@ -3,14 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useSharedResource } from '@/api/hooks/useShares';
-import { ShareResourceType } from 'shared-schemas';
+import {
+  ShareResourceType,
+  type SharedInspectionResponse,
+} from 'shared-schemas';
 import { useTranslation } from 'react-i18next';
+import { useSignUpAvailable } from '@/hooks/use-sign-up-available';
 
 // Unit symbol shown when a shared harvest hive has no unit recorded.
 const DEFAULT_HONEY_UNIT = 'kg';
 
 export function SharedPage() {
   const { t, i18n } = useTranslation('share');
+  const signUpAvailable = useSignUpAvailable();
   const { token } = useParams<{ token: string }>();
   const { data, isLoading, error } = useSharedResource(token ?? '');
 
@@ -33,9 +38,11 @@ export function SharedPage() {
             <p className="text-muted-foreground mb-4">
               {t('shared.notFound.description')}
             </p>
-            <Link to="/register">
-              <Button>{t('shared.notFound.signUp')}</Button>
-            </Link>
+            {signUpAvailable && (
+              <Link to="/register">
+                <Button>{t('shared.notFound.signUp')}</Button>
+              </Link>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -55,9 +62,11 @@ export function SharedPage() {
       })
     : t('shared.og.inspectionTitle', { hiveName: data.hiveName });
 
+  const temperatureSuffix =
+    !isHarvest && data.temperature ? ` - ${data.temperature}°C` : '';
   const ogDescription = isHarvest
     ? `${data.apiaryName} - ${dateStr}`
-    : `${dateStr}${data.temperature ? ` - ${data.temperature}°C` : ''}`;
+    : `${dateStr}${temperatureSuffix}`;
 
   const imageUrl = token
     ? `${window.location.origin}/api/shares/${token}/image`
@@ -83,9 +92,11 @@ export function SharedPage() {
               />
               {t('shared.brand')}
             </Link>
-            <Link to="/register">
-              <Button size="sm">{t('shared.signUpFree')}</Button>
-            </Link>
+            {signUpAvailable && (
+              <Link to="/register">
+                <Button size="sm">{t('shared.signUpFree')}</Button>
+              </Link>
+            )}
           </div>
         </header>
 
@@ -98,19 +109,21 @@ export function SharedPage() {
           )}
 
           {/* CTA */}
-          <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="pt-6 text-center">
-              <h3 className="text-lg font-semibold mb-2">
-                {t('shared.cta.title')}
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                {t('shared.cta.description')}
-              </p>
-              <Link to="/register">
-                <Button>{t('shared.signUpFree')}</Button>
-              </Link>
-            </CardContent>
-          </Card>
+          {signUpAvailable && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="pt-6 text-center">
+                <h3 className="text-lg font-semibold mb-2">
+                  {t('shared.cta.title')}
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  {t('shared.cta.description')}
+                </p>
+                <Link to="/register">
+                  <Button>{t('shared.signUpFree')}</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
         </main>
       </div>
     </>
@@ -195,9 +208,9 @@ function HarvestView({
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {harvest.harvestHives.map((hh, i) => (
+            {harvest.harvestHives.map(hh => (
               <div
-                key={i}
+                key={hh.hiveName}
                 className="flex items-center justify-between p-3 border rounded-lg"
               >
                 <div>
@@ -218,6 +231,22 @@ function HarvestView({
       </Card>
     </>
   );
+}
+
+type SharedObservation = SharedInspectionResponse['observations'][number];
+
+/** Yes/no, a number, or free text: whichever value the observation holds. */
+function formatObservationValue(
+  obs: SharedObservation,
+  t: (key: string) => string,
+): string | number {
+  if (obs.booleanValue != null) {
+    return t(
+      obs.booleanValue ? 'shared.inspection.yes' : 'shared.inspection.no',
+    );
+  }
+  if (obs.numericValue != null) return obs.numericValue;
+  return obs.textValue || '-';
 }
 
 function InspectionView({
@@ -332,20 +361,13 @@ function InspectionView({
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-3">
-              {inspection.observations.map((obs, i) => (
-                <div key={i} className="p-3 border rounded-lg">
+              {inspection.observations.map(obs => (
+                <div key={obs.type} className="p-3 border rounded-lg">
                   <p className="text-sm text-muted-foreground">
                     {obs.type.replace(/_/g, ' ')}
                   </p>
                   <p className="font-medium">
-                    {obs.booleanValue !== null && obs.booleanValue !== undefined
-                      ? obs.booleanValue
-                        ? t('shared.inspection.yes')
-                        : t('shared.inspection.no')
-                      : obs.numericValue !== null &&
-                          obs.numericValue !== undefined
-                        ? obs.numericValue
-                        : obs.textValue || '-'}
+                    {formatObservationValue(obs, t)}
                   </p>
                 </div>
               ))}
@@ -361,8 +383,8 @@ function InspectionView({
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
-              {inspection.notes.map((note, i) => (
-                <li key={i} className="text-sm">
+              {inspection.notes.map(note => (
+                <li key={note} className="text-sm">
                   {note}
                 </li>
               ))}

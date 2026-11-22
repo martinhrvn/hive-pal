@@ -11,9 +11,11 @@ import { GithubIcon } from '@/components/icons/github-icon';
 import { PublicMeta } from '@/components/seo/public-meta';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
 import { LanguageMenu } from '@/components/language-menu';
+import { useSignUpAvailable } from '@/hooks/use-sign-up-available';
 
 export function ReleasesPage() {
   const { t } = useTranslation('common');
+  const signUpAvailable = useSignUpAvailable();
   const localize = useLocalizedPath();
   const { releaseNotes, loadReleaseNotes, isLoading } = useReleaseNotes();
 
@@ -81,9 +83,11 @@ export function ReleasesPage() {
               <Button variant="outline" asChild>
                 <Link to="/login">{t('releasesPage.signIn')}</Link>
               </Button>
-              <Button asChild className="bg-amber-500 hover:bg-amber-600">
-                <Link to="/register">{t('releasesPage.startFree')}</Link>
-              </Button>
+              {signUpAvailable && (
+                <Button asChild className="bg-amber-500 hover:bg-amber-600">
+                  <Link to="/register">{t('releasesPage.startFree')}</Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>

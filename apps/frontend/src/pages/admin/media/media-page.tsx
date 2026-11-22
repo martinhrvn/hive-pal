@@ -39,13 +39,12 @@ import {
   Image as ImageIcon,
   HardDrive,
   Files,
-  ChevronLeft,
-  ChevronRight,
   Eye,
 } from 'lucide-react';
 import type { AdminMediaItem, AdminMediaType } from 'shared-schemas';
 import { formatBytes } from './format-bytes';
 import { MediaPreviewDialog } from './media-preview-dialog';
+import { ListPagination } from '@/components/common/list-pagination';
 
 type TypeFilter = AdminMediaType | 'all';
 
@@ -294,25 +293,13 @@ const MediaPage: React.FC = () => {
             </TableBody>
           </Table>
 
-          <div className="flex items-center justify-end gap-2 mt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" /> {t('media.prev')}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= totalPages}
-              onClick={() => setPage(p => p + 1)}
-            >
-              {t('common:actions.next')}{' '}
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          </div>
+          <ListPagination
+            className="mt-4"
+            page={page}
+            pageSize={pageSize}
+            total={list?.total ?? 0}
+            onPageChange={setPage}
+          />
         </CardContent>
       </Card>
 
