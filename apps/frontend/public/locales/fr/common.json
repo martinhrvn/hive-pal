@@ -697,7 +697,7 @@
     "durationOther": "{{count}} jours",
     "queenEggDesc": "Pondus dans une cupule à reine",
     "queenLarvaDesc": "Nourrie exclusivement à la gelée royale",
-    "queenPupaDesc": "La cellule est operculée ; la nymphe se transforme en faux-bourdon",
+    "queenPupaDesc": "La cellule est operculée et la nymphe se développe rapidement.",
     "queenAdultDesc": "Émerge, s’accouple dans les jours suivants",
     "workerEggDesc": "Petit œuf blanc dressé dans la cellule",
     "workerLarvaDesc": "Nourrie à la gelée royale, puis au pain d’abeille et au miel",
@@ -783,7 +783,7 @@
       ],
       "criticalTimingTitle": "Périodes clés",
       "criticalTimingLead": "C'est lors de la première visite de suivi que le respect du calendrier est le plus important.",
-      "criticalTimingDetail": "Si cette vérification des cellules royales est effectuée au-delà de la période recommandée, les reines peuvent être proches de leur émergence et la colonie peut rapidement retrouver une dynamique d'essaimage."
+      "criticalTimingDetail": "Si cette vérification des cellules royales est effectuée au-delà de la période recommandée, les reines peuvent être sur le point d'émerger et la colonie peut rapidement retrouver une dynamique d'essaimage."
     },
     "demaree": {
       "badge": "Méthode de référence",
@@ -793,14 +793,14 @@
       "overviewLead": "Utilisez la méthode Demaree lorsque la colonie est forte, que la reine pond activement et que vous souhaitez réduire la pression d'essaimage sans diviser la colonie de production en plusieurs colonies.",
       "overviewPoints": [
         "Lisez l'intégralité de la méthode avant d'ouvrir la ruche, puis appliquez-la de manière cohérente afin que le déplacement du couvain, la disposition des corps de ruche et le retour des butineuses contribuent tous au même objectif.",
-        "Maintenez la reine pondeuse sous la grille à reine, en lui laissant suffisamment de place pour poursuivre sa ponte. Placez la majeure partie du couvain au-dessus et donnez de l'espace supplémentaire à la colonie vers le haut afin d'éviter que l'encombrement ne se reconstitue trop rapidement.",
+        "Maintenez la reine pondeuse sous la grille à reine, en lui laissant suffisamment de place pour poursuivre sa ponte. Placez la majeure partie du couvain au-dessus et veillez à laisser suffisamment d'espace au-dessus du nid à couvain pour éviter que l'encombrement ne se reforme rapidement.",
         "Une fois la mise en place initiale terminée, générez le plan de suivi à partir de la date réelle de mise en place. Considérez les bandeaux d'avertissement comme des invitations à revoir votre calendrier, en particulier pour la vérification des cellules royales prévue entre le 7e et le 8e jour."
       ],
       "prerequisitesTitle": "Prérequis",
       "prerequisites": [
         "Vérifiez que la colonie est suffisamment forte et dispose d'assez d'abeilles et de couvain pour justifier le recours à cette méthode.",
         "Confirmez la présence de signes manifestes de préparation à l'essaimage, tels qu'un encombrement de la ruche, des cellules royales amorcées et approvisionnées, ou une colonie qui se développe très rapidement pendant la miellée.",
-        "Assurez-vous de pouvoir repérer la reine pondeuse et de la maintenir dans le corps inférieur de la ruche.",
+        "Assurez-vous de pouvoir repérer la reine pondeuse et de la maintenir dans le corps de ruche inférieur.",
         "Préparez une grille à reine ainsi qu'au moins deux hausses à placer au-dessus.",
         "Préparez un corps de ruche supplémentaire équipé de cadres bâtis afin de pouvoir réorganiser la colonie sans restreindre l'espace disponible pour la ponte de la reine.",
         "Choisissez une période de météo stable afin que la colonie puisse se réorganiser sans interruption prolongée."
@@ -812,7 +812,7 @@
           "title": "Préparation",
           "items": [
             {
-              "text": "Préparez un corps de ruche supplémentaire équipé de cadres avec des feuilles de cire gaufrée ou des rayons déjà bâtis.",
+              "text": "Préparez un corps de ruche supplémentaire équipé de cadres garnis de cire gaufrée ou de rayons bâtis.",
               "children": [
                 "L'utilisation de feuilles de cire gaufrée peut réduire la récolte de miel, car les abeilles consommeront une part importante de leurs réserves pour produire de la cire et bâtir les rayons."
               ]
@@ -942,7 +942,7 @@
           },
           {
             "question": "Quel matériel faut-il pour appliquer la méthode Demaree ?",
-            "answer": "Il vous faut une grille à reine (parfois deux), un corps de couvain supplémentaire avec des rayons bâtis ou des cadres gaufrés, ainsi qu'au moins deux hausses à miel à placer entre la reine et le couvain déplacé."
+            "answer": "Il vous faut une grille à reine (parfois deux), un corps de ruche supplémentaire avec des rayons bâtis ou des cadres gaufrés, ainsi qu'au moins deux hausses à miel à placer entre la reine et le couvain déplacé."
           },
           {
             "question": "Quel est le principal risque de la méthode Demaree ?",
@@ -962,7 +962,7 @@
           "steps": [
             {
               "name": "Préparation",
-              "text": "Placez un corps de couvain supplémentaire contenant des rayons bâtis ou des cadres gaufrés sous le corps de couvain existant, sur le plancher de la ruche."
+              "text": "Placez sur le plancher de la ruche un corps de ruche supplémentaire contenant des rayons bâtis ou des cadres gaufrés, sous le nid à couvain existant."
             },
             {
               "name": "Rechercher la reine",
@@ -1091,7 +1091,7 @@
         "Vérifiez que la colonie est forte et dispose de suffisamment d'abeilles et de couvain pour justifier la division.",
         "Repérez la reine pondeuse et assurez-vous de pouvoir la capturer et la déplacer : vous devrez la transférer dans la nouvelle ruche.",
         "Préparez un plancher, un corps de ruche avec des rayons bâtis, une grille à reine, un couvre-cadres et un toit supplémentaires.",
-        "Préparez un deuxième plancher et un emplacement pour la colonie souche avec son couvain.",
+        "Préparez un deuxième plancher et un support de ruche pour y installer la colonie souche avec son couvain.",
         "Choisissez une période de météo stable pour permettre aux deux colonies de se réorganiser sans interruption prolongée."
       ],
       "stepsTitle": "Détail de la méthode",
@@ -1104,7 +1104,7 @@
               "text": "Trouvez un corps de ruche supplémentaire avec des rayons bâtis (et non des cadres gaufrés, qui ralentiraient le développement de la nouvelle colonie)."
             },
             {
-              "text": "Préparez un deuxième plancher et un emplacement situés à quelques mètres de l'emplacement initial."
+              "text": "Préparez un deuxième plancher et un support de ruche, à quelques mètres de l'emplacement initial."
             }
           ]
         },
@@ -1296,7 +1296,7 @@
           "steps": [
             {
               "name": "Préparation",
-              "text": "Trouvez un corps de ruche supplémentaire avec des rayons bâtis et préparez un deuxième plancher ainsi qu'un emplacement situé à quelques mètres."
+              "text": "Trouvez un corps de ruche supplémentaire avec des rayons bâtis, puis préparez un deuxième plancher et un support de ruche à quelques mètres de l'emplacement initial."
             },
             {
               "name": "Déplacer la reine",
@@ -1356,7 +1356,7 @@
               "text": "Trouvez un corps de ruche supplémentaire avec des rayons bâtis (et non des cadres gaufrés, qui ralentiraient le développement de la nouvelle colonie)."
             },
             {
-              "text": "Préparez un deuxième plancher et un emplacement situés à quelques mètres de l'emplacement initial."
+              "text": "Préparez un deuxième plancher et un support de ruche, à quelques mètres de l'emplacement initial."
             }
           ]
         },
@@ -1384,7 +1384,7 @@
               "text": "Transférez au centre du nouveau corps le cadre portant la cellule royale."
             },
             {
-              "text": "Complétez le nouveau corps avec des cadres de rayons bâtis et veillez à ce que les réserves soient suffisantes."
+              "text": "Complétez le nouveau corps de ruche avec des cadres de rayons bâtis et veillez à ce que la colonie dispose de réserves alimentaires suffisantes."
             }
           ]
         },
@@ -1545,7 +1545,7 @@
           "steps": [
             {
               "name": "Préparation",
-              "text": "Trouvez un corps de ruche supplémentaire avec des rayons bâtis et préparez un deuxième plancher ainsi qu'un emplacement situé à quelques mètres."
+              "text": "Trouvez un corps de ruche supplémentaire avec des rayons bâtis, puis préparez un deuxième plancher et un support de ruche à quelques mètres de l'emplacement initial."
             },
             {
               "name": "Déplacer la colonie souche",
@@ -2199,7 +2199,7 @@
         },
         "open": {
           "title": "Couvain ouvert d'ouvrières",
-          "description": "Les cellules de couvain ouvert d'ouvrières émergeront dans les 13 à 21 jours."
+          "description": "Les ouvrières issues du couvain ouvert émergent dans un délai de 13 à 21 jours."
         },
         "drone": {
           "title": "Couvain de mâles",
@@ -2284,7 +2284,7 @@
           "badge": "3–4 fois",
           "title": "Détruire le couvain de mâles",
           "items": [
-            "À la floraison des cerisiers, équipez chaque colonie d'une grille à reine et d'une hausse à miel, puis placez un cadre à mâles vide dans le corps de couvain supérieur, entre le cadre de rive et les cadres bâtis.",
+            "À la floraison des cerisiers, équipez chaque colonie d'une grille à reine et d'une hausse à miel, puis placez un cadre à mâles vide dans le corps de ruche supérieur, entre le cadre de rive et les cadres bâtis.",
             "Retirez et détruisez le cadre au plus tôt après 14 jours et au plus tard après 24 jours : ne laissez jamais émerger les mâles. Répétez l'opération aussi souvent que possible d'avril à juillet."
           ]
         },
@@ -2306,7 +2306,7 @@
             "condition": "Chute naturelle supérieure à 10 varroas par jour :",
             "action": "1 traitement d'urgence"
           },
-          "note": "Nécessaire très rarement. En dessous du seuil, ne traitez pas : préservez le couvain et les abeilles."
+          "note": "Ce traitement d'urgence est très rarement nécessaire. En dessous du seuil, ne traitez pas : préservez le couvain et les abeilles."
         },
         "nucleus": {
           "monitor": "Comptage des varroas sur 3 jours.",
@@ -2314,7 +2314,7 @@
             "condition": "Chute naturelle supérieure à 5 varroas par jour :",
             "action": "1 traitement d'urgence"
           },
-          "note": "Nécessaire très rarement. En dessous du seuil, ne traitez pas."
+          "note": "Ce traitement d'urgence est très rarement nécessaire. En dessous du seuil, ne traitez pas."
         }
       },
       "lateAugust": {
@@ -2322,7 +2322,7 @@
         "production": {
           "title": "Commencer les soins de fin d'été",
           "items": [
-            "Resserrez la colonie en retirant le corps de couvain inférieur (hygiène des rayons).",
+            "Resserrez la colonie en retirant le corps de ruche inférieur (hygiène des rayons).",
             "Effectuez un traitement à l'acide formique.",
             "Distribuez ensuite une grande portion de nourriture pour constituer les réserves hivernales."
           ],
@@ -2362,7 +2362,7 @@
             "condition": "Chute naturelle supérieure à 1 varroa par jour :",
             "action": "1 traitement résiduel"
           },
-          "note": "Faites couler 30 à 50 ml de solution d'acide oxalique à 3,5 % sur les abeilles dans les intercadres occupés. En dessous du seuil, aucun traitement n'est nécessaire."
+          "note": "Appliquez 30 à 50 ml de solution d'acide oxalique à 3,5 % par dégouttement au niveau des intercadres occupés par les abeilles. En dessous du seuil, aucun traitement n'est nécessaire."
         },
         "nucleus": {
           "monitor": "Pendant la période hivernale sans couvain : comptez les varroas sur 3 jours.",
@@ -2370,7 +2370,7 @@
             "condition": "Chute naturelle supérieure à 1 varroa par jour :",
             "action": "1 traitement résiduel"
           },
-          "note": "Faites couler 30 à 50 ml de solution d'acide oxalique à 3,5 %. En dessous du seuil, aucun traitement n'est nécessaire."
+          "note": "Appliquez 30 à 50 ml de solution d'acide oxalique à 3,5 % par dégouttement. En dessous du seuil, aucun traitement n'est nécessaire."
         }
       }
     },
@@ -2398,7 +2398,7 @@
           "points": [
             "Les deux corps de ruche sont placés sur un nouveau plancher, soit directement au-dessus de l'unité des butineuses (dans le même sens d'envol), soit à quelques mètres de distance.",
             "Elle contient tout le couvain et environ 90 % des varroas. Les abeilles qui partent butiner retournent toutefois dans l'unité des butineuses.",
-            "Élève une reine de sauveté à partir des plus jeunes larves ; dans environ 90 % des cas, celle-ci réussit son vol de fécondation.",
+            "Élève une reine de sauveté à partir des plus jeunes larves ; dans environ 90 % des cas, elle est fécondée.",
             "Se retrouve sans couvain au jour X+21, lorsque tout le couvain d'ouvrières a émergé : c'est le moment de traiter."
           ]
         }
@@ -2418,10 +2418,10 @@
           "day": "Jour X",
           "title": "Diviser la colonie",
           "items": [
-            "Par beau temps, séparez la colonie. Placez la hausse avec les abeilles sur le plancher d'origine : elle devient l'unité des butineuses. Si elle ne contient aucune réserve alimentaire, ajoutez un cadre de nourriture (1 à 2 kg, généralement situé en bordure du corps de couvain supérieur).",
-            "Trouvez la reine dans le corps de couvain (elle se trouve généralement dans le corps supérieur), enfermez-la dans une cage munie d'une fermeture au candi ou à la guimauve, puis suspendez la cage dans l'unité des butineuses.",
+            "Par beau temps, séparez la colonie. Placez la hausse avec les abeilles sur le plancher d'origine : elle devient l'unité des butineuses. Si elle ne contient aucune réserve alimentaire, ajoutez un cadre de nourriture (1 à 2 kg, généralement situé en bordure du corps de ruche supérieur).",
+            "Repérez la reine dans le corps de ruche (généralement dans le corps supérieur), enfermez-la dans une cage munie d'une fermeture au candi ou à la guimauve, puis suspendez cette cage dans l'unité des butineuses.",
             "Vous ne trouvez pas la reine ou les abeilles sont trop agressives ? Placez plutôt un cadre de couvain ouvert dans l'unité des butineuses, puis échangez-le contre la reine deux jours plus tard : elle sera bien plus facile à trouver dans l'unité de couvain, qui aura perdu ses butineuses. Le traitement du jour X+21 sera alors reporté au jour X+23.",
-            "Placez les deux corps de couvain (les rayons les plus anciens en bas) sur un nouveau plancher, soit directement au-dessus de l'unité des butineuses dans le même sens, soit à plusieurs mètres : ils constituent l'unité de couvain. Ne la placez jamais juste à côté de l'unité des butineuses, sinon les butineuses retourneraient dans l'unité la plus importante.",
+            "Placez les deux corps de ruche (les rayons les plus anciens en bas) sur un nouveau plancher, soit directement au-dessus de l'unité des butineuses dans le même sens, soit à plusieurs mètres : ils constituent l'unité de couvain. Ne la placez jamais juste à côté de l'unité des butineuses, sinon les butineuses retourneraient dans l'unité la plus peuplée.",
             "Réduisez les entrées des deux unités à environ 2 cm : pendant quelques jours, l'unité de couvain n'a ni reine ni butineuses et risque fortement d'être pillée.",
             "Ne distribuez jamais de nourriture liquide le jour de la division : cela déclenche le pillage."
           ]
@@ -2431,7 +2431,7 @@
           "title": "Traiter l'unité des butineuses",
           "items": [
             "Jusqu'aux deux tiers des abeilles se trouvent maintenant dans l'unité des butineuses ; la reine est libérée et pond à nouveau.",
-            "Tôt le matin, lorsque les abeilles sont regroupées, faites couler 100 à 200 ml de solution d'acide oxalique à 3,5 %. Mieux encore, sortez chaque cadre pendant la journée et pulvérisez les abeilles avec une solution d'acide oxalique à 3 % (en été, la pulvérisation est plus efficace que le dégouttement).",
+            "Tôt le matin, lorsque les abeilles sont regroupées, appliquez 100 à 200 ml de solution d'acide oxalique à 3,5 % par dégouttement. Mieux encore, sortez chaque cadre pendant la journée et pulvérisez les abeilles avec une solution d'acide oxalique à 3 % (en été, la pulvérisation est plus efficace que le dégouttement).",
             "Un seul traitement suffit : environ 90 % des varroas se trouvent dans le couvain et sur les abeilles nourrices, c'est-à-dire dans l'unité de couvain.",
             "Si aucune miellée tardive n'est attendue, nourrissez maintenant l'unité des butineuses avec jusqu'à 6 litres de sirop. Ne distribuez ensuite plus rien jusqu'en octobre afin de ne pas freiner l'élevage du couvain."
           ]
@@ -2442,7 +2442,7 @@
           "items": [
             "Tout le couvain d'ouvrières a maintenant émergé : l'unité de couvain est donc sans couvain. La reine de sauveté a généralement émergé, mais ne pond pas encore. Inutile de rechercher des œufs trop tôt.",
             "Démontez l'unité de couvain et resserrez-la dans un seul corps : retirez les vieux rayons (en général les 10 plus anciens, situés en bas) et secouez leurs abeilles dans l'unité de couvain ou devant son entrée. Si les rayons contiennent du miel de forêt ou de bruyère, vous pouvez tous les récolter et installer la colonie sur des cadres gaufrés avec un cadre de nourriture.",
-            "Traitez de la même manière que l'unité des butineuses : faites couler ou pulvérisez de l'acide oxalique pendant la période sans couvain.",
+            "Traitez de la même manière que l'unité des butineuses : appliquez l'acide oxalique par dégouttement ou par pulvérisation, en l'absence de couvain.",
             "Un deuxième traitement quatre jours plus tard est souvent nécessaire ici : si plus de 5 000 varroas tombent dans la semaine suivant le traitement, traitez à nouveau immédiatement.",
             "Nourrissez après le traitement, ou attendez d'avoir confirmé que la jeune reine pond : une reine en ponte réduit le risque de pillage."
           ]
@@ -2468,7 +2468,7 @@
       "advantages": [
         "Lutte contre le varroa indépendante de la météo et réalisable selon le calendrier de votre choix, sans vous soucier de l'évaporation de l'acide formique.",
         "Hygiène complète et renouvellement des rayons au cours de la même opération.",
-        "Il est possible de récolter le miel même dans les corps de couvain saturés de miel, y compris le miel tardif de forêt ou de bruyère.",
+        "Il est possible de récolter le miel même dans les corps de ruche saturés de miel, y compris le miel tardif de forêt ou de bruyère.",
         "Pas de cellules royales de sauveté indésirables à rechercher et à détruire, contrairement à l'encagement de la reine pendant plusieurs semaines.",
         "Pas de risque lié à l'encagement prolongé de la reine : après leur libération, environ une reine encagée sur cinq est rejetée par les ouvrières. Cette méthode évite entièrement ce problème.",
         "Lorsque les deux unités sont réunies en octobre, on obtient généralement des colonies hivernantes exceptionnellement fortes, dirigées par de jeunes reines.",
@@ -2556,7 +2556,7 @@
           },
           {
             "name": "Fin novembre à mi-décembre : acide oxalique",
-            "text": "Pendant la période hivernale sans couvain, faites un traitement à l'acide oxalique si la chute naturelle dépasse 1 varroa par jour."
+            "text": "Pendant la période hivernale sans couvain, appliquez une fois l'acide oxalique par dégouttement si la chute naturelle dépasse 1 varroa par jour."
           }
         ]
       }
