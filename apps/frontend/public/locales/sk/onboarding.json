@@ -19,7 +19,8 @@
   },
   "hive": {
     "title": "Pridajte svoj prvý úľ",
-    "description": "Teraz pridajme váš prvý úľ do vašej novej včelnice: {{apiaryName}}."
+    "description": "Teraz pridajme váš prvý úľ do vašej novej včelnice: {{apiaryName}}.",
+    "skip": "Zatiaľ preskočiť"
   },
   "complete": {
     "title": "Gratulujeme!",
@@ -33,6 +34,13 @@
       "description_few": "Požiadali ste o pripojenie k {{count}} včelniciam. Vlastníci vaše žiadosti čoskoro posúdia.",
       "description_many": "Požiadali ste o pripojenie k {{count}} včelniciam. Vlastníci vaše žiadosti čoskoro posúdia.",
       "description_other": "Požiadali ste o pripojenie k {{count}} včelniciam. Vlastníci vaše žiadosti čoskoro posúdia."
+    }
+  },
+  "nudges": {
+    "addHive": {
+      "title": "Vyzerá to, že si tu nový",
+      "description": "Pridajte svoj prvý úľ a začnite zaznamenávať prehliadky a aktivitu.",
+      "action": "Pridajte úľ"
     }
   }
 }
