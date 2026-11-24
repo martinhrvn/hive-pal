@@ -38,10 +38,12 @@
     "weatherConditions": "Poveternostné podmienky",
     "notRecorded": "Nezaznamenané",
     "yes": "Áno",
-    "no": "Nie"
+    "no": "Nie",
+    "notes": "Poznámky",
+    "actions": "Úkony"
   },
   "scores": {
-    "title": "Skóre prehliadky",
+    "title": "Zdravotné skoré",
     "population": "Populácia",
     "stores": "Zásoby",
     "queen": "Matka",
@@ -49,7 +51,9 @@
     "warnings": "Upozornenia",
     "override": "Prepísať",
     "resetToCalculated": "Vrátiť na vypočítané",
-    "calculatedValue": "Vypočítané: {{value}}"
+    "calculatedValue": "Vypočítané: {{value}}",
+    "autoCalculated": "Automaticky- vypočítané",
+    "overridden": "Vlastné"
   },
   "observations": {
     "title": "Pozorovania",
@@ -64,9 +68,9 @@
     "pollenStores": "Zásoby peľu",
     "queenCells": "Matečníky",
     "swarmCells": "Rojové matečníky",
-    "swarmCellsDescription": "",
+    "swarmCellsDescription": "Stavané na spodnej časti alebo na okrajoch rámikov. Často sa vyskytuje viacero buniek. Včely sa pripravujú na rojenie.",
     "supersedureCells": "Tichá výmena matky",
-    "supersedureCellsDescription": "",
+    "supersedureCellsDescription": "Stavané na spodnej časti alebo na okrajoch rámikov. Často sa vyskytuje viacero buniek. Včely sa pripravujú na rojenie.",
     "clearRating": "Vymazať hodnotenie",
     "rateAs": "Ohodnotiť ako {{value}}",
     "broodPattern": "Vzor plodu",
@@ -121,6 +125,14 @@
       "nectarFrames": "Nektár",
       "honeyFrames": "Zásoby",
       "emptyFrames": "Priestor"
+    },
+    "frameCounts": {
+      "title": "Počet ploduvých buniek",
+      "totalFrames": "{{count}} celkový počet",
+      "framesOf": "/ {{total}} rámikov",
+      "framesUnassigned_one": "Aktuálne {{count}} rámikov nepriradených",
+      "framesUnassigned_other": "Aktuálne {{count}} rámikov nepriradných",
+      "frameDeltaHint": "Pridané/odobrané rámiky počas tejto prehliadky"
     }
   },
   "actions": {
@@ -139,7 +151,10 @@
     "reschedule": "Preplánovať",
     "cancel": "Zrušiť",
     "completeInspection": "Dokončiť prehliadku",
-    "print": "Tlačiť"
+    "print": "Tlačiť",
+    "view": "Zobraziť",
+    "edit": "Upraviť",
+    "share": "Zdieľať"
   },
   "sidebar": {
     "actions": "Akcie",
@@ -294,7 +309,30 @@
         "concentration": "Koncentrácia",
         "selectConcentration": "Vybrať koncentráciu",
         "notesOptional": "Poznámky (voliteľné)",
-        "notesPlaceholder": "Pridajte akékoľvek dodatočné poznámky k tomuto kŕmeniu"
+        "notesPlaceholder": "Pridajte akékoľvek dodatočné poznámky k tomuto kŕmeniu",
+        "selectFeedType": "Vyber typ krmiva",
+        "builtinTypes": "Štandardné",
+        "myTypes": "Moje typy krmiva",
+        "otherGroup": "Iné",
+        "customOneOff": "Vlastné (jednorázové)",
+        "manageTypesHint": "Pridajte vlastné krmivá (s údajmi o hustote a obsahu cukru) v časti Nastavenia → Typy krmív.",
+        "waterAdded": "Rozpustené vo vode (ml, voliteľné)",
+        "sugarReadout": "≈ {{amount}} cukru",
+        "sugarShort": "≈ {{amount}} cukru",
+        "waterShort": "+ {{amount}} ml vody",
+        "types": {
+          "SYRUP_1_1": "Sirup 1:1",
+          "SYRUP_3_2": "Sirup 3:2",
+          "SYRUP_2_1": "Sirup 2:1",
+          "APIINVERT": "Apiinvert (Invertný sirup)",
+          "FONDANT": "Cukrové cesto",
+          "CANDY": "Cesto",
+          "DRY_SUGAR": "Cukor",
+          "HONEY": "Med",
+          "POLLEN_PATTY": "Peľové cesto",
+          "PROTEIN_CANDY": "Bielkovinové cesto"
+        },
+        "unit": "Jednotka"
       },
       "treatment_section": {
         "title": "Ošetrenie",
@@ -306,7 +344,15 @@
         "selectUnit": "Vybrať jednotku",
         "amount": "Množstvo",
         "notesOptional": "Poznámky (voliteľné)",
-        "notesPlaceholder": "Pridajte akékoľvek dodatočné poznámky k tomuto ošetreniu"
+        "notesPlaceholder": "Pridajte akékoľvek dodatočné poznámky k tomuto ošetreniu",
+        "other": "Iné (voľný text)",
+        "manageProducts": "Správa produktov",
+        "addEfficacy": "+ Pridať počty klieštikov (účinnosť)",
+        "miteMethod": "Metódy spočítavania klieštikov",
+        "miteBefore": "Klieštikov predtým",
+        "miteAfter": "Klištikov potom",
+        "sampleSize": "Veľkosť vzorky (včely)",
+        "efficacy": "{{p}}% účinnosť"
       },
       "frames_section": {
         "title": "Rámiky",
@@ -347,7 +393,34 @@
       "pendingUpload": "{{count}} čaká na nahratie",
       "uploadWarning": "Zvukové nahrávky budú nahrané po uložení prehliadky."
     },
-    "strengthSubjectiveRange": "V subjektívnom režime musí byť hodnota od 0 do 10"
+    "strengthSubjectiveRange": "V subjektívnom režime musí byť hodnota od 0 do 10",
+    "now": "Teraz",
+    "weights": {
+      "title": "Váha",
+      "description": "Zaznamenávajte údaje o hmotnosti úľa. Poznačte si, kam ste váhu umiestnili – pri vážení celého úľa nechajte bočnú časť voľnú, pričom základňu použite na nadvihnutie celého úľa zospodu.",
+      "empty": "Žiadne záznamy váhy.",
+      "add": "Pridať meranie",
+      "remove": "Odstrániť meranie",
+      "value": "Váha ({{unit}})",
+      "position": "Pozícia",
+      "wholeHive": "Celý úľ (základňa)",
+      "boxLabel": "Nádstavok {{position}} · {{type}}",
+      "boxType": {
+        "BROOD": "Plod",
+        "HONEY": "Med",
+        "FEEDER": "Kŕmitko"
+      },
+      "side": "Bok",
+      "wholeWeight": "Celý (nie bok)",
+      "sides": {
+        "FRONT": "Predok (vstup)",
+        "BACK": "Zadok",
+        "LEFT": "V ľavo",
+        "RIGHT": "V pravo"
+      },
+      "chartTitle": "Váha",
+      "chartDescription": "Zaznamenané hmotnosti úľov v čase ({{unit}}), zoskupené podľa pozície a strany"
+    }
   },
   "detailSidebar": {
     "inspectionActions": "Akcie prehliadky",
