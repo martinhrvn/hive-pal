@@ -47,6 +47,7 @@ import {
   PhotoResponse,
   DocumentResponse,
   type ActionDetails,
+  reminderObservationSchema,
 } from 'shared-schemas';
 import {
   getFeedingAmountLabel,
@@ -62,11 +63,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useScheduledInspectionActions } from '@/api/hooks/useScheduledInspectionActions';
 import { useHive } from '@/api/hooks/useHives';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { cn } from '@/lib/utils';
 import { StatusPill } from './status-pill';
 import { PhotoGallery } from './photo-gallery';
 import { StandalonePhotoPreview } from './standalone-photo-preview';
 import { DocumentDownloadLink } from './document-download-link';
+import { TimelineInspectionDetails } from './timeline-inspection-details';
+import { hasInspectionDetails } from './timeline-inspection-fields';
 
 export type TimelineEvent = {
   id: string;
@@ -149,25 +153,48 @@ const useTimelineRow = () => {
   return ctx;
 };
 
-const formatTime = (date: string) => {
-  return format(new Date(date), 'h:mm a');
+const DATE_STYLES = {
+  day: { month: 'short', day: 'numeric' },
+  dayWithYear: { month: 'short', day: 'numeric', year: 'numeric' },
+  weekday: { weekday: 'long' },
+} as const satisfies Record<string, Intl.DateTimeFormatOptions>;
+
+// One formatter per language and style, shared by every row and divider.
+const dateFormatters = new Map<string, Intl.DateTimeFormat>();
+const formatLocalized = (
+  date: Date,
+  language: string,
+  style: keyof typeof DATE_STYLES,
+): string => {
+  const key = `${language}:${style}`;
+  let formatter = dateFormatters.get(key);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(language, DATE_STYLES[style]);
+    dateFormatters.set(key, formatter);
+  }
+  return formatter.format(date);
 };
 
-const formatEntryDate = (date: string, t: TFunction): string => {
+const formatEntryDate = (
+  date: string,
+  t: TFunction,
+  language: string,
+): string => {
   const d = new Date(date);
   if (isToday(d)) return t('common:timeline.today');
   if (isYesterday(d)) return t('common:timeline.yesterday');
-  const now = new Date();
-  return format(
-    d,
-    d.getFullYear() === now.getFullYear() ? 'MMM d' : 'MMM d, yyyy',
-  );
+  const sameYear = d.getFullYear() === new Date().getFullYear();
+  return formatLocalized(d, language, sameYear ? 'day' : 'dayWithYear');
 };
 
-const formatDayContext = (date: Date, t: TFunction): string => {
+const formatDayContext = (
+  date: Date,
+  t: TFunction,
+  language: string,
+): string => {
   if (isToday(date)) return t('common:timeline.today');
   if (isYesterday(date)) return t('common:timeline.yesterday');
-  return format(date, 'EEEE');
+  return formatLocalized(date, language, 'weekday');
 };
 
 const HEXAGON_CLIP =
@@ -578,146 +605,192 @@ const InspectionEntry: React.FC<{ event: DecoratedEvent }> = ({ event }) => {
   const isCancelled = inspection.status === InspectionStatus.CANCELLED;
   const { isOverdue } = event;
   const clickable = !!onInspectionClick && !isScheduled;
+  const [expanded, setExpanded] = useState(false);
+  const expandable = !isCancelled && hasInspectionDetails(inspection);
+  const toggleLabel = expanded
+    ? t('common:timeline.hideDetails')
+    : t('common:timeline.showDetails');
 
   return (
-    <div
-      className={cn(
-        'rounded-md -mx-2 px-2 py-1.5 transition-colors',
-        clickable && 'cursor-pointer',
-        isOverdue
-          ? 'bg-destructive/5 hover:bg-destructive/10 ring-1 ring-inset ring-destructive/20'
-          : !isScheduled && 'hover:bg-accent/70',
-      )}
-      onClick={clickable ? () => onInspectionClick(inspection) : undefined}
-    >
-      <div className="flex items-start justify-between gap-1.5">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {isOverdue ? (
-              <AlertCircle className="size-3.5 text-destructive-foreground shrink-0" />
-            ) : (
-              <CalendarIcon
-                className={cn(
-                  'size-3.5 shrink-0',
-                  isScheduled ? 'text-honey' : 'text-muted-foreground',
+    <>
+      <div
+        className={cn(
+          'rounded-md -mx-2 px-2 py-1.5 transition-colors',
+          clickable && 'cursor-pointer',
+          isOverdue
+            ? 'bg-destructive/5 hover:bg-destructive/10 ring-1 ring-inset ring-destructive/20'
+            : !isScheduled && 'hover:bg-accent/70',
+        )}
+        onClick={clickable ? () => onInspectionClick(inspection) : undefined}
+      >
+        <div className="flex items-start justify-between gap-1.5">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {isOverdue ? (
+                <AlertCircle className="size-3.5 text-destructive-foreground shrink-0" />
+              ) : (
+                <CalendarIcon
+                  className={cn(
+                    'size-3.5 shrink-0',
+                    isScheduled ? 'text-honey' : 'text-muted-foreground',
+                  )}
+                />
+              )}
+              <span className="font-medium text-sm text-foreground">
+                {isScheduled
+                  ? t('common:timeline.inspectHive', {
+                      hiveName: getHiveName?.(inspection.hiveId) ?? '',
+                    })
+                  : t('common:timeline.inspection')}
+              </span>
+              {!isScheduled && <HiveBadge data={inspection} />}
+              {isOverdue && (
+                <StatusPill tone="danger" size="sm">
+                  {t('common:timeline.overdue')}
+                </StatusPill>
+              )}
+              {isScheduled && !isOverdue && (
+                <StatusPill tone="warning" size="sm">
+                  {t('common:timeline.scheduled')}
+                </StatusPill>
+              )}
+              {isCancelled && (
+                <StatusPill size="sm">
+                  {t('common:timeline.cancelled')}
+                </StatusPill>
+              )}
+            </div>
+
+            {!isScheduled && !isCancelled && inspection.observations && (
+              <div className="flex items-center gap-1.5 mt-1.5 flex-wrap tabular-nums">
+                {inspection.observations.strength !== null && (
+                  <StatusPill size="sm">
+                    <ActivityIcon />
+                    {t('common:timeline.strength')}:{' '}
+                    {inspection.observations.strength}
+                  </StatusPill>
                 )}
-              />
+                {inspection.observations.honeyStores !== null && (
+                  <StatusPill tone="warning" size="sm">
+                    <DropletsIcon />
+                    {t('common:timeline.honey')}:{' '}
+                    {inspection.observations.honeyStores}
+                  </StatusPill>
+                )}
+                {inspection.observations.queenSeen !== null && (
+                  <StatusPill
+                    tone={
+                      inspection.observations.queenSeen ? 'warning' : 'neutral'
+                    }
+                    size="sm"
+                  >
+                    <Crown />
+                    {inspection.observations.queenSeen
+                      ? t('common:timeline.queenSeen')
+                      : t('common:timeline.queenNotSeen')}
+                  </StatusPill>
+                )}
+              </div>
             )}
-            <span className="font-medium text-sm text-foreground">
-              {isScheduled
-                ? t('common:timeline.inspectHive', {
-                    hiveName: getHiveName?.(inspection.hiveId) ?? '',
-                  })
-                : t('common:timeline.inspection')}
-            </span>
-            {!isScheduled && <HiveBadge data={inspection} />}
-            {isOverdue && (
-              <StatusPill tone="danger" size="sm">
-                {t('common:timeline.overdue')}
-              </StatusPill>
-            )}
-            {isScheduled && !isOverdue && (
-              <StatusPill tone="warning" size="sm">
-                {t('common:timeline.scheduled')}
-              </StatusPill>
-            )}
-            {isCancelled && (
-              <StatusPill size="sm">
-                {t('common:timeline.cancelled')}
-              </StatusPill>
+
+            {inspection.notes && (
+              <div className="flex items-start gap-1.5 mt-1.5 text-xs text-muted-foreground">
+                <FileTextIcon className="size-3 mt-0.5 shrink-0" />
+                <p
+                  className={cn(
+                    'min-w-0 break-words',
+                    expanded ? 'whitespace-pre-wrap' : 'line-clamp-2',
+                  )}
+                >
+                  {inspection.notes}
+                </p>
+              </div>
             )}
           </div>
 
-          {!isScheduled && !isCancelled && inspection.observations && (
-            <div className="flex items-center gap-1.5 mt-1.5 flex-wrap tabular-nums">
-              {inspection.observations.strength !== null && (
-                <StatusPill size="sm">
-                  <ActivityIcon />
-                  {t('common:timeline.strength')}:{' '}
-                  {inspection.observations.strength}
-                </StatusPill>
-              )}
-              {inspection.observations.honeyStores !== null && (
-                <StatusPill tone="warning" size="sm">
-                  <DropletsIcon />
-                  {t('common:timeline.honey')}:{' '}
-                  {inspection.observations.honeyStores}
-                </StatusPill>
-              )}
-              {inspection.observations.queenSeen !== null && (
-                <StatusPill
-                  tone={
-                    inspection.observations.queenSeen ? 'warning' : 'neutral'
-                  }
-                  size="sm"
-                >
-                  <Crown />
-                  {inspection.observations.queenSeen
-                    ? t('common:timeline.queenSeen')
-                    : t('common:timeline.queenNotSeen')}
-                </StatusPill>
-              )}
-            </div>
+          {expandable && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7 shrink-0 opacity-60 hover:opacity-100"
+              title={toggleLabel}
+              aria-label={toggleLabel}
+              aria-expanded={expanded}
+              aria-controls={`inspection-details-${inspection.id}`}
+              onClick={e => {
+                e.stopPropagation();
+                setExpanded(prev => !prev);
+              }}
+            >
+              <ChevronDownIcon
+                className={cn(
+                  'size-4 transition-transform',
+                  expanded && 'rotate-180',
+                )}
+              />
+            </Button>
           )}
 
-          {inspection.notes && (
-            <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-              <FileTextIcon className="size-3" />
-              <span>{t('common:timeline.notesAvailable')}</span>
-            </div>
+          {isScheduled && !isCancelled && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-7 shrink-0 opacity-60 hover:opacity-100"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <MoreVertical className="size-4" />
+                  <span className="sr-only">
+                    {t('common:actions.openMenu')}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuItem
+                  onClick={e => {
+                    e.stopPropagation();
+                    onDoInspection(inspection);
+                  }}
+                >
+                  <CheckCircle className="size-4 mr-2" />
+                  {t('common:timeline.doInspection')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={e => {
+                    e.stopPropagation();
+                    onReschedule(inspection);
+                  }}
+                >
+                  <CalendarIcon className="size-4 mr-2" />
+                  {t('common:timeline.reschedule')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
-
-        {isScheduled && !isCancelled && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-7 shrink-0 opacity-60 hover:opacity-100"
-                onClick={e => e.stopPropagation()}
-              >
-                <MoreVertical className="size-4" />
-                <span className="sr-only">
-                  {t('common:actions.openMenu', 'Open menu')}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44">
-              <DropdownMenuItem
-                onClick={e => {
-                  e.stopPropagation();
-                  onDoInspection(inspection);
-                }}
-              >
-                <CheckCircle className="size-4 mr-2" />
-                {t('common:timeline.doInspection')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={e => {
-                  e.stopPropagation();
-                  onReschedule(inspection);
-                }}
-              >
-                <CalendarIcon className="size-4 mr-2" />
-                {t('common:timeline.reschedule')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
       </div>
-    </div>
+      {/* Outside the clickable row, so using the panel never opens the inspection. */}
+      {expandable && expanded && (
+        <div id={`inspection-details-${inspection.id}`}>
+          <TimelineInspectionDetails inspection={inspection} />
+        </div>
+      )}
+    </>
   );
 };
+
+const isReminderTag = (tag: string): boolean =>
+  (reminderObservationSchema.options as readonly string[]).includes(tag);
 
 const QuickCheckEntry: React.FC<{ quickCheck: QuickCheckResponse }> = ({
   quickCheck,
 }) => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common', 'inspection']);
   const { onDeleteQuickCheck } = useTimelineRow();
   return (
     <div className="flex items-start gap-2">
-      <ClipboardCheck className="size-3.5 mt-0.5 text-emerald-600 dark:text-emerald-500 shrink-0" />
+      <ClipboardCheck className="size-3.5 mt-0.5 text-success shrink-0" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap text-sm font-medium text-foreground">
           {t('common:quickCheck.title')}
@@ -727,7 +800,9 @@ const QuickCheckEntry: React.FC<{ quickCheck: QuickCheckResponse }> = ({
           <div className="flex flex-wrap gap-1 mt-1">
             {quickCheck.tags.map(tag => (
               <StatusPill key={tag} tone="success" size="sm">
-                {tag.replace(/_/g, ' ')}
+                {t(
+                  `inspection:observations.${isReminderTag(tag) ? 'reminder' : 'additional'}.${tag}`,
+                )}
               </StatusPill>
             ))}
           </div>
@@ -761,7 +836,7 @@ const PhotoEntry: React.FC<{ photo: PhotoResponse }> = ({ photo }) => {
       <Camera className="size-3.5 mt-0.5 text-violet-600 dark:text-violet-400 shrink-0" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap text-sm font-medium text-foreground">
-          {t('common:timeline.photos', { defaultValue: 'Photo' })}
+          {t('common:timeline.photo')}
           <HiveBadge data={photo} />
         </div>
         {photo.caption && (
@@ -788,7 +863,7 @@ const DocumentEntry: React.FC<{ document: DocumentResponse }> = ({
   const { onDeleteDocument } = useTimelineRow();
   return (
     <div className="flex items-start gap-2">
-      <FileTextIcon className="size-3.5 mt-0.5 text-sky-600 dark:text-sky-400 shrink-0" />
+      <FileTextIcon className="size-3.5 mt-0.5 text-info shrink-0" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap text-sm font-medium text-foreground">
           {document.title}
@@ -864,8 +939,8 @@ const ActionEntry: React.FC<{ action: ActionResponse; tone: MarkerTone }> = ({
               variant="ghost"
               size="icon"
               className={rowActionClass}
-              title={t('common:timeline.undoSplit', 'Undo split')}
-              aria-label={t('common:timeline.undoSplit', 'Undo split')}
+              title={t('common:timeline.undoSplit')}
+              aria-label={t('common:timeline.undoSplit')}
               onClick={e => {
                 e.stopPropagation();
                 onUndoSplit(action);
@@ -902,7 +977,8 @@ const TimelineEventRow = memo(function TimelineEventRow({
 }: {
   event: DecoratedEvent;
 }) {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
+  const { formatTime } = useDateFormat();
   const tone = getEventTone(event);
   const data = event.data;
   const createdByUserName =
@@ -943,7 +1019,7 @@ const TimelineEventRow = memo(function TimelineEventRow({
         {/* date + time + author */}
         <div className="flex items-center gap-2 mb-1">
           <span className="font-overline tabular-nums text-muted-foreground">
-            {formatEntryDate(event.date, t)}
+            {formatEntryDate(event.date, t, i18n.language)}
             <span className="text-muted-foreground/50 mx-1.5">·</span>
             <span className="text-muted-foreground/80">
               {formatTime(event.date)}
@@ -971,10 +1047,7 @@ const DayDivider: React.FC<{ date: Date; isFirst: boolean }> = ({
   isFirst,
 }) => {
   const { t, i18n } = useTranslation('common');
-  const shortDate = new Intl.DateTimeFormat(i18n.language, {
-    month: 'short',
-    day: 'numeric',
-  }).format(date);
+  const shortDate = formatLocalized(date, i18n.language, 'day');
   return (
     <div
       className={cn(
@@ -985,7 +1058,7 @@ const DayDivider: React.FC<{ date: Date; isFirst: boolean }> = ({
       <div aria-hidden />
       <div className="flex items-center gap-2.5 min-w-0">
         <span className="font-overline text-muted-foreground shrink-0 tabular-nums">
-          {formatDayContext(date, t)}
+          {formatDayContext(date, t, i18n.language)}
           <span className="text-muted-foreground/50 mx-1.5">·</span>
           {shortDate}
         </span>
@@ -1203,12 +1276,10 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
               {t('common:quickCheck.title')}
             </SelectItem>
             <SelectItem value="photos">
-              {t('common:timeline.photos', { defaultValue: 'Photos' })}
+              {t('common:timeline.photos')}
             </SelectItem>
             <SelectItem value="documents">
-              {t('common:timeline.documents', {
-                defaultValue: 'Documents',
-              })}
+              {t('common:timeline.documents')}
             </SelectItem>
             <SelectItem value="notes">{t('common:timeline.notes')}</SelectItem>
             <SelectItem value="other">{t('common:timeline.other')}</SelectItem>
