@@ -4,6 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { GithubIcon } from '@/components/icons/github-icon';
 import { cn } from '@/lib/utils';
 import { useLocalizedPath } from '@/hooks/use-language-navigation';
+import { useSignUpAvailable } from '@/hooks/use-sign-up-available';
 import { LanguageMenu } from '@/components/language-menu';
 import { MarketingButton } from './marketing-button';
 import { DOCS_URL, GITHUB_URL, MARKETING_FOCUS } from './marketing-constants';
@@ -116,6 +117,7 @@ export function MarketingHeader() {
     { label: t('marketing.nav.releaseNotes'), to: localize('/releases') },
   ];
   const linkClass = 'transition-colors hover:text-stone-900';
+  const signUpAvailable = useSignUpAvailable();
 
   return (
     <header className="sticky top-0 z-40 border-b border-stone-900/10 bg-cream/85 backdrop-blur-md">
@@ -153,19 +155,27 @@ export function MarketingHeader() {
 
         <div className="flex items-center gap-2">
           <LanguageMenu className="text-stone-700 hover:bg-stone-900/5 hover:text-stone-900" />
-          <MarketingButton
-            variant="ghost"
-            asChild
-            className="hidden sm:inline-flex"
-          >
-            <Link to="/login">{t('marketing.nav.signIn')}</Link>
-          </MarketingButton>
-          <MarketingButton variant="dark" asChild className="shadow-sm">
-            <Link to="/register">
-              {t('marketing.nav.startFree')}
-              <ArrowUpRight className="size-4" />
-            </Link>
-          </MarketingButton>
+          {signUpAvailable ? (
+            <>
+              <MarketingButton
+                variant="ghost"
+                asChild
+                className="hidden sm:inline-flex"
+              >
+                <Link to="/login">{t('marketing.nav.signIn')}</Link>
+              </MarketingButton>
+              <MarketingButton variant="dark" asChild className="shadow-sm">
+                <Link to="/register">
+                  {t('marketing.nav.startFree')}
+                  <ArrowUpRight className="size-4" />
+                </Link>
+              </MarketingButton>
+            </>
+          ) : (
+            <MarketingButton variant="dark" asChild className="shadow-sm">
+              <Link to="/login">{t('marketing.nav.signIn')}</Link>
+            </MarketingButton>
+          )}
         </div>
       </div>
     </header>
@@ -178,6 +188,7 @@ const FOOTER_LINK = 'text-amber-50/75 transition-colors hover:text-amber-50';
 export function MarketingFooter() {
   const localize = useLocalizedPath();
   const { t } = useTranslation('common');
+  const signUpAvailable = useSignUpAvailable();
   const columns: { title: string; links: NavLink[] }[] = [
     {
       title: t('marketing.footer.product'),
@@ -213,7 +224,9 @@ export function MarketingFooter() {
           icon: <GithubIcon className="size-4" />,
         },
         { label: t('marketing.footer.signIn'), to: '/login' },
-        { label: t('marketing.footer.createAccount'), to: '/register' },
+        ...(signUpAvailable
+          ? [{ label: t('marketing.footer.createAccount'), to: '/register' }]
+          : []),
       ],
     },
   ];

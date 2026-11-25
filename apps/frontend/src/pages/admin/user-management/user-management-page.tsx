@@ -1,253 +1,190 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { authClient } from '@/lib/auth-client';
-import { useIsAdmin } from '@/hooks/use-is-admin.ts';
-import { useAdminUsers } from '@/api/hooks/useAdminUsers';
+import { SearchX, UserPlus } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table.tsx';
+  useAdminUserCapabilities,
+  useAdminUsers,
+  useCreateUser,
+} from '@/api/hooks/useAdminUsers';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet.tsx';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { Input } from '@/components/ui/input.tsx';
-import { Label } from '@/components/ui/label.tsx';
-import { Alert } from '@/components/ui/alert.tsx';
-import { PASSWORD_MIN_LENGTH, UserWithStatsResponse } from 'shared-schemas';
+  ColumnVisibilityMenu,
+  DataTable,
+  useColumnVisibility,
+} from '@/components/data-table';
+import { ListPagination } from '@/components/common/list-pagination';
+import { EmptyState } from '@/components/dashboard/empty-state';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
+import { CreateUserDialog } from './create-user-dialog';
+import { UsersToolbar } from './users-toolbar';
+import { useUserColumns } from './use-user-columns';
+import { useUserActions } from './use-user-actions';
+import { USERS_PAGE_SIZE, useUserListParams } from './use-user-list-params';
 
-const UserManagementPage: React.FC = () => {
+export default function UserManagementPage() {
   const { t } = useTranslation('admin');
-  const isAdmin = useIsAdmin();
-  const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
+  const { filters, setFilters, hasFilters } = useUserListParams();
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const { data, isLoading, isError, isPlaceholderData } = useAdminUsers({
+    search: filters.search.trim() || undefined,
+    role: filters.role,
+    status: filters.status,
+    page: filters.page,
+    pageSize: USERS_PAGE_SIZE,
+  });
+  const { data: capabilities } = useAdminUserCapabilities();
+  const createUser = useCreateUser();
+
+  const { openAction, dialogs } = useUserActions();
+  const columns = useUserColumns(currentUser?.id, openAction);
   const {
-    data: users,
-    isLoading,
-    error: queryError,
-    refetch,
-  } = useAdminUsers();
-  const [selectedUser, setSelectedUser] =
-    useState<UserWithStatsResponse | null>(null);
-  const [tempPassword, setTempPassword] = useState('');
-  const [resetSuccess, setResetSuccess] = useState(false);
-  const [resetError, setResetError] = useState<string | null>(null);
+    visibleColumns,
+    hideableColumns,
+    isColumnVisible,
+    setColumnVisible,
+    resetColumns,
+    isCustomised,
+  } = useColumnVisibility('admin-users', columns);
 
-  // Check if user is admin, otherwise redirect
+  const rows = data?.items ?? [];
+  const lastPage = data
+    ? Math.max(1, Math.ceil(data.total / data.pageSize))
+    : 1;
+
+  // A stale ?page= (or deleting the last row of the last page) would otherwise
+  // show an empty list with no pager to get back.
   useEffect(() => {
-    if (!isAdmin) {
-      navigate('/');
-    }
-  }, [isAdmin, navigate]);
-
-  const handleResetPassword = async () => {
-    if (!selectedUser || !tempPassword.trim()) return;
-
-    setResetError(null);
-    try {
-      // The better-auth client reports failures in `error`; it does not throw.
-      const { error } = await authClient.admin.setUserPassword({
-        userId: selectedUser.id,
-        newPassword: tempPassword,
-      });
-      if (error) {
-        setResetError(error.message || t('messages.failedToReset'));
-        return;
-      }
-
-      setResetSuccess(true);
-
-      // Refetch to get updated data
-      refetch();
-
-      // Clear temporary password
-      setTempPassword('');
-    } catch {
-      setResetError(t('messages.unexpectedError'));
-    }
-  };
-
-  const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return t('status.dash');
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const formatDateTime = (dateString: string | null | undefined) => {
-    if (!dateString) return t('status.dash');
-    return new Date(dateString).toLocaleString();
-  };
-
-  const error = queryError ? t('messages.failedToFetch') : resetError;
+    if (data && filters.page > lastPage) setFilters({ page: lastPage });
+  }, [data, filters.page, lastPage, setFilters]);
 
   return (
-    <div className="container mx-auto py-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
-          <CardDescription>{t('description')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              {error}
-            </Alert>
+    <div className="container mx-auto space-y-8 py-6">
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('description')}</p>
+          {capabilities && !capabilities.registrationEnabled && (
+            <p
+              className="text-sm text-muted-foreground"
+              data-test="registration-closed-note"
+            >
+              {t('users.registrationClosed')}
+            </p>
           )}
+        </div>
+        <Button
+          onClick={() => setCreateOpen(true)}
+          data-test="create-user-open"
+        >
+          <UserPlus className="size-4" aria-hidden />
+          {t('users.createButton')}
+        </Button>
+      </header>
 
-          {isLoading ? (
-            <div className="flex justify-center py-8">
-              {t('messages.loadingUsers')}
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('table.email')}</TableHead>
-                    <TableHead>{t('table.name')}</TableHead>
-                    <TableHead>{t('table.role')}</TableHead>
-                    <TableHead className="text-center">
-                      {t('table.apiaries')}
-                    </TableHead>
-                    <TableHead className="text-center">
-                      {t('table.hives')}
-                    </TableHead>
-                    <TableHead className="text-center">
-                      {t('table.inspections')}
-                    </TableHead>
-                    <TableHead>{t('table.lastActivity')}</TableHead>
-                    <TableHead>{t('table.createdAt')}</TableHead>
-                    <TableHead>{t('table.actions')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users?.map(user => (
-                    <TableRow key={user.id}>
-                      <TableCell>
-                        <Link
-                          to={`/admin/users/${user.id}`}
-                          className="text-primary hover:underline font-medium"
-                        >
-                          {user.email}
-                        </Link>
-                      </TableCell>
-                      <TableCell>{user.name || t('status.dash')}</TableCell>
-                      <TableCell>{user.role}</TableCell>
-                      <TableCell className="text-center">
-                        {user.stats.apiariesCount}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {user.stats.hivesCount}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {user.stats.inspectionsCount}
-                      </TableCell>
-                      <TableCell>
-                        {formatDate(user.stats.lastActivityDate)}
-                      </TableCell>
-                      <TableCell>
-                        {formatDateTime(user.createdAt.toString())}
-                      </TableCell>
-                      <TableCell>
-                        <Sheet>
-                          <SheetTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setTempPassword('');
-                                setResetSuccess(false);
-                                setResetError(null);
-                              }}
-                            >
-                              {t('actions.resetPassword')}
-                            </Button>
-                          </SheetTrigger>
-                          <SheetContent>
-                            <SheetHeader>
-                              <SheetTitle>
-                                {t('resetPasswordDialog.title')}
-                              </SheetTitle>
-                              <SheetDescription>
-                                {t('resetPasswordDialog.description', {
-                                  email: selectedUser?.email,
-                                })}
-                              </SheetDescription>
-                            </SheetHeader>
+      <UsersToolbar filters={filters} onFiltersChange={setFilters}>
+        <ColumnVisibilityMenu
+          columns={hideableColumns}
+          isColumnVisible={isColumnVisible}
+          setColumnVisible={setColumnVisible}
+          resetColumns={resetColumns}
+          visibleCount={visibleColumns.length}
+          isCustomised={isCustomised}
+          align="end"
+        />
+      </UsersToolbar>
 
-                            <div className="mt-8 space-y-4">
-                              {resetSuccess ? (
-                                <div className="bg-green-50 text-green-800 p-4 rounded-md">
-                                  {t('messages.resetSuccess')}
-                                </div>
-                              ) : (
-                                <>
-                                  <div className="space-y-2">
-                                    <Label htmlFor="temp-password">
-                                      {t(
-                                        'resetPasswordDialog.tempPasswordLabel',
-                                      )}
-                                    </Label>
-                                    <Input
-                                      id="temp-password"
-                                      type="text"
-                                      value={tempPassword}
-                                      onChange={e =>
-                                        setTempPassword(e.target.value)
-                                      }
-                                      placeholder={t(
-                                        'resetPasswordDialog.tempPasswordPlaceholder',
-                                      )}
-                                    />
-                                    <p className="text-sm text-gray-500">
-                                      {t('resetPasswordDialog.minCharacters', {
-                                        count: PASSWORD_MIN_LENGTH,
-                                      })}
-                                    </p>
-                                  </div>
+      {isError && (
+        <Alert variant="destructive">
+          <AlertDescription>{t('messages.failedToFetch')}</AlertDescription>
+        </Alert>
+      )}
 
-                                  <Button
-                                    onClick={handleResetPassword}
-                                    disabled={
-                                      !tempPassword.trim() ||
-                                      tempPassword.length < PASSWORD_MIN_LENGTH
-                                    }
-                                    className="w-full"
-                                  >
-                                    {t('resetPasswordDialog.submit')}
-                                  </Button>
-                                </>
-                              )}
-                            </div>
-                          </SheetContent>
-                        </Sheet>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+      {isLoading && <UsersTableSkeleton />}
+
+      {data?.total === 0 && (
+        <EmptyState
+          icon={<SearchX />}
+          title={t(hasFilters ? 'users.empty.title' : 'messages.noUsers')}
+          description={t(
+            hasFilters ? 'users.empty.description' : 'users.empty.noUsers',
           )}
-        </CardContent>
-      </Card>
+        >
+          {hasFilters && (
+            <Button
+              variant="outline"
+              onClick={() =>
+                setFilters({ search: '', role: undefined, status: undefined })
+              }
+            >
+              {t('users.empty.clear')}
+            </Button>
+          )}
+        </EmptyState>
+      )}
+
+      {data && rows.length > 0 && (
+        <Card
+          className={cn(
+            'gap-0 overflow-hidden py-0 transition-opacity',
+            isPlaceholderData && 'opacity-60',
+          )}
+          aria-busy={isPlaceholderData}
+          data-test="users-table"
+        >
+          <DataTable
+            columns={visibleColumns}
+            rows={rows}
+            rowKey={user => user.id}
+          />
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-3">
+            <p className="text-sm text-muted-foreground tabular-nums">
+              {t('users.count', { count: data.total })}
+            </p>
+            <ListPagination
+              page={data.page}
+              pageSize={data.pageSize}
+              total={data.total}
+              onPageChange={page => setFilters({ page })}
+            />
+          </div>
+        </Card>
+      )}
+
+      {dialogs}
+
+      <CreateUserDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        mailEnabled={capabilities?.mailEnabled ?? false}
+        onCreate={createUser.mutateAsync}
+      />
     </div>
   );
-};
+}
 
-export default UserManagementPage;
+const SKELETON_ROWS = ['a', 'b', 'c', 'd', 'e', 'f'];
+
+/** Placeholder rows shaped like the users table while the first page loads. */
+function UsersTableSkeleton() {
+  return (
+    <Card className="gap-0 py-0" aria-hidden>
+      {SKELETON_ROWS.map(row => (
+        <div key={row} className="flex items-center gap-4 border-b px-4 py-3">
+          <div className="flex-1 space-y-1.5">
+            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-3 w-56" />
+          </div>
+          <Skeleton className="h-5 w-14 rounded-full" />
+          <Skeleton className="h-5 w-16 rounded-full" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+      ))}
+    </Card>
+  );
+}

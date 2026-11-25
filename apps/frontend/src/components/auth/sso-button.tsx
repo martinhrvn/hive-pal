@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
-import { getAuthConfig } from '@/lib/auth-config';
+import { getAuthConfig, getSocialProviders } from '@/lib/auth-config';
 import { cn } from '@/lib/utils';
 import { SOCIAL_PROVIDERS } from './social-providers';
 
@@ -96,13 +96,9 @@ export const SsoButtons = ({
   ...redirect
 }: SsoButtonsProps) => {
   const { t } = useTranslation('auth');
-  const {
-    oidcEnabled,
-    oidcAllowSignup,
-    oidcProviderId,
-    oidcButtonLabel,
-    socialProviders,
-  } = getAuthConfig();
+  const { oidcEnabled, oidcAllowSignup, oidcProviderId, oidcButtonLabel } =
+    getAuthConfig();
+  const socialProviders = getSocialProviders(mode);
   const oidcShown = mode === 'signUp' ? oidcAllowSignup : oidcEnabled;
   const oidcLabel =
     mode === 'signUp' ? t('sso.signUp') : oidcButtonLabel || t('sso.signIn');

@@ -34,10 +34,26 @@ Hive-Pal authenticates with [Better Auth](https://www.better-auth.com/). Beyond 
 | `COOKIE_DOMAIN` | Set when frontend and backend share a parent domain across subdomains (e.g. `.example.com`) | — |
 | `ALLOWED_ORIGINS` | Comma-separated list of allowed CORS origins | — |
 | `JWT_SECRET` | Signs short-lived tokens for iCal calendar feeds, HiveScale proxy requests, and local-storage download URLs (see note below). Generate with `openssl rand -base64 32` | — |
+| `DISABLE_REGISTRATION` | Turn off public sign-up (email and password, magic link, Google, Facebook). Admins create accounts instead; see [Managing users](#managing-users) | `false` |
 
 :::info JWT_SECRET is not for login
 `JWT_SECRET` is **not** used for user authentication (that's Better Auth). It only signs short-lived tokens for iCal calendar feeds, HiveScale proxy requests, and local-storage download URLs. Set it only if you use those features.
 :::
+
+### Managing users
+
+A fresh install lets anyone who can reach it create an account. For a private instance, you have two options.
+
+**Accounts managed in Hive-Pal.** Set `DISABLE_REGISTRATION=true`. The sign-up page and every "create account" link disappear, and new visitors can only sign in. Admins create accounts under **Admin → Users → Create user**, either:
+
+- with a **temporary password** that you pass on. The user has to choose a new password the first time they sign in.
+- with an **emailed setup link** (needs [email](#email) configured). The user picks their own password; the link is valid for 72 hours.
+
+The same page lets admins search and filter users, reset passwords, promote users to admin, ban and unban them, and delete accounts. The account in `ADMIN_EMAIL` is created on startup and stays an admin even with registration disabled.
+
+**Accounts managed by your identity provider.** Configure [single sign-on](#single-sign-on-oidc--authentik) and leave `OIDC_ALLOW_SIGNUP=true`. People your provider lets in get an account on their first sign-in. `DISABLE_REGISTRATION` does not affect OIDC sign-up, so you can combine both: no public sign-up, with SSO creating accounts.
+
+Users created by an admin or through SSO are asked to accept the privacy policy once, after their first sign-in.
 
 ### Single sign-on (OIDC / Authentik)
 

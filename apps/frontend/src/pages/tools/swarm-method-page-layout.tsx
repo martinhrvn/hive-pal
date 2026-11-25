@@ -6,6 +6,7 @@ import {
   Waypoints,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useSignUpAvailable } from '@/hooks/use-sign-up-available';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { InspectionStatus, type HiveResponse } from 'shared-schemas';
@@ -164,6 +165,7 @@ export function SwarmMethodPageLayout({
   const navigate = useNavigate();
   const localize = useLocalizedPath();
   const { isLoggedIn } = useAuth();
+  const signUpAvailable = useSignUpAvailable();
   const { data: hives = [], isLoading: isLoadingHives } = useHives();
   const { mutateAsync: createInspection, isPending: isSaving } =
     useCreateInspection();
@@ -185,8 +187,9 @@ export function SwarmMethodPageLayout({
     const checklist = checkpoint.checklistKeys
       .map(key => `- ${t(key)}`)
       .join('\n');
+    const prefix = t(`${methodPlannerNs}.checkpointPrefix`);
     return [
-      `${t(`${methodPlannerNs}.checkpointPrefix`)} ${t(checkpoint.titleKey)}`,
+      `${prefix} ${t(checkpoint.titleKey)}`,
       t(checkpoint.summaryKey),
       '',
       t(`${methodPlannerNs}.notesChecklistLabel`),
@@ -485,11 +488,13 @@ export function SwarmMethodPageLayout({
                     <Button asChild>
                       <Link to="/login">{t(`${plannerNs}.signInCta`)}</Link>
                     </Button>
-                    <Button variant="outline" asChild>
-                      <Link to="/register">
-                        {t(`${plannerNs}.registerCta`)}
-                      </Link>
-                    </Button>
+                    {signUpAvailable && (
+                      <Button variant="outline" asChild>
+                        <Link to="/register">
+                          {t(`${plannerNs}.registerCta`)}
+                        </Link>
+                      </Button>
+                    )}
                   </div>
                 </div>
               ) : (

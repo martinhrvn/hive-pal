@@ -7,7 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { PublicFooter } from '@/components/layout/public-footer';
 import { authClient } from '@/lib/auth-client';
-import { getAuthConfig, hasSsoOptions } from '@/lib/auth-config';
+import {
+  getAuthConfig,
+  hasSsoOptions,
+  isSignUpAvailable,
+} from '@/lib/auth-config';
 import { SsoButtons, SsoDivider } from '@/components/auth/sso-button';
 import { useSsoErrorMessage } from '@/components/auth/use-sso-error-message';
 import { getOAuthResumeUrl } from '@/lib/oauth-resume';
@@ -30,7 +34,7 @@ const LoginPage = () => {
   const ssoError = useSsoErrorMessage(searchParams.get('error'));
   const { localLoginEnabled } = getAuthConfig();
   const ssoShown = hasSsoOptions('signIn');
-  const showSignUpLink = localLoginEnabled || hasSsoOptions('signUp');
+  const showSignUpLink = isSignUpAvailable();
 
   // An OAuth client (e.g. Claude over MCP) sent the user here to sign in:
   // every sign-in method then returns to its authorization request.

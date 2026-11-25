@@ -13,6 +13,8 @@
 //                        email sign-up (default: false; only honoured while
 //                        SSO is configured, to avoid locking everyone out)
 
+import { parseBool } from './env-bool';
+
 export interface OidcConfig {
   enabled: boolean;
   providerId: string;
@@ -24,13 +26,10 @@ export interface OidcConfig {
   allowSignup: boolean;
 }
 
-const parseBool = (value: string | undefined, fallback: boolean): boolean => {
-  if (value === undefined || value.trim() === '') return fallback;
-  return ['true', '1', 'yes', 'on'].includes(value.trim().toLowerCase());
-};
-
 export function buildDiscoveryUrl(issuer: string): string {
-  return `${issuer.replace(/\/+$/, '')}/.well-known/openid-configuration`;
+  let base = issuer;
+  while (base.endsWith('/')) base = base.slice(0, -1);
+  return `${base}/.well-known/openid-configuration`;
 }
 
 export function loadOidcConfig(

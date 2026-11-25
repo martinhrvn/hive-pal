@@ -30,7 +30,7 @@ const RegisterPage = () => {
     ?.pathname;
   const [searchParams] = useSearchParams();
   const ssoError = useSsoErrorMessage(searchParams.get('error'));
-  const { localLoginEnabled } = getAuthConfig();
+  const { localSignUpEnabled } = getAuthConfig();
   const ssoShown = hasSsoOptions('signUp');
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
@@ -110,24 +110,24 @@ const RegisterPage = () => {
 
         <div className="backdrop-blur-md bg-white/10 py-8 px-4 shadow-2xl rounded-xl sm:px-10 border border-white/20">
           {ssoShown && (
-            <div className={localLoginEnabled ? 'mb-6 space-y-6' : ''}>
+            <div className={localSignUpEnabled ? 'mb-6 space-y-6' : ''}>
               <SsoButtons
                 mode="signUp"
                 redirectTo={redirectTo}
                 errorPath="/register"
                 oidcClassName="bg-green-600 hover:bg-green-700 text-white"
               />
-              {localLoginEnabled && <SsoDivider label={t('sso.or')} />}
+              {localSignUpEnabled && <SsoDivider label={t('sso.or')} />}
             </div>
           )}
 
-          {!localLoginEnabled && !ssoShown && (
+          {!localSignUpEnabled && !ssoShown && (
             <p className="text-white/80 text-center">
               {t('sso.registrationClosed')}
             </p>
           )}
 
-          {localLoginEnabled && (
+          {localSignUpEnabled && (
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <Label htmlFor="email" className="text-white/90">

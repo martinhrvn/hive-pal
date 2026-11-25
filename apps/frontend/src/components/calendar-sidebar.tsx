@@ -10,6 +10,7 @@ import { Clock, AlertTriangle, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router';
 import { getDateLocale } from '@/utils/locale-utils.ts';
 import { cn } from '@/lib/utils';
+import { actionTypeKey } from '@/utils/action-type';
 import {
   ActionSidebarContainer,
   ActionSidebarGroup,
@@ -36,9 +37,6 @@ const getInspectionState = (
 };
 
 // ActionType enum value → common:actionTypes key, e.g. BOX_CONFIGURATION → boxConfiguration.
-const actionTypeKey = (type: string) =>
-  type.toLowerCase().replace(/_([a-z])/g, (_, c: string) => c.toUpperCase());
-
 const DOT_CLASS =
   'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:h-1 after:rounded-full';
 

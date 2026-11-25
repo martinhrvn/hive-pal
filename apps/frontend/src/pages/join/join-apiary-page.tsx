@@ -7,9 +7,11 @@ import { useAuth } from '@/context/auth-context';
 import { Loader2, Users, CheckCircle, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { useSignUpAvailable } from '@/hooks/use-sign-up-available';
 
 export function JoinApiaryPage() {
   const { t } = useTranslation('apiary');
+  const signUpAvailable = useSignUpAvailable();
   const { token } = useParams<{ token: string }>();
   const { isLoggedIn } = useAuth();
   const { data, isLoading, error } = useInviteInfo(token ?? '');
@@ -165,14 +167,16 @@ export function JoinApiaryPage() {
               >
                 <Button className="w-full">{t('join.signIn')}</Button>
               </Link>
-              <Link
-                to="/register"
-                state={{ from: { pathname: `/join/${token}` } }}
-              >
-                <Button variant="outline" className="w-full">
-                  {t('join.createAccount')}
-                </Button>
-              </Link>
+              {signUpAvailable && (
+                <Link
+                  to="/register"
+                  state={{ from: { pathname: `/join/${token}` } }}
+                >
+                  <Button variant="outline" className="w-full">
+                    {t('join.createAccount')}
+                  </Button>
+                </Link>
+              )}
             </div>
           </CardContent>
         </Card>

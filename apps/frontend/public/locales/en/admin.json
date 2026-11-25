@@ -1,6 +1,6 @@
 {
   "title": "User Management",
-  "description": "Manage users and reset passwords",
+  "description": "Create accounts, find users and manage their access",
   "table": {
     "email": "Email",
     "name": "Name",
@@ -33,11 +33,11 @@
     "lastSeen": "Last seen"
   },
   "actions": {
-    "resetPassword": "Reset Password"
+    "resetPassword": "Reset password"
   },
   "resetPasswordDialog": {
     "title": "Reset User Password",
-    "description": "Set a temporary password for {email}. The user will be required to change their password on next login.",
+    "description": "Set a temporary password for {{email}}. They will have to change it the next time they sign in.",
     "tempPasswordLabel": "Temporary Password",
     "tempPasswordPlaceholder": "Enter temporary password",
     "minCharacters": "Minimum {{count}} characters",
@@ -249,6 +249,94 @@
       "createFailed": "Failed to create worker token",
       "revoked": "Worker token revoked",
       "revokeFailed": "Failed to revoke worker token"
+    }
+  },
+  "users": {
+    "registrationClosed": "Public sign-up is turned off on this server, so new accounts are created here.",
+    "createButton": "Create user",
+    "searchLabel": "Search users",
+    "searchPlaceholder": "Search by name or email",
+    "count_one": "{{count}} user",
+    "count_other": "{{count}} users",
+    "you": "You",
+    "filters": {
+      "allRoles": "All roles",
+      "allStatuses": "All statuses"
+    },
+    "roles": {
+      "USER": "User",
+      "ADMIN": "Admin"
+    },
+    "status": {
+      "active": "Active",
+      "banned": "Banned",
+      "mustChangePassword": "Must change password"
+    },
+    "table": {
+      "user": "User",
+      "lastLogin": "Last sign-in",
+      "never": "Never"
+    },
+    "empty": {
+      "title": "No users match",
+      "description": "Try a different search or clear the filters.",
+      "noUsers": "Create the first account with the Create user button.",
+      "clear": "Clear filters"
+    },
+    "actions": {
+      "menu": "Actions for {{email}}",
+      "view": "View details",
+      "makeAdmin": "Make admin",
+      "makeUser": "Remove admin role",
+      "ban": "Ban user",
+      "unban": "Unban user",
+      "delete": "Delete user"
+    },
+    "toasts": {
+      "roleChanged": "{{email}} is now: {{role}}",
+      "banned": "{{email}} is banned",
+      "unbanned": "{{email}} can sign in again",
+      "deleted": "{{email}} was deleted"
+    },
+    "password": {
+      "generate": "Generate",
+      "copy": "Copy password",
+      "copied": "Password copied",
+      "copyFailed": "Couldn't copy. Select the password and copy it by hand."
+    },
+    "create": {
+      "title": "Create user",
+      "description": "The account works right away, even while public sign-up is turned off.",
+      "name": "Name",
+      "credential": "How will they sign in?",
+      "credentialPassword": "Temporary password",
+      "credentialSetupLink": "Email a setup link",
+      "mailDisabled": "Email isn't configured on this server, so setup links can't be sent.",
+      "passwordHint": "Share it with them. They'll choose a new password when they first sign in.",
+      "setupLinkHint": "They'll get an email with a link to choose their own password. The link expires in {{hours}} hours.",
+      "submit": "Create user",
+      "createdPassword": "{{email}} can now sign in with this temporary password. Copy it now; it won't be shown again.",
+      "createdSetupLink": "A setup link was sent to {{email}}.",
+      "errors": {
+        "nameRequired": "Enter a name",
+        "emailInvalid": "Enter a valid email address",
+        "emailTaken": "A user with this email already exists"
+      }
+    },
+    "ban": {
+      "title": "Ban {{email}}?",
+      "description": "They are signed out right away and can't sign in until you unban them.",
+      "reason": "Reason (optional)",
+      "reasonPlaceholder": "Only admins see this"
+    },
+    "delete": {
+      "title": "Delete {{email}}?",
+      "description": "This permanently deletes the account and every apiary, hive and inspection they own. It can't be undone."
+    },
+    "detail": {
+      "lastLogin": "Last sign-in:",
+      "memberSince": "Member since",
+      "banReason": "Ban reason: {{reason}}"
     }
   }
 }

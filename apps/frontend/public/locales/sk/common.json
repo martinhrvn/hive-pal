@@ -1679,5 +1679,9 @@
       "PROTEIN": "Bielkovinové krmivo",
       "OTHER": "Iné"
     }
+  },
+  "pagination": {
+    "label": "Stránkovanie",
+    "pageOf": "Strana {{page}} z {{pages}}"
   }
 }
