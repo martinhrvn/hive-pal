@@ -452,35 +452,16 @@ export class ActionsService {
     });
 
     // Delete all related action details
-    for (const action of existingActions) {
-      await tx.feedingAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.treatmentAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.frameAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.harvestAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.boxConfigurationAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.maintenanceAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.statusChangeAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.splitAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.combineAction.deleteMany({
-        where: { actionId: action.id },
-      });
-    }
+    const where = { actionId: { in: existingActions.map((a) => a.id) } };
+    await tx.feedingAction.deleteMany({ where });
+    await tx.treatmentAction.deleteMany({ where });
+    await tx.frameAction.deleteMany({ where });
+    await tx.harvestAction.deleteMany({ where });
+    await tx.boxConfigurationAction.deleteMany({ where });
+    await tx.maintenanceAction.deleteMany({ where });
+    await tx.statusChangeAction.deleteMany({ where });
+    await tx.splitAction.deleteMany({ where });
+    await tx.combineAction.deleteMany({ where });
 
     // Delete all actions
     await tx.action.deleteMany({

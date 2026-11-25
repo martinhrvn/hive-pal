@@ -390,15 +390,16 @@ describe('Colony combine (e2e)', () => {
     expect(absorbed.status).toBe('ARCHIVED');
   });
 
-  it('refuses to create COMBINE or SPLIT actions through POST /actions', async () => {
-    const a = await makeHive('Direct L');
-    for (const type of ['COMBINE', 'SPLIT']) {
+  it.each(['COMBINE', 'SPLIT'])(
+    'refuses to create %s actions through POST /actions',
+    async (type) => {
+      const a = await makeHive(`Direct ${type}`);
       await request(app.getHttpServer())
         .post('/actions')
         .set('Cookie', authCookie)
         .set('x-apiary-id', apiaryId)
         .send({ hiveId: a.hive.id, type, details: { type } })
         .expect(400);
-    }
-  });
+    },
+  );
 });

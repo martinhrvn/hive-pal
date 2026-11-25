@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import { Prisma } from '@/prisma/client';
 import {
   ActionType,
@@ -14,7 +14,6 @@ import {
   CURRENT_QUEEN_STATUSES,
   HiveStatus,
   OtherQueenFate,
-  QueenStatus,
 } from 'shared-schemas';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApiaryScopeFilter } from '../interface/request-with.apiary';
@@ -154,7 +153,7 @@ export class CombineService {
           data: {
             hiveId: survivor.id,
             installedAt: date,
-            ...installStatus(keptQueen.status as QueenStatus, date),
+            ...installStatus(keptQueen.status, date),
           },
         });
       }
@@ -176,12 +175,14 @@ export class CombineService {
           (max, b) => Math.max(max, b.position),
           -1,
         );
-        for (const [i, box] of absorbed.boxes.entries()) {
-          await tx.box.update({
-            where: { id: box.id },
-            data: { hiveId: survivor.id, position: top + 1 + i },
-          });
-        }
+        await Promise.all(
+          absorbed.boxes.map((box, i) =>
+            tx.box.update({
+              where: { id: box.id },
+              data: { hiveId: survivor.id, position: top + 1 + i },
+            }),
+          ),
+        );
         boxesMoved = absorbed.boxes.length;
       }
 
