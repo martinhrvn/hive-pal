@@ -26,6 +26,7 @@ import {
   ArrowLeftRight,
   Undo2,
   Split,
+  Merge,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -45,8 +46,12 @@ import {
   QuickCheckResponse,
   PhotoResponse,
   DocumentResponse,
+  type ActionDetails,
 } from 'shared-schemas';
-import { getFeedTypeLabel } from '@/utils/feed-type-label';
+import {
+  getFeedingAmountLabel,
+  getFeedTypeLabel,
+} from '@/utils/feed-type-label';
 import { hiveStatusLabelKey } from '@/utils/status-colors';
 import { Link } from 'react-router';
 import {
@@ -56,6 +61,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useScheduledInspectionActions } from '@/api/hooks/useScheduledInspectionActions';
+import { useHive } from '@/api/hooks/useHives';
 import { cn } from '@/lib/utils';
 import { StatusPill } from './status-pill';
 import { PhotoGallery } from './photo-gallery';
@@ -302,96 +308,116 @@ const getActionIcon = (action: ActionResponse) => {
       return <ArrowLeftRight />;
     case 'SPLIT':
       return <Split />;
+    case 'COMBINE':
+      return <Merge />;
     default:
       return <ActivityIcon />;
   }
 };
 
+// Label when an action has no (matching) details, e.g. legacy records.
+const FALLBACK_ACTION_LABEL_KEYS: Partial<Record<ActionType, string>> = {
+  [ActionType.FEEDING]: 'common:timeline.actionLabel.feeding',
+  [ActionType.TREATMENT]: 'common:timeline.actionLabel.treatment',
+  [ActionType.FRAME]: 'common:timeline.actionLabel.frameManagement',
+  [ActionType.HARVEST]: 'common:timeline.actionLabel.harvest',
+  [ActionType.NOTE]: 'common:timeline.actionLabel.note',
+  [ActionType.STATUS_CHANGE]: 'common:timeline.actionLabel.statusChange',
+  [ActionType.SPLIT]: 'common:timeline.actionLabel.split',
+  [ActionType.COMBINE]: 'common:timeline.actionLabel.combineSurvivor',
+  [ActionType.BOX_CONFIGURATION]: 'common:timeline.boxConfiguration',
+  [ActionType.MAINTENANCE]: 'common:timeline.maintenance',
+};
+
+const getFeedingLabel = (
+  details: Extract<ActionDetails, { type: 'FEEDING' }>,
+  t: TFunction,
+): string => {
+  let extra = '';
+  if (details.sugarG != null) {
+    extra = t('common:timeline.actionLabel.sugarEquivalent', {
+      kg: Math.round(details.sugarG / 10) / 100,
+    });
+  } else if (details.concentration) {
+    extra = ` (${details.concentration})`;
+  }
+  return t('common:timeline.actionLabel.fed', {
+    amount: getFeedingAmountLabel(details),
+    feed: getFeedTypeLabel(details.feedType),
+    extra,
+  });
+};
+
+const getStatusChangeLabel = (
+  details: Extract<ActionDetails, { type: 'STATUS_CHANGE' }>,
+  t: TFunction,
+): string => {
+  const to = t(`hive:${hiveStatusLabelKey(details.toStatus)}`);
+  return details.fromStatus
+    ? t('common:timeline.actionLabel.statusChangedFromTo', {
+        from: t(`hive:${hiveStatusLabelKey(details.fromStatus)}`),
+        to,
+      })
+    : t('common:timeline.actionLabel.statusChangedTo', { to });
+};
+
+// Label built from an action's details; null when the type has none.
+const getDetailsLabel = (
+  details: ActionDetails,
+  t: TFunction,
+): string | null => {
+  switch (details.type) {
+    case 'FEEDING':
+      return getFeedingLabel(details, t);
+    case 'TREATMENT':
+      return t('common:timeline.actionLabel.treatedWith', {
+        product: details.product,
+        quantity: details.quantity,
+        unit: details.unit,
+      });
+    case 'FRAME':
+      return t('common:timeline.actionLabel.addedFrames', {
+        count: details.quantity,
+      });
+    case 'HARVEST':
+      return t('common:timeline.actionLabel.harvested', {
+        amount: details.amount,
+        unit: details.unit,
+      });
+    case 'STATUS_CHANGE':
+      return getStatusChangeLabel(details, t);
+    case 'SPLIT':
+      return t(
+        details.role === 'SOURCE'
+          ? 'common:timeline.actionLabel.splitSource'
+          : 'common:timeline.actionLabel.splitTarget',
+        { count: details.framesMoved },
+      );
+    case 'COMBINE':
+      return t(
+        details.role === 'ABSORBED'
+          ? 'common:timeline.actionLabel.combineAbsorbed'
+          : 'common:timeline.actionLabel.combineSurvivor',
+      );
+    case 'MAINTENANCE':
+      return t(
+        details.status.toLowerCase() === 'cleaned'
+          ? 'common:timeline.actionLabel.cleaned'
+          : 'common:timeline.actionLabel.replaced',
+        { component: details.component.replace('_', ' ').toLowerCase() },
+      );
+    default:
+      return null;
+  }
+};
+
 const getActionLabel = (action: ActionResponse, t: TFunction): string => {
   const details = action.details;
-  switch (action.type) {
-    case 'FEEDING': {
-      if (details?.type !== 'FEEDING') {
-        return t('common:timeline.actionLabel.feeding');
-      }
-      const amount =
-        details.enteredAmount != null && details.enteredUnit
-          ? `${details.enteredAmount} ${details.enteredUnit === 'l' ? 'L' : details.enteredUnit}`
-          : `${details.amount} ${details.unit}`;
-      let extra = '';
-      if (details.sugarG != null) {
-        extra = t('common:timeline.actionLabel.sugarEquivalent', {
-          kg: Math.round(details.sugarG / 10) / 100,
-        });
-      } else if (details.concentration) {
-        extra = ` (${details.concentration})`;
-      }
-      return t('common:timeline.actionLabel.fed', {
-        amount,
-        feed: getFeedTypeLabel(details.feedType),
-        extra,
-      });
-    }
-    case 'TREATMENT':
-      return details?.type === 'TREATMENT'
-        ? t('common:timeline.actionLabel.treatedWith', {
-            product: details.product,
-            quantity: details.quantity,
-            unit: details.unit,
-          })
-        : t('common:timeline.actionLabel.treatment');
-    case 'FRAME':
-      return details?.type === 'FRAME'
-        ? t('common:timeline.actionLabel.addedFrames', {
-            count: details.quantity,
-          })
-        : t('common:timeline.actionLabel.frameManagement');
-    case 'HARVEST':
-      return details?.type === 'HARVEST'
-        ? t('common:timeline.actionLabel.harvested', {
-            amount: details.amount,
-            unit: details.unit,
-          })
-        : t('common:timeline.actionLabel.harvest');
-    case 'NOTE':
-      return t('common:timeline.actionLabel.note');
-    case 'STATUS_CHANGE': {
-      if (details?.type !== 'STATUS_CHANGE') {
-        return t('common:timeline.actionLabel.statusChange');
-      }
-      const to = t(`hive:${hiveStatusLabelKey(details.toStatus)}`);
-      return details.fromStatus
-        ? t('common:timeline.actionLabel.statusChangedFromTo', {
-            from: t(`hive:${hiveStatusLabelKey(details.fromStatus)}`),
-            to,
-          })
-        : t('common:timeline.actionLabel.statusChangedTo', { to });
-    }
-    case 'SPLIT':
-      if (details?.type !== 'SPLIT') {
-        return t('common:timeline.actionLabel.split');
-      }
-      return details.role === 'SOURCE'
-        ? t('common:timeline.actionLabel.splitSource', {
-            count: details.framesMoved,
-          })
-        : t('common:timeline.actionLabel.splitTarget', {
-            count: details.framesMoved,
-          });
-    case 'BOX_CONFIGURATION':
-      return t('common:timeline.boxConfiguration');
-    case 'MAINTENANCE': {
-      if (details?.type !== 'MAINTENANCE') {
-        return t('common:timeline.maintenance');
-      }
-      const component = details.component.replace('_', ' ').toLowerCase();
-      return details.status.toLowerCase() === 'cleaned'
-        ? t('common:timeline.actionLabel.cleaned', { component })
-        : t('common:timeline.actionLabel.replaced', { component });
-    }
-    default:
-      return action.type;
-  }
+  const detailsLabel =
+    details?.type === action.type ? getDetailsLabel(details, t) : null;
+  if (detailsLabel) return detailsLabel;
+  const fallbackKey = FALLBACK_ACTION_LABEL_KEYS[action.type];
+  return fallbackKey ? t(fallbackKey) : action.type;
 };
 
 const getEventTone = (event: DecoratedEvent): MarkerTone => {
@@ -494,6 +520,34 @@ const HiveBadge: React.FC<{ data: TimelineEvent['data'] }> = ({ data }) => {
     <Badge variant="outline" className="text-xs py-0 ml-1">
       {name}
     </Badge>
+  );
+};
+
+// Links a COMBINE entry to the other hive of the pair. Prefers the timeline's
+// own name lookup (apiary timeline); otherwise loads the hive, which still
+// resolves once it has been archived.
+const CombineCounterpartLink: React.FC<{ action: ActionResponse }> = ({
+  action,
+}) => {
+  const { getHiveName } = useTimelineRow();
+  const counterpartId =
+    action.details?.type === 'COMBINE'
+      ? (action.details.counterpartHiveId ?? undefined)
+      : undefined;
+  const knownName = counterpartId ? getHiveName?.(counterpartId) : undefined;
+  const { data: counterpart } = useHive(counterpartId ?? '', {
+    enabled: Boolean(counterpartId) && !knownName,
+  });
+  const name = knownName ?? counterpart?.name;
+  if (!counterpartId || !name) return null;
+  return (
+    <Link
+      to={`/hives/${counterpartId}`}
+      onClick={e => e.stopPropagation()}
+      className="ml-1 font-medium underline-offset-2 hover:underline"
+    >
+      {name}
+    </Link>
   );
 };
 
@@ -783,6 +837,7 @@ const ActionEntry: React.FC<{ action: ActionResponse; tone: MarkerTone }> = ({
       <div className="flex-1 min-w-0">
         <div className="text-sm text-foreground/90">
           {getActionLabel(action, t)}
+          <CombineCounterpartLink action={action} />
           <HiveBadge data={action} />
           {action.inspectionId && (
             <StatusPill tone="warning" size="sm" asChild>

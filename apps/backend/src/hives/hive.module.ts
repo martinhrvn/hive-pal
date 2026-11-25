@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { HiveController } from './hive.controller';
 import { HiveService } from './hive.service';
 import { SplitService } from './split.service';
+import { CombineService } from './combine.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { LoggerModule } from '../logger/logger.module';
 import { ActionsModule } from '../actions/actions.module';
@@ -18,7 +19,7 @@ import { PrometheusModule } from '../health/prometheus/prometheus.module';
     PrometheusModule,
   ],
   controllers: [HiveController],
-  providers: [HiveService, SplitService, MetricsService],
+  providers: [HiveService, SplitService, CombineService, MetricsService],
   exports: [HiveService],
 })
 export class HiveModule {}

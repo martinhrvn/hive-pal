@@ -543,7 +543,8 @@
       "STATUS_CHANGE": "Zmena stavu",
       "SPLIT": "Delenie včelstva",
       "HARVEST": "Zber",
-      "OTHER": "Iné"
+      "OTHER": "Iné",
+      "COMBINE": "Spojenie včelstiev"
     },
     "frameQuantity_one": "{{value}} rámik",
     "frameQuantity_few": "{{value}} rámiky",
@@ -594,7 +595,15 @@
     "splitFrames_one": "{{sign}}{{count}} rámik",
     "splitFrames_few": "{{sign}}{{count}} rámiky",
     "splitFrames_many": "{{sign}}{{count}} rámika",
-    "splitFrames_other": "{{sign}}{{count}} rámikov"
+    "splitFrames_other": "{{sign}}{{count}} rámikov",
+    "combine": {
+      "survivor": "Pripojilo iné včelstvo",
+      "absorbed": "Pripojené k inému úľu",
+      "boxesMoved_one": "{{count}} presunutý nadstavok",
+      "boxesMoved_few": "{{count}} presunuté nadstavky",
+      "boxesMoved_many": "{{count}} presunutých nadstavkov",
+      "boxesMoved_other": "{{count}} presunutých nadstavkov"
+    }
   },
   "boxConfigAction": {
     "instruction": "Nastavte zostavu nadstavkov úľa. Zmeny sa zaznamenajú ako akcia tejto prehliadky a na úľ sa použijú po uložení prehliadky.",

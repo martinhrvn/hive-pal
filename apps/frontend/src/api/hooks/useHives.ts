@@ -13,6 +13,8 @@ import {
   UpdateHiveBoxes,
   SplitHive,
   SplitHiveResponse,
+  CombineHivesInput,
+  CombineHivesResponse,
 } from 'shared-schemas';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import type { UseQueryOptions } from '@tanstack/react-query';
@@ -400,6 +402,47 @@ export const useUndoSplit = () => {
         `/api/hives/${variables.hiveId}/splits/${variables.splitId}`,
         'DELETE',
       );
+    },
+  });
+};
+
+// Combine (unite) two colonies: `id` survives, `data.absorbedHiveId` is
+// archived. Queens, boxes and both timelines change, so refresh broadly.
+export const useCombineHives = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: CombineHivesInput;
+    }) => {
+      const response = await apiClient.post<CombineHivesResponse>(
+        `/api/hives/${id}/combine`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: async (_data, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: HIVES_KEYS.detail(variables.id),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: HIVES_KEYS.detail(variables.data.absorbedHiveId),
+        }),
+        queryClient.invalidateQueries({ queryKey: HIVES_KEYS.lists() }),
+        queryClient.invalidateQueries({
+          queryKey: HIVES_KEYS.listsWithBoxes(),
+        }),
+        queryClient.invalidateQueries({ queryKey: ['actions'] }),
+        queryClient.invalidateQueries({ queryKey: ['queens'] }),
+      ]);
+    },
+    onError: (error, variables) => {
+      logApiError(error, `/api/hives/${variables.id}/combine`, 'POST');
     },
   });
 };

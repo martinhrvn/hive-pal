@@ -459,7 +459,9 @@
       "splitTarget_many": "Delenie včelstva: vytvorené s {{count}} plodovými rámikmi",
       "splitTarget_other": "Delenie včelstva: vytvorené s {{count}} plodovými rámikmi",
       "cleaned": "Vyčistené: {{component}}",
-      "replaced": "Vymenené: {{component}}"
+      "replaced": "Vymenené: {{component}}",
+      "combineSurvivor": "Spojenie včelstiev: pripojený úľ",
+      "combineAbsorbed": "Spojenie včelstiev: pripojený k úľu"
     }
   },
   "reports": {
@@ -1538,7 +1540,8 @@
     "maintenance": "Údržba",
     "note": "Poznámka",
     "other": "Iné",
-    "weighing": "Váženie"
+    "weighing": "Váženie",
+    "combine": "Spojenie"
   },
   "breadcrumbs": {
     "queen": "Matka",

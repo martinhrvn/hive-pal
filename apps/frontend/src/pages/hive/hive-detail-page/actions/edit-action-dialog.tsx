@@ -38,7 +38,7 @@ interface EditActionDialogProps {
 interface ActionFormData {
   date: Date;
   actions: ActionData[];
-  /** Only edited for splits, whose details are immutable. */
+  /** Only edited for splits/combines, whose details are immutable. */
   notes: string;
 }
 
@@ -74,6 +74,9 @@ const getWarning = (
   }
   if (action.type === ActionType.SPLIT) {
     return { message: t('hive:actionDialog.warnings.split') };
+  }
+  if (action.type === ActionType.COMBINE) {
+    return { message: t('hive:actionDialog.warnings.combine') };
   }
   return null;
 };
@@ -220,8 +223,10 @@ export const EditActionDialog = ({
   const { t } = useTranslation(['hive', 'common']);
   const notesId = useId();
   const updateAction = useUpdateAction();
-  // A split is a structural paired record: only date + notes are editable.
+  // Splits and combines are structural paired records: only date + notes are
+  // editable.
   const isSplit = action.type === ActionType.SPLIT;
+  const isPaired = isSplit || action.type === ActionType.COMBINE;
 
   const methods = useForm<ActionFormData>({
     defaultValues: toFormValues(action),
@@ -238,8 +243,8 @@ export const EditActionDialog = ({
     const actions = values.actions || [];
     const selectedDate = values.date;
 
-    if (isSplit) {
-      // Split details are immutable; only date + notes travel to the server.
+    if (isPaired) {
+      // Split/combine details are immutable; only date + notes travel to the server.
       try {
         await updateAction.mutateAsync({
           actionId: action.id,
@@ -248,7 +253,11 @@ export const EditActionDialog = ({
             notes: values.notes.trim() || undefined,
           },
         });
-        toast.success(t('hive:actionDialog.splitUpdateSuccess'));
+        toast.success(
+          isSplit
+            ? t('hive:actionDialog.splitUpdateSuccess')
+            : t('hive:actionDialog.combineUpdateSuccess'),
+        );
         onOpenChange(false);
       } catch {
         toast.error(t('hive:actionDialog.updateError'));
@@ -319,7 +328,7 @@ export const EditActionDialog = ({
                 />
               )}
             />
-            {isSplit ? (
+            {isPaired ? (
               <div className="mb-4">
                 <Label htmlFor={notesId} className="mb-2">
                   {t('hive:actionDialog.notes')}
@@ -327,7 +336,11 @@ export const EditActionDialog = ({
                 <Textarea
                   id={notesId}
                   {...notesField}
-                  placeholder={t('hive:actionDialog.splitNotesPlaceholder')}
+                  placeholder={
+                    isSplit
+                      ? t('hive:actionDialog.splitNotesPlaceholder')
+                      : t('hive:actionDialog.combineNotesPlaceholder')
+                  }
                   rows={3}
                 />
               </div>

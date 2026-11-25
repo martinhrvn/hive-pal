@@ -169,7 +169,8 @@
     "dataOptions": "Možnosti údajov",
     "createNewHive": "Vytvoriť nový úľ",
     "qr": "QR kód",
-    "splitColony": "Rozdeliť včelstvo"
+    "splitColony": "Rozdeliť včelstvo",
+    "combineColony": "Spojiť včelstvá"
   },
   "manage": {
     "title": "Spravovať úľ",
@@ -463,7 +464,9 @@
       "frameManagement": "Správa rámikov",
       "harvested": "Vyťočené {{amount}} {{unit}}",
       "harvest": "Medobranie",
-      "note": "Poznámka"
+      "note": "Poznámka",
+      "combineSurvivor": "Spojené s iným včelstvom",
+      "combineAbsorbed": "Pripojené k inému úľu (tento úľ bol archivovaný)"
     }
   },
   "actionDialog": {
@@ -490,8 +493,11 @@
       "inspectionLink": "Upraviť radšej prehliadku",
       "harvest": "Tento úkon je prepojený s medobraním. Ak ho upravíte tu, nebude sa zhodovať so záznamom medobrania.",
       "harvestLink": "Prejsť na medobranie",
-      "split": "Toto je delenie včelstva. Tu sa dá upraviť len dátum a poznámky — zmena dátumu sa prejaví v oboch prepojených záznamoch na časovej osi a posunie aj pripomienku kontroly. Ak chcete samotné delenie vrátiť, použite na časovej osi „Zrušiť delenie“."
-    }
+      "split": "Toto je delenie včelstva. Tu sa dá upraviť len dátum a poznámky — zmena dátumu sa prejaví v oboch prepojených záznamoch na časovej osi a posunie aj pripomienku kontroly. Ak chcete samotné delenie vrátiť, použite na časovej osi „Zrušiť delenie“.",
+      "combine": "Toto je spojenie včelstiev. Upraviť tu môžete iba dátum a poznámky; zmena dátumu sa prejaví v oboch prepojených záznamoch na časovej osi."
+    },
+    "combineUpdateSuccess": "Spojenie aktualizované — obidva záznamy na časovej osi majú nový dátum",
+    "combineNotesPlaceholder": "Poznámky k tomuto spojeniu…"
   },
   "detail": {
     "established": "Založený · {{date}}",
@@ -628,8 +634,10 @@
     "deleteAction": {
       "title": "Vymazať úkon?",
       "splitDescription": "Záznam o delení sa vymaže z časových osí oboch úľov. Úle si ponechajú aktuálne rámiky aj matku — ak chcete delenie úplne vrátiť, použite „Zrušiť delenie“.",
-      "description": "Túto akciu nie je možné vrátiť. Úkon sa natrvalo vymaže."
-    }
+      "description": "Túto akciu nie je možné vrátiť. Úkon sa natrvalo vymaže.",
+      "combineDescription": "Týmto sa záznam o spojení odstráni z časových osí oboch úľov. Pripojený úľ zostane archivovaný a matky aj nadstavky zostanú tak, ako sú."
+    },
+    "combineDeleted": "Záznam o spojení bol odstránený z oboch časových osí"
   },
   "qr": {
     "printTitle": "QR kód – {{name}}",
@@ -683,5 +691,47 @@
       "download3mf_many": "Stiahnuť .3MF — {{count}} úľa",
       "download3mf_other": "Stiahnuť .3MF — {{count}} úľov"
     }
+  },
+  "combine": {
+    "title": "Spojenie včelstiev",
+    "stepHives": "Úle",
+    "stepQueen": "Matka",
+    "stepDetails": "Podrobnosti",
+    "stepConfirm": "Potvrdenie",
+    "otherHiveLabel": "Spojiť s",
+    "otherHivePlaceholder": "Vyberte úľ",
+    "noCandidates": "Na tomto stanovišti nie je iný aktívny úľ, s ktorým by sa dal spojiť.",
+    "survivorQuestion": "Ktorý úľ zostáva?",
+    "survivorDesc": "{{absorbed}} sa k nemu pripojí a archivuje sa.",
+    "queenQuestion": "Ktorá matka zostala?",
+    "queenHint": "Ponechaná matka vedie spojené včelstvo.",
+    "queenFrom": "Teraz v úli {{hive}}",
+    "noQueens": "Ani jeden úľ nemá zaznamenanú matku. Spojenému včelstvu ju môžete pridať neskôr.",
+    "fateQuestion": "Čo sa stalo s druhou matkou?",
+    "fateDeadTitle": "Odstránená (uhynutá)",
+    "fateDeadDesc": "Bola vyradená alebo spojenie neprežila.",
+    "fateReplacedTitle": "Nahradená",
+    "fateReplacedDesc": "Bola odobratá, napríklad pre iné včelstvo.",
+    "fateDeadShort": "odstránená (uhynutá)",
+    "fateReplacedShort": "nahradená",
+    "dateLabel": "Dátum spojenia",
+    "moveBoxesLabel": "Presunúť nadstavky na zostávajúci úľ",
+    "moveBoxesHint": "Nadstavky úľa {{absorbed}} sa uložia na vrch úľa {{survivor}}.",
+    "notesLabel": "Poznámky",
+    "notesPlaceholder": "napr. spájanie cez noviny",
+    "summary": "Zhrnutie",
+    "survivorRow": "Pokračuje ako",
+    "absorbedRow": "Pripojený",
+    "absorbedValue": "{{name}} (archivovaný)",
+    "queenRow": "Matka",
+    "queenNone": "nezaznamenaná",
+    "otherQueenRow": "Druhá matka",
+    "boxesRow": "Nadstavky",
+    "boxesMoved": "uložené na úľ {{survivor}}",
+    "boxesKept": "ponechané na mieste",
+    "confirm": "Spojiť včelstvá",
+    "combining": "Spájam…",
+    "toastDone": "{{absorbed}} bol spojený s úľom {{survivor}}",
+    "toastError": "Spojenie zlyhalo. Skúste to znova."
   }
 }

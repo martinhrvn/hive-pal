@@ -183,6 +183,25 @@ export const splitActionDetailsSchema = z.object({
   queenDisposition: queenDispositionSchema,
 });
 
+export const combineRoleSchema = z.enum(['SURVIVOR', 'ABSORBED']);
+// What happened to the queen that did not head the united colony.
+export const otherQueenFateSchema = z.enum(['DEAD', 'REPLACED']);
+
+// Colony combine (uniting two colonies) details. Written as a matched PAIR of
+// COMBINE actions sharing a `combineId` (one on the surviving hive, one on the
+// absorbed hive). All fields are set by the backend; they are optional on input
+// because COMBINE actions are only created through POST /hives/:id/combine.
+export const combineActionDetailsSchema = z.object({
+  type: z.literal(ActionType.COMBINE),
+  combineId: z.uuid().optional(),
+  role: combineRoleSchema.optional(),
+  counterpartHiveId: z.uuid().nullish(),
+  keptQueenId: z.uuid().nullish(),
+  otherQueenId: z.uuid().nullish(),
+  otherQueenFate: otherQueenFateSchema.nullish(),
+  boxesMoved: z.int().min(0).optional(),
+});
+
 export const otherActionDetailsSchema = z.object({
   type: z.literal(ActionType.OTHER),
 });
@@ -198,6 +217,7 @@ export const actionDetailsSchema = z.discriminatedUnion('type', [
   noteActionDetailsSchema,
   statusChangeActionDetailsSchema,
   splitActionDetailsSchema,
+  combineActionDetailsSchema,
   otherActionDetailsSchema,
 ]);
 
@@ -222,5 +242,8 @@ export type StatusChangeActionDetails = z.infer<
 export type SplitRole = z.infer<typeof splitRoleSchema>;
 export type QueenDisposition = z.infer<typeof queenDispositionSchema>;
 export type SplitActionDetails = z.infer<typeof splitActionDetailsSchema>;
+export type CombineRole = z.infer<typeof combineRoleSchema>;
+export type OtherQueenFate = z.infer<typeof otherQueenFateSchema>;
+export type CombineActionDetails = z.infer<typeof combineActionDetailsSchema>;
 export type OtherActionDetails = z.infer<typeof otherActionDetailsSchema>;
 export type ActionDetails = z.infer<typeof actionDetailsSchema>;

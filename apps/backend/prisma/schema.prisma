@@ -678,6 +678,7 @@ model Action {
   maintenanceAction MaintenanceAction?
   statusChangeAction StatusChangeAction?
   splitAction     SplitAction?
+  combineAction   CombineAction?
   createdByUserId String?
   createdByUser   User?      @relation("ActionCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
 
@@ -909,6 +910,24 @@ model SplitAction {
   @@index([splitId])
 }
 
+// Colony combine (uniting two colonies) details. A combine writes a matched PAIR
+// of COMBINE actions sharing one combineId: one on the surviving hive and one on
+// the absorbed hive (which is archived). Recorded on the timeline only.
+model CombineAction {
+  id                String  @id @default(uuid())
+  actionId          String  @unique
+  action            Action  @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  combineId         String  // Groups the survivor-side and absorbed-side entries of one combine
+  role              String  // 'SURVIVOR' | 'ABSORBED'
+  counterpartHiveId String? // The other hive in this combine (null-safe if it is later deleted)
+  keptQueenId       String? // The queen heading the united colony (null if none was recorded)
+  otherQueenId      String? // The queen that was not kept (null if there was only one)
+  otherQueenFate    String? // 'DEAD' | 'REPLACED'
+  boxesMoved        Int     // Boxes stacked from the absorbed hive onto the survivor (0 = none)
+
+  @@index([combineId])
+}
+
 // Harvest tracking
 model Harvest {
   id              String         @id @default(uuid())
@@ -998,6 +1017,7 @@ enum ActionType {
   NOTE
   STATUS_CHANGE
   SPLIT
+  COMBINE
   OTHER
 }
 

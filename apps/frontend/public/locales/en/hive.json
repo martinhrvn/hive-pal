@@ -168,7 +168,8 @@
     "dataOptions": "Data Options",
     "createNewHive": "Create New Hive",
     "qr": "QR Code",
-    "splitColony": "Split colony"
+    "splitColony": "Split colony",
+    "combineColony": "Combine colonies"
   },
   "split": {
     "titlePrefix": "Split colony",
@@ -509,7 +510,9 @@
       "frameManagement": "Frame Management",
       "harvested": "Harvested {{amount}} {{unit}}",
       "harvest": "Harvest",
-      "note": "Note"
+      "note": "Note",
+      "combineSurvivor": "Combined with another colony",
+      "combineAbsorbed": "Combined into another hive (this hive was archived)"
     }
   },
   "treatmentSummary": {
@@ -542,8 +545,11 @@
       "inspectionLink": "Edit inspection instead",
       "harvest": "This action is linked to a harvest. Editing it here will cause it to be out of sync with the harvest record.",
       "harvestLink": "Go to harvest",
-      "split": "This is a colony split. Only the date and notes can be edited here — the date change applies to both linked timeline entries and shifts the follow-up reminder. To revert the split itself, use \"Undo split\" on the timeline."
-    }
+      "split": "This is a colony split. Only the date and notes can be edited here — the date change applies to both linked timeline entries and shifts the follow-up reminder. To revert the split itself, use \"Undo split\" on the timeline.",
+      "combine": "This is a colony combine. Only the date and notes can be edited here; a date change applies to both linked timeline entries."
+    },
+    "combineUpdateSuccess": "Combine updated — both timeline entries were re-dated",
+    "combineNotesPlaceholder": "Notes about this combine…"
   },
   "detail": {
     "established": "Established · {{date}}",
@@ -674,8 +680,10 @@
     "deleteAction": {
       "title": "Delete Action?",
       "splitDescription": "This removes the split record from both hives’ timelines. The hives themselves keep their current frames and queen — use \"Undo split\" instead to fully revert the split.",
-      "description": "This action cannot be undone. This will permanently delete this action."
-    }
+      "description": "This action cannot be undone. This will permanently delete this action.",
+      "combineDescription": "This removes the combine record from both hives’ timelines. The absorbed hive stays archived, and queens and boxes stay as they are."
+    },
+    "combineDeleted": "Combine record deleted from both timelines"
   },
   "qr": {
     "printTitle": "QR Code - {{name}}",
@@ -723,5 +731,47 @@
       "download3mf_one": "Download .3MF — {{count}} hive",
       "download3mf_other": "Download .3MF — {{count}} hives"
     }
+  },
+  "combine": {
+    "title": "Combine colonies",
+    "stepHives": "Hives",
+    "stepQueen": "Queen",
+    "stepDetails": "Details",
+    "stepConfirm": "Confirm",
+    "otherHiveLabel": "Combine with",
+    "otherHivePlaceholder": "Select a hive",
+    "noCandidates": "There is no other active hive in this apiary to combine with.",
+    "survivorQuestion": "Which hive continues?",
+    "survivorDesc": "{{absorbed}} is merged into it and archived.",
+    "queenQuestion": "Which queen was kept?",
+    "queenHint": "The kept queen heads the united colony.",
+    "queenFrom": "Currently in {{hive}}",
+    "noQueens": "Neither hive has a queen recorded. You can add one to the united colony later.",
+    "fateQuestion": "What happened to the other queen?",
+    "fateDeadTitle": "Removed (dead)",
+    "fateDeadDesc": "She was culled or did not survive the combine.",
+    "fateReplacedTitle": "Replaced",
+    "fateReplacedDesc": "She was taken out, for example to head another colony.",
+    "fateDeadShort": "removed (dead)",
+    "fateReplacedShort": "replaced",
+    "dateLabel": "Date of combine",
+    "moveBoxesLabel": "Move boxes onto the surviving hive",
+    "moveBoxesHint": "The boxes of {{absorbed}} are stacked on top of {{survivor}}.",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "e.g. newspaper method",
+    "summary": "Summary",
+    "survivorRow": "Continues as",
+    "absorbedRow": "Absorbed",
+    "absorbedValue": "{{name}} (archived)",
+    "queenRow": "Queen",
+    "queenNone": "none recorded",
+    "otherQueenRow": "Other queen",
+    "boxesRow": "Boxes",
+    "boxesMoved": "stacked onto {{survivor}}",
+    "boxesKept": "left as they are",
+    "confirm": "Combine colonies",
+    "combining": "Combining…",
+    "toastDone": "{{absorbed}} combined into {{survivor}}",
+    "toastError": "Combining failed. Please try again."
   }
 }

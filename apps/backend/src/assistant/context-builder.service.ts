@@ -501,6 +501,11 @@ export class ContextBuilderService {
         return 'Box configuration';
       case ActionType.MAINTENANCE:
         return this.formatMaintenanceLabel(action);
+      case ActionType.COMBINE:
+        return action.details?.type === ActionType.COMBINE &&
+          action.details.role === 'ABSORBED'
+          ? 'Combined into another hive (this hive was archived)'
+          : 'Combined with another colony';
       default:
         return action.type;
     }
