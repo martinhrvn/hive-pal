@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { MemoryRouter } from 'react-router';
-import { InspectionStatus, type InspectionResponse } from 'shared-schemas';
+import {
+  InspectionStatus,
+  type InspectionResponse,
+  type QuickCheckResponse,
+} from 'shared-schemas';
 import { TimelineEventList } from './timeline-event-list';
 
 /**
@@ -52,7 +56,24 @@ const bareInspection: InspectionResponse = {
   actions: [],
 };
 
-const Harness = ({ inspections }: { inspections: InspectionResponse[] }) => {
+const quickCheck: QuickCheckResponse = {
+  id: '44444444-4444-4444-8444-444444444444',
+  hiveId: HIVE_ID,
+  apiaryId: '55555555-5555-4555-8555-555555555555',
+  date: '2026-05-02T10:00:00.000Z',
+  note: null,
+  tags: ['varroa_present', 'low_stores'],
+  photos: [],
+  createdAt: '2026-05-02T10:00:00.000Z',
+  updatedAt: '2026-05-02T10:00:00.000Z',
+};
+
+interface HarnessProps {
+  inspections?: InspectionResponse[];
+  quickChecks?: QuickCheckResponse[];
+}
+
+const Harness = ({ inspections = [], quickChecks = [] }: HarnessProps) => {
   const [opened, setOpened] = useState('');
 
   return (
@@ -62,7 +83,7 @@ const Harness = ({ inspections }: { inspections: InspectionResponse[] }) => {
         <TimelineEventList
           inspections={inspections}
           actions={[]}
-          quickChecks={[]}
+          quickChecks={quickChecks}
           handlers={{ onInspectionClick: ins => setOpened(ins.id) }}
         />
       </div>
@@ -79,3 +100,6 @@ export const InspectionWithDetails = () => (
 export const InspectionWithoutDetails = () => (
   <Harness inspections={[bareInspection]} />
 );
+
+/** A quick check tagged with one observation and one reminder. */
+export const QuickCheckWithTags = () => <Harness quickChecks={[quickCheck]} />;

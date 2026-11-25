@@ -63,3 +63,12 @@ test('offers nothing to expand when the inspection has no details', async ({
     0,
   );
 });
+
+test('labels quick check tags like the inspection form does', async ({
+  mount,
+}) => {
+  const component = await mount(`${STORY}/QuickCheckWithTags`);
+
+  await expect(component.getByText('Varroa Mites Present')).toBeVisible();
+  await expect(component.getByText('Low Stores')).toBeVisible();
+});
