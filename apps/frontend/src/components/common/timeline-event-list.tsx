@@ -67,6 +67,8 @@ import { StatusPill } from './status-pill';
 import { PhotoGallery } from './photo-gallery';
 import { StandalonePhotoPreview } from './standalone-photo-preview';
 import { DocumentDownloadLink } from './document-download-link';
+import { TimelineInspectionDetails } from './timeline-inspection-details';
+import { hasInspectionDetails } from './timeline-inspection-fields';
 
 export type TimelineEvent = {
   id: string;
@@ -578,6 +580,11 @@ const InspectionEntry: React.FC<{ event: DecoratedEvent }> = ({ event }) => {
   const isCancelled = inspection.status === InspectionStatus.CANCELLED;
   const { isOverdue } = event;
   const clickable = !!onInspectionClick && !isScheduled;
+  const [expanded, setExpanded] = useState(false);
+  const expandable = !isCancelled && hasInspectionDetails(inspection);
+  const toggleLabel = expanded
+    ? t('common:timeline.hideDetails')
+    : t('common:timeline.showDetails');
 
   return (
     <div
@@ -661,12 +668,52 @@ const InspectionEntry: React.FC<{ event: DecoratedEvent }> = ({ event }) => {
           )}
 
           {inspection.notes && (
-            <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-              <FileTextIcon className="size-3" />
-              <span>{t('common:timeline.notesAvailable')}</span>
+            <div className="flex items-start gap-1.5 mt-1.5 text-xs text-muted-foreground">
+              <FileTextIcon className="size-3 mt-0.5 shrink-0" />
+              <p
+                className={cn(
+                  'min-w-0 break-words',
+                  expanded ? 'whitespace-pre-wrap' : 'line-clamp-2',
+                )}
+              >
+                {inspection.notes}
+              </p>
+            </div>
+          )}
+
+          {expandable && expanded && (
+            <div
+              id={`inspection-details-${inspection.id}`}
+              className="cursor-auto"
+              onClick={e => e.stopPropagation()}
+            >
+              <TimelineInspectionDetails inspection={inspection} />
             </div>
           )}
         </div>
+
+        {expandable && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 shrink-0 opacity-60 hover:opacity-100"
+            title={toggleLabel}
+            aria-label={toggleLabel}
+            aria-expanded={expanded}
+            aria-controls={`inspection-details-${inspection.id}`}
+            onClick={e => {
+              e.stopPropagation();
+              setExpanded(prev => !prev);
+            }}
+          >
+            <ChevronDownIcon
+              className={cn(
+                'size-4 transition-transform',
+                expanded && 'rotate-180',
+              )}
+            />
+          </Button>
+        )}
 
         {isScheduled && !isCancelled && (
           <DropdownMenu>
