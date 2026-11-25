@@ -22,7 +22,7 @@
     "depthMm": "Profondeur (mm)",
     "dimensionsMm": "Dimensions (mm)",
     "submitted": "Soumis le",
-    "source": "Source",
+    "source": "Origine",
     "file": "Fichier",
     "owner": "Propriétaire",
     "apiary": "Rucher",
@@ -176,7 +176,7 @@
       "30d": "30 derniers jours",
       "90d": "90 derniers jours",
       "6m": "6 derniers mois",
-      "1y": "Année dernière",
+      "1y": "Dernière année",
       "all": "Depuis le début"
     },
     "additionalTitle": "Statistiques supplémentaires",
