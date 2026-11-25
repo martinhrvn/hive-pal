@@ -10,6 +10,7 @@ export enum ActionType {
   NOTE = 'NOTE',
   STATUS_CHANGE = 'STATUS_CHANGE',
   SPLIT = 'SPLIT',
+  COMBINE = 'COMBINE',
   OTHER = 'OTHER',
 }
 

@@ -8,6 +8,7 @@ import {
   MessageSquare,
   Pill,
   Split,
+  Merge,
   Wrench,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -23,9 +24,11 @@ import {
   NoteActionDetails,
   StatusChangeActionDetails,
   SplitActionDetails,
+  CombineActionDetails,
   TreatmentActionDetails,
 } from 'shared-schemas';
 import { cn } from '@/lib/utils';
+import { getFeedingAmountLabel } from '@/utils/feed-type-label';
 
 // ─── Icon palette per action type ─────────────────────────────────────────────
 
@@ -65,6 +68,10 @@ const ACTION_VISUAL: Record<
     Icon: Split,
     tone: 'bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300',
   },
+  [ActionType.COMBINE]: {
+    Icon: Merge,
+    tone: 'bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300',
+  },
   [ActionType.HARVEST]: {
     Icon: ClipboardCheck,
     tone: 'bg-yellow-50 text-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-300',
@@ -90,10 +97,7 @@ const FeedingDetails = ({ details }: { details: FeedingActionDetails }) => {
         {details.feedType}
       </Badge>
       <span className="font-medium tabular-nums">
-        {/* v2 records show what was entered; legacy records the stored value */}
-        {details.enteredAmount != null && details.enteredUnit
-          ? `${details.enteredAmount} ${details.enteredUnit === 'l' ? 'L' : details.enteredUnit}`
-          : `${details.amount} ${details.unit}`}
+        {getFeedingAmountLabel(details)}
       </span>
       {details.sugarG != null && (
         <span className="text-stone-500 dark:text-stone-400">
@@ -336,6 +340,26 @@ const SplitDetails = ({ details }: { details: SplitActionDetails }) => {
   );
 };
 
+const CombineDetails = ({ details }: { details: CombineActionDetails }) => {
+  const { t } = useTranslation('inspection');
+  return (
+    <div className="flex gap-2 flex-wrap items-center">
+      <span className="text-stone-500 dark:text-stone-400">
+        {details.role === 'ABSORBED'
+          ? t('actionsCard.combine.absorbed')
+          : t('actionsCard.combine.survivor')}
+      </span>
+      {(details.boxesMoved ?? 0) > 0 && (
+        <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-200 font-normal tabular-nums">
+          {t('actionsCard.combine.boxesMoved', {
+            count: details.boxesMoved,
+          })}
+        </Badge>
+      )}
+    </div>
+  );
+};
+
 // ─── Action label ─────────────────────────────────────────────────────────────
 
 const KNOWN_ACTION_LABELS = new Set<string>(Object.values(ActionType));
@@ -372,6 +396,8 @@ const ActionItem = ({
         return <StatusChangeDetails details={details} />;
       case 'SPLIT':
         return <SplitDetails details={details} />;
+      case 'COMBINE':
+        return <CombineDetails details={details} />;
       default:
         return null;
     }

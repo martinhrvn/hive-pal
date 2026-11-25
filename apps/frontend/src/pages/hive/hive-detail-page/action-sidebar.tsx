@@ -10,6 +10,7 @@ import {
   Smartphone,
   Mic,
   Split,
+  Merge,
 } from 'lucide-react';
 import { bee } from '@lucide/lab';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +31,7 @@ import { DeleteConfirmDialog } from '@/components/common/delete-confirm-dialog';
 import { useDeleteDialog } from '@/hooks/useDeleteDialog';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { SplitWizard } from './split/split-wizard';
+import { CombineWizard } from './combine/combine-wizard';
 import { DeleteHivePermanently } from './delete-hive-permanently';
 
 type ActionSideBarProps = {
@@ -48,6 +50,8 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
   const { canEdit } = useApiaryPermission(hive?.apiaryId);
   const deleteHive = useDeleteHive();
   const [splitOpen, setSplitOpen] = useState(false);
+  const [combineOpen, setCombineOpen] = useState(false);
+  const canCombine = hive?.status === 'ACTIVE' || hive?.status === 'INACTIVE';
 
   const deleteDialog = useDeleteDialog(
     () => {
@@ -179,6 +183,15 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
               disabled={!hive}
             />
           )}
+          {canEdit && (
+            <MenuItemButton
+              icon={<Merge className="h-4 w-4" />}
+              label={t('hive:actions.combineColony')}
+              onClick={() => setCombineOpen(true)}
+              tooltip={t('hive:actions.combineColony')}
+              disabled={!canCombine}
+            />
+          )}
           <RefreshButton
             onRefresh={onRefreshData}
             i18nNamespace="hive"
@@ -267,6 +280,13 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
 
       {hive && (
         <SplitWizard hive={hive} open={splitOpen} onOpenChange={setSplitOpen} />
+      )}
+      {hive && (
+        <CombineWizard
+          hive={hive}
+          open={combineOpen}
+          onOpenChange={setCombineOpen}
+        />
       )}
     </div>
   );

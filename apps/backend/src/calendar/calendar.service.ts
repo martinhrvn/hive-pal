@@ -73,6 +73,7 @@ export class CalendarService {
               maintenanceAction: true,
               statusChangeAction: true,
               splitAction: true,
+              combineAction: true,
               createdByUser: { select: { name: true, email: true } },
             },
           },
@@ -105,6 +106,7 @@ export class CalendarService {
           maintenanceAction: true,
           statusChangeAction: true,
           splitAction: true,
+          combineAction: true,
           createdByUser: { select: { name: true, email: true } },
           hive: {
             select: {

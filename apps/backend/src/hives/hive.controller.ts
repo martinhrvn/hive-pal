@@ -18,6 +18,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { HiveService } from './hive.service';
 import { SplitService } from './split.service';
+import { CombineService } from './combine.service';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
@@ -41,6 +42,9 @@ import {
   splitHiveSchema,
   SplitHive,
   SplitHiveResponse,
+  combineHivesSchema,
+  CombineHives,
+  CombineHivesResponse,
 } from 'shared-schemas';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -51,6 +55,7 @@ export class HiveController {
   constructor(
     private readonly hiveService: HiveService,
     private readonly splitService: SplitService,
+    private readonly combineService: CombineService,
     private readonly logger: CustomLoggerService,
   ) {
     this.logger.setContext('HiveController');
@@ -88,6 +93,24 @@ export class HiveController {
       force === 'true',
     );
     return { success: true };
+  }
+
+  @Post(':id/combine')
+  @ApiaryOptional()
+  @ApiConsumes('application/json')
+  @ZodValidation(combineHivesSchema)
+  combine(
+    @Param('id') id: string,
+    @Body() dto: CombineHives,
+    @Req() req: RequestWithApiaryScope,
+  ): Promise<CombineHivesResponse> {
+    this.logger.log(
+      `Combining hive ${dto.absorbedHiveId} into ${id} by user: ${req.user.id}`,
+    );
+    return this.combineService.combine(id, dto, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Post()

@@ -616,7 +616,9 @@
       "splitTarget_one": "Colony split: created with {{count}} brood frame",
       "splitTarget_other": "Colony split: created with {{count}} brood frames",
       "cleaned": "Cleaned {{component}}",
-      "replaced": "Replaced {{component}}"
+      "replaced": "Replaced {{component}}",
+      "combineSurvivor": "Colony combine: absorbed",
+      "combineAbsorbed": "Colony combine: merged into"
     }
   },
   "syrupCalculator": {
@@ -2651,7 +2653,8 @@
     "maintenance": "Maintenance",
     "note": "Note",
     "other": "Other",
-    "weighing": "Weighing"
+    "weighing": "Weighing",
+    "combine": "Combine"
   },
   "table": {
     "columns": "Columns",

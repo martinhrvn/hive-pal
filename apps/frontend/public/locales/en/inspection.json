@@ -615,7 +615,8 @@
       "STATUS_CHANGE": "Status Change",
       "SPLIT": "Colony Split",
       "HARVEST": "Harvest",
-      "OTHER": "Other"
+      "OTHER": "Other",
+      "COMBINE": "Colony Combine"
     },
     "frameQuantity_one": "{{value}} frame",
     "frameQuantity_other": "{{value}} frames",
@@ -646,7 +647,13 @@
       "NEW_IS_QUEENLESS": "New hive queenless"
     },
     "splitFrames_one": "{{sign}}{{count}} frame",
-    "splitFrames_other": "{{sign}}{{count}} frames"
+    "splitFrames_other": "{{sign}}{{count}} frames",
+    "combine": {
+      "survivor": "Absorbed another colony",
+      "absorbed": "Merged into another hive",
+      "boxesMoved_one": "{{count}} box moved",
+      "boxesMoved_other": "{{count}} boxes moved"
+    }
   },
   "boxConfigAction": {
     "instruction": "Configure the hive's box stack. Changes will be recorded as an action on this inspection and applied to the hive when the inspection is saved.",

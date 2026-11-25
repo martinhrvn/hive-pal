@@ -1,4 +1,9 @@
-import { Injectable, ForbiddenException, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  ForbiddenException,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 
@@ -9,9 +14,11 @@ import {
   ActionResponse,
   ActionType,
   boxTypeSchema,
+  CombineRole,
   CreateAction,
   CreateStandaloneAction,
   HiveStatus,
+  OtherQueenFate,
   getBuiltinFeedType,
   UpdateAction,
   UserPreferences,
@@ -43,18 +50,36 @@ const actionNotes = (
 ): string | undefined =>
   details?.type === ActionType.NOTE ? details.content || notes : notes;
 
+const ACTION_INCLUDE = {
+  feedingAction: true,
+  treatmentAction: true,
+  frameAction: true,
+  harvestAction: true,
+  boxConfigurationAction: true,
+  maintenanceAction: true,
+  statusChangeAction: true,
+  splitAction: true,
+  combineAction: true,
+  createdByUser: { select: { name: true, email: true } },
+} satisfies Prisma.ActionInclude;
+
+/**
+ * SPLIT and COMBINE are structural, paired records: only the dedicated hive
+ * endpoints (POST /hives/:id/split, POST /hives/:id/combine) may write them.
+ */
+const STRUCTURAL_ACTION_TYPES: ReadonlySet<ActionType> = new Set([
+  ActionType.SPLIT,
+  ActionType.COMBINE,
+]);
+
+const assertCreatableActionType = (type: ActionType): void => {
+  if (STRUCTURAL_ACTION_TYPES.has(type)) {
+    throw new BadRequestException(`${type} actions cannot be created directly`);
+  }
+};
+
 type ActionWithRelations = Prisma.ActionGetPayload<{
-  include: {
-    feedingAction: true;
-    treatmentAction: true;
-    frameAction: true;
-    harvestAction: true;
-    boxConfigurationAction: true;
-    maintenanceAction: true;
-    statusChangeAction: true;
-    splitAction: true;
-    createdByUser: { select: { name: true; email: true } };
-  };
+  include: typeof ACTION_INCLUDE;
 }>;
 
 @Injectable()
@@ -216,6 +241,13 @@ export class ActionsService {
         });
         break;
       }
+      case ActionType.SPLIT:
+      case ActionType.COMBINE:
+        // Structural, paired records: only the dedicated hive endpoints
+        // (POST /hives/:id/split, POST /hives/:id/combine) may write them.
+        throw new BadRequestException(
+          `${details.type} actions cannot be created directly`,
+        );
     }
   }
 
@@ -228,16 +260,25 @@ export class ActionsService {
     hiveId: string,
     tx: Prisma.TransactionClient,
   ): Promise<void> {
+    // Being absorbed into another colony (the ABSORBED side of a COMBINE)
+    // archives the hive, so it counts as a status change to ARCHIVED.
     const latest = await tx.action.findFirst({
-      where: { hiveId, type: ActionType.STATUS_CHANGE },
+      where: {
+        hiveId,
+        OR: [
+          { type: ActionType.STATUS_CHANGE },
+          { type: ActionType.COMBINE, combineAction: { role: 'ABSORBED' } },
+        ],
+      },
       orderBy: [{ date: 'desc' }, { id: 'desc' }],
       include: { statusChangeAction: true },
     });
-    if (latest?.statusChangeAction) {
-      await tx.hive.update({
-        where: { id: hiveId },
-        data: { status: latest.statusChangeAction.toStatus },
-      });
+    const status: HiveStatus | undefined =
+      (latest?.type as ActionType) === ActionType.COMBINE
+        ? HiveStatus.ARCHIVED
+        : (latest?.statusChangeAction?.toStatus as HiveStatus | undefined);
+    if (status) {
+      await tx.hive.update({ where: { id: hiveId }, data: { status } });
     }
   }
 
@@ -356,6 +397,7 @@ export class ActionsService {
     if (!actions || actions.length === 0) {
       return;
     }
+    actions.forEach(({ type }) => assertCreatableActionType(type));
 
     // Get the hiveId from the inspection
     const inspection = await tx.inspection.findUnique({
@@ -410,32 +452,16 @@ export class ActionsService {
     });
 
     // Delete all related action details
-    for (const action of existingActions) {
-      await tx.feedingAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.treatmentAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.frameAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.harvestAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.boxConfigurationAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.maintenanceAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.statusChangeAction.deleteMany({
-        where: { actionId: action.id },
-      });
-      await tx.splitAction.deleteMany({
-        where: { actionId: action.id },
-      });
-    }
+    const where = { actionId: { in: existingActions.map((a) => a.id) } };
+    await tx.feedingAction.deleteMany({ where });
+    await tx.treatmentAction.deleteMany({ where });
+    await tx.frameAction.deleteMany({ where });
+    await tx.harvestAction.deleteMany({ where });
+    await tx.boxConfigurationAction.deleteMany({ where });
+    await tx.maintenanceAction.deleteMany({ where });
+    await tx.statusChangeAction.deleteMany({ where });
+    await tx.splitAction.deleteMany({ where });
+    await tx.combineAction.deleteMany({ where });
 
     // Delete all actions
     await tx.action.deleteMany({
@@ -502,17 +528,7 @@ export class ActionsService {
     const actions = await this.prisma.action.findMany({
       where: whereClause,
       orderBy: [{ date: 'desc' }, { id: 'asc' }],
-      include: {
-        feedingAction: true,
-        treatmentAction: true,
-        frameAction: true,
-        harvestAction: true,
-        boxConfigurationAction: true,
-        maintenanceAction: true,
-        statusChangeAction: true,
-        splitAction: true,
-        createdByUser: { select: { name: true, email: true } },
-      },
+      include: ACTION_INCLUDE,
     });
 
     // Get user preferences for unit conversion
@@ -549,6 +565,7 @@ export class ActionsService {
     }
 
     const { type, notes, details, date } = createActionDto;
+    assertCreatableActionType(type);
 
     // Use transaction to create action and related details
     const result = await this.prisma.$transaction(async (tx) => {
@@ -579,17 +596,7 @@ export class ActionsService {
       // Fetch the complete action with relations
       return await tx.action.findUnique({
         where: { id: createdAction.id },
-        include: {
-          feedingAction: true,
-          treatmentAction: true,
-          frameAction: true,
-          harvestAction: true,
-          boxConfigurationAction: true,
-          maintenanceAction: true,
-          statusChangeAction: true,
-          splitAction: true,
-          createdByUser: { select: { name: true, email: true } },
-        },
+        include: ACTION_INCLUDE,
       });
     });
 
@@ -624,17 +631,7 @@ export class ActionsService {
         id: actionId,
         hive: { apiary: apiaryWriteScope(filter) },
       },
-      include: {
-        feedingAction: true,
-        treatmentAction: true,
-        frameAction: true,
-        harvestAction: true,
-        boxConfigurationAction: true,
-        maintenanceAction: true,
-        statusChangeAction: true,
-        splitAction: true,
-        createdByUser: { select: { name: true, email: true } },
-      },
+      include: ACTION_INCLUDE,
     });
 
     if (!existingAction) {
@@ -652,8 +649,17 @@ export class ActionsService {
         filter.userId,
       );
     }
+    // Same for a combine (survivor + absorbed share a combineId).
+    if ((existingAction.type as ActionType) === ActionType.COMBINE) {
+      return this.updateCombineActionPair(
+        existingAction,
+        updateActionDto,
+        filter.userId,
+      );
+    }
 
     const { type, details, date } = updateActionDto;
+    if (type) assertCreatableActionType(type);
     const notes = actionNotes(updateActionDto.notes, details);
 
     // Use transaction to update action and related details
@@ -698,17 +704,7 @@ export class ActionsService {
       // Fetch the complete updated action with relations
       return await tx.action.findUnique({
         where: { id: actionId },
-        include: {
-          feedingAction: true,
-          treatmentAction: true,
-          frameAction: true,
-          harvestAction: true,
-          boxConfigurationAction: true,
-          maintenanceAction: true,
-          statusChangeAction: true,
-          splitAction: true,
-          createdByUser: { select: { name: true, email: true } },
-        },
+        include: ACTION_INCLUDE,
       });
     });
 
@@ -803,17 +799,62 @@ export class ActionsService {
 
       return tx.action.findUnique({
         where: { id: existingAction.id },
-        include: {
-          feedingAction: true,
-          treatmentAction: true,
-          frameAction: true,
-          harvestAction: true,
-          boxConfigurationAction: true,
-          maintenanceAction: true,
-          statusChangeAction: true,
-          splitAction: true,
-          createdByUser: { select: { name: true, email: true } },
+        include: ACTION_INCLUDE,
+      });
+    });
+
+    if (!result) {
+      throw new Error('Failed to update action');
+    }
+
+    const userPreferences = await this.getUserPreferencesWithFallback(userId);
+    return this.mapPrismaToDto(result, userPreferences);
+  }
+
+  /**
+   * Updates a COMBINE action: applies date/notes to the edited side and mirrors
+   * the date onto the counterpart action (same combineId). Queen/box details
+   * are immutable. Re-dating the pair can reorder it against status changes,
+   * so the absorbed hive's status is re-derived.
+   */
+  private async updateCombineActionPair(
+    existingAction: ActionWithRelations,
+    updateActionDto: UpdateAction,
+    userId: string,
+  ): Promise<ActionResponse> {
+    const { notes, date } = updateActionDto;
+    const newDate = date ? new Date(date) : null;
+    const combineId = existingAction.combineAction?.combineId;
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      await tx.action.update({
+        where: { id: existingAction.id },
+        data: {
+          ...(notes !== undefined && { notes }),
+          ...(newDate && { date: newDate }),
         },
+      });
+
+      if (newDate && combineId) {
+        const pair = await tx.action.findMany({
+          where: { combineAction: { combineId } },
+          select: { id: true, hiveId: true, combineAction: true },
+        });
+        await tx.action.updateMany({
+          where: { id: { in: pair.map((a) => a.id) } },
+          data: { date: newDate },
+        });
+        const absorbedHiveId = pair.find(
+          (a) => a.combineAction?.role === 'ABSORBED',
+        )?.hiveId;
+        if (absorbedHiveId) {
+          await this.recomputeHiveStatusFromChanges(absorbedHiveId, tx);
+        }
+      }
+
+      return tx.action.findUnique({
+        where: { id: existingAction.id },
+        include: ACTION_INCLUDE,
       });
     });
 
@@ -874,6 +915,29 @@ export class ActionsService {
         }
       }
 
+      // A combine is likewise a pair (survivor + absorbed). Deleting it only
+      // removes the record: the absorbed hive stays archived, queens and boxes
+      // stay where they are (there is no combine undo).
+      if ((existingAction.type as ActionType) === ActionType.COMBINE) {
+        const combine = await tx.combineAction.findUnique({
+          where: { actionId },
+          select: { combineId: true },
+        });
+        if (combine) {
+          const pair = await tx.action.findMany({
+            where: { combineAction: { combineId: combine.combineId } },
+            select: { id: true },
+          });
+          await tx.combineAction.deleteMany({
+            where: { combineId: combine.combineId },
+          });
+          await tx.action.deleteMany({
+            where: { id: { in: pair.map((a) => a.id) } },
+          });
+          return;
+        }
+      }
+
       // Delete type-specific details
       await this.deleteActionDetails(actionId, tx);
 
@@ -907,6 +971,7 @@ export class ActionsService {
     await tx.maintenanceAction.deleteMany({ where: { actionId } });
     await tx.statusChangeAction.deleteMany({ where: { actionId } });
     await tx.splitAction.deleteMany({ where: { actionId } });
+    await tx.combineAction.deleteMany({ where: { actionId } });
   }
 
   // Prisma-to-Domain Transformation Function
@@ -1199,6 +1264,34 @@ export class ActionsService {
               'STAYED_WITH_SOURCE' | 'MOVED_TO_NEW' | 'NEW_IS_QUEENLESS',
           },
         };
+
+      case ActionType.COMBINE: {
+        const combine = prismaAction.combineAction;
+        if (!combine) {
+          this.logger.warn(
+            `Combine action details missing for action ${prismaAction.id}`,
+          );
+          return {
+            ...base,
+            type: ActionType.OTHER,
+            details: { type: ActionType.OTHER },
+          };
+        }
+        return {
+          ...base,
+          type: ActionType.COMBINE,
+          details: {
+            type: ActionType.COMBINE,
+            combineId: combine.combineId,
+            role: combine.role as CombineRole,
+            counterpartHiveId: combine.counterpartHiveId ?? undefined,
+            keptQueenId: combine.keptQueenId,
+            otherQueenId: combine.otherQueenId,
+            otherQueenFate: combine.otherQueenFate as OtherQueenFate | null,
+            boxesMoved: combine.boxesMoved,
+          },
+        };
+      }
 
       case ActionType.BOX_CONFIGURATION:
         if (!prismaAction.boxConfigurationAction) {

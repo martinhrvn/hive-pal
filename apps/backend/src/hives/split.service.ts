@@ -19,7 +19,7 @@ import { ApiaryScopeFilter } from '../interface/request-with.apiary';
 import { apiaryWriteAccessWhere, apiaryWriteScope } from '../common';
 
 /** Status (and its timestamp, if it changes) for a queen moved into a hive. */
-const installStatus = (status: QueenStatus, at: Date) => {
+export const installStatus = (status: QueenStatus, at: Date) => {
   const next = queenStatusOnInstall(status);
   return next === status ? { status } : { status: next, statusChangedAt: at };
 };

@@ -45,6 +45,20 @@ interface HiveTimelineProps {
   apiaryId: string | undefined;
 }
 
+// Paired, structural actions (one entry on each hive) get their own delete texts.
+const PAIRED_DELETE_KEYS: Partial<
+  Record<ActionType, { toast: string; description: string }>
+> = {
+  [ActionType.SPLIT]: {
+    toast: 'hive:timeline.splitDeleted',
+    description: 'hive:timeline.deleteAction.splitDescription',
+  },
+  [ActionType.COMBINE]: {
+    toast: 'hive:timeline.combineDeleted',
+    description: 'hive:timeline.deleteAction.combineDescription',
+  },
+};
+
 export const HiveTimeline: React.FC<HiveTimelineProps> = ({
   hiveId,
   apiaryId,
@@ -121,6 +135,13 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
     return null;
   };
 
+  let undoButtonLabel = t('common:timeline.undoSplit');
+  if (undoSplitMutation.isPending) {
+    undoButtonLabel = t('hive:timeline.undoSplitDialog.undoing');
+  } else if (undoConflict) {
+    undoButtonLabel = t('hive:timeline.undoSplitDialog.undoAnyway');
+  }
+
   const handleDeleteConfirm = async () => {
     if (!deletingAction) return;
     try {
@@ -128,9 +149,10 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
         actionId: deletingAction.id,
       });
       toast.success(
-        deletingAction.type === ActionType.SPLIT
-          ? t('hive:timeline.splitDeleted')
-          : t('hive:timeline.actionDeleted'),
+        t(
+          PAIRED_DELETE_KEYS[deletingAction.type]?.toast ??
+            'hive:timeline.actionDeleted',
+        ),
       );
       setDeletingAction(null);
     } catch {
@@ -302,11 +324,7 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
               onClick={() => handleUndoSplitConfirm(undoConflict)}
               disabled={undoSplitMutation.isPending}
             >
-              {undoSplitMutation.isPending
-                ? t('hive:timeline.undoSplitDialog.undoing')
-                : undoConflict
-                  ? t('hive:timeline.undoSplitDialog.undoAnyway')
-                  : t('common:timeline.undoSplit')}
+              {undoButtonLabel}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -321,9 +339,11 @@ export const HiveTimeline: React.FC<HiveTimelineProps> = ({
           <DialogHeader>
             <DialogTitle>{t('hive:timeline.deleteAction.title')}</DialogTitle>
             <DialogDescription>
-              {deletingAction?.type === ActionType.SPLIT
-                ? t('hive:timeline.deleteAction.splitDescription')
-                : t('hive:timeline.deleteAction.description')}
+              {t(
+                (deletingAction &&
+                  PAIRED_DELETE_KEYS[deletingAction.type]?.description) ??
+                  'hive:timeline.deleteAction.description',
+              )}
             </DialogDescription>
           </DialogHeader>
           {deletingAction &&

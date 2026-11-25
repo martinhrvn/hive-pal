@@ -5,7 +5,10 @@ import { activeQueenSchema } from '../queens';
 import { alertResponseSchema } from '../alerts';
 import { apiarySettingsSchema, inspectionTypeEnum } from '../apiaries';
 import { seasonListSchema } from '../seasons';
-import { queenDispositionSchema } from '../actions/details.schema';
+import {
+  otherQueenFateSchema,
+  queenDispositionSchema,
+} from '../actions/details.schema';
 
 // Schema for hive settings
 export const hiveSettingsSchema = z
@@ -193,3 +196,27 @@ export const splitHiveResponseSchema = z.object({
 
 export type SplitHive = z.infer<typeof splitHiveSchema>;
 export type SplitHiveResponse = z.infer<typeof splitHiveResponseSchema>;
+
+// ─── Colony combine (uniting two colonies) ──────────────────────────────────
+// The hive in the URL survives; `absorbedHiveId` is archived. The kept queen is
+// one of the two hives' current queens (null when neither has one recorded);
+// the other queen is marked DEAD or REPLACED. Optionally the absorbed hive's
+// boxes are stacked on top of the survivor.
+export const combineHivesSchema = z.object({
+  date: z.iso.datetime(),
+  absorbedHiveId: z.uuid(),
+  keptQueenId: z.uuid().nullish(),
+  otherQueenFate: otherQueenFateSchema.default('DEAD'),
+  moveBoxes: z.boolean().default(true),
+  notes: z.string().optional(),
+});
+
+export const combineHivesResponseSchema = z.object({
+  combineId: z.uuid(),
+  survivorHiveId: z.uuid(),
+  absorbedHiveId: z.uuid(),
+});
+
+export type CombineHives = z.infer<typeof combineHivesSchema>;
+export type CombineHivesInput = z.input<typeof combineHivesSchema>;
+export type CombineHivesResponse = z.infer<typeof combineHivesResponseSchema>;

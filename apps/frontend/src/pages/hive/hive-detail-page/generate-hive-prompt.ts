@@ -16,6 +16,37 @@ function formatDate(date: string | Date): string {
   return format(new Date(date), 'P', { locale: getDateLocale(i18n.language) });
 }
 
+function getFrameLabel(action: ActionResponse): string {
+  if (action.details?.type !== 'FRAME') {
+    return i18n.t('hive:llmPrompt.textArea.frameManagement', {
+      defaultValue: 'Frame management',
+    });
+  }
+  const { quantity } = action.details;
+  return quantity === 1
+    ? i18n.t('hive:llmPrompt.textArea.addedFrame', {
+        quantity,
+        defaultValue: 'Added {{quantity}} frame',
+      })
+    : i18n.t('hive:llmPrompt.textArea.addedFrames', {
+        quantity,
+        defaultValue: 'Added {{quantity}} frames',
+      });
+}
+
+function getMaintenanceLabel(action: ActionResponse): string {
+  if (action.details?.type !== 'MAINTENANCE') {
+    return i18n.t('hive:llmPrompt.textArea.maintenanceDefault', {
+      defaultValue: 'Maintenance',
+    });
+  }
+  return i18n.t('hive:llmPrompt.textArea.maintenance', {
+    status: action.details.status.toLowerCase(),
+    component: action.details.component.replace('_', ' ').toLowerCase(),
+    defaultValue: '{{status}} {{component}}',
+  });
+}
+
 function getActionLabel(action: ActionResponse): string {
   switch (action.type) {
     case 'FEEDING':
@@ -47,20 +78,7 @@ function getActionLabel(action: ActionResponse): string {
         defaultValue: 'Treatment',
       });
     case 'FRAME':
-      if (action.details?.type === 'FRAME') {
-        return action.details.quantity === 1
-          ? i18n.t('hive:llmPrompt.textArea.addedFrame', {
-              quantity: action.details.quantity,
-              defaultValue: 'Added {{quantity}} frame',
-            })
-          : i18n.t('hive:llmPrompt.textArea.addedFrames', {
-              quantity: action.details.quantity,
-              defaultValue: 'Added {{quantity}} frames',
-            });
-      }
-      return i18n.t('hive:llmPrompt.textArea.frameManagement', {
-        defaultValue: 'Frame management',
-      });
+      return getFrameLabel(action);
     case 'HARVEST':
       if (action.details?.type === 'HARVEST') {
         return i18n.t('hive:llmPrompt.textArea.harvested', {
@@ -79,18 +97,13 @@ function getActionLabel(action: ActionResponse): string {
         defaultValue: 'Box configuration',
       });
     case 'MAINTENANCE':
-      if (action.details?.type === 'MAINTENANCE') {
-        const comp = action.details.component.replace('_', ' ').toLowerCase();
-        const stat = action.details.status.toLowerCase();
-        return i18n.t('hive:llmPrompt.textArea.maintenance', {
-          status: stat,
-          component: comp,
-          defaultValue: '{{status}} {{component}}',
-        });
-      }
-      return i18n.t('hive:llmPrompt.textArea.maintenanceDefault', {
-        defaultValue: 'Maintenance',
-      });
+      return getMaintenanceLabel(action);
+    case 'COMBINE':
+      return i18n.t(
+        action.details?.type === 'COMBINE' && action.details.role === 'ABSORBED'
+          ? 'hive:llmPrompt.textArea.combineAbsorbed'
+          : 'hive:llmPrompt.textArea.combineSurvivor',
+      );
     default:
       return action.type;
   }
