@@ -96,7 +96,7 @@ export const TimelineInspectionDetails: React.FC<{
     temperature == null ? null : formatTemperature(temperature);
 
   return (
-    <div className="mt-2 space-y-3 border-l-2 border-border pl-3">
+    <div className="mt-1 space-y-3 border-l-2 border-border pl-3">
       {hasWeather && (
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Thermometer className="size-3.5 shrink-0" />
@@ -174,7 +174,6 @@ export const TimelineInspectionDetails: React.FC<{
 
       <Link
         to={`/inspections/${inspection.id}`}
-        onClick={e => e.stopPropagation()}
         className={cn(
           'inline-flex items-center gap-1 text-xs font-medium text-muted-foreground',
           'hover:text-foreground hover:underline',

@@ -587,173 +587,171 @@ const InspectionEntry: React.FC<{ event: DecoratedEvent }> = ({ event }) => {
     : t('common:timeline.showDetails');
 
   return (
-    <div
-      className={cn(
-        'rounded-md -mx-2 px-2 py-1.5 transition-colors',
-        clickable && 'cursor-pointer',
-        isOverdue
-          ? 'bg-destructive/5 hover:bg-destructive/10 ring-1 ring-inset ring-destructive/20'
-          : !isScheduled && 'hover:bg-accent/70',
-      )}
-      onClick={clickable ? () => onInspectionClick(inspection) : undefined}
-    >
-      <div className="flex items-start justify-between gap-1.5">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {isOverdue ? (
-              <AlertCircle className="size-3.5 text-destructive-foreground shrink-0" />
-            ) : (
-              <CalendarIcon
-                className={cn(
-                  'size-3.5 shrink-0',
-                  isScheduled ? 'text-honey' : 'text-muted-foreground',
+    <>
+      <div
+        className={cn(
+          'rounded-md -mx-2 px-2 py-1.5 transition-colors',
+          clickable && 'cursor-pointer',
+          isOverdue
+            ? 'bg-destructive/5 hover:bg-destructive/10 ring-1 ring-inset ring-destructive/20'
+            : !isScheduled && 'hover:bg-accent/70',
+        )}
+        onClick={clickable ? () => onInspectionClick(inspection) : undefined}
+      >
+        <div className="flex items-start justify-between gap-1.5">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {isOverdue ? (
+                <AlertCircle className="size-3.5 text-destructive-foreground shrink-0" />
+              ) : (
+                <CalendarIcon
+                  className={cn(
+                    'size-3.5 shrink-0',
+                    isScheduled ? 'text-honey' : 'text-muted-foreground',
+                  )}
+                />
+              )}
+              <span className="font-medium text-sm text-foreground">
+                {isScheduled
+                  ? t('common:timeline.inspectHive', {
+                      hiveName: getHiveName?.(inspection.hiveId) ?? '',
+                    })
+                  : t('common:timeline.inspection')}
+              </span>
+              {!isScheduled && <HiveBadge data={inspection} />}
+              {isOverdue && (
+                <StatusPill tone="danger" size="sm">
+                  {t('common:timeline.overdue')}
+                </StatusPill>
+              )}
+              {isScheduled && !isOverdue && (
+                <StatusPill tone="warning" size="sm">
+                  {t('common:timeline.scheduled')}
+                </StatusPill>
+              )}
+              {isCancelled && (
+                <StatusPill size="sm">
+                  {t('common:timeline.cancelled')}
+                </StatusPill>
+              )}
+            </div>
+
+            {!isScheduled && !isCancelled && inspection.observations && (
+              <div className="flex items-center gap-1.5 mt-1.5 flex-wrap tabular-nums">
+                {inspection.observations.strength !== null && (
+                  <StatusPill size="sm">
+                    <ActivityIcon />
+                    {t('common:timeline.strength')}:{' '}
+                    {inspection.observations.strength}
+                  </StatusPill>
                 )}
-              />
+                {inspection.observations.honeyStores !== null && (
+                  <StatusPill tone="warning" size="sm">
+                    <DropletsIcon />
+                    {t('common:timeline.honey')}:{' '}
+                    {inspection.observations.honeyStores}
+                  </StatusPill>
+                )}
+                {inspection.observations.queenSeen !== null && (
+                  <StatusPill
+                    tone={
+                      inspection.observations.queenSeen ? 'warning' : 'neutral'
+                    }
+                    size="sm"
+                  >
+                    <Crown />
+                    {inspection.observations.queenSeen
+                      ? t('common:timeline.queenSeen')
+                      : t('common:timeline.queenNotSeen')}
+                  </StatusPill>
+                )}
+              </div>
             )}
-            <span className="font-medium text-sm text-foreground">
-              {isScheduled
-                ? t('common:timeline.inspectHive', {
-                    hiveName: getHiveName?.(inspection.hiveId) ?? '',
-                  })
-                : t('common:timeline.inspection')}
-            </span>
-            {!isScheduled && <HiveBadge data={inspection} />}
-            {isOverdue && (
-              <StatusPill tone="danger" size="sm">
-                {t('common:timeline.overdue')}
-              </StatusPill>
-            )}
-            {isScheduled && !isOverdue && (
-              <StatusPill tone="warning" size="sm">
-                {t('common:timeline.scheduled')}
-              </StatusPill>
-            )}
-            {isCancelled && (
-              <StatusPill size="sm">
-                {t('common:timeline.cancelled')}
-              </StatusPill>
+
+            {inspection.notes && (
+              <div className="flex items-start gap-1.5 mt-1.5 text-xs text-muted-foreground">
+                <FileTextIcon className="size-3 mt-0.5 shrink-0" />
+                <p
+                  className={cn(
+                    'min-w-0 break-words',
+                    expanded ? 'whitespace-pre-wrap' : 'line-clamp-2',
+                  )}
+                >
+                  {inspection.notes}
+                </p>
+              </div>
             )}
           </div>
 
-          {!isScheduled && !isCancelled && inspection.observations && (
-            <div className="flex items-center gap-1.5 mt-1.5 flex-wrap tabular-nums">
-              {inspection.observations.strength !== null && (
-                <StatusPill size="sm">
-                  <ActivityIcon />
-                  {t('common:timeline.strength')}:{' '}
-                  {inspection.observations.strength}
-                </StatusPill>
-              )}
-              {inspection.observations.honeyStores !== null && (
-                <StatusPill tone="warning" size="sm">
-                  <DropletsIcon />
-                  {t('common:timeline.honey')}:{' '}
-                  {inspection.observations.honeyStores}
-                </StatusPill>
-              )}
-              {inspection.observations.queenSeen !== null && (
-                <StatusPill
-                  tone={
-                    inspection.observations.queenSeen ? 'warning' : 'neutral'
-                  }
-                  size="sm"
-                >
-                  <Crown />
-                  {inspection.observations.queenSeen
-                    ? t('common:timeline.queenSeen')
-                    : t('common:timeline.queenNotSeen')}
-                </StatusPill>
-              )}
-            </div>
-          )}
-
-          {inspection.notes && (
-            <div className="flex items-start gap-1.5 mt-1.5 text-xs text-muted-foreground">
-              <FileTextIcon className="size-3 mt-0.5 shrink-0" />
-              <p
-                className={cn(
-                  'min-w-0 break-words',
-                  expanded ? 'whitespace-pre-wrap' : 'line-clamp-2',
-                )}
-              >
-                {inspection.notes}
-              </p>
-            </div>
-          )}
-
-          {expandable && expanded && (
-            <div
-              id={`inspection-details-${inspection.id}`}
-              className="cursor-auto"
-              onClick={e => e.stopPropagation()}
+          {expandable && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7 shrink-0 opacity-60 hover:opacity-100"
+              title={toggleLabel}
+              aria-label={toggleLabel}
+              aria-expanded={expanded}
+              aria-controls={`inspection-details-${inspection.id}`}
+              onClick={e => {
+                e.stopPropagation();
+                setExpanded(prev => !prev);
+              }}
             >
-              <TimelineInspectionDetails inspection={inspection} />
-            </div>
+              <ChevronDownIcon
+                className={cn(
+                  'size-4 transition-transform',
+                  expanded && 'rotate-180',
+                )}
+              />
+            </Button>
+          )}
+
+          {isScheduled && !isCancelled && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-7 shrink-0 opacity-60 hover:opacity-100"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <MoreVertical className="size-4" />
+                  <span className="sr-only">
+                    {t('common:actions.openMenu', 'Open menu')}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuItem
+                  onClick={e => {
+                    e.stopPropagation();
+                    onDoInspection(inspection);
+                  }}
+                >
+                  <CheckCircle className="size-4 mr-2" />
+                  {t('common:timeline.doInspection')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={e => {
+                    e.stopPropagation();
+                    onReschedule(inspection);
+                  }}
+                >
+                  <CalendarIcon className="size-4 mr-2" />
+                  {t('common:timeline.reschedule')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
-
-        {expandable && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7 shrink-0 opacity-60 hover:opacity-100"
-            title={toggleLabel}
-            aria-label={toggleLabel}
-            aria-expanded={expanded}
-            aria-controls={`inspection-details-${inspection.id}`}
-            onClick={e => {
-              e.stopPropagation();
-              setExpanded(prev => !prev);
-            }}
-          >
-            <ChevronDownIcon
-              className={cn(
-                'size-4 transition-transform',
-                expanded && 'rotate-180',
-              )}
-            />
-          </Button>
-        )}
-
-        {isScheduled && !isCancelled && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-7 shrink-0 opacity-60 hover:opacity-100"
-                onClick={e => e.stopPropagation()}
-              >
-                <MoreVertical className="size-4" />
-                <span className="sr-only">
-                  {t('common:actions.openMenu', 'Open menu')}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44">
-              <DropdownMenuItem
-                onClick={e => {
-                  e.stopPropagation();
-                  onDoInspection(inspection);
-                }}
-              >
-                <CheckCircle className="size-4 mr-2" />
-                {t('common:timeline.doInspection')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={e => {
-                  e.stopPropagation();
-                  onReschedule(inspection);
-                }}
-              >
-                <CalendarIcon className="size-4 mr-2" />
-                {t('common:timeline.reschedule')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
       </div>
-    </div>
+      {/* Outside the clickable row, so using the panel never opens the inspection. */}
+      {expandable && expanded && (
+        <div id={`inspection-details-${inspection.id}`}>
+          <TimelineInspectionDetails inspection={inspection} />
+        </div>
+      )}
+    </>
   );
 };
 
